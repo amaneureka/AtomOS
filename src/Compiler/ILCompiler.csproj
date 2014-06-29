@@ -1,0 +1,266 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{5F140860-2A9A-44DD-831E-61C0D052CC6B}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Atomix</RootNamespace>
+    <AssemblyName>Atomixilc</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>2.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Build\Bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\Build\Bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Atomix.ILCompiler</StartupObject>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>true</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Compiler.cs" />
+    <Compile Include="ILAttribute.cs" />
+    <Compile Include="ILHelper.cs" />
+    <Compile Include="ILCompiler.cs" />
+    <Compile Include="ILOpCode.cs" />
+    <Compile Include="ILOpCodes\OpNone.cs" />
+    <Compile Include="ILOpCodes\OpSig.cs" />
+    <Compile Include="ILOpCodes\OpVar.cs" />
+    <Compile Include="ILOpCodes\OpSwitch.cs" />
+    <Compile Include="ILOpCodes\OpToken.cs" />
+    <Compile Include="ILOpCodes\OpType.cs" />
+    <Compile Include="ILOpCodes\OpString.cs" />
+    <Compile Include="ILOpCodes\OpSingle.cs" />
+    <Compile Include="ILOpCodes\OpMethod.cs" />
+    <Compile Include="ILOpCodes\OpInt.cs" />
+    <Compile Include="ILOpCodes\OpInt64.cs" />
+    <Compile Include="ILOpCodes\OpField.cs" />
+    <Compile Include="ILOpCodes\OpDouble.cs" />
+    <Compile Include="ILOpCodes\OpBranch.cs" />
+    <Compile Include="IL\Arithmetic\Div_Un.cs" />
+    <Compile Include="IL\Arithmetic\Not.cs" />
+    <Compile Include="IL\Arithmetic\Xor.cs" />
+    <Compile Include="IL\Arithmetic\Or.cs" />
+    <Compile Include="IL\Box.cs" />
+    <Compile Include="IL\Branch\Bne_Un.cs" />
+    <Compile Include="IL\Branch\Bge.cs" />
+    <Compile Include="IL\Branch\Bge_Un.cs" />
+    <Compile Include="IL\Branch\Bgt_Un.cs" />
+    <Compile Include="IL\Branch\Bgt.cs" />
+    <Compile Include="IL\Branch\Blt_Un.cs" />
+    <Compile Include="IL\Branch\Blt.cs" />
+    <Compile Include="IL\Branch\Ble.cs" />
+    <Compile Include="IL\Branch\Ble_Un.cs" />
+    <Compile Include="IL\Clt_Un.cs" />
+    <Compile Include="IL\Conversion\Conv_U.cs" />
+    <Compile Include="IL\Conversion\Conv_I.cs" />
+    <Compile Include="IL\Function\Callvirt.cs" />
+    <Compile Include="IL\Load\Ldflda.cs" />
+    <Compile Include="IL\Load\Ldind\Ldind_I2.cs" />
+    <Compile Include="IL\Load\Ldind\Ldind_I4.cs" />
+    <Compile Include="IL\Load\Ldind\Ldind_I1.cs" />
+    <Compile Include="IL\Load\Ldlen.cs" />
+    <Compile Include="IL\Load\Ldelema.cs" />
+    <Compile Include="IL\Load\Ldelem\Ldelem_U1.cs" />
+    <Compile Include="IL\Load\Ldelem\Ldelem_U2.cs" />
+    <Compile Include="IL\Load\Ldelem\Ldelem_U4.cs" />
+    <Compile Include="IL\Load\Ldelem\Ldelem_R4.cs" />
+    <Compile Include="IL\Load\Ldelem\Ldelem_R8.cs" />
+    <Compile Include="IL\Load\Ldelem\Ldelem_I8.cs" />
+    <Compile Include="IL\Load\Ldelem\Ldelem_I4.cs" />
+    <Compile Include="IL\Load\Ldelem\Ldelem_I2.cs" />
+    <Compile Include="IL\Load\Ldelem\Ldelem_I1.cs" />
+    <Compile Include="IL\Load\Ldelem\Ldelem_I.cs" />
+    <Compile Include="IL\Load\Ldelem\Ldelem_Ref.cs" />
+    <Compile Include="IL\Load\Ldelem\Ldelem.cs" />
+    <Compile Include="IL\Load\Ldfld.cs" />
+    <Compile Include="IL\Load\Ldind\Ldind_I.cs" />
+    <Compile Include="IL\Load\Ldind\Ldind_U4.cs" />
+    <Compile Include="IL\Load\Ldind\Ldind_U2.cs" />
+    <Compile Include="IL\Load\Ldind\Ldind_U1.cs" />
+    <Compile Include="IL\Load\Ldloca.cs" />
+    <Compile Include="IL\Load\Ldsflda.cs" />
+    <Compile Include="IL\Load\Ldobj.cs" />
+    <Compile Include="IL\Load\Ldtoken.cs" />
+    <Compile Include="IL\Object\Newarr.cs" />
+    <Compile Include="IL\Object\Initobj.cs" />
+    <Compile Include="IL\Rem_Un.cs" />
+    <Compile Include="IL\Shl.cs" />
+    <Compile Include="IL\Shr.cs" />
+    <Compile Include="IL\Shr_Un.cs" />
+    <Compile Include="IL\Arithmetic\And.cs" />
+    <Compile Include="IL\Arithmetic\Sub.cs" />
+    <Compile Include="IL\Arithmetic\Div.cs" />
+    <Compile Include="IL\Arithmetic\Mul.cs" />
+    <Compile Include="IL\Branch\Beq.cs" />
+    <Compile Include="IL\Load\Ldarg.cs" />
+    <Compile Include="IL\Store\Stelem\Stelem_R4.cs" />
+    <Compile Include="IL\Store\Stelem\Stelem_R8.cs" />
+    <Compile Include="IL\Store\Stelem\Stelem_I8.cs" />
+    <Compile Include="IL\Store\Stelem\Stelem_I4.cs" />
+    <Compile Include="IL\Store\Stelem\Stelem_I2.cs" />
+    <Compile Include="IL\Store\Stelem\Stelem_I1.cs" />
+    <Compile Include="IL\Store\Stelem\Stelem_I.cs" />
+    <Compile Include="IL\Store\Stelem\Stelem.cs" />
+    <Compile Include="IL\Store\Stelem\Stelem_Ref.cs" />
+    <Compile Include="IL\Store\Stfld.cs" />
+    <Compile Include="IL\Store\Stind\Stind_Ref.cs" />
+    <Compile Include="IL\Store\Stind\Stind_R4.cs" />
+    <Compile Include="IL\Store\Stind\Stind_R8.cs" />
+    <Compile Include="IL\Store\Starg.cs" />
+    <Compile Include="IL\Store\Stobj.cs" />
+    <Compile Include="IL\Switch.cs" />
+    <Compile Include="IL\Rem.cs" />
+    <Compile Include="IL\Stack\Pop.cs" />
+    <Compile Include="IL\Store\Stind\Stind_I8.cs" />
+    <Compile Include="IL\Store\Stind\Stind_I4.cs" />
+    <Compile Include="IL\Store\Stind\Stind_I2.cs" />
+    <Compile Include="IL\Store\Stind\Stind_I1.cs" />
+    <Compile Include="IL\Store\Stind\Stind_I.cs" />
+    <Compile Include="IL\Store\Stsfld.cs" />
+    <Compile Include="IL\Load\Ldsfld.cs" />
+    <Compile Include="IL\Object\NewObj.cs" />
+    <Compile Include="IL\Cgt.cs" />
+    <Compile Include="IL\Clt.cs" />
+    <Compile Include="IL\Conversion\Conv_U8.cs" />
+    <Compile Include="IL\Conversion\Conv_U4.cs" />
+    <Compile Include="IL\Conversion\Conv_U2.cs" />
+    <Compile Include="IL\Conversion\Conv_U1.cs" />
+    <Compile Include="IL\Conversion\Conv_I8.cs" />
+    <Compile Include="IL\Conversion\Conv_I4.cs" />
+    <Compile Include="IL\Conversion\Conv_I2.cs" />
+    <Compile Include="IL\Stack\Dup.cs" />
+    <Compile Include="IL\Conversion\Conv_I1.cs" />
+    <Compile Include="IL\Load\Ldnull.cs" />
+    <Compile Include="IL\SizeOf.cs" />
+    <Compile Include="IL\Throw.cs" />
+    <Compile Include="IL\Branch\Brfalse.cs" />
+    <Compile Include="IL\Leave.cs" />
+    <Compile Include="IL\Branch\Brtrue.cs" />
+    <Compile Include="IL\Function\Call.cs" />
+    <Compile Include="IL\Load\Ldstr.cs" />
+    <Compile Include="IL\Function\Ret.cs" />
+    <Compile Include="IL\Branch\Br.cs" />
+    <Compile Include="IL\Ceq.cs" />
+    <Compile Include="IL\Load\Ldc\Ldc_R8.cs" />
+    <Compile Include="IL\Load\Ldc\Ldc_R4.cs" />
+    <Compile Include="IL\Load\Ldc\Ldc_I8.cs" />
+    <Compile Include="IL\Load\Ldc\Ldc_I4.cs" />
+    <Compile Include="IL\Load\Ldloc.cs" />
+    <Compile Include="IL\Nop.cs" />
+    <Compile Include="IL\Arithmetic\Add.cs" />
+    <Compile Include="IL\MSIL.cs" />
+    <Compile Include="IL\Store\Stloc.cs" />
+    <Compile Include="log2html.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>log2html.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Logger.cs" />
+    <Compile Include="log2htmlcode.cs" />
+    <Compile Include="OpCodes.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="log2html.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>log2html.cs</LastGenOutput>
+    </None>
+    <None Include="Properties\app.manifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.5">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.5 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Kernel\Kernel_alpha\Kernel_alpha.csproj">
+      <Project>{aea97938-d7f4-484f-8cf2-3f62bc2a11ec}</Project>
+      <Name>Kernel_alpha</Name>
+    </ProjectReference>
+    <ProjectReference Include="CompilerExt\CompilerExt.csproj">
+      <Project>{8974125b-52ca-48bd-92f5-c8b28f1c1dee}</Project>
+      <Name>CompilerExt</Name>
+    </ProjectReference>
+    <ProjectReference Include="ILCompiler.Assembler\ILCompiler.Assembler.csproj">
+      <Project>{c39c02ef-559e-47a6-98d9-e5b79d683948}</Project>
+      <Name>ILCompiler.Assembler</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="IL\Branch\Note.txt" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

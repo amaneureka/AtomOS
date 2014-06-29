@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{31896A26-F45D-46C2-AF40-D6D409DECBEA}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Atomix.mscorlib</RootNamespace>
+    <AssemblyName>Atomix.mscorlib</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\Build\Bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\Build\Bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Array.cs" />
+    <Compile Include="Globalization\CultureInfo.cs" />
+    <Compile Include="SR.cs" />
+    <Compile Include="Type.cs" />
+    <Compile Include="SByte.cs" />
+    <Compile Include="Console.cs" />
+    <Compile Include="Enum.cs" />
+    <Compile Include="Environment.cs" />
+    <Compile Include="Exception.cs" />
+    <Compile Include="Number.cs" />
+    <Compile Include="Object.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="String.cs" />
+    <Compile Include="Runtime\CompilerServices\RuntimeHelpers.cs" />
+    <Compile Include="Byte.cs" />
+    <Compile Include="UInt32.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Compiler\CompilerExt\CompilerExt.csproj">
+      <Project>{8974125b-52ca-48bd-92f5-c8b28f1c1dee}</Project>
+      <Name>CompilerExt</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Compiler\ILCompiler.Assembler\ILCompiler.Assembler.csproj">
+      <Project>{c39c02ef-559e-47a6-98d9-e5b79d683948}</Project>
+      <Name>ILCompiler.Assembler</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Kernel_alpha\Kernel_alpha.csproj">
+      <Project>{aea97938-d7f4-484f-8cf2-3f62bc2a11ec}</Project>
+      <Name>Kernel_alpha</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

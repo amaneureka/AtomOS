@@ -1,0 +1,37 @@
+﻿Well Here are some IL's who just differ in Signed and Unsigned...So what is it
+Well they are almost identical and doesn't matter too much but for more accuracy
+I googled and i got to know the about different jump instruction
+http://www.unixwiz.net/techtips/x86-jumps.html
+
+The Unsigned Jump Instruction are :-
+JB			Jump if below
+JNAE		Jump if not above or equal
+JC			Jump if carry
+
+JNB			Jump if not below
+JAE			Jump if above or equal
+JNC			Jump if not carry
+
+JBE			Jump if below or equal 
+JNA			Jump if not above
+JA			Jump if above 
+JNBE		Jump if not below or equal
+
+And the Signed Jump Instruction are :-
+JL			Jump if less 
+JNGE		Jump if not greater or equal
+
+JGE			Jump if greater or equal 
+JNL			Jump if not less
+
+JLE			Jump if less or equal 
+JNG			Jump if not greater
+
+JG			Jump if greater 
+JNLE		Jump if not less or equal
+
+@Message:
+1)	I was thinking Xor is better than Compare in Brfalse and Brtrue IL...But will try later
+2)	I have used ECX register at some place...so for a good quality we do sure that its value is neither 0x1, 0x0
+	else if the method throws error but still the ECX register contains 0x1, 0x0 than compiler
+	thought no error is thrown so this is to be taken in mind

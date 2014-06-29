@@ -1,0 +1,7 @@
+TODO:
+1) Add a proper project structure.
+2) Create a well managed docs.
+3) @Sandeep: Add the updates to Filesystem project to this source code
+4) @reaper.2334: You have to start from Compiler/ILCompiler Compiler.cs Just navigate to this file rest you will get to know from comments
+5) @Sandeep: whatever links or resources i gave you just put it into a folder inside docs named as "resources"
+...Rest is coming soon

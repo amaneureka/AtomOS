@@ -1,0 +1,137 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ILCompiler", "Compiler\ILCompiler.csproj", "{5F140860-2A9A-44DD-831E-61C0D052CC6B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Compiler", "Compiler", "{A5068223-D6F4-4C05-8F29-0FC5BDE75BE7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Kernel", "Kernel", "{C53B4F01-2D9E-4AE6-A0FA-D849A9B61EF2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel_alpha", "Kernel\Kernel_alpha\Kernel_alpha.csproj", "{AEA97938-D7F4-484F-8CF2-3F62BC2A11EC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompilerExt", "Compiler\CompilerExt\CompilerExt.csproj", "{8974125B-52CA-48BD-92F5-C8B28F1C1DEE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ILOptimizer", "Compiler\ILOptimizer\ILOptimizer.csproj", "{ECA9C753-5F48-427C-B432-E7D61324AB41}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ILCompiler.Assembler", "Compiler\ILCompiler.Assembler\ILCompiler.Assembler.csproj", "{C39C02EF-559E-47A6-98D9-E5B79D683948}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Virtual Resources", "Virtual Resources", "{FF33C910-44B2-4135-822D-38BE75CA45BF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FileSystem v2.0", "FileSystem v2.0", "{08E83764-C281-48BB-9413-FD0D65CCA57D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileSystem", "Virtual Resources\File System v2.0\FileSystem.csproj", "{CACCFB22-A659-459F-9891-504224635A3F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atomix.mscorlib", "Kernel\Atomix.mscorlib\Atomix.mscorlib.csproj", "{31896A26-F45D-46C2-AF40-D6D409DECBEA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atomix.mscorlibext", "Kernel\Atomix.mscorlibext\Atomix.mscorlibext.csproj", "{4C45ED0B-E904-43EC-9C68-F5D6446DBCE1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{C3B02D38-C841-4DF9-BD4F-63008728FF28}"
+	ProjectSection(SolutionItems) = preProject
+		..\docs\README = ..\docs\README
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "users", "users", "{AD86D26A-9AB6-4BF3-99B9-043FD22EB1A5}"
+	ProjectSection(SolutionItems) = preProject
+		..\Notes.txt = ..\Notes.txt
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Amanp", "Amanp", "{FC738CC5-C45D-4CCE-8820-0A090C2912AC}"
+	ProjectSection(SolutionItems) = preProject
+		..\users\Amanp\Notes.txt = ..\users\Amanp\Notes.txt
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 9
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://atomos-il2asm.visualstudio.com/defaultcollection
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = Compiler\\CompilerExt\\CompilerExt.csproj
+		SccProjectTopLevelParentUniqueName1 = Atomix.sln
+		SccProjectName1 = Compiler/CompilerExt
+		SccLocalPath1 = Compiler\\CompilerExt
+		SccProjectUniqueName2 = Compiler\\ILCompiler.Assembler\\ILCompiler.Assembler.csproj
+		SccProjectTopLevelParentUniqueName2 = Atomix.sln
+		SccProjectName2 = Compiler/ILCompiler.Assembler
+		SccLocalPath2 = Compiler\\ILCompiler.Assembler
+		SccProjectUniqueName3 = Compiler\\ILCompiler.csproj
+		SccProjectTopLevelParentUniqueName3 = Atomix.sln
+		SccProjectName3 = Compiler
+		SccLocalPath3 = Compiler
+		SccProjectUniqueName4 = Compiler\\ILOptimizer\\ILOptimizer.csproj
+		SccProjectTopLevelParentUniqueName4 = Atomix.sln
+		SccProjectName4 = Compiler/ILOptimizer
+		SccLocalPath4 = Compiler\\ILOptimizer
+		SccProjectUniqueName5 = Kernel\\Atomix.mscorlib\\Atomix.mscorlib.csproj
+		SccProjectTopLevelParentUniqueName5 = Atomix.sln
+		SccProjectName5 = Kernel/Atomix.mscorlib
+		SccLocalPath5 = Kernel\\Atomix.mscorlib
+		SccProjectUniqueName6 = Kernel\\Atomix.mscorlibext\\Atomix.mscorlibext.csproj
+		SccProjectTopLevelParentUniqueName6 = Atomix.sln
+		SccProjectName6 = Kernel/Atomix.mscorlibext
+		SccLocalPath6 = Kernel\\Atomix.mscorlibext
+		SccProjectUniqueName7 = Kernel\\Kernel_alpha\\Kernel_alpha.csproj
+		SccProjectTopLevelParentUniqueName7 = Atomix.sln
+		SccProjectName7 = Kernel/Kernel_alpha
+		SccLocalPath7 = Kernel\\Kernel_alpha
+		SccProjectUniqueName8 = Virtual\u0020Resources\\File\u0020System\u0020v2.0\\FileSystem.csproj
+		SccProjectTopLevelParentUniqueName8 = Atomix.sln
+		SccProjectName8 = Virtual\u0020Resources/File\u0020System\u0020v2.0
+		SccLocalPath8 = Virtual\u0020Resources\\File\u0020System\u0020v2.0
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5F140860-2A9A-44DD-831E-61C0D052CC6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F140860-2A9A-44DD-831E-61C0D052CC6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F140860-2A9A-44DD-831E-61C0D052CC6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F140860-2A9A-44DD-831E-61C0D052CC6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AEA97938-D7F4-484F-8CF2-3F62BC2A11EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AEA97938-D7F4-484F-8CF2-3F62BC2A11EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AEA97938-D7F4-484F-8CF2-3F62BC2A11EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AEA97938-D7F4-484F-8CF2-3F62BC2A11EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8974125B-52CA-48BD-92F5-C8B28F1C1DEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8974125B-52CA-48BD-92F5-C8B28F1C1DEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8974125B-52CA-48BD-92F5-C8B28F1C1DEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8974125B-52CA-48BD-92F5-C8B28F1C1DEE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECA9C753-5F48-427C-B432-E7D61324AB41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECA9C753-5F48-427C-B432-E7D61324AB41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECA9C753-5F48-427C-B432-E7D61324AB41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECA9C753-5F48-427C-B432-E7D61324AB41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C39C02EF-559E-47A6-98D9-E5B79D683948}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C39C02EF-559E-47A6-98D9-E5B79D683948}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C39C02EF-559E-47A6-98D9-E5B79D683948}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C39C02EF-559E-47A6-98D9-E5B79D683948}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CACCFB22-A659-459F-9891-504224635A3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CACCFB22-A659-459F-9891-504224635A3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CACCFB22-A659-459F-9891-504224635A3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CACCFB22-A659-459F-9891-504224635A3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31896A26-F45D-46C2-AF40-D6D409DECBEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31896A26-F45D-46C2-AF40-D6D409DECBEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31896A26-F45D-46C2-AF40-D6D409DECBEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31896A26-F45D-46C2-AF40-D6D409DECBEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C45ED0B-E904-43EC-9C68-F5D6446DBCE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C45ED0B-E904-43EC-9C68-F5D6446DBCE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C45ED0B-E904-43EC-9C68-F5D6446DBCE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C45ED0B-E904-43EC-9C68-F5D6446DBCE1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5F140860-2A9A-44DD-831E-61C0D052CC6B} = {A5068223-D6F4-4C05-8F29-0FC5BDE75BE7}
+		{8974125B-52CA-48BD-92F5-C8B28F1C1DEE} = {A5068223-D6F4-4C05-8F29-0FC5BDE75BE7}
+		{ECA9C753-5F48-427C-B432-E7D61324AB41} = {A5068223-D6F4-4C05-8F29-0FC5BDE75BE7}
+		{C39C02EF-559E-47A6-98D9-E5B79D683948} = {A5068223-D6F4-4C05-8F29-0FC5BDE75BE7}
+		{AEA97938-D7F4-484F-8CF2-3F62BC2A11EC} = {C53B4F01-2D9E-4AE6-A0FA-D849A9B61EF2}
+		{31896A26-F45D-46C2-AF40-D6D409DECBEA} = {C53B4F01-2D9E-4AE6-A0FA-D849A9B61EF2}
+		{4C45ED0B-E904-43EC-9C68-F5D6446DBCE1} = {C53B4F01-2D9E-4AE6-A0FA-D849A9B61EF2}
+		{08E83764-C281-48BB-9413-FD0D65CCA57D} = {FF33C910-44B2-4135-822D-38BE75CA45BF}
+		{CACCFB22-A659-459F-9891-504224635A3F} = {08E83764-C281-48BB-9413-FD0D65CCA57D}
+		{FC738CC5-C45D-4CCE-8820-0A090C2912AC} = {AD86D26A-9AB6-4BF3-99B9-043FD22EB1A5}
+	EndGlobalSection
+EndGlobal

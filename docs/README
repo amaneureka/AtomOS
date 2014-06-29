@@ -1,0 +1,33 @@
+ █████╗ ████████╗ ██████╗ ███╗   ███╗██╗██╗  ██╗     ██████╗ ███████╗
+██╔══██╗╚══██╔══╝██╔═══██╗████╗ ████║██║╚██╗██╔╝    ██╔═══██╗██╔════╝
+███████║   ██║   ██║   ██║██╔████╔██║██║ ╚███╔╝     ██║   ██║███████╗
+██╔══██║   ██║   ██║   ██║██║╚██╔╝██║██║ ██╔██╗     ██║   ██║╚════██║
+██║  ██║   ██║   ╚██████╔╝██║ ╚═╝ ██║██║██╔╝ ██╗    ╚██████╔╝███████║
+╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝     ╚═╝╚═╝╚═╝  ╚═╝     ╚═════╝ ╚══════╝
+                                                                     
+HOW TO BUILD SOURCE:
+1) Open the solution in VS 2013 and build project.
+2) Open Build/Build.bat
+3) Kernel Output assembly will be inside Build/Output.
+4) Use any iso making tool to 
+
+Folder Structure:
+# Atomix
+	# docs 					;Here All the documentations regarding project will be put
+		# README			;This File
+	# src					;Whole source code inside this
+		#Build				;The Output Directory
+			#Bin			;The Solution Build Directory
+			#Output			;Assembly and Log file build Directory
+		#Compiler			;Containing Compiler Projects
+		#Kernel				;Containing Kernel and plugs projects
+		#Virtual Resources	;Containing Virtual driver making library for other developers
+	# users					;The notes by main developers will be here
+	# Notes.txt				;The notes for working on current changeset
+
+LICENSE APPLIED ON EACH CODE FILE INSIDE PROJECT
+Copyright (C) Atomix Development, Inc - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Proprietary and confidential
+Written by Aman Priyadarshi <aman.eureka@gmail.com>, Jun 2014
+AND ALL OTHER ATOMIX DEVLOPMENT TEAM MAIN DEVELOPERS.

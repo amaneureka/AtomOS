@@ -1,0 +1,7 @@
+What i was doing...
+	1) Was finding a bug in compiler as because was not able to get IsValid function working inside multitasking.
+	2) Was writing Keyboard driver...Have to complete it
+
+What to do:	
+	1) Commenting is left in some part of code
+	2) Need to read all the warnings that i leave in code.
