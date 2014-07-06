@@ -16,17 +16,19 @@ namespace Kernel_alpha
     public static class Caller
     {        
         public static Keyboard KBD;
-        public static Drivers.HAL.ACPI ACPI;
+        public static Drivers.acpi ACPI;
         public static unsafe void Start()
-        {   
+        {
             Multitasking.CreateTask(pTask1, true);
             Multitasking.CreateTask(pTask2, true);
             
             KBD = new Keyboard();
             PCI.Setup();
-            ACPI = new Drivers.HAL.ACPI();
-            ACPI.Init();
-            ACPI.Enable();
+            // Start ACPI
+            // Should automatically be initialized and enabled :)
+            ACPI = new Drivers.acpi (true, true);
+
+            Console.WriteLine("WELCOME TO MY ATOMIX BUILDER");            
         }
 
         public static unsafe void Update()
@@ -74,7 +76,7 @@ namespace Kernel_alpha
                 xA[7] = 0xd;
                 c++;
                 if (c >= 255)
-                    c = 0;   
+                    c = 0;
                 a++;
                 Thread.Sleep(100);
             }

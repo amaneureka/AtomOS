@@ -42,7 +42,6 @@
     <Compile Include="Caller.cs" />
     <Compile Include="Drivers\ACPI\ACPI.cs" />
     <Compile Include="Drivers\ACPI\misc.cs" />
-    <Compile Include="Drivers\HAL\ACPI.cs" />
     <Compile Include="Drivers\Input\keyboard\Keyboard.cs" />
     <Compile Include="Drivers\Input\keyboard\Keys.cs" />
     <Compile Include="Drivers\Input\misc.cs" />
@@ -76,9 +75,6 @@
       <Project>{4c45ed0b-e904-43ec-9c68-f5d6446dbce1}</Project>
       <Name>Atomix.mscorlibext</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Drivers\HAL\Note.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
