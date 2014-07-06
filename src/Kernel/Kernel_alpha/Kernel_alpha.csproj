@@ -40,6 +40,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Caller.cs" />
+    <Compile Include="Drivers\ACPI\ACPI.cs" />
+    <Compile Include="Drivers\ACPI\misc.cs" />
     <Compile Include="Drivers\HAL\ACPI.cs" />
     <Compile Include="Drivers\Input\keyboard\Keyboard.cs" />
     <Compile Include="Drivers\Input\keyboard\Keys.cs" />
@@ -74,7 +76,9 @@
       <Name>Atomix.mscorlibext</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Drivers\HAL\Note.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

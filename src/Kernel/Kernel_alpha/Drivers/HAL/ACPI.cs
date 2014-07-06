@@ -4,57 +4,54 @@ using Kernel_alpha.x86.Intrinsic;
 
 namespace Kernel_alpha.Drivers.HAL
 {
-    // It's a bit messy but I think it should work.. :D
     public unsafe class ACPI
     {
         // ACPI variables
-        internal int* SMI_CMD;
-        internal byte ACPI_ENABLE;
-        internal byte ACPI_DISABLE;
-        internal int* PM1a_CNT;
-        internal int* PM1b_CNT;
-        internal short SLP_TYPa;
-        internal short SLP_TYPb;
-        internal short SLP_EN;
-        internal short SCI_EN;
-        internal byte PM1_CNT_LEN;
+        public int* SMI_CMD;
+        public byte ACPI_ENABLE;
+        public byte ACPI_DISABLE;
+        public int* PM1a_CNT;
+        public int* PM1b_CNT;
+        public short SLP_TYPa;
+        public short SLP_TYPb;
+        public short SLP_EN;
+        public short SCI_EN;
+        public byte PM1_CNT_LEN;
 
-        // Port I/O
-        internal byte smiIO;
-        internal ushort pm1aIO, pm1bIO;
-        internal ushort smiIOPort, pm1aIOPort, pm1bIOPort;
+        // Port I/O        
+        public ushort smiIOPort, pm1aIOPort, pm1bIOPort;
 
         // ACPI structures
         [StructLayout (LayoutKind.Sequential, Pack = 1)]
-        internal struct RSDPtr
+        public struct RSDPtr
         {
-            internal fixed byte Signature[8];
-            internal byte CheckSum;
-            internal fixed byte OemID[6];
-            internal byte Revision;
-            internal int RsdtAddress;
+            public fixed byte Signature[8];
+            public byte CheckSum;
+            public fixed byte OemID[6];
+            public byte Revision;
+            public int RsdtAddress;
         };
 
         [StructLayout (LayoutKind.Sequential, Pack = 1)]
-        internal struct FACP
+        public struct FACP
         {
-            internal fixed byte Signature[4];
-            internal int Length;
-            internal fixed byte unneded1[40 - 8];
-            internal int* DSDT;
-            internal fixed byte unneded2[48 - 44];
-            internal int* SMI_CMD;
-            internal byte ACPI_ENABLE;
-            internal byte ACPI_DISABLE;
-            internal fixed byte unneded3[64 - 54];
-            internal int* PM1a_CNT_BLK;
-            internal int* PM1b_CNT_BLK;
-            internal fixed byte unneded4[89 - 72];
-            internal byte PM1_CNT_LEN;
+            public fixed byte Signature[4];
+            public int Length;
+            public fixed byte unneded1[40 - 8];
+            public int* DSDT;
+            public fixed byte unneded2[48 - 44];
+            public int* SMI_CMD;
+            public byte ACPI_ENABLE;
+            public byte ACPI_DISABLE;
+            public fixed byte unneded3[64 - 54];
+            public int* PM1a_CNT_BLK;
+            public int* PM1b_CNT_BLK;
+            public fixed byte unneded4[89 - 72];
+            public byte PM1_CNT_LEN;
         };
 
         // Initialize ACPI
-        internal bool Init ()
+        public bool Init ()
         {
             byte* ptr = (byte*)RSDPAddress ();
             int addr = 0;
@@ -148,13 +145,13 @@ namespace Kernel_alpha.Drivers.HAL
         }
 
         // Enable ACPI
-        internal bool Enable ()
+        public bool Enable ()
         {
             if (Native.In16 (pm1aIOPort) == 0)
             {
                 if (SMI_CMD != null && ACPI_ENABLE != 0)
                 {
-                    smiIO = Native.In8 (ACPI_ENABLE);
+                    Native.Out8(smiIOPort, ACPI_ENABLE);
                     int i;
                     for (i = 0; i < 300; i++)
                     {
@@ -176,13 +173,13 @@ namespace Kernel_alpha.Drivers.HAL
         }
 
         // Disable ACPI
-        internal void Disable ()
+        public void Disable ()
         {
-            smiIO = Native.In8 (ACPI_DISABLE);
+            Native.Out8(smiIOPort, ACPI_DISABLE);
         }
 
         // Comparation
-        internal int Compare (string c1, byte* c2)
+        public int Compare (string c1, byte* c2)
         {
             for (int i = 0; i < c1.Length; i++)
             {
@@ -191,15 +188,15 @@ namespace Kernel_alpha.Drivers.HAL
             return 0;
         }
 
-        internal int acpiCheckHeader (byte* ptr, string sig)
+        public int acpiCheckHeader (byte* ptr, string sig)
         {
             return Compare (sig, ptr);
         }
 
         // FACP
-        internal byte* Facp = null;
+        public byte* Facp = null;
 
-        internal byte facpbget (int number)
+        public byte facpbget (int number)
         {
             if (number == 0) { return *(Facp + 52); }
             else if (number == 1) { return *(Facp + 53); }
@@ -207,7 +204,7 @@ namespace Kernel_alpha.Drivers.HAL
             else return 0;
         }
 
-        internal int* facpget (int number)
+        public int* facpget (int number)
         {
             if (number == 0) { return (int*)*((int*)(Facp + 40)); }
             else if (number == 1) { return (int*)*((int*)(Facp + 48)); }
@@ -217,7 +214,7 @@ namespace Kernel_alpha.Drivers.HAL
         }
 
         // RSD
-        internal bool Check_RSD (uint address)
+        public bool Check_RSD (uint address)
         {
             byte sum = 0;
             byte* check = (byte*)address;
@@ -228,7 +225,7 @@ namespace Kernel_alpha.Drivers.HAL
             return (sum == 0);
         }
 
-        internal uint* acpiCheckRSDPtr (uint* ptr)
+        public uint* acpiCheckRSDPtr (uint* ptr)
         {
             string sig = "RSD PTR ";
             RSDPtr* rsdp = (RSDPtr*)ptr;
@@ -259,7 +256,7 @@ namespace Kernel_alpha.Drivers.HAL
             return null;
         }
 
-        internal unsafe uint RSDPAddress ()
+        public unsafe uint RSDPAddress ()
         {
             for (uint addr = 0xE0000; addr < 0x100000; addr += 4)
                 if (Compare ("RSD PTR ", (byte*)addr) == 0)
@@ -282,10 +279,13 @@ namespace Kernel_alpha.Drivers.HAL
             if (PM1a_CNT == null)
                 Init ();
 
-            pm1aIO = Native.In16 ((ushort)(SLP_TYPa | SLP_EN));
-
+            Native.Out16(pm1aIOPort, (ushort)(SLP_TYPa | SLP_EN));
+            
             if (PM1b_CNT != null)
-                pm1bIO = Native.In16 ((ushort)(SLP_TYPb | SLP_EN));
+                Native.Out16(pm1bIOPort, (ushort)(SLP_TYPb | SLP_EN));
+
+            // Halt CPU
+            Native.Halt();
         }
 
         // Reboot
@@ -299,7 +299,7 @@ namespace Kernel_alpha.Drivers.HAL
             Native.Out8 (0x64, 0xFE);
 
             // Halt CPU
-            while (true) ;
+            Native.Halt();
         }
     }
 }

@@ -6,4 +6,8 @@ TODO:
 5) @Sandeep: whatever links or resources i gave you just put it into a folder inside docs named as "resources"
 6) Just Add other PS2 error detection, in my code i assume that there will not be anykind of error
 	Code is in Driver/Input/misc.cs --> PS2_Cmd http://wiki.osdev.org/PS/2_Keyboard#Special_Bytes
+7) @Splitty: Have to start on ACPI, the brief documentation is here http://www.acpi.info/DOWNLOADS/ACPIspec50.pdf
+	The documentation is very brief but bit long, so have to read througly first, i'll also try to finish it soon. 
+	I created all the required directories and etc.. Rest messages i'll forward you on slack.
+	And I created a Note.txt in /Drivers/HAL Just read it one =D
 

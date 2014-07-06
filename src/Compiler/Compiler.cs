@@ -563,7 +563,7 @@ namespace Atomix
                     Core.vStack.Push(4, typeof(Exception));
                 }
                 //Well this is just to comment whole output Assembly
-                Core.AssemblerCode.Add(new Comment(Op.ToString() + "; " + Core.vStack.Count));
+                //Core.AssemblerCode.Add(new Comment(Op.ToString() + "; " + Core.vStack.Count));
 
                 //Check if this IL is in out implementation
                 if (MSIL.ContainsKey(Op.Code))

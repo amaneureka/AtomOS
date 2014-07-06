@@ -16,7 +16,7 @@ namespace Kernel_alpha
     public static class Caller
     {        
         public static Keyboard KBD;
-
+        public static Drivers.HAL.ACPI ACPI;
         public static unsafe void Start()
         {
             /* Start MultiTasking */
@@ -26,12 +26,28 @@ namespace Kernel_alpha
             Multitasking.Init();
             KBD = new Keyboard();
             PCI.Setup();
+            ACPI = new Drivers.HAL.ACPI();
+            ACPI.Init();
+            ACPI.Enable();
+
             Console.WriteLine("WELCOME TO MY ATOMIX BUILDER");            
         }
 
         public static unsafe void Update()
         {
-            
+            var s = KBD.Read();
+            if (KBD.Alt)
+            {
+                Console.WriteLine("Shutdown");
+                ACPI.Shutdown();
+            }
+            else if (KBD.Ctrl)
+            {
+                Console.WriteLine("Reboot");
+                ACPI.Reboot();
+            }
+            else if (s != null)
+                Console.Write(s.Char);
         }
 
         private static uint pTask1;

@@ -12,13 +12,13 @@ namespace Kernel_alpha.Drivers.Input
         private Queue<Keys> Buffer;
         private int MaxBuffer;
 
-        private bool NumLock;
-        private bool CapsLock;
-        private bool ScrollLock;
+        public bool NumLock;
+        public bool CapsLock;
+        public bool ScrollLock;
 
-        private bool Shift;
-        private bool Alt;
-        private bool Ctrl;
+        public bool Shift;
+        public bool Alt;
+        public bool Ctrl;
 
         private KeyCode[] Set = new KeyCode[]
         {
