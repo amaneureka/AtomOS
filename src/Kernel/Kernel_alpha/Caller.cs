@@ -24,6 +24,7 @@ namespace Kernel_alpha
             
             KBD = new Keyboard();
             PCI.Setup();
+
             // Start ACPI
             // Should automatically be initialized and enabled :)
             ACPI = new Drivers.acpi (true, true);
