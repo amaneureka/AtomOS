@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Caller.cs" />
+    <Compile Include="Drivers\HAL\ACPI.cs" />
     <Compile Include="Drivers\Input\keyboard\Keyboard.cs" />
     <Compile Include="Drivers\Input\keyboard\Keys.cs" />
     <Compile Include="Drivers\Input\misc.cs" />
