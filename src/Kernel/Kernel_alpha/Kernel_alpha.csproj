@@ -54,6 +54,7 @@
     <Compile Include="x86\GDT.cs" />
     <Compile Include="x86\Heap.cs" />
     <Compile Include="x86\IDT.cs" />
+    <Compile Include="x86\Intrinsic\IOPort.cs" />
     <Compile Include="x86\Intrinsic\IRQ.cs" />
     <Compile Include="x86\Intrinsic\Native.cs" />
     <Compile Include="x86\Memory.cs" />
