@@ -15,10 +15,19 @@ namespace Kernel_alpha
 {
     public static class Multitasking
     {
-        public static Task[] Tasks = new Task[6];
-        
-        public static int CurrentTask = -1;
+        private static Task[] mTasks = new Task[255];
+        private static int mCurrentTask = -1;
         private static int Counter = 0;
+
+        public static Task[] Tasks
+        {
+            get { return mTasks; }
+        }
+
+        public static int CurrentTask
+        {
+            get { return mCurrentTask; }
+        }
 
         public static void Init()
         {
@@ -27,7 +36,7 @@ namespace Kernel_alpha
             Native.Out8(0x40, (byte)(divisor & 0xFF));          /* Set low byte of divisor */
             Native.Out8(0x40, (byte)(divisor >> 8));            /* Set high byte of divisor */
 
-            CurrentTask = 0;
+            mCurrentTask = 0;
             PIC.ClearMask(0);
         }
         
@@ -35,55 +44,58 @@ namespace Kernel_alpha
         public static uint TaskSwitcher(uint context)
         {
             // save the old context into current task
-            Tasks[CurrentTask].Stack = context; 
+            mTasks[mCurrentTask].Stack = context; 
      
-            //Have to implement best ever task switcher
-            Console.Write('Y');
+            //Have to implement best ever task switcher            
             do
             {
-                CurrentTask = GetTaskToRun();
+                mCurrentTask = GetTaskToRun();
             }
             while(!IsValid());
-            Console.Write('Z');
+            
             // Return new task's context.
-            return Tasks[CurrentTask].Stack;         
+            return mTasks[mCurrentTask].Stack;         
         }
 
         public static int GetTaskToRun()
         {
-            //This is called round robin            
-            //if (CurrentTask == Counter - 1)//Counter = 2 
-            //    return 0;
+            mCurrentTask++;
 
-            return CurrentTask++;
+            //This is called round robin            
+            if (mCurrentTask == Counter)//Counter = 2 
+                return 0;
+            
+            return mCurrentTask;
         }
 
         public static bool IsValid ()
         {
-            var xTaskToRun = Tasks[CurrentTask];
+            var xState = mTasks[mCurrentTask].state;
             
-            switch ((State)xTaskToRun.state)
+            switch ((State)xState)
             {
                 case State.Dead:
-                case State.Sleep:
                 case State.None:
                     return false;
                 case State.Alive:
-                    return true;
-            }
-            /*
-            //Highest priority
-            switch (xTaskToRun.IRQ)
-            {
-                case 0:
                     break;
                 default:
-                    return (IDT.GetIRQState(xTaskToRun.IRQ));
+                    {
+                        if (xState > 0)
+                        {
+                            //Just like sleeping
+                            mTasks[mCurrentTask].state--;
+                            return false;//As this thread is sleeping =)
+                        }
+                    }
+                    break;
             }
-            */
+            
+            //Highest priority
+            
             return true;
         }
-        public static unsafe Thread CreateTask(uint xLoc)
+        public static unsafe Thread CreateTask(uint xLoc, bool isRunning)
         {
             Native.ClearInterrupt();
 
@@ -118,12 +130,11 @@ namespace Kernel_alpha
 
             task->Stack = (uint)stack;
             task->Address = (uint*)xLoc;
-            task->state = (uint)State.None;
+            task->state = (byte)(isRunning ? State.Alive : State.None);
     
-            Tasks[Counter++] = *task;
+            mTasks[Counter++] = *task;
             
             Native.SetInterrupt();
-            
             return new Thread(Counter - 1);
         }
         

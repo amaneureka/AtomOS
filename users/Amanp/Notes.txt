@@ -1,7 +1,13 @@
-What i was doing...
-	1) Was finding a bug in compiler as because was not able to get IsValid function working inside multitasking.
-	2) Was writing Keyboard driver...Have to complete it
+What i was doing...		
+	# Multitasking Thread sleep is working fine but it shows some stupid thing while doing any arithematic in thread...maybe have to debug its assembly :/
+	# Need to add more things to Task Switch algorithm.
+	# Queue generic class is fixed now the task is to implement it into Multitasking =P
+	# Well Box has some major issue, have to give some more time to it
+
+Task Done:
+	# Was finding a bug in compiler as because was not able to get IsValid function working inside multitasking. (Completed 29-06-14)
+	# Was writing Keyboard driver...Have to complete it (Completed 03-07-2014)
 
 What to do:	
-	1) Commenting is left in some part of code
-	2) Need to read all the warnings that i leave in code.
+	# Commenting is left in some part of code
+	# Need to read all the warnings that i leave in code.

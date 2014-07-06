@@ -36,6 +36,8 @@ namespace Atomix.IL
                 #region _x86_
                 case CPUArch.x86:
                     {
+                        #warning Have to check memory allocation here, so don't use it now
+                        throw new Exception("Not yet implemented");
                         //***What we are going to do is***
                         //1) Push the size of object + 0xC --> The 0xC is the offset of object data before this object metadata is stored
                         //2) Call our memory manager

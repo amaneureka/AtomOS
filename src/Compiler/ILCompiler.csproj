@@ -100,10 +100,12 @@
     <Compile Include="IL\Branch\Blt.cs" />
     <Compile Include="IL\Branch\Ble.cs" />
     <Compile Include="IL\Branch\Ble_Un.cs" />
+    <Compile Include="IL\Cgt_Un.cs" />
     <Compile Include="IL\Clt_Un.cs" />
     <Compile Include="IL\Conversion\Conv_U.cs" />
     <Compile Include="IL\Conversion\Conv_I.cs" />
     <Compile Include="IL\Function\Callvirt.cs" />
+    <Compile Include="IL\Load\Ldarga.cs" />
     <Compile Include="IL\Load\Ldflda.cs" />
     <Compile Include="IL\Load\Ldind\Ldind_I2.cs" />
     <Compile Include="IL\Load\Ldind\Ldind_I4.cs" />

@@ -51,6 +51,7 @@ namespace Atomix
 
         private Dictionary<FieldInfo, string> Pointers;
 
+        private List<string> BuildMethods;
         public Compiler()
         {
             ILCompiler.Logger.Write("@Compiler", "Main Compilation Process", "Loading Non-Static Parameters and starting up Compilation Process...");
@@ -64,6 +65,7 @@ namespace Atomix
             Core.AssemblerCode = new List<Instruction>();
             MSIL = new Dictionary<ILCode, MSIL>();
             Pointers = new Dictionary<FieldInfo, string>();
+            BuildMethods = new List<string>();
             Core.StaticLabels = new Dictionary<string, _MemberInfo>();
 
             ILHelper.Compiler = this;
@@ -112,7 +114,7 @@ namespace Atomix
                     {
                         var Method = xMethod as MethodBase;
                         /* Well what is dummy, a good question, 
-                         * exactly it is used when we want to fool VS compiler, because we are smarter than bill gates hehe =P (will be not now)
+                         * exactly it is used when we want to fool VS compiler, because we are smarter than bill gates hehe =P (will be in future)
                          * And Replace a method with something else, not like plug...and also if we want not to build something =P                         * 
                          */
                         if (!Dummys.ContainsValue(Method))
@@ -458,7 +460,10 @@ namespace Atomix
             var xAssemblyName  = aMethod.DeclaringType.Assembly.GetName().Name;
             if ((xAssemblyName == "mscorlib" || xAssemblyName == "System") && Plugs.ContainsValue(aMethod.FullName()))
                 return;
-            
+
+            if (BuildMethods.Contains(aMethod.FullName()))
+                return;
+
             //Tell logger that we are processing a method with given name and declaring type
             //Well declaring type is necessary because when we have a plugged method than
             //Its full name is the plugged value so we will not get where the plug is implemented
@@ -657,6 +662,7 @@ namespace Atomix
 
             //Add this method to build definations so we will not build it again
             BuildDefinations.Add(aMethod);
+            BuildMethods.Add(aMethod.FullName());
 
             //And log it
             ILCompiler.Logger.Write("Method Build Done()");

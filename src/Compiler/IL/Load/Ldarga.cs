@@ -12,29 +12,25 @@ using Core = Atomix.Assembler.AssemblyHelper;
 
 namespace Atomix.IL
 {
-    [ILOp(ILCode.Ldloca)]
-    public class Ldloca : MSIL
+    [ILOp(ILCode.Ldarga)]
+    public class Ldarga : MSIL
     {
-        public Ldloca(Compiler Cmp)
-            : base("ldloca", Cmp) { }
+        public Ldarga(Compiler Cmp)
+            : base("ldarga", Cmp) { }
 
         public override void Execute(ILOpCode instr, MethodBase aMethod)
         {
-            var xVar = ((OpVar)instr).Value;
-            var xBody = aMethod.GetMethodBody();
-            var xField = xBody.LocalVariables[xVar];
-            var xSize = xField.LocalType.SizeOf();
-            var StackCount = xSize.Align() / 4;
-            var EBPOffset = ILHelper.MemoryOffset(xBody, xVar);
-
-            var xAddress = StackCount* 4 + EBPOffset;
+            var aParam = ((OpVar)instr).Value;
+            var xDisplacement = Ldarg.GetArgumentDisplacement(aMethod, aParam);
+            
             switch (ILCompiler.CPUArchitecture)
             {
                 #region _x86_
                 case CPUArch.x86:
                     {
+                        Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceRef = "0x" + xDisplacement.ToString("X") });
                         Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP });
-                        Core.AssemblerCode.Add(new Sub { DestinationReg = Registers.EAX, SourceRef = "0x" + xAddress.ToString("X") });
+                        Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EAX, SourceReg = Registers.EBX });
                         Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
                     }
                     break;
@@ -54,7 +50,8 @@ namespace Atomix.IL
                     break;
                 #endregion
             }
-            Core.vStack.Push(4, xField.LocalType);
+
+            Core.vStack.Push(4, typeof(uint));
         }
     }
 }

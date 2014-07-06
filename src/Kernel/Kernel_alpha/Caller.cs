@@ -9,51 +9,61 @@ using Atomix.Assembler.x86;
 using Kernel_alpha.x86;
 using Kernel_alpha.x86.Intrinsic;
 using Core = Atomix.Assembler.AssemblyHelper;
+using Kernel_alpha.Drivers.Input;
 
 namespace Kernel_alpha
 {
     public static class Caller
-    {
-        private static Thread xNull;
+    {        
+        public static Keyboard KBD;
+
         public static unsafe void Start()
         {
-            Console.WriteLine("Testing started...");
-            //Create a system update thread
-            var s = Multitasking.CreateTask(0);
-            xNull = Multitasking.CreateTask(pTest);
-            s.Start();
-            xNull.Start();
+            /* Start MultiTasking */
+            Multitasking.CreateTask(0, true); //Our Current System Thread
+            Multitasking.CreateTask(pTask1, true);
+            Multitasking.CreateTask(pTask2, true);
             Multitasking.Init();
-            Console.WriteLine("Testing started...2");
-        }
-        private static byte xCurr = 0x0;
-        public static unsafe void Update()
-        {
-            byte* xA = (byte*)0xB8000;
-            xA[3] = 0xC;
-            xA[2] = xCurr;
-            xCurr++;
-            if (xCurr >= 255)
-                xCurr = 0;
+            KBD = new Keyboard();
+            PCI.Setup();
+            Console.WriteLine("WELCOME TO MY ATOMIX BUILDER");            
         }
 
-        public static uint pTest;
-        public static unsafe void Test()
+        public static unsafe void Update()
         {
-            byte* xA = (byte*)0xB8000;
-            xA[1] = 0xA;
-            byte x = 0x0;
-            uint c = 0;
+            
+        }
+
+        private static uint pTask1;
+        public static unsafe void Task1()
+        {
+            byte* xA = (byte*)0xB8000;            
+            byte c = 0;
             do
             {
-                x++;
+                xA[4] = c;
+                xA[5] = 0xb;
                 c++;
-                xA[0] = x;
-                if (x >= 255)
-                    x = 0;
+                if (c >= 255)
+                    c = 0;
             }
-            while (c == 25500);
-            Console.WriteLine("My Task is over");
+            while (true);
+        }
+
+        private static uint pTask2;
+        public static unsafe void Task2()
+        {
+            byte* xA = (byte*)0xB8000;            
+            byte c = 0;
+            do
+            {
+                xA[6] = c;
+                xA[7] = 0xd;
+                c++;
+                if (c >= 255)
+                    c = 0;
+            }
+            while (true);
         }
     }
 }

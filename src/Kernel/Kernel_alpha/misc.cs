@@ -15,14 +15,13 @@ namespace Kernel_alpha
         [FieldOffset(8)]
         public uint* Address;
         [FieldOffset(12)]
-        public uint state;
+        public int state;
     };
 
-    public enum State : uint
+    public enum State : int
     {
-        None = 0,
-        Sleep = 1,
-        Dead = 3,
-        Alive = 4
+        None = -2,
+        Dead = -1,
+        Alive = 0
     };
 }

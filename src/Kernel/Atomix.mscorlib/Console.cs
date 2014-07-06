@@ -39,11 +39,10 @@ namespace Atomix.mscorlib
                 Console.Write(str[i]);
             }
         }
-
+        
         [Plug("System_Void_System_Console_Write_System_Char_", CPUArch.x86)]
         public static void Write_x86(char chr)
-        {     
-            
+        {
             unsafe
             {
                 byte* xAddress = (byte*)0xB8000;
@@ -58,6 +57,15 @@ namespace Atomix.mscorlib
             UpdatePosition();
         }
         #endregion
+
+        [Plug("System_Void_System_Console_Clear__")]
+        public static void Clear()
+        {
+            Pointer = 0;
+            for (int i = 0; i < 80 * 25; i++)
+                Console.Write(' ');
+            Pointer = 0;
+        }
 
         public static unsafe void ScrollUP()
         {

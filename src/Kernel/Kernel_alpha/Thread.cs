@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using MT = Kernel_alpha.Multitasking;
+using Kernel_alpha.x86.Intrinsic;
 
 namespace Kernel_alpha
 {
@@ -19,11 +20,11 @@ namespace Kernel_alpha
         {
             get 
             {
-                return (State)Multitasking.Tasks[aProcessid].state;
+                return (State)MT.Tasks[aProcessid].state;
             }
             set
             {
-                Multitasking.Tasks[aProcessid].state = (ushort)value;
+                MT.Tasks[aProcessid].state = (ushort)value;
             }
         }
         #endregion
@@ -38,9 +39,29 @@ namespace Kernel_alpha
             this.State = State.Alive;
         }
 
+        /// <summary>
+        /// Stop Refrenced Thread
+        /// </summary>
         public void Stop()
         {
             this.State = State.Dead;
+            IRQ.Timer();
+        }
+
+        /// <summary>
+        /// Die Current Thread
+        /// </summary>
+        public static void Die()
+        {
+            MT.Tasks[MT.CurrentTask].state = (int)State.Dead;
+            //As we have done our code, so let other thread to start...So we fire IRQ0
+            IRQ.Timer();
+        }
+
+        public static void Sleep(int Cycles)
+        {
+            MT.Tasks[MT.CurrentTask].state = Cycles;//Cycles should be positive =P
+            IRQ.Timer();
         }
     }
 }

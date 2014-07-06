@@ -33,10 +33,8 @@ namespace Kernel_alpha
             Core.DataMember.Add(new AsmData("GDT_And_IDT_Content:", "TIMES 3000 db 0"));//0x250020 --> First IDT than GDT            
             Core.DataMember.Add(new AsmData("Stack_Entrypoint:", string.Empty));
 
-            /* Here is Entrypoint Method */            
-            Core.AssemblerCode.Add(new Cli()); //Clear interrupts first !!
-            //Setup Stack pointer, We do rest things later (i.e. Another method) because they are managed :)
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ESP, SourceRef = "Stack_Entrypoint" });
+            /* Here is Entrypoint Method */
+            Core.AssemblerCode.Add(new Cli()); //Clear interrupts first !!            
             //SSE Init
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.CR4 });
             Core.AssemblerCode.Add(new Or { DestinationReg = Registers.EAX, SourceRef = "0x100" });
@@ -53,10 +51,13 @@ namespace Kernel_alpha
 
             Core.AssemblerCode.Add(new And { DestinationReg = Registers.EAX, SourceRef = "0x1" });
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.CR0, SourceReg = Registers.EAX });
+            
+            //Setup Stack pointer, We do rest things later (i.e. Another method) because they are managed :)
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ESP, SourceRef = "Stack_Entrypoint" });
             Core.AssemblerCode.Add(new Jmp { DestinationRef = "Kernel_Start" });
         }
 
-        [Plug("Kernel_Start")]
+        [Plug("Kernel_Start")]        
         public static void Start()
         {
             /* Setup Multiboot */
@@ -64,7 +65,7 @@ namespace Kernel_alpha
 
             /* Clear Interrupts */
             Native.ClearInterrupt();
-
+            
             /* Setup PIC */
             PIC.Setup();
             
@@ -81,7 +82,7 @@ namespace Kernel_alpha
             try
             {
                 Caller.Start();
-
+                                
                 while(true)
                 {
                     Caller.Update();

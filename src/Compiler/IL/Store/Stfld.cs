@@ -42,13 +42,13 @@ namespace Atomix.IL
                 case CPUArch.x86:
                     {
                         
-                        Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.ESP, SourceIndirect = true, SourceDisplacement = (int)xRoundedSize });
-                        Core.AssemblerCode.Add(new Add { DestinationReg = Registers.ECX, SourceRef = "0x" + xOffset.ToString("X") });
+                        Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.ESP, SourceIndirect = true, SourceDisplacement = (int)xRoundedSize });
+                        Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EBX, SourceRef = "0x" + xOffset.ToString("X") });
                         
                         for (int i = 0; i < (xSize / 4); i++)
                         {
                             Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
-                            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, DestinationIndirect = true, DestinationDisplacement = (int)((i * 4)), SourceReg = Registers.EAX });
+                            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, DestinationIndirect = true, DestinationDisplacement = (int)((i * 4)), SourceReg = Registers.EAX });
                         }
 
                         switch (xSize % 4)
@@ -56,21 +56,21 @@ namespace Atomix.IL
                             case 1:
                                 {
                                     Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
-                                    Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, DestinationIndirect = true, DestinationDisplacement = (int)((xSize / 4) * 4), SourceReg = Registers.AL, Size = 8 });
+                                    Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, DestinationIndirect = true, DestinationDisplacement = (int)((xSize / 4) * 4), SourceReg = Registers.AL, Size = 8 });
                                     break;
                                 }
                             case 2:
                                 {
                                     Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
-                                    Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, DestinationIndirect = true, DestinationDisplacement = (int)((xSize / 4) * 4), SourceReg = Registers.AX, Size = 16 });
+                                    Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, DestinationIndirect = true, DestinationDisplacement = (int)((xSize / 4) * 4), SourceReg = Registers.AX, Size = 16 });
                                     break;
                                 }
                             case 3:
                                 {
                                     Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
-                                    Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, DestinationIndirect = true, DestinationDisplacement = (int)((xSize / 4) * 4), SourceReg = Registers.AX, Size = 16 });
+                                    Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, DestinationIndirect = true, DestinationDisplacement = (int)((xSize / 4) * 4), SourceReg = Registers.AX, Size = 16 });
                                     Core.AssemblerCode.Add(new Shr { DestinationReg = Registers.EAX, SourceRef = "0x10" });
-                                    Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, DestinationIndirect = true, DestinationDisplacement = (int)((xSize / 4) * 4) + 2, SourceReg = Registers.AL, Size = 8 });
+                                    Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, DestinationIndirect = true, DestinationDisplacement = (int)((xSize / 4) * 4) + 2, SourceReg = Registers.AL, Size = 8 });
                                     break;
                                 }
                             case 0:

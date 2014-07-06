@@ -40,18 +40,23 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Caller.cs" />
-    <Compile Include="Drivers\PS2\Keyboard.cs" />
+    <Compile Include="Drivers\Input\keyboard\Keyboard.cs" />
+    <Compile Include="Drivers\Input\keyboard\Keys.cs" />
+    <Compile Include="Drivers\Input\misc.cs" />
     <Compile Include="Kernel.cs" />
     <Compile Include="Multitasking.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Ref.cs" />
+    <Compile Include="misc.cs" />
     <Compile Include="Thread.cs" />
     <Compile Include="x86\GDT.cs" />
     <Compile Include="x86\Heap.cs" />
     <Compile Include="x86\IDT.cs" />
+    <Compile Include="x86\Intrinsic\IRQ.cs" />
     <Compile Include="x86\Intrinsic\Native.cs" />
     <Compile Include="x86\Memory.cs" />
     <Compile Include="x86\Multiboot.cs" />
+    <Compile Include="x86\PCI.cs" />
+    <Compile Include="x86\PCIDevice.cs" />
     <Compile Include="x86\PIC.cs" />
   </ItemGroup>
   <ItemGroup>
