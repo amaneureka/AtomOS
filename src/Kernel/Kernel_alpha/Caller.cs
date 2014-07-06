@@ -18,19 +18,15 @@ namespace Kernel_alpha
         public static Keyboard KBD;
         public static Drivers.HAL.ACPI ACPI;
         public static unsafe void Start()
-        {
-            /* Start MultiTasking */
-            Multitasking.CreateTask(0, true); //Our Current System Thread
+        {   
             Multitasking.CreateTask(pTask1, true);
             Multitasking.CreateTask(pTask2, true);
-            Multitasking.Init();
+            
             KBD = new Keyboard();
             PCI.Setup();
             ACPI = new Drivers.HAL.ACPI();
             ACPI.Init();
             ACPI.Enable();
-
-            Console.WriteLine("WELCOME TO MY ATOMIX BUILDER");            
         }
 
         public static unsafe void Update()
@@ -71,15 +67,20 @@ namespace Kernel_alpha
         {
             byte* xA = (byte*)0xB8000;            
             byte c = 0;
+            uint a = 0;
             do
             {
                 xA[6] = c;
                 xA[7] = 0xd;
                 c++;
                 if (c >= 255)
-                    c = 0;
+                    c = 0;   
+                a++;
+                Thread.Sleep(100);
             }
-            while (true);
+            while (a != 10);
+            Console.WriteLine("My task is finished");
+            Thread.Die();
         }
     }
 }

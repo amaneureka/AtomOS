@@ -1,12 +1,14 @@
-What i was doing...		
-	# Multitasking Thread sleep is working fine but it shows some stupid thing while doing any arithematic in thread...maybe have to debug its assembly :/
-	# Need to add more things to Task Switch algorithm.
-	# Queue generic class is fixed now the task is to implement it into Multitasking =P
+What i was doing...	
+	# Need to add more things to Task Switch algorithm.	
 	# Well Box has some major issue, have to give some more time to it
-
+	# Have to go with documentations given to splitty.
+	
 Task Done:
 	# Was finding a bug in compiler as because was not able to get IsValid function working inside multitasking. (Completed 29-06-14)
 	# Was writing Keyboard driver...Have to complete it (Completed 03-07-2014)
+	# Haunt the known but very tricky bug by compiler... =P (Completed 06-07-2014) was just not able to clear memory very well during init any object.
+	# Multitasking Thread sleep is working fine but it shows some stupid thing while doing any arithematic in thread...maybe have to debug its assembly :/ (Completed 06-07-2014)
+	# Queue generic class is fixed now the task is to implement it into Multitasking =P (Completed 06-07-2014)
 
 What to do:	
 	# Commenting is left in some part of code

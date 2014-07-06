@@ -19,6 +19,8 @@ namespace Kernel_alpha
         private static int mCurrentTask = -1;
         private static int Counter = 0;
 
+        private static Queue<int> RunningTasks = new Queue<int>();
+
         public static Task[] Tasks
         {
             get { return mTasks; }
@@ -44,57 +46,51 @@ namespace Kernel_alpha
         public static uint TaskSwitcher(uint context)
         {
             // save the old context into current task
-            mTasks[mCurrentTask].Stack = context; 
-     
-            //Have to implement best ever task switcher            
-            do
-            {
-                mCurrentTask = GetTaskToRun();
-            }
-            while(!IsValid());
+            mTasks[mCurrentTask].Stack = context;
+
+            //Update the sleeping tasks
+            UpdateHaltedTasks();
+
+            //Get Task to Run
+            mCurrentTask = GetTaskToRun();
             
             // Return new task's context.
             return mTasks[mCurrentTask].Stack;         
         }
 
         public static int GetTaskToRun()
-        {
-            mCurrentTask++;
-
-            //This is called round robin            
-            if (mCurrentTask == Counter)//Counter = 2 
-                return 0;
-            
-            return mCurrentTask;
-        }
-
-        public static bool IsValid ()
-        {
+        {            
             var xState = mTasks[mCurrentTask].state;
-            
             switch ((State)xState)
             {
+                case State.Alive:
+                    RunningTasks.Enqueue(mCurrentTask);
+                    break;
                 case State.Dead:
                 case State.None:
-                    return false;
-                case State.Alive:
-                    break;
-                default:
-                    {
-                        if (xState > 0)
-                        {
-                            //Just like sleeping
-                            mTasks[mCurrentTask].state--;
-                            return false;//As this thread is sleeping =)
-                        }
-                    }
                     break;
             }
             
-            //Highest priority
-            
-            return true;
+            return RunningTasks.Dequeue();
         }
+
+        public static void UpdateHaltedTasks()
+        {
+            int xState;
+
+            /* Sleeping Tasks */
+            for (int i = 0; i < Counter; i++)
+            {
+                xState = mTasks[i].state;
+                if (xState > 0)
+                {
+                    mTasks[i].state--;
+                    if (xState == 1)
+                        RunningTasks.Enqueue(i);
+                }
+            }
+        }
+
         public static unsafe Thread CreateTask(uint xLoc, bool isRunning)
         {
             Native.ClearInterrupt();
@@ -133,7 +129,10 @@ namespace Kernel_alpha
             task->state = (byte)(isRunning ? State.Alive : State.None);
     
             mTasks[Counter++] = *task;
-            
+
+            if (isRunning)
+                RunningTasks.Enqueue(Counter - 1);
+
             Native.SetInterrupt();
             return new Thread(Counter - 1);
         }
