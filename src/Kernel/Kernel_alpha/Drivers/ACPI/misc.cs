@@ -4,14 +4,6 @@ using System.Runtime.InteropServices;
 
 namespace Kernel_alpha.Drivers.ACPI
 {
-
-    // Begun adding the thermal stuff..
-    // No idea if it will work
-
-    // Edit 10 minutes later: It won't work.
-    // Edit 12 minutes later: It won't even compile.
-    //                        We are fucked.
-
     public unsafe static class misc
     {
         public static int Compare (string c1, byte* c2)
@@ -41,26 +33,6 @@ namespace Kernel_alpha.Drivers.ACPI
             return (sum == 0);
         }        
     }
-
-    // I have actually no fucking idea how to properly implement this
-    // There isn't even an acpi_device struct in the source like what the fuck
-    [StructLayout (LayoutKind.Sequential, Pack = 1)]
-    public unsafe struct acpi_thermal
-    {
-        //struct acpi_device* device;
-        //acpi_bus_id name;
-        ulong temperature;
-        ulong last_temperature;
-        ulong polling_frequency;
-        //volatile u8 zombie;
-        //struct acpi_thermal_flags flags;
-        //struct acpi_thermal_state state;
-        //struct acpi_thermal_trips trips;
-        //struct acpi_handle_list devices;
-        int tz_enabled;
-        int kelvin_offset;
-        //struct work_struct thermal_check_work;
-    };
 
     /// <summary>
     /// RSD Table
