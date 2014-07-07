@@ -29,5 +29,14 @@ namespace Kernel_alpha.x86.Intrinsic
         {
             Core.AssemblerCode.Add(new Literal("int 0x21"));
         }
+
+        /// <summary>
+        /// Fire Mouse Interrupt
+        /// </summary>
+        [Assembly (0x0)]
+        public static void Mouse ()
+        {
+            Core.AssemblerCode.Add (new Literal ("int 0x12"));
+        }
     }
 }

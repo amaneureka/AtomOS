@@ -90,7 +90,7 @@ namespace Kernel_alpha.Drivers.Input.Mouse
             }
         }
 
-        enum MouseCommandSet : byte
+        public enum MouseCommandSet : byte
         {
             // Acknowledged
             Ack = 0xFA,
