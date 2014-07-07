@@ -100,7 +100,7 @@ namespace Kernel_alpha.Drivers.Input
 
             if (xScanCode == 0xE0)
             {
-                IsExtended = true;//The ScanCode is extended
+                IsExtended = true; //The ScanCode is extended
                 return;
             }
 

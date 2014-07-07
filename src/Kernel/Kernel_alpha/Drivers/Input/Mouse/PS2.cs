@@ -1,4 +1,5 @@
 ﻿using System;
+using Kernel_alpha.x86;
 using Kernel_alpha.x86.Intrinsic;
 
 namespace Kernel_alpha.Drivers.Input.Mouse
@@ -33,8 +34,13 @@ namespace Kernel_alpha.Drivers.Input.Mouse
             Poll.Byte = (byte)MouseCommandSet.Enable;
 
             // We could map the mouse to IRQ 12 here
-            // but I won't do it currently cause I don't
-            // really know how the AtomixOS handles interrupts
+            // but I don't really know how to do this
+
+            // I guess we should enable IRQ 12 first
+            // PIC.ClearMask (0xC);
+
+            // But since I don't know how to write a handler for it,
+            // I will have to wait for Aman's response on this ^^
 
             // Set defaults
             SendCommand (MouseCommandSet.SetDefaults);
