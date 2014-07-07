@@ -198,6 +198,7 @@ namespace Kernel_alpha.Drivers
             smiIO.Byte = ACPI_DISABLE;
         }
 
+        // Retrieve the RSDP address
         private unsafe uint RSDPAddress()
         {
             for (uint addr = 0xE0000; addr < 0x100000; addr += 4)
@@ -215,6 +216,7 @@ namespace Kernel_alpha.Drivers
             return 0;
         }
 
+        // RSDT Table
         private uint* acpiCheckRSDPtr(uint* ptr)
         {
             string sig = "RSD PTR ";
@@ -246,7 +248,8 @@ namespace Kernel_alpha.Drivers
             return null;
         }
 
-        private byte facpbget(int number)
+        // FACP Table
+        private byte facpbget (int number)
         {
             if (number == 0) { return *(Facp + 52); }
             else if (number == 1) { return *(Facp + 53); }
@@ -254,7 +257,7 @@ namespace Kernel_alpha.Drivers
             else return 0;
         }
 
-        private int* facpget(int number)
+        private int* facpget (int number)
         {
             if (number == 0) { return (int*)*((int*)(Facp + 40)); }
             else if (number == 1) { return (int*)*((int*)(Facp + 48)); }
