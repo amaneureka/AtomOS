@@ -222,10 +222,12 @@ namespace Kernel_alpha.x86.Intrinsic
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
         [Assembly(0x0)]
-        public static ushort In32(UInt16 aAddress)
+        public static uint In32(UInt16 aAddress)
         {
             //Load address into EDX
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
+            //Set EAX = 0x00000000
+            Core.AssemblerCode.Add (new Xor { DestinationReg = Registers.EAX, SourceReg = Registers.EAX });
             //Read 16 byte And put result into EAX (AX)
             Core.AssemblerCode.Add(new In { DestinationReg = Registers.EAX, SourceReg = Registers.DX });
             //Save value

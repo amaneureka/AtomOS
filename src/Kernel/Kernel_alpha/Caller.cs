@@ -10,23 +10,32 @@ using Kernel_alpha.x86;
 using Kernel_alpha.x86.Intrinsic;
 using Core = Atomix.Assembler.AssemblyHelper;
 using Kernel_alpha.Drivers.Input;
+using Kernel_alpha.Drivers.Input.Mouse;
 
 namespace Kernel_alpha
 {
     public static class Caller
     {        
         public static Keyboard KBD;
+        public static PS2 Mouse;
         public static Drivers.acpi ACPI;
         public static unsafe void Start()
         {
             Multitasking.CreateTask(pTask1, true);
             Multitasking.CreateTask(pTask2, true);
             
+            // Setup Keyboard
             KBD = new Keyboard();
+
+            // Setup Mouse
+            Mouse = new PS2 ();
+            Mouse.Initialize ();
+
+            // Setup PCI
             PCI.Setup();
 
             // Start ACPI
-            // Should automatically be initialized and enabled :)
+            // Initializes and enables itself
             ACPI = new Drivers.acpi (true, true);
 
             Console.WriteLine("WELCOME TO MY ATOMIX BUILDER");            

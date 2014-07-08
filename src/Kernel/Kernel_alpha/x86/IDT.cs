@@ -19,6 +19,8 @@ namespace Kernel_alpha.x86
         private static uint _idtTable = 0x250020;
         private static uint _idtEntries = 0x250020 + 6;
 
+        private static IOPort idtTable;
+
         public enum Offset
         {
             BaseLow = 0x00,
@@ -118,7 +120,10 @@ namespace Kernel_alpha.x86
                 switch (xINT - 0x20)
                 {
                     case 1:
-                        Caller.KBD.HandleIRQ();
+                        Caller.KBD.HandleIRQ ();
+                        break;
+                    case 12:
+                        Caller.Mouse.HandleIRQ ();
                         break;
                 }
                 PIC.SendEndOfInterrupt((byte)xContext.Interrupt);

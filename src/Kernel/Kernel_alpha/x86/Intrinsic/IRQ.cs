@@ -36,7 +36,7 @@ namespace Kernel_alpha.x86.Intrinsic
         [Assembly (0x0)]
         public static void Mouse ()
         {
-            Core.AssemblerCode.Add (new Literal ("int 0x12"));
+            Core.AssemblerCode.Add (new Literal ("int 0x2C"));
         }
     }
 }

@@ -33,7 +33,7 @@ namespace Kernel_alpha
 
         public static void Init()
         {
-            uint divisor = (1193180 * 10) / 1000;                /* Calculate our divisor */ //10ms
+            uint divisor = (1193180 * 10) / 1000;               /* Calculate our divisor */ //10ms
             Native.Out8(0x43, 0x36);                            /* Set our command byte 0x36 */
             Native.Out8(0x40, (byte)(divisor & 0xFF));          /* Set low byte of divisor */
             Native.Out8(0x40, (byte)(divisor >> 8));            /* Set high byte of divisor */
