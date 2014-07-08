@@ -21,10 +21,10 @@ namespace Kernel_alpha.Drivers.Input
         /// <summary>
         /// The mouse buttons
         /// </summary>
-        MouseButtons Buttons = MouseButtons.None;
+        private MouseButtons button = MouseButtons.None;
 
         public MouseButtons Button
-        { get { return Buttons; } }
+        { get { return button; } }
 
         // We'll be using 40 as sample rate
         // That's not too slow and not too fast
@@ -123,7 +123,7 @@ namespace Kernel_alpha.Drivers.Input
                     else if (Y > 199)
                         Y = 199;
 
-                    Buttons = (MouseButtons)(packet[0] & 0x7);
+                    button = (MouseButtons)(packet[0] & 0x7);
 
                     break;
             }
