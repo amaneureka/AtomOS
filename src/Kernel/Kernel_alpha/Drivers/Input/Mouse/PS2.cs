@@ -54,19 +54,22 @@ namespace Kernel_alpha.Drivers.Input.Mouse
             // Let's map the stuff to IRQ 12
             PIC.ClearMask (0x2C);
 
-            // Enable Interrupt
+            // Set defaults
+            SendCommand (MouseCommandSet.SetDefaults);
+
+            // Enable the mouse
+            SendCommand (MouseCommandSet.EnablePacketStreaming);
+        }
+
+        // DO NOT CALL THIS!
+        public void EnableInterrupt ()
+        {
             WaitSignal ();
             Poll.Byte = 0x20;
             WaitData ();
             byte status = (byte)(Data.Byte | 2);
             WaitSignal ();
             Data.Byte = status;
-
-            // Set defaults
-            SendCommand (MouseCommandSet.SetDefaults);
-
-            // Enable the mouse
-            SendCommand (MouseCommandSet.EnablePacketStreaming);
         }
 
         public void HandleIRQ ()
