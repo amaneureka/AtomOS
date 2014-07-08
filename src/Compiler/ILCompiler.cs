@@ -122,7 +122,7 @@ namespace Atomix
                 Logger.Write("Architecture     : " + CPUArchitecture);
                 Logger.Write("Output Directory : " + OutputDir);
                 Logger.Write("Input Assembly   : " + InputDll);
-                var xCompiler = new Compiler(); 
+                Compiler xCompiler = new Compiler(); 
                 try
                 {                  
                     xCompiler.Start();

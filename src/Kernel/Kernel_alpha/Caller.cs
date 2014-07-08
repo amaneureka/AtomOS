@@ -20,37 +20,71 @@ namespace Kernel_alpha
         public static Drivers.acpi ACPI;
         public static unsafe void Start()
         {
+            Console.WriteLine ("                                         ");
+
+            Console.Write ("Creating Task1... ");
             Multitasking.CreateTask(pTask1, true);
+            Console.WriteLine ("OK");
+
+            Console.Write ("Creating Task2... ");
             Multitasking.CreateTask(pTask2, true);
+            Console.WriteLine ("OK");
             
             // Setup Keyboard
+            Console.Write ("Setting up Keyboard... ");
             KBD = new Keyboard();
+            Console.WriteLine ("OK");
 
             // Setup Mouse
+            Console.Write ("Setting up PS/2 Mouse... ");
             Mouse = new PS2Mouse ();
             Mouse.Initialize();
+            Console.WriteLine ("OK");
 
             // Setup PCI
+            Console.Write ("Setting up PCI... ");
             PCI.Setup();
+            Console.WriteLine ("OK");
 
             // Start ACPI
             // Initializes and enables itself
+            Console.Write ("Setting up ACPI... ");
             ACPI = new Drivers.acpi (true, true);
-            Console.WriteLine("                                         ");
+            Console.WriteLine ("OK");
+
+            Console.WriteLine ("Welcome to AtomixOS!");
+            Console.WriteLine ();
+
+            Console.WriteLine ("Shutdown: Ctrl+S");
+            Console.WriteLine ("Reboot: Ctrl+R");
         }
 
         public static unsafe void Update()
         {
-            var s = KBD.Read();
-            if (KBD.Alt)
+            Keys s = KBD.Read();
+            if (KBD.Ctrl)
             {
-                Console.WriteLine("Shutdown");
-                ACPI.Shutdown();
-            }
-            else if (KBD.Ctrl)
-            {
-                Console.WriteLine("Reboot");
-                ACPI.Reboot();
+
+#warning Aman please look this up!! ~Splitty
+
+                /*
+                 * 
+                 * Here is something going wrong..
+                 * It won't compile the following code
+                 * Seems to be crashing if I access the s variable
+                 * 
+                 */
+
+                if (s.Code == KeyCode.S)
+                {
+                    Console.WriteLine ("Shutdown");
+                    ACPI.Shutdown ();
+                }
+                else if (s.Code == KeyCode.R)
+                {
+                    Console.WriteLine ("Reboot");
+                    ACPI.Reboot ();
+                }
             }
             else if (s != null)
                 Console.Write(s.Char);

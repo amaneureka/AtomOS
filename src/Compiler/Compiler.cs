@@ -501,7 +501,13 @@ namespace Atomix
             //              we make its array while making the IL's array so its make our task easier 
             List<int> NewLabels = new List<int>();
             var OpCodes = aMethod.Process(NewLabels);
-            ILCompiler.Logger.Write("MSIL Codes Loaded... Count::" + OpCodes.Count);
+
+            // Here seems to be going something wrong
+            try
+            {
+                ILCompiler.Logger.Write ("MSIL Codes Loaded... Count::" + OpCodes.Count);
+            }
+            catch { Console.WriteLine ("What the fuck"); }
 
             string xMethodLabel = aMethod.FullName();
             var xBody = aMethod.GetMethodBody();
@@ -527,6 +533,7 @@ namespace Atomix
             Core.AssemblerCode.Add(new Mov() { DestinationReg = Registers.EBP, SourceReg = Registers.ESP });
 
             /* Calculate Method Variables Size */
+#warning Hey Aman looks like here is something fucked up
             int Size = (from item in xBody.LocalVariables
                         select (int)item.LocalType.SizeOf().Align()).Sum();
 
