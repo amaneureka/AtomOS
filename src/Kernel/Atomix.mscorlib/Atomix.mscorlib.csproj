@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="Array.cs" />
     <Compile Include="Globalization\CultureInfo.cs" />
+    <Compile Include="Int32.cs" />
     <Compile Include="SR.cs" />
     <Compile Include="Type.cs" />
     <Compile Include="SByte.cs" />

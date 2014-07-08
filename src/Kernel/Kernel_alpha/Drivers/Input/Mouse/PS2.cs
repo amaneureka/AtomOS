@@ -23,6 +23,9 @@ namespace Kernel_alpha.Drivers.Input
         /// </summary>
         MouseButtons Buttons = MouseButtons.None;
 
+        public MouseButtons Button
+        { get { return Buttons; } }
+
         // We'll be using 40 as sample rate
         // That's not too slow and not too fast
         byte SampleRate = 40;

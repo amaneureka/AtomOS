@@ -28,7 +28,7 @@ namespace Kernel_alpha
 
             // Setup Mouse
             Mouse = new PS2Mouse ();
-            Mouse.Initialize ();
+            Mouse.Initialize();
 
             // Setup PCI
             PCI.Setup();
@@ -36,8 +36,7 @@ namespace Kernel_alpha
             // Start ACPI
             // Initializes and enables itself
             ACPI = new Drivers.acpi (true, true);
-
-            Console.WriteLine("WELCOME TO MY ATOMIX BUILDER");            
+            Console.WriteLine("                                         ");
         }
 
         public static unsafe void Update()
@@ -53,31 +52,52 @@ namespace Kernel_alpha
                 Console.WriteLine("Reboot");
                 ACPI.Reboot();
             }
-            else if (s.Code == KeyCode.Esc)
-            {
-                Console.Write("X:");
-                Console.WriteLine(((uint)Mouse.X).ToString());
-                Console.Write("Y:");
-                Console.WriteLine(((uint)Mouse.Y).ToString());
-            }
             else if (s != null)
                 Console.Write(s.Char);
         }
 
         private static uint pTask1;
         public static unsafe void Task1()
-        {
-            byte* xA = (byte*)0xB8000;            
-            byte c = 0;
+        {            
             do
             {
-                xA[4] = c;
-                xA[5] = 0xb;
-                c++;
-                if (c >= 255)
-                    c = 0;
+                WriteScreen("X:", 6);
+                WriteScreen(((uint)Mouse.X).ToString(), 10);
+
+                WriteScreen("Y:", 24);
+                WriteScreen(((uint)Mouse.Y).ToString(), 28);
+
+                switch (Mouse.Button)
+                {
+                    case MouseButtons.Left:
+                        WriteScreen("L", 40);
+                        break;
+                    case MouseButtons.Right:
+                        WriteScreen("R", 40);
+                        break;
+                    case MouseButtons.Middle:
+                        WriteScreen("M", 40);
+                        break;
+                    case MouseButtons.None:
+                        WriteScreen("N", 40);
+                        break;
+                    default:
+                        WriteScreen("E", 40);
+                        break;
+                }
+                Thread.Sleep(5);
             }
             while (true);
+        }
+
+        public static unsafe void WriteScreen(string s, int p)
+        {
+            byte* xA = (byte*)0xB8000;
+            for (int i = 0; i < s.Length; i++)
+            {
+                xA[p++] = (byte)s[i];
+                xA[p++] = 0x0B;
+            }
         }
 
         private static uint pTask2;
@@ -88,15 +108,15 @@ namespace Kernel_alpha
             uint a = 0;
             do
             {
-                xA[6] = c;
-                xA[7] = 0xd;
+                xA[0] = c;
+                xA[1] = 0xd;
                 c++;
                 if (c >= 255)
                     c = 0;
                 a++;
-                Thread.Sleep(100);
+                //Thread.Sleep(100);
             }
-            while (a != 10);
+            while (true);
             Console.WriteLine("My task is finished");
             Thread.Die();
         }
