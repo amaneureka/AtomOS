@@ -10,14 +10,13 @@ using Kernel_alpha.x86;
 using Kernel_alpha.x86.Intrinsic;
 using Core = Atomix.Assembler.AssemblyHelper;
 using Kernel_alpha.Drivers.Input;
-using Kernel_alpha.Drivers.Input.Mouse;
 
 namespace Kernel_alpha
 {
     public static class Caller
     {        
         public static Keyboard KBD;
-        public static PS2 Mouse;
+        public static PS2Mouse Mouse;
         public static Drivers.acpi ACPI;
         public static unsafe void Start()
         {
@@ -28,7 +27,7 @@ namespace Kernel_alpha
             KBD = new Keyboard();
 
             // Setup Mouse
-            Mouse = new PS2 ();
+            Mouse = new PS2Mouse ();
             Mouse.Initialize ();
 
             // Setup PCI

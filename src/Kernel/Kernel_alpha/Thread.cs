@@ -60,7 +60,7 @@ namespace Kernel_alpha
 
         public static void Sleep(uint Cycles)
         {
-            MT.Tasks[MT.CurrentTask].state = (int)Cycles;//Cycles should be positive =P
+            MT.Tasks[MT.CurrentTask].state = (int)Cycles; //Cycles should be positive =P
             IRQ.Timer();
         }
     }

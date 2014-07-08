@@ -6,6 +6,47 @@ using Kernel_alpha.x86.Intrinsic;
 
 namespace Kernel_alpha.Drivers.Input
 {
+    public enum MouseCommandSet : byte
+    {
+        // Acknowledged
+        Ack = 0xFA,
+
+        // Send data
+        Send = 0xD4,
+
+        // Enable PS/2
+        Enable = 0xA8,
+
+        // Basic instruction sets
+        Reset = 0xFF,
+        Resend = 0xFE,
+        SetDefaults = 0xF6,
+        DisablePacketStreaming = 0xF5,
+        EnablePacketStreaming = 0xF4,
+        SetSampleRate = 0xF3,
+        GetMouseID = 0xF2,
+        RequestSinglePacket = 0xEB,
+        StatusRequest = 0xE9,
+        SetResolution = 0xE8,
+
+        // Not really useful
+        // but for the sake of completeness
+        SetRemoteMode = 0xF0,
+        SetWrapMode = 0xEE,
+        ResetWrapMode = 0xEC,
+        SetSteamMode = 0xEA,
+        SetScaling21 = 0xE7,
+        SetScaling11 = 0xE6
+    }
+
+    public enum MouseButtons : byte
+    {
+        None = 0,
+        Left = 1,
+        Right = 2,
+        Middle = 4
+    }
+
     /// <summary>
     /// List ref: http://www.computer-engineering.org/ps2keyboard/scancodes1.html
     /// </summary>
