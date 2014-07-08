@@ -37,31 +37,34 @@ namespace Kernel_alpha.Drivers.Input.Mouse
         byte cycle = 0;
         int[] packet = new int[4];
 
-        public void Initialize ()
+        public PS2 ()
         {
             // I guess we'll be receiving data from Port 0x60
             Data = new IOPort (0x60);
 
             // And polling port 0x64
             Poll = new IOPort (0x64);
+        }
 
-            // Now to the configuration part
-
+        public void Initialize ()
+        {
             // Enable the Aux Input
             WaitSignal ();
             Poll.Byte = (byte)MouseCommandSet.Enable;
 
-            // Let's map the stuff to IRQ 12
-            PIC.ClearMask (0x2C);
+            // Pretty self-explanatory
+            EnableInterrupt ();
 
             // Set defaults
             SendCommand (MouseCommandSet.SetDefaults);
 
             // Enable the mouse
             SendCommand (MouseCommandSet.EnablePacketStreaming);
+
+            // Let's map the stuff to IRQ 12
+            PIC.ClearMask (0xC);
         }
 
-        // DO NOT CALL THIS!
         public void EnableInterrupt ()
         {
             WaitSignal ();
