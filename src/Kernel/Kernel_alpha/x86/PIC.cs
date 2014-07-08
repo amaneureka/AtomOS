@@ -62,8 +62,6 @@ namespace Kernel_alpha.x86
             // set masks:
             Native.Out8(PIC1_Data, xOldMasterMask);
             Native.Wait();
-            Native.Out8(PIC1_Data, xOldSlaveMask);
-            Native.Wait();
         }
 
         public static void SendEndOfInterrupt(byte irq)

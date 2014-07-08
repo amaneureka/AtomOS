@@ -54,6 +54,13 @@ namespace Kernel_alpha
                 Console.WriteLine("Reboot");
                 ACPI.Reboot();
             }
+            else if (s.Code == KeyCode.Esc)
+            {
+                Console.Write("X:");
+                Console.WriteLine(((uint)Mouse.X).ToString());
+                Console.Write("Y:");
+                Console.WriteLine(((uint)Mouse.Y).ToString());
+            }
             else if (s != null)
                 Console.Write(s.Char);
         }

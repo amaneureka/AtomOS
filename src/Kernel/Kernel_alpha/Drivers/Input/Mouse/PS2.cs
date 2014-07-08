@@ -21,7 +21,7 @@ namespace Kernel_alpha.Drivers.Input.Mouse
         /// <summary>
         /// The mouse buttons
         /// </summary>
-        MouseButtons Buttons;
+        MouseButtons Buttons = MouseButtons.None;
 
         // We'll be using 40 as sample rate
         // That's not too slow and not too fast
@@ -59,10 +59,7 @@ namespace Kernel_alpha.Drivers.Input.Mouse
             SendCommand (MouseCommandSet.SetDefaults);
 
             // Enable the mouse
-            SendCommand (MouseCommandSet.EnablePacketStreaming);
-
-            // Let's map the stuff to IRQ 12
-            PIC.ClearMask (0xC);
+            SendCommand (MouseCommandSet.EnablePacketStreaming);           
         }
 
         public void EnableInterrupt ()
@@ -137,6 +134,9 @@ namespace Kernel_alpha.Drivers.Input.Mouse
 
             // Send the command to the data port
             Data.Byte = (byte)cmd;
+
+            //Wait till it respond, Have to check if ACK
+            Read();
         }
 
         public byte Read ()
