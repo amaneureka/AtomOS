@@ -18,6 +18,7 @@ namespace Kernel_alpha
         public static Keyboard KBD;
         public static PS2Mouse Mouse;
         public static Drivers.acpi ACPI;
+
         public static unsafe void Start()
         {
             Console.WriteLine ("                                         ");
