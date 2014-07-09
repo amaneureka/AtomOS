@@ -36,9 +36,6 @@ namespace Kernel_alpha.x86
 
         private static void Remap(byte masterStart, byte masterMask, byte slaveStart, byte slaveMask)
         {
-            var xOldMasterMask = Native.In8(PIC1_Data);
-            var xOldSlaveMask = Native.In8(PIC2_Data);
-
             Native.Out8(PIC1_Command, ICW1_Initialization + ICW1_ICW4);
             Native.Wait();
             Native.Out8(PIC2_Command, ICW1_Initialization + ICW1_ICW4);
@@ -60,8 +57,10 @@ namespace Kernel_alpha.x86
             Native.Wait();
 
             // set masks:
-            Native.Out8(PIC1_Data, xOldMasterMask);
+            Native.Out8(PIC1_Data, masterMask);
             Native.Wait();
+            //Native.Out8(PIC2_Data, slaveMask);
+            ///Native.Wait();
         }
 
         public static void SendEndOfInterrupt(byte irq)

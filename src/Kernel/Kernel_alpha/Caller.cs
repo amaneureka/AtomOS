@@ -64,17 +64,6 @@ namespace Kernel_alpha
             Keys s = KBD.Read();
             if (KBD.Ctrl)
             {
-
-#warning Aman please look this up!! ~Splitty
-
-                /*
-                 * 
-                 * Here is something going wrong..
-                 * It won't compile the following code
-                 * Seems to be crashing if I access the s variable
-                 * 
-                 */
-
                 if (s.Code == KeyCode.S)
                 {
                     Console.WriteLine ("Shutdown");

@@ -31,6 +31,12 @@ namespace Atomix.mscorlib
             Pointer = ((uint)(Pointer / 80) + 1) * 80;
         }
 
+        [Plug("System_Void_System_Console_WriteLine__", CPUArch.x86)]
+        public static void WriteLine_x86()
+        {
+            Pointer = ((uint)(Pointer / 80) + 1) * 80;
+        }
+
         [Plug("System_Void_System_Console_Write_System_String_", CPUArch.x86)]
         public static void Write_x86(string str)
         {
