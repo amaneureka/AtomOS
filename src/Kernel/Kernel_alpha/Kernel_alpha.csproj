@@ -42,10 +42,13 @@
     <Compile Include="Caller.cs" />
     <Compile Include="Drivers\ACPI\ACPI.cs" />
     <Compile Include="Drivers\ACPI\misc.cs" />
+    <Compile Include="Drivers\Buses\ATA\IDE.cs" />
+    <Compile Include="Drivers\Buses\ATA\misc.cs" />
     <Compile Include="Drivers\Input\keyboard\Keyboard.cs" />
     <Compile Include="Drivers\Input\keyboard\Keys.cs" />
     <Compile Include="Drivers\Input\misc.cs" />
     <Compile Include="Drivers\Input\Mouse\PS2.cs" />
+    <Compile Include="Global.cs" />
     <Compile Include="Kernel.cs" />
     <Compile Include="Multitasking.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -76,6 +79,9 @@
       <Project>{4c45ed0b-e904-43ec-9c68-f5d6446dbce1}</Project>
       <Name>Atomix.mscorlibext</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="x86\PCI.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

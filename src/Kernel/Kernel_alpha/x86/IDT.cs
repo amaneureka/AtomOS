@@ -120,10 +120,10 @@ namespace Kernel_alpha.x86
                 switch (xINT - 0x20)
                 {
                     case 1:
-                        Caller.KBD.HandleIRQ ();
+                        Global.KBD.HandleIRQ ();
                         break;
                     case 12:
-                        Caller.Mouse.HandleIRQ ();
+                        Global.Mouse.HandleIRQ();
                         break;
                 }
                 PIC.SendEndOfInterrupt((byte)xContext.Interrupt);

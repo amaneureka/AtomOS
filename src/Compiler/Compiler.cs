@@ -579,9 +579,8 @@ namespace Atomix
                     MSIL[Op.Code].Execute(Op, aMethod);
                 }
                 else
-                    //If it is not implementation than comment inside that IL to assembly
-                    //So, mind to check any type of comment in code =P
-                    Core.AssemblerCode.Add(new Comment(Op.ToString() + "; " + Core.vStack.Count));
+                    //If it is not implementation than throw error while compilation
+                    throw new Exception(Op.ToString() + "; " + xMethodLabel);
                 #region Queue Inline calls
                 if (Op is OpMethod)
                 {

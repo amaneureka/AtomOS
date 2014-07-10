@@ -1,3 +1,5 @@
+Not so important but have to do this: Chack PCI.cs and add more properties which are mentioned in Config enum
+
 TODO:
 1) Add a proper project structure.
 2) Create a well managed docs.

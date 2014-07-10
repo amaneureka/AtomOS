@@ -1,79 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Atomix.CompilerExt;
-using Atomix.CompilerExt.Attributes;
-using Atomix.Assembler;
-using Atomix.Assembler.x86;
-using Kernel_alpha.x86;
-using Kernel_alpha.x86.Intrinsic;
-using Core = Atomix.Assembler.AssemblyHelper;
 using Kernel_alpha.Drivers.Input;
 
 namespace Kernel_alpha
 {
     public static class Caller
-    {        
-        public static Keyboard KBD;
-        public static PS2Mouse Mouse;
-        public static Drivers.acpi ACPI;
-
+    {
         public static unsafe void Start()
         {
             Console.WriteLine ("                                         ");
 
-            Console.Write ("Creating Task1... ");
-            Multitasking.CreateTask(pTask1, true);
-            Console.WriteLine ("OK");
-
-            Console.Write ("Creating Task2... ");
-            Multitasking.CreateTask(pTask2, true);
-            Console.WriteLine ("OK");
-            
-            // Setup Keyboard
-            Console.Write ("Setting up Keyboard... ");
-            KBD = new Keyboard();
-            Console.WriteLine ("OK");
-
-            // Setup Mouse
-            Console.Write ("Setting up PS/2 Mouse... ");
-            Mouse = new PS2Mouse ();
-            Mouse.Initialize();
-            Console.WriteLine ("OK");
-
-            // Setup PCI
-            Console.Write ("Setting up PCI... ");
-            PCI.Setup();
-            Console.WriteLine ("OK");
-
-            // Start ACPI
-            // Initializes and enables itself
-            Console.Write ("Setting up ACPI... ");
-            ACPI = new Drivers.acpi (true, true);
-            Console.WriteLine ("OK");
+            //Load System Elements
+            Global.Init();
 
             Console.WriteLine ("Welcome to AtomixOS!");
             Console.WriteLine ();
 
             Console.WriteLine ("Shutdown: Ctrl+S");
             Console.WriteLine ("Reboot: Ctrl+R");
+
+            //Just for mouse testing
+            Multitasking.CreateTask(pTask1, true);
+            Multitasking.CreateTask(pTask2, true);
         }
 
         public static unsafe void Update()
         {
-            Keys s = KBD.Read();
-            if (KBD.Ctrl)
+            var s = Global.KBD.Read();
+            if (Global.KBD.Ctrl)
             {
                 if (s.Code == KeyCode.S)
                 {
                     Console.WriteLine ("Shutdown");
-                    ACPI.Shutdown ();
+                    Global.ACPI.Shutdown();
                 }
                 else if (s.Code == KeyCode.R)
                 {
                     Console.WriteLine ("Reboot");
-                    ACPI.Reboot ();
+                    Global.ACPI.Reboot();
                 }
             }
             else if (s != null)
@@ -86,12 +50,12 @@ namespace Kernel_alpha
             do
             {
                 WriteScreen("X:", 6);
-                WriteScreen(((uint)Mouse.X).ToString(), 10);
+                WriteScreen(((uint)Global.Mouse.X).ToString(), 10);
 
                 WriteScreen("Y:", 24);
-                WriteScreen(((uint)Mouse.Y).ToString(), 28);
+                WriteScreen(((uint)Global.Mouse.Y).ToString(), 28);
 
-                switch (Mouse.Button)
+                switch (Global.Mouse.Button)
                 {
                     case MouseButtons.Left:
                         WriteScreen("L", 40);

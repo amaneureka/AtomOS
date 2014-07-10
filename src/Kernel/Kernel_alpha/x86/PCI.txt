@@ -1,0 +1,22 @@
+﻿
+						  03h			  02h			 01h		00h
+register	 bits 31-24		bits 23-16		bits 15-8		bits 7-0
+00			 Device ID						Vendor ID
+04			 Status							Command
+08			 Class code		Subclass		Prog IF			Revision ID
+0C			 BIST			Header type		Latency Timer	Cache Line Size
+10			 Base address #0 (BAR0)
+14			 Base address #1 (BAR1)
+18			 Sec. LT	    Sub. Bus No.	Sec. Bus No.	Primary Bus Number
+1C			 Sec. Status					I/O Limit		I/O Base
+20			 Memory Limit					Memory Base
+24			 Prefetchable Memory Limit		Prefetchable Memory Base
+28			 Prefetchable Base Upper 32 Bits
+2C			 Prefetchable Limit Upper 32 Bits
+30			 I/O Limit Upper 16 Bits		I/O Base Upper 16 Bits
+34			 Reserved										Capability Pointer
+38			 Expansion ROM base address
+3C			 Bridge Control					Interrupt PIN	 Interrupt Line
+
+Above is PCI Device Configuration Table, 
+Now the Address of each config. is sum of X + Y where X is offset at horizontal and Y is offset at vertical

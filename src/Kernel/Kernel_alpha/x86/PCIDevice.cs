@@ -8,21 +8,65 @@ namespace Kernel_alpha.x86
 {
     public class PCIDevice
     {
-        public uint Bus;
-        public uint Slot;
-        public uint Function;
+        #region Enums
+        public enum PCIHeaderType : byte
+        {
+            Normal = 0x00,
+            Bridge = 0x01,
+            Cardbus = 0x02
+        };
+
+        public enum PCIBist : byte
+        {
+            CocdMask = 0x0f,   /* Return result */
+            Start = 0x40,   /* 1 to start BIST, 2 secs or less */
+            Capable = 0x80    /* 1 if BIST capable */
+        };
+
+        public enum PCIInterruptPIN : byte
+        {
+            None = 0x00,
+            INTA = 0x01,
+            INTB = 0x02,
+            INTC = 0x03,
+            INTD = 0x04
+        };
+
+        public enum Config : byte
+        {
+            VendorID            = 0,                            DeviceID            = 2,
+            Command             = 4,                            Status              = 6,
+            RevisionID          = 8,    ProgIF          = 9,    SubClass            = 10,   Class       = 11,
+            CacheLineSize       = 12,   LatencyTimer    = 13,   HeaderType          = 14,   BIST        = 15,
+            BAR0                = 16,
+            BAR1                = 20,
+            PrimaryBusNo        = 24,   SecondaryBusNo  = 25,   SubBusNo            = 26,   SecondarLT  = 27,
+            IOBase              = 28,   IOLimit         = 29,   SecondaryStatus     = 30,
+            MemoryBase          = 32,                           MemoryLimit         = 34,
+            PrefMemoryBase      = 36,                           PrefMemoryLimit     = 38,
+            PrefBase32Upper     = 40,
+            PrefLimit32upper    = 44,
+            PrefBase16Upper     = 48,                           PrefLimit16upper    = 50,
+            CapabilityPointer   = 52,   Reserved        = 53,
+            ExpROMBaseAddress   = 56,
+            InterruptLine       = 60,   InterruptPIN    = 61,   BridgeControl       = 62
+        };
+        #endregion
+
+        public readonly uint Bus;
+        public readonly uint Slot;
+        public readonly uint Function;
 
         public readonly ushort VendorID;
         public readonly ushort DeviceID;
+
+        public readonly ushort Command;
+        public readonly ushort Status;
 
         public readonly byte RevisionID;
         public readonly byte ProgIF;
         public readonly byte Subclass;
         public readonly byte ClassCode;
-
-        public readonly byte CacheLineSize;
-        public readonly byte LatencyTimer;
-        public readonly byte InterruptLine;
 
         public readonly bool DeviceExists;
 
@@ -39,21 +83,21 @@ namespace Kernel_alpha.x86
             this.Slot = slot;
             this.Function = function;
 
-            VendorID = ReadRegister16(0x00);
-            DeviceID = ReadRegister16(0x02);
-            
-            RevisionID = ReadRegister8(0x08);
-            ProgIF = ReadRegister8(0x09);
-            Subclass = ReadRegister8(0x0A);
-            ClassCode = ReadRegister8(0x0B);
+            this.VendorID = ReadRegister16((byte)Config.VendorID);
+            this.DeviceID = ReadRegister16((byte)Config.DeviceID);
 
-            CacheLineSize = ReadRegister8(0x0C);
-            LatencyTimer = ReadRegister8(0x0D);
-            HeaderType = (PCIHeaderType)ReadRegister8(0x0E);
-            BIST = (PCIBist)ReadRegister8(0x0F);
+            this.Command = ReadRegister16((byte)Config.Command);
+            this.Status = ReadRegister16((byte)Config.Status);
 
-            InterruptLine = ReadRegister8(0x3C);
-            InterruptPIN = (PCIInterruptPIN)ReadRegister8(0x3D);
+
+            this.RevisionID = ReadRegister8((byte)Config.RevisionID);
+            this.ProgIF = ReadRegister8((byte)Config.ProgIF);
+            this.Subclass = ReadRegister8((byte)Config.SubClass);
+            this.ClassCode = ReadRegister8((byte)Config.Class);
+
+            this.HeaderType = (PCIHeaderType)ReadRegister8((byte)Config.HeaderType);
+            this.BIST = (PCIBist)ReadRegister8((byte)Config.BIST);
+            this.InterruptPIN = (PCIInterruptPIN)ReadRegister8((byte)Config.InterruptPIN);
 
             DeviceExists = (uint)VendorID != 0xFFFF && (uint)DeviceID != 0xFFFF;
         }
@@ -116,30 +160,6 @@ namespace Kernel_alpha.x86
                 | ((aFunction & 0x07) << 8));
         }
 
-        #region Enums
-        public enum PCIHeaderType : byte
-        {
-            Normal = 0x00,
-            Bridge = 0x01,
-            Cardbus = 0x02
-        }
-
-        [Flags]
-        public enum PCIBist : byte
-        {
-            CocdMask = 0x0f,   /* Return result */
-            Start = 0x40,   /* 1 to start BIST, 2 secs or less */
-            Capable = 0x80    /* 1 if BIST capable */
-        }
-
-        public enum PCIInterruptPIN : byte
-        {
-            None = 0x00,
-            INTA = 0x01,
-            INTB = 0x02,
-            INTC = 0x03,
-            INTD = 0x04
-        }
-        #endregion
+        
     }
 }
