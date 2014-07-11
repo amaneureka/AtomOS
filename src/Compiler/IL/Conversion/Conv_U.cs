@@ -8,7 +8,6 @@ using Atomix.Assembler.x86;
 using Atomix.CompilerExt;
 using System.Reflection;
 using Atomix.ILOpCodes;
-using Atomix.CompilerExt;
 using Core = Atomix.Assembler.AssemblyHelper;
 
 namespace Atomix.IL

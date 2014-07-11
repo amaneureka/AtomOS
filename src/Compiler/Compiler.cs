@@ -533,7 +533,6 @@ namespace Atomix
             Core.AssemblerCode.Add(new Mov() { DestinationReg = Registers.EBP, SourceReg = Registers.ESP });
 
             /* Calculate Method Variables Size */
-#warning Hey Aman looks like here is something fucked up
             int Size = (from item in xBody.LocalVariables
                         select (int)item.LocalType.SizeOf().Align()).Sum();
 

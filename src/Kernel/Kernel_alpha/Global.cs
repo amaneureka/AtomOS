@@ -18,28 +18,30 @@ namespace Kernel_alpha
             // Setup PCI
             Console.Write("Setting up PCI... ");
             PCI.Setup();
-            Console.WriteLine("OK");
+            Console.WriteLine ("OK");
 
             // Start ACPI
             // Initializes and enables itself
             Console.Write("Setting up ACPI... ");
-            ACPI = new acpi();
-            Console.WriteLine("OK");
+            ACPI = new acpi(true, true);
+            Console.WriteLine ("OK");
 
             // Setup Keyboard
-            Console.Write("Setting up Keyboard... ");
+            Console.Write("Setting up PS/2 Keyboard... ");
             KBD = new Keyboard();
-            Console.WriteLine("OK");
+            Console.WriteLine ("OK");
 
             // Setup Mouse
             Console.Write("Setting up PS/2 Mouse... ");
             Mouse = new PS2Mouse();
             Mouse.Initialize();
-            Console.WriteLine("OK");
+            Console.WriteLine ("OK");
 
             //Loading ATA
             Console.WriteLine("Loading ATA SubSystem... ");
+#warning I am getting a CPU Exception x0D here
             LoadATA();
+            Console.WriteLine ("OK");
         }
 
         private static void LoadATA()

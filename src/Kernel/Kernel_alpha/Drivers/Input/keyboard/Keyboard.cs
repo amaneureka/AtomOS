@@ -256,7 +256,7 @@ namespace Kernel_alpha.Drivers.Input
         }
 
 
-        public Keys Read()
+        public Keys ReadKey()
         {
             if (Buffer.Count == 0)
                 return null;
