@@ -63,6 +63,9 @@ namespace Kernel_alpha.Drivers.Buses.ATA
             Discover();
         }
 
+        /// <summary>
+        /// This method discover the current ATA device and try to read all its configurations
+        /// </summary>
         private void Discover()
         {
             DriveInfo.Device = Device.IDE_ATA;
@@ -109,34 +112,38 @@ namespace Kernel_alpha.Drivers.Buses.ATA
                 Wait();
             }
             
-            var xBuff = new ushort[256];
-            ReadDataBuffer(xBuff);
-
-            DriveInfo.Cylinder      = (UInt32)(xBuff[(byte)Identify.ATA_IDENT_CYLINDERS     + 2] << 16 | xBuff[(byte)Identify.ATA_IDENT_CYLINDERS]);
-            DriveInfo.Heads         = (UInt32)(xBuff[(byte)Identify.ATA_IDENT_HEADS         + 2] << 16 | xBuff[(byte)Identify.ATA_IDENT_HEADS]);
-            DriveInfo.Sectors       = (UInt32)(xBuff[(byte)Identify.ATA_IDENT_SECTORS       + 2] << 16 | xBuff[(byte)Identify.ATA_IDENT_SECTORS]);
-            DriveInfo.CommandSet    = (UInt32)(xBuff[(byte)Identify.ATA_IDENT_COMMANDSETS   + 2] << 16 | xBuff[(byte)Identify.ATA_IDENT_COMMANDSETS]);
+            var xBuff = new ushort[256];            
+            DataReg.Read16(xBuff);
             
-            if ((DriveInfo.CommandSet & (1 << 26)) != 0)
+            //CHS configurations
+            DriveInfo.Cylinder      = xBuff.ToUInt32((int)Identify.ATA_IDENT_CYLINDERS);
+            DriveInfo.Heads         = xBuff.ToUInt32((int)Identify.ATA_IDENT_HEADS);
+            DriveInfo.Sectors       = xBuff.ToUInt32((int)Identify.ATA_IDENT_SECTORS);
+            DriveInfo.CommandSet    = xBuff.ToUInt32((int)Identify.ATA_IDENT_COMMANDSETS);
+
+            ushort xFieldValid = xBuff[(int)Identify.ATA_IDENT_FIELDVALID];
+            //1st bit determine weather it support LBA or not
+            DriveInfo.LBASupport = (bool)((xFieldValid & 1) == 1);
+            
+            if ((DriveInfo.CommandSet & (1 << 26)) != 0)                
                 // Device uses 48-Bit Addressing:
-                DriveInfo.Size = (UInt32)(xBuff[(byte)Identify.ATA_IDENT_MAX_LBA_EXT + 2] << 16 | xBuff[(byte)Identify.ATA_IDENT_MAX_LBA_EXT]);
+                DriveInfo.Size = xBuff.ToUInt48((int)Identify.ATA_IDENT_MAX_LBA_EXT);
             else
                 // Device uses CHS or 28-bit Addressing:
-                DriveInfo.Size = (UInt32)(xBuff[(byte)Identify.ATA_IDENT_MAX_LBA + 2] << 16 | xBuff[(byte)Identify.ATA_IDENT_MAX_LBA]);
-                        
-            // (VIII) String indicates model of device (like Western Digital HDD and SONY DVD-RW...):
-            char[] xModel = new char[40];
-            for (int k = 0; k < 40; k += 2)
-            {
-                xModel[k] = (char)xBuff[(byte)Identify.ATA_IDENT_MODEL + k + 1];
-                xModel[k + 1] = (char)xBuff[(byte)Identify.ATA_IDENT_MODEL + k];
-            }
-            DriveInfo.Model = new string(xModel);
+                DriveInfo.Size = xBuff.ToUInt32((int)Identify.ATA_IDENT_MAX_LBA);
+            
+            //Read Model, Firmware, SerialNo.
+            DriveInfo.Model = xBuff.GetString((int)Identify.ATA_IDENT_MODEL, 40);
+            DriveInfo.SerialNo = xBuff.GetString((int)Identify.ATA_IDENT_SERIAL, 20);
 
+            /* Print Config...just for testing */
             Console.Write("Size:");
-            Console.WriteLine(DriveInfo.Size.ToString());
+            Console.WriteLine(((UInt32)DriveInfo.Size).ToString());
             Console.Write("Model:");
             Console.WriteLine(DriveInfo.Model);
+            Console.Write("Serial:");
+            Console.WriteLine(DriveInfo.SerialNo);
+            Console.WriteLine(DriveInfo.LBASupport.ToString());
 
             Console.Write("Type:");
             if (DriveInfo.Device == Device.IDE_ATA)
@@ -145,6 +152,37 @@ namespace Kernel_alpha.Drivers.Buses.ATA
                 Console.WriteLine("ATAPI");
         }
 
+        private void Poll(bool AdvancedCheck)
+        {
+            // (I) Delay 400 nanosecond for BSY to be set:
+            Wait();
+
+            // (II) Wait for BSY to be cleared:
+            // -------------------------------------------------
+            while (((Status)StatusReg.Byte & Status.ATA_SR_BSY) != 0)
+                ; // Wait for BSY to be zero.
+
+            if (AdvancedCheck)
+            {
+                var xState = (Status)StatusReg.Byte;
+
+                // (III) Check For Errors:
+                // -------------------------------------------------
+                if ((xState & Status.ATA_SR_ERR) != 0)
+                    throw new Exception("ATA Error");
+
+                // (IV) Check If Device fault:
+                // -------------------------------------------------                
+                if ((xState & Status.ATA_SR_DF) != 0)
+                    throw new Exception("ATA Device Fault");
+
+                // (V) Check DRQ:
+                // -------------------------------------------------
+                // BSY = 0; DF = 0; ERR = 0 so we should check for DRQ now.
+                if ((xState & Status.ATA_SR_DRQ) != 0)
+                    throw new Exception("ATA DRQ should be set");
+            }
+        }
         /// <summary>
         /// 0 - Master
         /// 1 - Slave
@@ -164,16 +202,6 @@ namespace Kernel_alpha.Drivers.Buses.ATA
             n = StatusReg.Byte;
             n = StatusReg.Byte;
             n = StatusReg.Byte;
-        }
-
-        private void ReadDataBuffer(ushort[] xData)
-        {
-            for (int i = 0; i < xData.Length / 2; i++)
-            {
-                var xTemp = DataReg.Inw();
-                xData[i * 2] = (ushort)(xTemp & 0xFF);
-                xData[i * 2 + 1] = (ushort)((xTemp >> 8) & 0xFF);
-            }
         }
     }    
 }

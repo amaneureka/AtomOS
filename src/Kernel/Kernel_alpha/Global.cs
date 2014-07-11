@@ -39,9 +39,7 @@ namespace Kernel_alpha
 
             //Loading ATA
             Console.WriteLine("Loading ATA SubSystem... ");
-#warning I am getting a CPU Exception x0D here
             LoadATA();
-            Console.WriteLine ("OK");
         }
 
         private static void LoadATA()

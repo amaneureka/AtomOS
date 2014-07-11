@@ -49,16 +49,16 @@ namespace Kernel_alpha.Drivers.Buses.ATA
     public enum Identify : byte
     {
         ATA_IDENT_DEVICETYPE = 0,
-        ATA_IDENT_CYLINDERS = 2,
-        ATA_IDENT_HEADS = 6,
-        ATA_IDENT_SECTORS = 12,
-        ATA_IDENT_SERIAL = 20,
-        ATA_IDENT_MODEL = 54,
-        ATA_IDENT_CAPABILITIES = 98,
-        ATA_IDENT_FIELDVALID = 106,
-        ATA_IDENT_MAX_LBA = 120,
-        ATA_IDENT_COMMANDSETS = 164,
-        ATA_IDENT_MAX_LBA_EXT = 200
+        ATA_IDENT_CYLINDERS = 1,
+        ATA_IDENT_HEADS = 3,
+        ATA_IDENT_SECTORS = 6,
+        ATA_IDENT_SERIAL = 10,
+        ATA_IDENT_MODEL = 27,
+        ATA_IDENT_CAPABILITIES = 49,
+        ATA_IDENT_FIELDVALID = 53,
+        ATA_IDENT_MAX_LBA = 60,
+        ATA_IDENT_COMMANDSETS = 82,
+        ATA_IDENT_MAX_LBA_EXT = 100
     };
 
     public enum Register : byte
@@ -112,9 +112,41 @@ namespace Kernel_alpha.Drivers.Buses.ATA
         public Device Device;
         public uint Cylinder;
         public uint Heads;
-        public uint Size;
+        public ulong Size;
         public uint Sectors;
         public uint CommandSet;
         public string Model;
+        public string SerialNo;
+        public bool LBASupport;
+    }
+    public static class misc
+    {
+        public static byte[] ATAPI_Packet = new byte[12] { 0xA8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+        public static UInt32 ToUInt32(this ushort[] xBuff, int loc)
+        {
+            return (UInt32)(xBuff[loc + 1] << 16 | xBuff[loc]);
+        }
+
+        public static UInt64 ToUInt64(this ushort[] xBuff, int loc)
+        {
+            return (UInt64)(xBuff[loc + 3] << 48 | xBuff[loc + 2] << 32 | xBuff[loc + 1] << 16 | xBuff[loc]);
+        }
+
+        public static UInt64 ToUInt48(this ushort[] xBuff, int loc)
+        {
+            return (UInt64)(xBuff[loc + 2] << 32 | xBuff[loc + 1] << 16 | xBuff[loc]);
+        }
+
+        public static string GetString(this ushort[] xBuff, int loc, int length)
+        {  
+            char[] xResult = new char[40];            
+            for (int k = 0; k < (length / 2); k++)
+            {
+                xResult[k * 2] = (char)((xBuff[loc + k] >> 8) & 0xFF);
+                xResult[k * 2 + 1] = (char)(xBuff[loc + k] & 0xFF);
+            }
+            return new String(xResult);
+        }
     }
 }

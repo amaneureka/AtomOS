@@ -83,7 +83,7 @@ namespace Atomix.IL
                 #endregion
             }
 
-            Core.vStack.Push(4, typeof(Int32));
+            Core.vStack.Push(4, typeof(UInt32));
         }
     }
 }

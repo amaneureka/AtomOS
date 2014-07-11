@@ -111,5 +111,13 @@ namespace Kernel_alpha.x86.Intrinsic
                 Native.Out32 (Address, value);
             }
         }
+
+        public void Read16(ushort[] xData)
+        {
+            for (int i = 0; i < xData.Length; i++)
+            {
+                xData[i] = this.Inw();
+            }
+        }
     }
 }

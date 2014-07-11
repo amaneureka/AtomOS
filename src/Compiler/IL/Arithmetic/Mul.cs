@@ -20,7 +20,7 @@ namespace Atomix.IL
         public override void Execute(ILOpCode instr, MethodBase aMethod)
         {
             var xItem = Core.vStack.Pop();
-            var xSize = Math.Max(xItem.Size, Core.vStack.Peek().Size);
+            var xSize = xItem.Size;
 
             switch (ILCompiler.CPUArchitecture)
             {
