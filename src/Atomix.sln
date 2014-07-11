@@ -42,6 +42,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Amanp", "Amanp", "{FC738CC5
 		..\users\Amanp\Notes.txt = ..\users\Amanp\Notes.txt
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Kernel_H", "Kernel_H", "{39D9498C-2D10-44DB-9B99-1286592965E8}"
+	ProjectSection(SolutionItems) = preProject
+		NewKernel.txt = NewKernel.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
 		SccNumberOfProjects = 9
