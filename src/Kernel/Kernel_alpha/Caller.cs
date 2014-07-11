@@ -10,7 +10,7 @@ namespace Kernel_alpha
         {
             Console.WriteLine ("                                         ");
 
-            //Load System Elements
+            // Load System Elements
             Global.Init();
 
             Console.WriteLine ("Welcome to AtomixOS!");
@@ -19,7 +19,7 @@ namespace Kernel_alpha
             Console.WriteLine ("Shutdown: Ctrl+S");
             Console.WriteLine ("Reboot: Ctrl+R");
 
-            //Just for mouse testing
+            // Just for mouse testing
             Multitasking.CreateTask(pTask1, true);
             Multitasking.CreateTask(pTask2, true);
         }

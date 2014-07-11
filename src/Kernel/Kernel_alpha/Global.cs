@@ -16,29 +16,29 @@ namespace Kernel_alpha
         public static void Init()
         {
             // Setup PCI
-            Console.Write("Setting up PCI... ");
+            Console.Write ("Setting up PCI... ");
             PCI.Setup();
             Console.WriteLine ("OK");
 
             // Start ACPI
             // Initializes and enables itself
-            Console.Write("Setting up ACPI... ");
+            Console.Write ("Setting up ACPI... ");
             ACPI = new acpi(true, true);
             Console.WriteLine ("OK");
 
             // Setup Keyboard
-            Console.Write("Setting up PS/2 Keyboard... ");
+            Console.Write ("Setting up PS/2 Keyboard... ");
             KBD = new Keyboard();
             Console.WriteLine ("OK");
 
             // Setup Mouse
-            Console.Write("Setting up PS/2 Mouse... ");
+            Console.Write ("Setting up PS/2 Mouse... ");
             Mouse = new PS2Mouse();
             Mouse.Initialize();
             Console.WriteLine ("OK");
 
             //Loading ATA
-            Console.WriteLine("Loading ATA SubSystem... ");
+            Console.WriteLine ("Loading ATA SubSystem... ");
             LoadATA();
         }
 
