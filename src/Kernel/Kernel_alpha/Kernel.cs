@@ -15,7 +15,7 @@ namespace Kernel_alpha
     [Kernel(CPUArch.x86, "0x200000")]//Fixed Entrypoint, if you change it than i kill you :)
     public static class Kernel_x86
     {
-        [Assembly, Plug("Kernel_Main")]   
+        [Assembly, Plug("Kernel_Main")]
         public static void main()
         {
             /* Will do some assembly, because it can't be managed via C# :(
@@ -57,7 +57,7 @@ namespace Kernel_alpha
             Core.AssemblerCode.Add(new Jmp { DestinationRef = "Kernel_Start" });
         }
 
-        [Plug("Kernel_Start")]        
+        [Plug("Kernel_Start")]
         public static void Start()
         {
             /* Setup Multiboot */
