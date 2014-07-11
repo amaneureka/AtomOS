@@ -10,7 +10,7 @@ namespace Atomix.mscorlib
     {
         public const string xDigits = "0123456789";
         public static string ToString8Bit(uint aNum, bool IsSigned)
-        {
+        {            
             if (aNum == 0)
                 return "0";
             
@@ -56,9 +56,25 @@ namespace Atomix.mscorlib
             return new string(xResultChars, xCurrentPos + 1, 10 - xCurrentPos);
         }
 
-        public static string ToString64Bit(uint aNumber, bool IsSigned)
+        public static string ToString64Bit(ulong aNumber, bool IsSigned)
         {
-            return string.Empty;
+            if (aNumber == 0)
+                return "0";
+            char[] xResultChars = new char[21];
+            int xCurrentPos = 20;
+            while (aNumber > 0)
+            {
+                ushort xPos = (ushort)(aNumber % 10);
+                aNumber /= 10;
+                xResultChars[xCurrentPos] = xDigits[xPos];
+                xCurrentPos -= 1;
+            }
+            if (IsSigned)
+            {
+                xResultChars[xCurrentPos] = '-';
+                xCurrentPos -= 1;
+            }
+            return new string(xResultChars, xCurrentPos + 1, 20 - xCurrentPos);
         }
 
         public static string ToStringHex(byte aByte)

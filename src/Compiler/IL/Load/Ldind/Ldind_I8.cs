@@ -12,17 +12,14 @@ using Core = Atomix.Assembler.AssemblyHelper;
 
 namespace Atomix.IL
 {
-    [ILOp(ILCode.Ldind_U4)]
-    public class Ldind_U4 : MSIL
+    [ILOp(ILCode.Ldind_I8)]
+    public class Ldind_I8 : MSIL
     {
-        public Ldind_U4(Compiler Cmp)
-            : base("ldind_u4", Cmp) { }
+        public Ldind_I8(Compiler Cmp)
+            : base("ldind_i8", Cmp) { }
 
         public override void Execute(ILOpCode instr, MethodBase aMethod)
         {
-            /*
-            Situation is an address of a 32 bit value is on the stack, we have to push that onto the stack 
-            */
             switch (ILCompiler.CPUArchitecture)
             {
                 #region _x86_
@@ -30,6 +27,7 @@ namespace Atomix.IL
                     {
                         Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
                         Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX, DestinationIndirect = true });
+                        Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = 0x4 });
                     }
                     break;
                 #endregion
@@ -48,6 +46,7 @@ namespace Atomix.IL
                     break;
                 #endregion
             }
+            Core.vStack.Push(4, typeof(Int32));
         }
     }
 }

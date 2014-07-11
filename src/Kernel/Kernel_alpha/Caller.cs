@@ -102,7 +102,7 @@ namespace Kernel_alpha
                 if (c >= 255)
                     c = 0;
                 a++;
-                //Thread.Sleep(100);
+                Thread.Sleep(100);
             }
             while (true);
             Console.WriteLine("My task is finished");

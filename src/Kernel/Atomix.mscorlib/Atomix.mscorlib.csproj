@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="Array.cs" />
     <Compile Include="Globalization\CultureInfo.cs" />
+    <Compile Include="Int64.cs" />
     <Compile Include="Int32.cs" />
     <Compile Include="SR.cs" />
     <Compile Include="Type.cs" />
@@ -55,6 +56,7 @@
     <Compile Include="String.cs" />
     <Compile Include="Runtime\CompilerServices\RuntimeHelpers.cs" />
     <Compile Include="Byte.cs" />
+    <Compile Include="UInt64.cs" />
     <Compile Include="UInt32.cs" />
   </ItemGroup>
   <ItemGroup>

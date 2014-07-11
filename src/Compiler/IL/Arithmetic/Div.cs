@@ -19,8 +19,6 @@ namespace Atomix.IL
 
         public override void Execute(ILOpCode instr, MethodBase aMethod)
         {
-            //We want both items but we are peeking the second because we have to push it again
-            //so making two lines of more code is difficult for me hence i peek it :P
             var xItem = Core.vStack.Pop();
             var xSize = xItem.Size;
 
@@ -95,14 +93,14 @@ namespace Atomix.IL
                                 //high
                                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDI, SourceReg = Registers.ESP, SourceIndirect = true, SourceDisplacement = 4 });
 
-                                // pop both 8 byte values
-                                Core.AssemblerCode.Add(new Add { DestinationReg = Registers.ESP, SourceRef = "0x10" });
-
                                 //dividend
                                 // low
                                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.ESP, SourceIndirect = true, SourceDisplacement = 8 });
                                 //high
-                                new Mov { DestinationReg = Registers.EDX, SourceReg = Registers.ESP, SourceIndirect = true, SourceDisplacement = 12 };
+                                Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDX, SourceReg = Registers.ESP, SourceIndirect = true, SourceDisplacement = 12 });
+
+                                // pop both 8 byte values
+                                Core.AssemblerCode.Add(new Add { DestinationReg = Registers.ESP, SourceRef = "0x10" });
 
                                 // set flags
                                 Core.AssemblerCode.Add(new Or { DestinationReg = Registers.EDI, SourceReg = Registers.EDI });

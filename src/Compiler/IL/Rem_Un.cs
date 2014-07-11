@@ -20,7 +20,7 @@ namespace Atomix.IL
 
         public override void Execute(ILOpCode instr, MethodBase aMethod)
         {
-            var FirstItem = Core.vStack.Pop();
+            var FirstItem = Core.vStack.Peek();
             var SecondItem = Core.vStack.Pop();
 
             var xSize = Math.Max(FirstItem.Size, SecondItem.Size);
@@ -40,7 +40,80 @@ namespace Atomix.IL
                             if (FirstItem.IsFloat)
                                 throw new Exception("You Can't get remainder of floating point division");
 
-                            throw new Exception("Yet to be implemented");
+                            string BaseLabel = ILHelper.GetLabel(aMethod, instr.Position) + ".";
+                            string LabelShiftRight = BaseLabel + "ShiftRightLoop";
+                            string LabelNoLoop = BaseLabel + "NoLoop";
+                            string LabelEnd = BaseLabel + "End";
+
+                            // divisor
+                            //low
+                            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ESI, SourceReg = Registers.ESP, SourceIndirect = true });
+                            //high
+                            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDI, SourceReg = Registers.ESP, SourceIndirect = true, SourceDisplacement = 4 });
+
+                            //dividend
+                            // low
+                            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.ESP, SourceIndirect = true, SourceDisplacement = 8 });
+                            //high
+                            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDX, SourceReg = Registers.ESP, SourceIndirect = true, SourceDisplacement = 12 });
+
+                            // pop both 8 byte values
+                            Core.AssemblerCode.Add(new Add { DestinationReg = Registers.ESP, SourceRef = "0x10" });
+
+                            // set flags
+                            Core.AssemblerCode.Add(new Or { DestinationReg = Registers.EDI, SourceReg = Registers.EDI });
+                            // if high dword of divisor is already zero, we dont need the loop
+                            Core.AssemblerCode.Add(new Jmp { Condition = ConditionalJumpEnum.JZ, DestinationRef = LabelNoLoop });
+
+                            // set ecx to zero for counting the shift operations
+                            Core.AssemblerCode.Add(new Xor { DestinationReg = Registers.ECX, SourceReg = Registers.ECX });
+
+                            Core.AssemblerCode.Add(new Label(LabelShiftRight));
+
+                            // shift divisor 1 bit right
+                            Core.AssemblerCode.Add(new Literal("shrd ESI, EDI, 0x1"));
+                            Core.AssemblerCode.Add(new Shr { DestinationReg = Registers.EDI, SourceRef = "0x1" });
+
+                            // increment shift counter
+                            Core.AssemblerCode.Add(new Literal("inc ECX"));
+
+                            // set flags
+                            Core.AssemblerCode.Add(new Or { DestinationReg = Registers.EDI, SourceReg = Registers.EDI });
+                            // loop while high dword of divisor till it is zero
+                            Core.AssemblerCode.Add(new Jmp { Condition = ConditionalJumpEnum.JZ, DestinationRef = LabelShiftRight });
+
+                            // shift the divident now in one step
+                            // shift divident CL bits right
+                            Core.AssemblerCode.Add(new Literal("shrd EAX, EDX, CL"));
+                            Core.AssemblerCode.Add(new Shr { DestinationReg = Registers.EDX, SourceReg = Registers.CL });
+
+                            // so we shifted both, so we have near the same relation as original values
+                            // divide this
+                            Core.AssemblerCode.Add(new Div { DestinationReg = Registers.ESI });
+
+                            // save remainder to stack
+                            Core.AssemblerCode.Add(new Push { DestinationRef = "0x0" });
+                            Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EDX });
+                            
+                            Core.AssemblerCode.Add(new Jmp { DestinationRef = LabelEnd });
+
+                            Core.AssemblerCode.Add(new Label(LabelNoLoop));
+
+                            //save high dividend
+                            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.EAX });
+                            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EDX });
+                            // zero EDX, so that high part is zero -> reduce overflow case
+                            Core.AssemblerCode.Add(new Xor { DestinationReg = Registers.EDX, SourceReg = Registers.EDX });
+                            // divide high part
+                            Core.AssemblerCode.Add(new Div { DestinationReg = Registers.ESI });
+                            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.ECX });
+                            // divide low part
+                            Core.AssemblerCode.Add(new Div { DestinationReg = Registers.ESI });
+                            // save remainder result
+                            Core.AssemblerCode.Add(new Push { DestinationRef = "0x0" });
+                            Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EDX });
+
+                            Core.AssemblerCode.Add(new Label(LabelEnd));
                         }
                         else
                         {
@@ -72,7 +145,6 @@ namespace Atomix.IL
                     break;
                 #endregion
             }
-            Core.vStack.Push(FirstItem.Size, FirstItem.Type);
         }
     }
 }

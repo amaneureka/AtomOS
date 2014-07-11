@@ -136,14 +136,13 @@ namespace Kernel_alpha.Drivers.Buses.ATA
             DriveInfo.Model = xBuff.GetString((int)Identify.ATA_IDENT_MODEL, 40);
             DriveInfo.SerialNo = xBuff.GetString((int)Identify.ATA_IDENT_SERIAL, 20);
 
-            /* Print Config...just for testing */
+            /* Print Config...just for testing */            
             Console.Write("Size:");
-            Console.WriteLine(((UInt32)DriveInfo.Size).ToString());
+            Console.WriteLine((DriveInfo.Size).ToString());
             Console.Write("Model:");
             Console.WriteLine(DriveInfo.Model);
             Console.Write("Serial:");
             Console.WriteLine(DriveInfo.SerialNo);
-            Console.WriteLine(DriveInfo.LBASupport.ToString());
 
             Console.Write("Type:");
             if (DriveInfo.Device == Device.IDE_ATA)

@@ -56,7 +56,6 @@ namespace Atomix.IL
                     break;
                 #endregion
             }
-            Core.vStack.Push(4, typeof(Int32));
         }
     }
 }
