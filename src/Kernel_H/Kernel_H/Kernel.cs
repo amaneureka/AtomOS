@@ -13,10 +13,10 @@ using libAtomixH.Threading;
 namespace Kernel_H
 {
     [Kernel (CPUArch.x86, "0x200000")]
-    public class Kernel
+    public static class Kernel
     {
         [Assembly, Plug ("Kernel_Main")]
-        public void main ()
+        public static void main ()
         {
             // Initialize Multiboot
             asm.DataMember.Add (new AsmData ("MultibootSignature", BitConverter.GetBytes (0x1BADB002))); //0x200000
@@ -54,7 +54,7 @@ namespace Kernel_H
         }
 
         [Plug ("Kernel_Start")]
-        public void start ()
+        public static void start ()
         {
             // Setup Multiboot
             Multiboot.Setup ();
