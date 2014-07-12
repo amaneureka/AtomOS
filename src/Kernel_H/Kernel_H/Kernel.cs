@@ -79,6 +79,11 @@ namespace Kernel_H
             try
             {
                 Caller.Start ();
+
+                while (true)
+                {
+                    Caller.Update ();
+                }
             }
             catch (Exception ex)
             {

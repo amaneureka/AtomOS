@@ -7,13 +7,6 @@ namespace Kernel_H
         public static unsafe void Start ()
         {
             // Do the initialization stuff here
-            // For now, let's just print something
-            WriteScreen ("AtomixOS H booted successfully!", 0);
-
-            while (true)
-            {
-                Update ();
-            }
         }
 
         public static void Update ()

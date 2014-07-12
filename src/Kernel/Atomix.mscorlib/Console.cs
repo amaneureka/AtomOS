@@ -1,10 +1,17 @@
-﻿using System;
+﻿#define COMPILE_H
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Atomix.CompilerExt;
 using Atomix.CompilerExt.Attributes;
+
+#if (COMPILE_H)
+using libAtomixH.IO.Ports;
+#else
 using Kernel_alpha.x86.Intrinsic;
+#endif
 
 namespace Atomix.mscorlib
 {    
