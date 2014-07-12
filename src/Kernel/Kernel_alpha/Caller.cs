@@ -40,7 +40,10 @@ namespace Kernel_alpha
         {
             char[] achar = new char[] {'A', 'T', 'O', 'M', 'O', 'S' };
             Console.Write(b);
-            Console.WriteLine(new string(achar));
+            Console.Write("...");
+            Console.Write(new string(achar));
+            Console.Write("...");
+            Console.WriteLine(a.ToString());
         }
 
         public static unsafe void Update()
