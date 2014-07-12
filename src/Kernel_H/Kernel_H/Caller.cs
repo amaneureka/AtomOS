@@ -7,6 +7,7 @@ namespace Kernel_H
         public static unsafe void Start ()
         {
             // Do the initialization stuff here
+            Console.Write ("Welcome to AtomixOS H!");
         }
 
         public static void Update ()

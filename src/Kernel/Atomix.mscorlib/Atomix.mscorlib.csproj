@@ -36,7 +36,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release H|AnyCPU'">
-    <OutputPath>bin\Release H\</OutputPath>
+    <OutputPath>..\..\Build\Bin\</OutputPath>
     <DefineConstants>TRACE;COMPILE_H</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Optimize>true</Optimize>

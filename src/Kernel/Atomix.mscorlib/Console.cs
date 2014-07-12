@@ -1,9 +1,4 @@
-﻿#define COMPILE_H
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System;
 using Atomix.CompilerExt;
 using Atomix.CompilerExt.Attributes;
 
