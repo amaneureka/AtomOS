@@ -24,7 +24,7 @@ namespace Atomix.IL
             var xOffset = ((OpBranch)instr).Value;
             var xSize = Core.vStack.Pop().Size;
             var xTrueLabel = ILHelper.GetLabel(aMethod, xOffset);
-            var xFalseLabel = xTrueLabel + "._blt_false";
+            var xFalseLabel = ILHelper.GetLabel(aMethod, instr.Position) + "._blt_false";
 
             //Make a pop because exactly we are popping up two items
             Core.vStack.Pop();

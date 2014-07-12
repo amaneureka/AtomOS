@@ -12,8 +12,7 @@ namespace Atomix.mscorlib
         [Plug("System_String_System_UInt32_ToString__")]
         public static string ToString(ref uint aThis)
         {
-            uint x = aThis;
-            return Number.ToString32Bit(x, false);
+            return Number.ToString32Bit(aThis, false);
         }
     }
 }

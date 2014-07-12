@@ -123,8 +123,12 @@ namespace Kernel_alpha.x86
                         Global.KBD.HandleIRQ ();
                         break;
                     case 12:
-                        Global.Mouse.HandleIRQ();
+                        Console.Write('X');
+                        //Global.Mouse.HandleIRQ();
                         break;
+                    case 7://Spurious IRQs
+                    case 15://Spurious IRQs
+                        return;
                 }
                 PIC.SendEndOfInterrupt((byte)xContext.Interrupt);
             }
@@ -157,7 +161,7 @@ namespace Kernel_alpha.x86
             var xInterruptsWithParam = new int[] { 8, 10, 11, 12, 13, 14 };
             for (int i = 0; i <= 255; i++)
             {
-                if (i == 0x20)
+                if (i == 0x20 || i == 1 || i == 3)
                     continue; //No IRQ0 here
 
                 var xHex = i.ToString("X2");

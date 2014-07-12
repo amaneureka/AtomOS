@@ -1,7 +1,9 @@
 What i was doing...	
 	# Need to add more things to Task Switch algorithm.	
 	# Well Box has some major issue, have to give some more time to it
-	# Have to go with documentations given to splitty.
+	# Compiler has a major issue in Rem or maybe any other when compiled in debug mode...i don't know why only debug mode
+	# for now mouse is disabled due to compiler issue.
+	# Also have to check array...i guess this is why mouse is not working well
 	
 Task Done:
 	# Was finding a bug in compiler as because was not able to get IsValid function working inside multitasking. (Completed 29-06-14)
@@ -13,3 +15,4 @@ Task Done:
 What to do:	
 	# Commenting is left in some part of code
 	# Need to read all the warnings that i leave in code.
+	# Need to implement read/write method in IDE

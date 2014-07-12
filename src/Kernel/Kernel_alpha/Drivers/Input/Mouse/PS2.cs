@@ -38,7 +38,7 @@ namespace Kernel_alpha.Drivers.Input
         IOPort Poll = null;
 
         byte cycle = 0;
-        int[] packet = new int[4];
+        byte[] packet = new byte[4];
 
         public PS2Mouse ()
         {
@@ -55,24 +55,21 @@ namespace Kernel_alpha.Drivers.Input
             WaitSignal ();
             Poll.Byte = (byte)MouseCommandSet.Enable;
 
-            // Pretty self-explanatory
-            EnableInterrupt ();
+            // EnableInterrupt
+            WaitSignal();
+            Poll.Byte = 0x20;
+            WaitData();
+            byte status = (byte)(Data.Byte | 2);
+            WaitSignal();
+            Poll.Byte = 0x60;
+            WaitSignal();
+            Data.Byte = status;
 
             // Set defaults
             SendCommand (MouseCommandSet.SetDefaults);
 
             // Enable the mouse
             SendCommand (MouseCommandSet.EnablePacketStreaming);           
-        }
-
-        public void EnableInterrupt ()
-        {
-            WaitSignal ();
-            Poll.Byte = 0x20;
-            WaitData ();
-            byte status = (byte)(Data.Byte | 2);
-            WaitSignal ();
-            Data.Byte = status;
         }
 
         public void SetSampleRate ()
@@ -85,24 +82,28 @@ namespace Kernel_alpha.Drivers.Input
         {
             switch (cycle)
             {
-                case 0:
-                    packet[0] = Data.Byte;
-
+                case 0:                    
+                    //packet[0] = Read();
+                    Console.Write('A');
+                    packet[0] = 0xC;
+                    Console.Write('C');
                     if ((packet[0] & 0x8) == 0x8)
                         cycle++;
-
+                    
                     break;
 
-                case 1:
-                    packet[1] = Data.Byte;
+                case 1:                    
+                    packet[1] = Read();
+                    Console.Write('Z');
                     cycle++;
-
+                    
                     break;
 
-                case 2:
-                    packet[2] = Data.Byte;
+                case 2:                    
+                    packet[2] = Read();
+                    Console.Write('Y');
                     cycle = 0;
-
+                    
                     if ((packet[0] & 0x10) == 0x10)
                         X -= packet[1] ^ 0xFF;
                     else
@@ -115,16 +116,15 @@ namespace Kernel_alpha.Drivers.Input
 
                     if (X < 0)
                         X = 0;
-                    else if (X > 319)
-                        X = 319;
 
                     if (Y < 0)
                         Y = 0;
-                    else if (Y > 199)
-                        Y = 199;
 
                     button = (MouseButtons)(packet[0] & 0x7);
 
+                    break;
+                default:
+                    Console.Write('X');
                     break;
             }
         }

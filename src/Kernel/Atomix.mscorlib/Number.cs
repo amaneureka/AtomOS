@@ -39,20 +39,24 @@ namespace Atomix.mscorlib
         {
             if (aNumber == 0)
                 return "0";
+
             char[] xResultChars = new char[11];
             int xCurrentPos = 10;
+            
             while (aNumber > 0)
             {
-                ushort xPos = (ushort)(aNumber % 10);
+                byte xPos = (byte)(aNumber % 10);
                 aNumber /= 10;
                 xResultChars[xCurrentPos] = xDigits[xPos];
                 xCurrentPos -= 1;
             }
+            
             if (IsSigned)
             {
                 xResultChars[xCurrentPos] = '-';
                 xCurrentPos -= 1;
             }
+            
             return new string(xResultChars, xCurrentPos + 1, 10 - xCurrentPos);
         }
 
@@ -64,7 +68,7 @@ namespace Atomix.mscorlib
             int xCurrentPos = 20;
             while (aNumber > 0)
             {
-                ushort xPos = (ushort)(aNumber % 10);
+                byte xPos = (byte)(aNumber % 10);
                 aNumber /= 10;
                 xResultChars[xCurrentPos] = xDigits[xPos];
                 xCurrentPos -= 1;

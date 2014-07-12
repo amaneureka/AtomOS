@@ -122,9 +122,9 @@ namespace Atomix.IL
 
                             
                             Core.AssemblerCode.Add(new Xor { DestinationReg = Registers.EDX, SourceReg = Registers.EDX });
-                            Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EBX });
+                            Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.ECX });
                             Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
-                            Core.AssemblerCode.Add(new Div { DestinationReg = Registers.EBX });
+                            Core.AssemblerCode.Add(new Div { DestinationReg = Registers.ECX });
                             Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EDX });
                         }
                     }

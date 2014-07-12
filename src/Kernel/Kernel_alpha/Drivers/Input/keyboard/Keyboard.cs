@@ -88,9 +88,6 @@ namespace Kernel_alpha.Drivers.Input
             
             /* Set LEDs */
             UpdateLEDs();
-
-            /* Init IRQ 1 */
-            PIC.ClearMask(0x1);
         }
         
         private bool IsExtended = false;

@@ -119,11 +119,11 @@ namespace Atomix.IL
                         {
                             if (FirstItem.IsFloat)
                                 throw new Exception("You Can't get remainder of floating point division");
-                                                        
-                            Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EBX });
+
+                            Core.AssemblerCode.Add(new Xor { DestinationReg = Registers.EDX, SourceReg = Registers.EDX });
+                            Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.ECX });
                             Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
-                            Core.AssemblerCode.Add(new Conversion { Code = ConversionCode.SignedDWord_2_SignedQWord });
-                            Core.AssemblerCode.Add(new IDiv { DestinationReg = Registers.EBX });
+                            Core.AssemblerCode.Add(new Div { DestinationReg = Registers.ECX });
                             Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EDX });
                         }
                     }

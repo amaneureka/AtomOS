@@ -138,7 +138,7 @@ namespace Kernel_alpha.Drivers.Buses.ATA
 
             /* Print Config...just for testing */            
             Console.Write("Size:");
-            Console.WriteLine((DriveInfo.Size).ToString());
+            Console.WriteLine(((UInt32)DriveInfo.Size).ToString());
             Console.Write("Model:");
             Console.WriteLine(DriveInfo.Model);
             Console.Write("Serial:");

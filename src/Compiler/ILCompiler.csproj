@@ -131,6 +131,7 @@
     <Compile Include="IL\Load\Ldind\Ldind_U2.cs" />
     <Compile Include="IL\Load\Ldind\Ldind_U1.cs" />
     <Compile Include="IL\Load\Ldloca.cs" />
+    <Compile Include="IL\Load\Ldftn.cs" />
     <Compile Include="IL\Load\Ldsflda.cs" />
     <Compile Include="IL\Load\Ldobj.cs" />
     <Compile Include="IL\Load\Ldtoken.cs" />

@@ -10,7 +10,7 @@ namespace Atomix.mscorlib
     public static class Object
     {
         [Plug("System_Void__System_Object__ctor__")]
-        public static void Cctor()
+        public static void Cctor(object obj)
         {
             return;
         }

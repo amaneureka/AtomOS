@@ -33,8 +33,10 @@ namespace Kernel_alpha
 
             // Setup Mouse
             Console.Write ("Setting up PS/2 Mouse... ");
-            Mouse = new PS2Mouse();
-            Mouse.Initialize();
+            #warning For now disable it, till we are not able to hunt issue
+            //Mouse = new PS2Mouse();
+            //Mouse.Initialize();
+            
             Console.WriteLine ("OK");
 
             //Loading ATA

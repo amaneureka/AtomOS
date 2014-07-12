@@ -463,6 +463,12 @@ namespace Atomix
 
             if (BuildMethods.Contains(aMethod.FullName()))
                 return;
+            
+            if (IsDelegate(aMethod.DeclaringType))
+            {
+                ProcessDelegate(aMethod);
+                return;
+            }
 
             //Tell logger that we are processing a method with given name and declaring type
             //Well declaring type is necessary because when we have a plugged method than
@@ -503,11 +509,7 @@ namespace Atomix
             var OpCodes = aMethod.Process(NewLabels);
 
             // Here seems to be going something wrong
-            try
-            {
-                ILCompiler.Logger.Write ("MSIL Codes Loaded... Count::" + OpCodes.Count);
-            }
-            catch { Console.WriteLine ("What the fuck"); }
+            ILCompiler.Logger.Write ("MSIL Codes Loaded... Count::" + OpCodes.Count);
 
             string xMethodLabel = aMethod.FullName();
             var xBody = aMethod.GetMethodBody();
@@ -690,6 +692,61 @@ namespace Atomix
             BuildDefinations.Add(aType);
         }
 
+        private void ProcessDelegate(MethodBase xMethod)
+        {
+            Core.AssemblerCode.Add(new Label(xMethod.FullName()));
+
+            //Calli header
+            Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EBP });
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBP, SourceReg = Registers.ESP });
+
+            if (xMethod.Name.Contains("ctor"))
+            {
+                var xObjectCtor = typeof(object).GetConstructors(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance)[0];
+                //Load Argument
+                ((Ldarg)MSIL[ILCode.Ldarg]).Execute2(0, xMethod);
+                
+                //Load Argument
+                ((Ldarg)MSIL[ILCode.Ldarg]).Execute2(2, xMethod);//The pointer
+                #warning WORKING !! BUT DON'T KNOW WHY :(
+                Core.AssemblerCode.Add(new Call("System_String_System_UInt32_ToString__"));//These two lines
+                Core.AssemblerCode.Add(new Call(xObjectCtor.FullName()));//These two lines
+
+                ((Ldarg)MSIL[ILCode.Ldarg]).Execute2(2, xMethod);//The pointer
+                Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.ESP, SourceDisplacement = 0x4, SourceIndirect = true });
+                Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EBX, SourceRef = "0xC" });
+                Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
+                Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, DestinationIndirect = true, SourceReg = Registers.EAX });
+                Core.AssemblerCode.Add(new Add { DestinationReg = Registers.ESP, SourceRef = "0x4" });
+
+                //calli footer
+                Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "0x0" });
+                Core.AssemblerCode.Add(new Leave());
+                Core.AssemblerCode.Add(new Ret { Address = 0x8 });
+            }
+            else if (xMethod.Name.Contains("Invoke"))
+            {
+                //Load Argument
+                ((Ldarg)MSIL[ILCode.Ldarg]).Execute2(0, xMethod);
+                                
+                Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EBX });
+                Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EBX, SourceRef = "0xC" });                
+                
+                var xParms = xMethod.GetParameters();
+                for (ushort i = 1; i <= xParms.Length; i++)
+                {
+                    ((Ldarg)MSIL[ILCode.Ldarg]).Execute2(i, xMethod);
+                }
+                Core.AssemblerCode.Add(new Call("[EBX]"));
+
+                //calli footer
+                Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "0x0" });
+                Core.AssemblerCode.Add(new Leave());
+                Core.AssemblerCode.Add(new Ret { Address = 0x4 });
+            }
+            BuildDefinations.Add(xMethod);
+        }
+
         public void FlushAsmFile()
         {
             //To Make output assembly looks good
@@ -722,6 +779,11 @@ namespace Atomix
                     }
                 }
             }
+        }
+
+        private bool IsDelegate(Type type)
+        {
+            return typeof (Delegate).IsAssignableFrom(type.BaseType);
         }
     }
 }

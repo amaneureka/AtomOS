@@ -21,6 +21,11 @@ namespace Atomix.IL
         public override void Execute(ILOpCode instr, MethodBase aMethod)
         {
             var aParam = ((OpVar)instr).Value;
+            Execute2(aParam, aMethod);
+        }
+
+        public void Execute2(ushort aParam, MethodBase aMethod)
+        {
             var xDisplacement = GetArgumentDisplacement(aMethod, aParam);
 
             Type xArgType;
@@ -70,11 +75,11 @@ namespace Atomix.IL
                             for (int i = 0; i < (xArgSize / 4); i++)
                             {
                                 Core.AssemblerCode.Add(
-                                    new Push 
-                                    { 
-                                        DestinationReg = Registers.EBP, 
-                                        DestinationIndirect = true, 
-                                        DestinationDisplacement = xDisplacement - (i * 4) 
+                                    new Push
+                                    {
+                                        DestinationReg = Registers.EBP,
+                                        DestinationIndirect = true,
+                                        DestinationDisplacement = xDisplacement - (i * 4)
                                     });
                             }
                         }
