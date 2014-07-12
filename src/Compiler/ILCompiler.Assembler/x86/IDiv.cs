@@ -8,7 +8,7 @@ using Atomix.Assembler;
 
 namespace Atomix.Assembler.x86
 {
-    public class IDiv : DestinationSourceSize
+    public class IDiv : OnlyDestination
     {
         public IDiv()
             : base("idiv") { }        

@@ -20,7 +20,7 @@ namespace Atomix.IL
 
         public override void Execute(ILOpCode instr, MethodBase aMethod)
         {
-            var FirstItem = Core.vStack.Pop();
+            var FirstItem = Core.vStack.Peek();
             var SecondItem = Core.vStack.Pop();
 
             var xSize = Math.Max(FirstItem.Size, SecondItem.Size);
@@ -120,9 +120,9 @@ namespace Atomix.IL
                             if (FirstItem.IsFloat)
                                 throw new Exception("You Can't get remainder of floating point division");
 
-                            Core.AssemblerCode.Add(new Xor { DestinationReg = Registers.EDX, SourceReg = Registers.EDX });
                             Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.ECX });
                             Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
+                            Core.AssemblerCode.Add(new Conversion { Code = ConversionCode.SignedDWord_2_SignedQWord });
                             Core.AssemblerCode.Add(new Div { DestinationReg = Registers.ECX });
                             Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EDX });
                         }
@@ -144,7 +144,6 @@ namespace Atomix.IL
                     break;
                 #endregion
             }
-            Core.vStack.Push(FirstItem.Size, FirstItem.Type);
         }
     }
 }

@@ -702,16 +702,10 @@ namespace Atomix
 
             if (xMethod.Name.Contains("ctor"))
             {
-                var xObjectCtor = typeof(object).GetConstructors(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance)[0];
+                Core.AssemblerCode.Add(new Sub { DestinationReg = Registers.ESP, SourceRef = "0x4" });//make space for pointer
                 //Load Argument
                 ((Ldarg)MSIL[ILCode.Ldarg]).Execute2(0, xMethod);
                 
-                //Load Argument
-                ((Ldarg)MSIL[ILCode.Ldarg]).Execute2(2, xMethod);//The pointer
-                #warning WORKING !! BUT DON'T KNOW WHY :(
-                Core.AssemblerCode.Add(new Call("System_String_System_UInt32_ToString__"));//These two lines
-                Core.AssemblerCode.Add(new Call(xObjectCtor.FullName()));//These two lines
-
                 ((Ldarg)MSIL[ILCode.Ldarg]).Execute2(2, xMethod);//The pointer
                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.ESP, SourceDisplacement = 0x4, SourceIndirect = true });
                 Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EBX, SourceRef = "0xC" });

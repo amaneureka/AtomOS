@@ -26,18 +26,16 @@ namespace Kernel_alpha
             ACPI = new acpi(true, true);
             Console.WriteLine ("OK");
 
-            // Setup Keyboard
-            Console.Write ("Setting up PS/2 Keyboard... ");
-            KBD = new Keyboard();
-            Console.WriteLine ("OK");
-
             // Setup Mouse
             Console.Write ("Setting up PS/2 Mouse... ");
-            #warning For now disable it, till we are not able to hunt issue
-            //Mouse = new PS2Mouse();
-            //Mouse.Initialize();
-            
+            Mouse = new PS2Mouse();
+            Mouse.Initialize();            
             Console.WriteLine ("OK");
+
+            // Setup Keyboard
+            Console.Write("Setting up PS/2 Keyboard... ");
+            KBD = new Keyboard();
+            Console.WriteLine("OK");
 
             //Loading ATA
             Console.WriteLine ("Loading ATA SubSystem... ");

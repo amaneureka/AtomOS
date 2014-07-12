@@ -123,8 +123,7 @@ namespace Kernel_alpha.x86
                         Global.KBD.HandleIRQ ();
                         break;
                     case 12:
-                        Console.Write('X');
-                        //Global.Mouse.HandleIRQ();
+                        Global.Mouse.HandleIRQ();
                         break;
                     case 7://Spurious IRQs
                     case 15://Spurious IRQs

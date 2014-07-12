@@ -59,6 +59,7 @@ namespace Kernel_alpha.Drivers.Input
             WaitSignal();
             Poll.Byte = 0x20;
             WaitData();
+
             byte status = (byte)(Data.Byte | 2);
             WaitSignal();
             Poll.Byte = 0x60;
@@ -67,9 +68,11 @@ namespace Kernel_alpha.Drivers.Input
 
             // Set defaults
             SendCommand (MouseCommandSet.SetDefaults);
+            Read();
 
             // Enable the mouse
-            SendCommand (MouseCommandSet.EnablePacketStreaming);           
+            SendCommand (MouseCommandSet.EnablePacketStreaming);
+            Read();
         }
 
         public void SetSampleRate ()
@@ -77,54 +80,51 @@ namespace Kernel_alpha.Drivers.Input
             SendCommand (MouseCommandSet.SetSampleRate);
             SendCommand (SampleRate);
         }
-
+        
         public void HandleIRQ ()
         {
+            var xRead = Read();
             switch (cycle)
             {
-                case 0:                    
-                    //packet[0] = Read();
-                    Console.Write('A');
-                    packet[0] = 0xC;
-                    Console.Write('C');
-                    if ((packet[0] & 0x8) == 0x8)
+                case 0:
+                    {
+                        packet[0] = xRead;
+                        if ((xRead & 0x8) == 0x8)
+                            cycle++;
+                        break;
+                    }
+                case 1:
+                    {
+                        packet[1] = xRead;
                         cycle++;
-                    
-                    break;
+                        break;
+                    }
+                case 2:
+                    {
+                        packet[2] = xRead;
+                        cycle = 0;
 
-                case 1:                    
-                    packet[1] = Read();
-                    Console.Write('Z');
-                    cycle++;
-                    
-                    break;
+                        if ((packet[0] & 0x10) == 0x10)
+                            X -= packet[1] ^ 0xFF;
+                        else
+                            X += packet[1];
 
-                case 2:                    
-                    packet[2] = Read();
-                    Console.Write('Y');
-                    cycle = 0;
-                    
-                    if ((packet[0] & 0x10) == 0x10)
-                        X -= packet[1] ^ 0xFF;
-                    else
-                        X += packet[1];
+                        if ((packet[0] & 0x20) == 0x20)
+                            Y += packet[2] ^ 0xFF;
+                        else
+                            Y -= packet[2];
 
-                    if ((packet[0] & 0x20) == 0x20)
-                        Y += packet[2] ^ 0xFF;
-                    else
-                        Y -= packet[2];
+                        if (X < 0)
+                            X = 0;
 
-                    if (X < 0)
-                        X = 0;
+                        if (Y < 0)
+                            Y = 0;
 
-                    if (Y < 0)
-                        Y = 0;
-
-                    button = (MouseButtons)(packet[0] & 0x7);
-
-                    break;
+                        button = (MouseButtons)(packet[0] & 0x7);
+                        break;
+                    }
                 default:
-                    Console.Write('X');
+                    cycle = 0;
                     break;
             }
         }
@@ -143,10 +143,6 @@ namespace Kernel_alpha.Drivers.Input
 
             // Send the command to the data port
             Data.Byte = cmd;
-
-            // Wait till the mouse acknowledges our command
-            // by sending an 0xFA byte (ACK)
-            Read ();
         }
 
         public void SendCommand (MouseCommandSet cmd)

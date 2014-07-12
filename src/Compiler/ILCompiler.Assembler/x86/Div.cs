@@ -8,9 +8,9 @@ using Atomix.Assembler;
 
 namespace Atomix.Assembler.x86
 {
-    public class Div : DestinationSourceSize
+    public class Div : OnlyDestination
     {
         public Div()
-            : base("div") { }        
+            : base("div") { }
     }
 }

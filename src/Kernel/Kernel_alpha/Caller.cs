@@ -35,16 +35,12 @@ namespace Kernel_alpha
             a(78, "Invoke3");
         }
         public delegate void DELTESTING(uint a, string b);
-        private static int wow = 1;
+        
         public static void Test123(uint a, string b)
         {
-            Console.Write("Hey...");
-            Console.Write(wow.ToString());
-            Console.Write("...");
-            Console.Write(a.ToString());
-            Console.Write("...");
-            Console.WriteLine(b);
-            wow++;
+            char[] achar = new char[] {'A', 'T', 'O', 'M', 'O', 'S' };
+            Console.Write(b);
+            Console.WriteLine(new string(achar));
         }
 
         public static unsafe void Update()
@@ -73,11 +69,11 @@ namespace Kernel_alpha
             do
             {
                 WriteScreen("X:", 6);
-                //WriteScreen(((uint)Global.Mouse.X).ToString(), 10);
-
+                WriteScreen(((uint)Global.Mouse.X).ToString(), 10);
+                
                 WriteScreen("Y:", 24);
-                //WriteScreen(((uint)Global.Mouse.Y).ToString(), 28);
-
+                WriteScreen(((uint)Global.Mouse.Y).ToString(), 28);
+                
                 switch (Global.Mouse.Button)
                 {
                     case MouseButtons.Left:
@@ -96,7 +92,7 @@ namespace Kernel_alpha
                         WriteScreen("E", 40);
                         break;
                 }
-                //Thread.Sleep(5);
+                Thread.Sleep(5);
             }
             while (true);
         }
