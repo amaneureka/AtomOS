@@ -9,11 +9,57 @@ namespace libAtomixH.mscorlib.System
 {
     public static unsafe class Console
     {
-        public static int X = 0;
-        public static int Y = 0;
+        private static int X = 0;
+        private static int Y = 0;
 
-        public static ConsoleColor ForegroundColor = ConsoleColor.White;
-        public static ConsoleColor BackgroundColor = ConsoleColor.Cyan;
+        #region Plugs
+        [Plug("System_Void_System_Console_set_CursorLeft_System_Int32_")]
+        private static void CursorLeft(int value)
+        {
+            X = value;
+        }
+        [Plug("System_Int32_System_Console_get_CursorLeft__")]
+        private static int CursorLeft()
+        { 
+            return X; 
+        }
+
+        [Plug("System_Void_System_Console_set_CursorTop_System_Int32_")]
+        private static void CursorTop(int value)
+        {
+            Y = value;
+        }
+
+        [Plug("System_Int32_System_Console_get_CursorTop__")]
+        private static int CursorTop()
+        {
+            return Y;
+        }
+        [Plug("System_Void_System_Console_set_ForegroundColor_System_ConsoleColor_")]
+        private static void ForColor(ConsoleColor value)
+        {
+            ForegroundColor = value;
+        }
+        [Plug("System_ConsoleColor_System_Console_get_ForegroundColor__")]
+        private static ConsoleColor ForColor()
+        {
+            return ForegroundColor;
+        }
+
+        [Plug("System_Void_System_Console_set_BackgroundColor_System_ConsoleColor_")]
+        private static void BackColor(ConsoleColor value)
+        {
+            BackgroundColor = value;
+        }
+
+        [Plug("System_ConsoleColor_System_Console_get_BackgroundColor__")]
+        private static ConsoleColor BackColor()
+        {
+            return BackgroundColor;
+        }
+        #endregion
+        private static ConsoleColor ForegroundColor = ConsoleColor.White;
+        private static ConsoleColor BackgroundColor = ConsoleColor.Cyan;
 
         private static bool IsClearing = false;
 
