@@ -72,6 +72,141 @@ namespace Atomix.mscorlib
             return (int)(xCharIdx[3] << 24 | xCharIdx[2] << 16 | xCharIdx[1] << 8 | xCharIdx[0]);
         }
 
+        [Plug("System_String_System_String_Concat_System_String__System_String__System_String__System_String_")]
+        public static string Concat(string s0, string s1, string s2, string s3)
+        {
+            return ConcatArray(new string[] { s0, s1, s2, s3 }, s0.Length + s1.Length + s2.Length + s3.Length);
+        }
 
+        [Plug("System_String_System_String_Concat_System_String__System_String__System_String_")]
+        public static string Concat(string s0, string s1, string s2)
+        {
+            return ConcatArray(new string[] { s0, s1, s2 }, s0.Length + s1.Length + s2.Length);
+        }
+
+        [Plug("System_String_System_String_Concat_System_String__System_String_")]
+        public static string Concat(string s0, string s1)
+        {
+            return ConcatArray(new string[] { s0, s1 }, s0.Length + s1.Length);
+        }
+
+        [Plug("System_String_System_String_Concat_System_String___")]
+        public static string Concat(params string[] strs)
+        {
+            int len= 0;
+            for (int i = 0; i < strs.Length; i++)
+                len += strs[i].Length;
+
+            return ConcatArray(strs, len);
+        }
+
+        private static string ConcatArray(string[] strs, int length)
+        {
+            char[] xResult = new char[length];
+            int p = 0;
+            for (int i = 0; i < strs.Length; i++)
+            {
+                var str = strs[i];
+                for (int j = 0; j < str.Length; j++)
+                {
+                    xResult[p++] = str[j];
+                }
+            }
+
+            return new String(xResult);
+        }
+
+        [Plug("System_String_System_String_Substring_System_Int32__System_Int32_")]
+        public static string SubString(string aThis, int index, int length)
+        {
+            char[] xResult = new char[length];
+
+            for (int i = 0; i < length; i++)
+            {
+                xResult[i] = aThis[index + i];
+            }
+            return new String(xResult);
+        }
+
+        [Plug("System_String_System_String_Substring_System_Int32_")]
+        public static string SubString(string aThis, int index)
+        {
+            return SubString(aThis, index, aThis.Length - index + 1);
+        }
+
+        [Plug("System_String_System_String_ToLower__")]
+        public static string ToLower(string aThis)
+        {
+            return ChangeCase(aThis, 65, 90, 32);
+        }
+
+        [Plug("System_String_System_String_ToUpper__")]
+        public static string ToUpper(string aThis)
+        {
+            return ChangeCase(aThis, 97, 122, -32);
+        }
+
+        [Plug("System_String_System_String_PadLeft_System_Int32__System_Char_")]
+        public static string PadLeft(string aThis, int TotalWidth, char paddingchar)
+        {
+            return Padding(aThis, TotalWidth, paddingchar, false);
+        }
+
+        [Plug("System_String_System_String_PadRight_System_Int32__System_Char_")]
+        public static string PadRight(string aThis, int TotalWidth, char paddingchar)
+        {
+            return Padding(aThis, TotalWidth, paddingchar, true);
+        }
+
+        private static string Padding(string aThis, int TotalWidth, char PaddingChar, bool Direction)
+        {
+            var len = aThis.Length;
+
+            if (len >= TotalWidth)
+                return aThis;
+
+            char[] xResult = new char[TotalWidth];
+            
+            if (Direction)
+            {
+                //Padding Right
+                for (int i = 0; i < TotalWidth; i++)
+                {
+                    if (len <= i)
+                        xResult[i] = PaddingChar;
+                    else
+                        xResult[i] = aThis[i];
+                }
+            }
+            else
+            {
+                var xOffset = TotalWidth - len;
+                //Padding Left
+                for (int i = 0; i < TotalWidth; i++)
+                {
+                    if (i < xOffset)
+                        xResult[i] = PaddingChar;
+                    else
+                        xResult[i] = aThis[i - xOffset];
+                }
+            }
+            return new String(xResult);
+        }
+
+        private static string ChangeCase(string xStr, int lowerACII, int upperASCII, int value)
+        {
+            char[] xResult = new char[xStr.Length];
+            for (int i = 0; i < xStr.Length; i++)
+            {
+                var xChar = xStr[i];
+                if (xChar >= lowerACII && xChar <= upperASCII)
+                {
+                    xChar = (char)(xChar + value);
+                }
+
+                xResult[i] = xChar;
+            }
+            return new String(xResult);
+        }
     }
 }

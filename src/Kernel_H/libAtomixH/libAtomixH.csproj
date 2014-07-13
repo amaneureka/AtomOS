@@ -65,15 +65,12 @@
       <Project>{c39c02ef-559e-47a6-98d9-e5b79d683948}</Project>
       <Name>ILCompiler.Assembler</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Kernel\Atomix.mscorlibext\Atomix.mscorlibext.csproj">
-      <Project>{4c45ed0b-e904-43ec-9c68-f5d6446dbce1}</Project>
-      <Name>Atomix.mscorlibext</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>$(OutDir)\..\Build_Splitty_H.bat</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

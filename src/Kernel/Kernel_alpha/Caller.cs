@@ -12,6 +12,7 @@ namespace Kernel_alpha
 {
     public static class Caller
     {
+        public static DELTESTING Test;
         public static unsafe void Start()
         {
             Console.WriteLine ("                                         ");
@@ -24,30 +25,47 @@ namespace Kernel_alpha
 
             Console.WriteLine ("Shutdown: Ctrl+S");
             Console.WriteLine ("Reboot: Ctrl+R");
-
+                        
             // Just for mouse testing
             Multitasking.CreateTask(pTask1, true);
             Multitasking.CreateTask(pTask2, true);
-            
-            DELTESTING a = Test123;
-            a(12, "Invoke1");
-            a(56, "Invoke2");
-            a(78, "Invoke3");
-        }
-        public delegate void DELTESTING(uint a, string b);
-        
-        public static void Test123(uint a, string b)
-        {
-            char[] achar = new char[] {'A', 'T', 'O', 'M', 'O', 'S' };
-            Console.Write(b);
-            Console.Write("...");
-            Console.Write(new string(achar));
-            Console.Write("...");
-            Console.WriteLine(a.ToString());
-        }
 
+            Test = Yeah;
+            Test();
+            Test();
+            Test();
+        }
+        public delegate void DELTESTING();
+        public static void Yeah()
+        {
+            char[] s = new char[] { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J' };
+            int c = 0;
+            
+            for (int i = 0; i < s.Length; i++)
+            {
+                c++;
+                switch (s[i])
+                {
+                    case 'D':
+                        Console.Write('$');
+                        break;
+                    case 'E':
+                        Console.Write('%');
+                        break;
+                    case 'J':
+                        Console.Write('&');
+                        break;
+                    default:
+                        break;
+                }
+            }
+            Console.Write(c.ToString());
+            Console.Write("...");
+            Console.WriteLine(new String(s));
+        }
         public static unsafe void Update()
         {
+            
             var s = Global.KBD.ReadKey ();
             if (Global.KBD.Ctrl)
             {
@@ -62,6 +80,13 @@ namespace Kernel_alpha
                     Global.ACPI.Reboot();
                 }
             }
+            else if (Global.KBD.Alt)
+            {
+                //if (s.Code == KeyCode.A)
+                //    Test();
+                //else if (s.Code == KeyCode.B)
+                    //Test2("WIN");
+            }
             else if (s != null)
                 Console.Write(s.Char);
         }
@@ -72,10 +97,11 @@ namespace Kernel_alpha
             do
             {
                 WriteScreen("X:", 6);
-                WriteScreen(((uint)Global.Mouse.X).ToString(), 10);
                 
+                var s = ((uint)Global.Mouse.X).ToString();
+                var J = ((uint)Global.Mouse.Y).ToString();
                 WriteScreen("Y:", 24);
-                WriteScreen(((uint)Global.Mouse.Y).ToString(), 28);
+                
                 
                 switch (Global.Mouse.Button)
                 {
@@ -95,7 +121,7 @@ namespace Kernel_alpha
                         WriteScreen("E", 40);
                         break;
                 }
-                Thread.Sleep(5);
+                Thread.Sleep(15);
             }
             while (true);
         }
@@ -113,22 +139,29 @@ namespace Kernel_alpha
         private static uint pTask2;
         public static unsafe void Task2()
         {
-            byte* xA = (byte*)0xB8000;            
-            byte c = 0;
-            uint a = 0;
-            do
+            try
             {
-                xA[0] = c;
-                xA[1] = 0xd;
-                c++;
-                if (c >= 255)
-                    c = 0;
-                a++;
-                Thread.Sleep(100);
+                byte* xA = (byte*)0xB8000;
+                byte c = 0;
+                uint a = 0;
+                do
+                {
+                    xA[0] = c;
+                    xA[1] = 0xd;
+                    c++;
+                    if (c >= 255)
+                        c = 0;
+                    a++;
+                    Thread.Sleep(10);
+                }
+                while (true);
             }
-            while (true);
-            Console.WriteLine("My task is finished");
-            Thread.Die();
+            catch (Exception e)
+            {
+                Console.Write("Died::");
+                Console.WriteLine(e.Message);
+                Thread.Die();
+            }
         }
     }
 }

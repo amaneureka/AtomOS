@@ -23,7 +23,7 @@ namespace Atomix.mscorlib
         [Plug("System_Void__System_Exception__cctor__")]
         public static void ctor()
         {
-            Exception = string.Empty;
+            Exception = "";
         }
 
         [Plug("System_Void__System_Exception__ctor_System_String_")]
@@ -38,7 +38,7 @@ namespace Atomix.mscorlib
         /// </summary>
         /// <param name="xr"></param>
         [Plug("System_String_System_Exception_get_Message__")]
-        public static void GetMessage(ref string xr)
+        public static void GetMessage(string xr)
         {
             xr = Message;
         }

@@ -53,10 +53,6 @@
       <Project>{c39c02ef-559e-47a6-98d9-e5b79d683948}</Project>
       <Name>ILCompiler.Assembler</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Kernel\Atomix.mscorlibext\Atomix.mscorlibext.csproj">
-      <Project>{4c45ed0b-e904-43ec-9c68-f5d6446dbce1}</Project>
-      <Name>Atomix.mscorlibext</Name>
-    </ProjectReference>
     <ProjectReference Include="..\libAtomixH.mscorlib\libAtomixH.mscorlib.csproj">
       <Project>{edbb1281-abfa-41d8-882b-e787f85047bb}</Project>
       <Name>libAtomixH.mscorlib</Name>

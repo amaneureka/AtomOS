@@ -694,13 +694,14 @@ namespace Atomix
 
         private void ProcessDelegate(MethodBase xMethod)
         {
-            Core.AssemblerCode.Add(new Label(xMethod.FullName()));
+            var lbl = xMethod.FullName();
+            Core.AssemblerCode.Add(new Label(lbl));
 
             //Calli header
             Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EBP });
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBP, SourceReg = Registers.ESP });
 
-            if (xMethod.Name.Contains("ctor"))
+            if (lbl.Contains("ctor"))
             {
                 ((Ldarg)MSIL[ILCode.Ldarg]).Execute2(0, xMethod);
                 var xArray_ctor = typeof(Array).GetConstructors(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance)[0];
@@ -711,7 +712,7 @@ namespace Atomix
                 
                 ((Ldarg)MSIL[ILCode.Ldarg]).Execute2(2, xMethod);//The pointer
                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.ESP, SourceDisplacement = 0x4, SourceIndirect = true });
-                //Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EBX, SourceRef = "0xC" });
+                Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EBX, SourceRef = "0x8" });
                 Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, DestinationIndirect = true, SourceReg = Registers.EAX });
                 Core.AssemblerCode.Add(new Add { DestinationReg = Registers.ESP, SourceRef = "0x4" });
@@ -721,13 +722,13 @@ namespace Atomix
                 Core.AssemblerCode.Add(new Leave());
                 Core.AssemblerCode.Add(new Ret { Address = 0xC });
             }
-            else if (xMethod.Name.Contains("Invoke"))
+            else if (lbl.Contains("Invoke"))
             {
                 //Load Argument
                 ((Ldarg)MSIL[ILCode.Ldarg]).Execute2(0, xMethod);
                 
-                Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EBX });
-                //Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EBX, SourceRef = "0xC" });
+                Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
+                Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EAX, SourceRef = "0x8" });
 
                 var xParms = xMethod.GetParameters();
                 int xSize = (from item in xMethod.GetParameters()
@@ -738,17 +739,40 @@ namespace Atomix
                     ((Ldarg)MSIL[ILCode.Ldarg]).Execute2(i, xMethod);
                 }
                 
-                Core.AssemblerCode.Add(new Call("[EBX]"));
+                Core.AssemblerCode.Add(new Call("[EAX]"));
                 //Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EBX });
                 //Core.AssemblerCode.Add(new Call("System_String_System_UInt32_ToString__"));
                 //Core.AssemblerCode.Add(new Call("System_Void_System_Console_WriteLine_System_String_"));
 
-                Core.AssemblerCode.Add(new Add { DestinationReg = Registers.ESP, SourceRef = "0x" + xSize.ToString("X") });
-                //calli footer                
+                //Core.AssemblerCode.Add(new Add { DestinationReg = Registers.ESP, SourceRef = "0x" + xSize.ToString("X") });
+                //calli footer
                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "0x0" });
                 Core.AssemblerCode.Add(new Leave());
                 Core.AssemblerCode.Add(new Ret { Address = (byte)xSize });
             }
+            /*else if (lbl.Contains("Clone"))
+            {
+                //Load Argument
+                ((Ldarg)MSIL[ILCode.Ldarg]).Execute2(0, xMethod);
+
+                Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
+
+                var xParms = xMethod.GetParameters();
+                int xSize = (from item in xMethod.GetParameters()
+                             select (int)item.ParameterType.SizeOf().Align()).Sum() - 0x4;//For return int
+
+                for (ushort i = 1; i <= xParms.Length; i++)
+                {
+                    ((Ldarg)MSIL[ILCode.Ldarg]).Execute2(i, xMethod);
+                }
+
+                Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBP, DestinationIndirect = true, DestinationDisplacement = 0x8, SourceReg = Registers.EAX });
+                
+                //calli footer                
+                Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "0x0" });
+                Core.AssemblerCode.Add(new Leave());
+                Core.AssemblerCode.Add(new Ret { Address = (byte)xSize });
+            }*/
             BuildDefinations.Add(xMethod);
         }
 

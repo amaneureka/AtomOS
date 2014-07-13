@@ -127,7 +127,7 @@ namespace libAtomixH.mscorlib.System
 
         private static void UpdateCursor ()
         {
-            char chr = (char)(X * Y);
+            char chr = (char)(X + (Y * 80));
 
             // Cursor low byte to VGA index register
             Native.Out8 (0x03D4, 0x0F);
