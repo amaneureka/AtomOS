@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3CE87B66-C4DD-4510-B461-8C78AD9D0381}</ProjectGuid>
+    <ProjectGuid>{EDBB1281-ABFA-41D8-882B-E787F85047BB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>libAtomixH</RootNamespace>
-    <AssemblyName>libAtomixH</AssemblyName>
+    <RootNamespace>libAtomixH.mscorlib</RootNamespace>
+    <AssemblyName>libAtomixH.mscorlib</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
@@ -19,42 +19,28 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\Build\Bin\</OutputPath>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\Build\Bin\</OutputPath>
-    <DefineConstants>
-    </DefineConstants>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="System\Console.cs" />
+    <Compile Include="System\ConsoleColor.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\GDT.cs" />
-    <Compile Include="Core\Heap.cs" />
-    <Compile Include="Core\IDT.cs" />
-    <Compile Include="Core\IRQ.cs" />
-    <Compile Include="Core\Memory.cs" />
-    <Compile Include="Core\Multiboot.cs" />
-    <Compile Include="Core\PIC.cs" />
-    <Compile Include="Drivers\Global.cs" />
-    <Compile Include="IO\Ports\Native.cs" />
-    <Compile Include="IO\Ports\Port.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Threading\Scheduler.cs" />
-    <Compile Include="Threading\Task.cs" />
-    <Compile Include="Threading\Thread.cs" />
-    <Compile Include="Threading\ThreadState.cs" />
+    <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Compiler\CompilerExt\CompilerExt.csproj">
@@ -65,16 +51,12 @@
       <Project>{c39c02ef-559e-47a6-98d9-e5b79d683948}</Project>
       <Name>ILCompiler.Assembler</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Kernel\Atomix.mscorlibext\Atomix.mscorlibext.csproj">
-      <Project>{4c45ed0b-e904-43ec-9c68-f5d6446dbce1}</Project>
-      <Name>Atomix.mscorlibext</Name>
+    <ProjectReference Include="..\libAtomixH\libAtomixH.csproj">
+      <Project>{3ce87b66-c4dd-4510-b461-8c78ad9d0381}</Project>
+      <Name>libAtomixH</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>$(OutDir)\..\Build_Splitty_H.bat</PostBuildEvent>
-  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

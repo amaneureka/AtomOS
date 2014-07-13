@@ -1,13 +1,11 @@
 ﻿using System;
 using Atomix.CompilerExt;
 using Atomix.CompilerExt.Attributes;
-
-#if (COMPILE_H)
-using libAtomixH.IO.Ports;
-#else
 using Kernel_alpha.x86.Intrinsic;
-#endif
 
+// Only compile for the old Kernel
+// I created a new class for the new Kernel
+#if (!COMPILE_H)
 namespace Atomix.mscorlib
 {    
     public class ConsoleImpl
@@ -121,3 +119,4 @@ namespace Atomix.mscorlib
         }
     }
 }
+#endif

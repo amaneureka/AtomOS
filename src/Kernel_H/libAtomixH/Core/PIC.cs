@@ -29,7 +29,7 @@ namespace libAtomixH.Core
 
         public static void Setup ()
         {
-            Remap (0x20, 0xF9 | 0x08, 0x28, 0xEF);
+            Remap (0x20, 0xF9, 0x28, 0xFF);
         }
 
         private static void Remap (byte masterStart, byte masterMask, byte slaveStart, byte slaveMask)
@@ -58,7 +58,7 @@ namespace libAtomixH.Core
             Native.Out8 (PIC1_Data, masterMask);
             Native.Wait ();
             //Native.Out8(PIC2_Data, slaveMask);
-            ///Native.Wait();
+            //Native.Wait();
         }
 
         public static void SendEndOfInterrupt (byte irq)

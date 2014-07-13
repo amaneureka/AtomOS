@@ -68,6 +68,9 @@ namespace Kernel_H
             // Setup GDT and enter protected mode
             GDT.Setup ();
 
+            // Setup IDT
+            IDT.Setup ();
+
             // Enable Interrupts
             Native.SetInterrupt ();
 

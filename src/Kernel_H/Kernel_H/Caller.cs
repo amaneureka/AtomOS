@@ -1,13 +1,43 @@
 ﻿using System;
 
+using libAtomixH.Threading;
+using sys = libAtomixH.mscorlib.System;
+
 namespace Kernel_H
 {
     public static class Caller
     {
+        public static Thread system;
+
         public static unsafe void Start ()
         {
-            // Do the initialization stuff here
-            Console.Write ("Welcome to AtomixOS H!");
+            Console.Clear ();
+            Console.WriteLine ("Hey Aman!");
+            Console.WriteLine ("The new Console can clear the whole Background :P");
+            Console.WriteLine ();
+            Console.WriteLine ("I got rid of the pointer and rewrote the Console" +
+                " to work with X and Y coordinates, which works pretty good :)");
+            Console.WriteLine ();
+            Console.WriteLine ("I also plugged the SetCursorPosition method ^^");
+            Console.WriteLine ();
+            Console.WriteLine ("Hope you enjoy :P");
+
+            //Scheduler.CreateTask (pTask1, true);
+        }
+
+        public static uint pTask1;
+        public static void Task1 ()
+        {
+            char[] tests = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+            while (true)
+            {
+                for (int i = 0; i < tests.Length; i++)
+                {
+                    Console.SetCursorPosition (10, 20);
+                    Console.Write (tests[i]);
+                    Thread.Sleep (100);
+                }
+            }
         }
 
         public static void Update ()

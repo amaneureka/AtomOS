@@ -57,12 +57,20 @@
       <Project>{4c45ed0b-e904-43ec-9c68-f5d6446dbce1}</Project>
       <Name>Atomix.mscorlibext</Name>
     </ProjectReference>
+    <ProjectReference Include="..\libAtomixH.mscorlib\libAtomixH.mscorlib.csproj">
+      <Project>{edbb1281-abfa-41d8-882b-e787f85047bb}</Project>
+      <Name>libAtomixH.mscorlib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\libAtomixH\libAtomixH.csproj">
       <Project>{3ce87b66-c4dd-4510-b461-8c78ad9d0381}</Project>
       <Name>libAtomixH</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
