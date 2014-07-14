@@ -1,67 +1,100 @@
 ﻿using System;
+using System.Collections;
 
 using Atomix.CompilerExt;
 using Atomix.CompilerExt.Attributes;
 
+using libAtomixH.Drivers;
+using libAtomixH.Drivers.Input.PS2;
 using libAtomixH.IO.Ports;
+
+using StringBuilder = libAtomixH.mscorlib.Text.StringBuilder;
 
 namespace libAtomixH.mscorlib.System
 {
     public static unsafe class Console
     {
+        private static bool verbose = false;
+
         private static int X = 0;
         private static int Y = 0;
 
-        #region Plugs
-        [Plug("System_Void_System_Console_set_CursorLeft_System_Int32_")]
-        private static void CursorLeft(int value)
+        private static ConsoleColor ForegroundColor = ConsoleColor.White;
+        private static ConsoleColor BackgroundColor = ConsoleColor.Black;
+
+        private static int Width = 80;
+        private static int Height = 25;
+
+        private static bool IsClearing = false;
+
+        [Plug ("System_Void_System_Console_set_WindowWidth_System_Int32_")]
+        private static void WindowWidth (int value)
+        {
+            Width = value;
+        }
+
+        [Plug ("System_Int32_System_Console_get_WindowWidth__")]
+        private static int WindowWidth ()
+        {
+            return Width;
+        }
+
+        [Plug ("System_Void_System_Console_set_WindowHeight_System_Int32_")]
+        private static void WindowHeight (int value)
+        {
+            Height = value;
+        }
+
+        [Plug ("System_Int32_System_Console_get_WindowHeight__")]
+        private static int WindowHeight ()
+        {
+            return Height;
+        }
+
+        [Plug ("System_Void_System_Console_set_CursorLeft_System_Int32_")]
+        private static void CursorLeft (int value)
         {
             X = value;
         }
-        [Plug("System_Int32_System_Console_get_CursorLeft__")]
-        private static int CursorLeft()
+        [Plug ("System_Int32_System_Console_get_CursorLeft__")]
+        private static int CursorLeft ()
         { 
             return X; 
         }
 
-        [Plug("System_Void_System_Console_set_CursorTop_System_Int32_")]
-        private static void CursorTop(int value)
+        [Plug ("System_Void_System_Console_set_CursorTop_System_Int32_")]
+        private static void CursorTop (int value)
         {
             Y = value;
         }
 
-        [Plug("System_Int32_System_Console_get_CursorTop__")]
-        private static int CursorTop()
+        [Plug ("System_Int32_System_Console_get_CursorTop__")]
+        private static int CursorTop ()
         {
             return Y;
         }
-        [Plug("System_Void_System_Console_set_ForegroundColor_System_ConsoleColor_")]
-        private static void ForColor(ConsoleColor value)
+        [Plug ("System_Void_System_Console_set_ForegroundColor_System_ConsoleColor_")]
+        private static void ForeColor (ConsoleColor value)
         {
             ForegroundColor = value;
         }
-        [Plug("System_ConsoleColor_System_Console_get_ForegroundColor__")]
-        private static ConsoleColor ForColor()
+        [Plug ("System_ConsoleColor_System_Console_get_ForegroundColor__")]
+        private static ConsoleColor ForeColor ()
         {
             return ForegroundColor;
         }
 
-        [Plug("System_Void_System_Console_set_BackgroundColor_System_ConsoleColor_")]
-        private static void BackColor(ConsoleColor value)
+        [Plug ("System_Void_System_Console_set_BackgroundColor_System_ConsoleColor_")]
+        private static void BackColor (ConsoleColor value)
         {
             BackgroundColor = value;
         }
 
-        [Plug("System_ConsoleColor_System_Console_get_BackgroundColor__")]
-        private static ConsoleColor BackColor()
+        [Plug ("System_ConsoleColor_System_Console_get_BackgroundColor__")]
+        private static ConsoleColor BackColor ()
         {
             return BackgroundColor;
         }
-        #endregion
-        private static ConsoleColor ForegroundColor = ConsoleColor.White;
-        private static ConsoleColor BackgroundColor = ConsoleColor.Cyan;
-
-        private static bool IsClearing = false;
 
         [Plug ("System_Void_System_Console_Clear__", CPUArch.x86)]
         public static void Clear ()
@@ -102,14 +135,52 @@ namespace libAtomixH.mscorlib.System
         {
             for (int i = 0; i < str.Length; i++)
             {
-                Write (str[i]);
+                char chr = str[i];
+                switch (chr)
+                {
+                    // Bell (alert)
+                    case '\a':
+                        break;
+                    // Backspace
+                    case '\b':
+                        break;
+                    // Formfeed
+                    case '\f':
+                        break;
+                    // Newline
+                    case '\n':
+                        Newline ();
+                        break;
+                    // Carriage return
+                    case '\r':
+                        SetCursorPosition (0, Y);
+                        break;
+                    // Horizontal tab
+                    case '\t':
+                        break;
+                    // Vertical tab
+                    case '\v':
+                        break;
+                    // Single quotation mark
+                    case '\'':
+                        Write ("'");
+                        break;
+                    // Double quotation mark
+                    case '\"':
+                        Write ('"');
+                        break;
+                    // Any other characters
+                    default:
+                        Write (chr);
+                        break;
+                }
             }
         }
 
         [Plug ("System_Void_System_Console_WriteLine__", CPUArch.x86)]
         public static void WriteLine ()
         {
-            Y++;
+            Newline ();
             CheckOverflow ();
         }
 
@@ -138,6 +209,142 @@ namespace libAtomixH.mscorlib.System
             UpdateCursor ();
         }
 
+        [Plug ("System_Int32_System_Console_Read__", CPUArch.x86)]
+        public static int Read ()
+        {
+            return (int)Global.keyboard.ReadKey ().Char;
+        }
+
+        [Plug ("System_String_System_Console_ReadLine__", CPUArch.x86)]
+        public static string ReadLine ()
+        {
+            StringBuilder sb = new StringBuilder ();
+
+            int start = 0;
+            int current = 0;
+            int max = 0;
+
+            Keys key = null;
+            while (key.Code != KeyCode.Enter)
+            {
+                key = Global.keyboard.ReadKey ();
+
+                if (key != null)
+                {
+                    switch (key.Code)
+                    {
+                        // Handle return
+                        case KeyCode.Enter:
+                            break;
+
+                        // Handle backspace
+                        case KeyCode.Backspace:
+                            if (current > start && current <= max)
+                            {
+                                sb.RemoveAt (current);
+                                current--;
+                                max--;
+                                SetCursorPosition (X - 1, Y);
+                                Write (" ");
+                                SetCursorPosition (X - 1, Y);
+                            }
+                            else if (current == start)
+                            {
+                                sb.Clear ();
+                            }
+                            else if (current == max)
+                            {
+                                sb.RemoveAt (max);
+                                current--;
+                                max--;
+                                SetCursorPosition (X - 1, Y);
+                                Write (" ");
+                                SetCursorPosition (X - 1, Y);
+                            }
+                            break;
+
+                        // Handle the left arrow key
+                        case KeyCode.CursorLeft:
+                            if (current > start)
+                            {
+                                current--;
+                                SetCursorPosition (X - 1, Y);
+                            }
+                            break;
+
+                        // Handle the right arrow key
+                        case KeyCode.CursorRight:
+                            if (current < max)
+                            {
+                                current++;
+                                SetCursorPosition (X + 1, Y);
+                            }
+                            break;
+
+                        // Handle default
+                        default:
+                            if (max == 0)
+                            {
+                                sb.Append (key.Char);
+                                Write (key.Char);
+                                max++;
+                                current++;
+                            }
+                            else if (current == start)
+                            {
+                                sb.Append (key.Char);
+                                current++;
+                                Write (key.Char);
+                            }
+                            else if (current == max)
+                            {
+                                sb.Append (key.Char);
+                                max++;
+                                current++;
+                                Write (key.Char);
+                            }
+                            else if (current < start)
+                            {
+                                current = start;
+                            }
+                            else if (current > max)
+                            {
+                                current = max;
+                            }
+                            else if (current >= start && current < max)
+                            {
+                                sb.UpdateAt (current, key.Char);
+                                current++;
+                                Write (key.Char);
+                            }
+                            break;
+                    }
+
+                    // START: Debug information
+                    if (verbose)
+                    {
+                        int x = X;
+                        int y = Y;
+                        SetCursorPosition (2, 0);
+                        for (int i = 0; i < 77; i++)
+                            Write (" ");
+                        SetCursorPosition (2, 0);
+                        Write ("current: " + current.ToString () +
+                            " start: " + start.ToString () +
+                            " max: " + max.ToString () +
+                            " content: " + sb.Flush ());
+                        SetCursorPosition (x, y);
+                    }
+                    // END: Debug information
+
+                }
+            }
+
+            WriteLine ();
+
+            return sb.Flush ();
+        }
+
         private static void Newline ()
         {
             X = 0;
@@ -153,19 +360,30 @@ namespace libAtomixH.mscorlib.System
 
         private static void CheckOverflow ()
         {
-            bool update = false;
-
-            if (X == 80)
+            if (X < 0)
+            {
+                X = Width + X;
+                Y--;
+            }
+            else if (X == Width)
             {
                 X = 0;
                 Y++;
-                update = true;
             }
-            if (Y > 80)
+            else if (X > Width)
+            {
+                X = X - Width;
+                Y++;
+            }
+
+            if (Y < 0)
+            {
+                Y = 0;
+            }
+            else if (Y > Height)
             {
                 ScrollUp ();
-                Y = 80;
-                update = true;
+                Y = Height;
             }
 
             UpdateCursor ();
@@ -186,23 +404,25 @@ namespace libAtomixH.mscorlib.System
 
         private static void ScrollUp ()
         {
-            byte* offset = (byte*)0xB8000;
+            int x = X;
+            byte* xAddress = (byte*)0xB8000;
 
-            byte[] bytes = new byte[80 * 24];
-            for (int i = 80; i < 80 * 24; i++)
+            for (int j = 0; j < 24; j++)
             {
-                bytes[i - 80] = offset[i];
+                for (int i = 0; i < 80; i++)
+                {
+                    xAddress[(j * 80 + i) * 2] = xAddress[((j + 1) * 80 + i) * 2];
+                    xAddress[(j * 80 + i) * 2 + 1] = xAddress[((j + 1) * 80 + i) * 2 + 1];
+                }
             }
 
-            for (int i = 0; i < 80 * 24; i++)
+            for (int i = 0; i < 80; i++)
             {
-                offset[i] = bytes[i];
+                xAddress[(24 * 80 + i) * 2] = (byte)' ';
+                xAddress[(24 * 80 + i) * 2 + 1] = (byte)CalculateColor ();
             }
-            for (int i = 80 * 24; i < 80; i++)
-            {
-                offset[(i + (25 * 80)) * 2] = (byte)' ';
-                offset[((X + (Y * 80)) * 2) + 1] = CalculateColor ();
-            }
+
+            SetCursorPosition (0, 24);
         }
     }
 }

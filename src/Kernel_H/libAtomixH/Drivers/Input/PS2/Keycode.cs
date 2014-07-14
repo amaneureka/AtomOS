@@ -1,52 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Kernel_alpha.x86.Intrinsic;
 
-namespace Kernel_alpha.Drivers.Input
+namespace libAtomixH.Drivers.Input.PS2
 {
-    public enum MouseCommandSet : byte
-    {
-        // Acknowledged
-        Ack = 0xFA,
-
-        // Send data
-        Send = 0xD4,
-
-        // Enable PS/2
-        Enable = 0xA8,
-
-        // Basic instruction sets
-        Reset = 0xFF,
-        Resend = 0xFE,
-        SetDefaults = 0xF6,
-        DisablePacketStreaming = 0xF5,
-        EnablePacketStreaming = 0xF4,
-        SetSampleRate = 0xF3,
-        GetMouseID = 0xF2,
-        RequestSinglePacket = 0xEB,
-        StatusRequest = 0xE9,
-        SetResolution = 0xE8,
-
-        // Not really useful
-        // but for the sake of completeness
-        SetRemoteMode = 0xF0,
-        SetWrapMode = 0xEE,
-        ResetWrapMode = 0xEC,
-        SetSteamMode = 0xEA,
-        SetScaling21 = 0xE7,
-        SetScaling11 = 0xE6
-    }
-
-    public enum MouseButtons : byte
-    {
-        None = 0,
-        Left = 1,
-        Right = 2,
-        Middle = 4
-    }
-
     /// <summary>
     /// List ref: http://www.computer-engineering.org/ps2keyboard/scancodes1.html
     /// </summary>
@@ -80,36 +35,4 @@ namespace Kernel_alpha.Drivers.Input
         Y = 24,
         Z = 25,
     };
-
-    public enum Ports : ushort
-    {
-        PS2_Cmd     = 0x60,
-        PS2_Data    = 0x64
-    };
-
-    public enum Cmd : ushort
-    {
-        Key_LEDs        = 0xED,
-    };
-
-    public enum Res : ushort
-    {
-        Acknowledged = 0xFA,
-    };
-
-    public static class misc
-    {
-        public static void PS2_Cmd(Cmd cmd, byte data)
-        {
-            Native.Out8((ushort)Ports.PS2_Cmd, (byte)cmd);
-            Wait2Resond();
-            Native.Out8((ushort)Ports.PS2_Cmd, data);
-            Wait2Resond();
-        }
-
-        private static void Wait2Resond()
-        {
-            while (Native.In8((ushort)Ports.PS2_Cmd) != (byte)Res.Acknowledged) ;
-        }
-    }
 }

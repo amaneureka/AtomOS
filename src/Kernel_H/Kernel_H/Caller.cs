@@ -1,7 +1,10 @@
 ﻿using System;
 
+using libAtomixH;
 using libAtomixH.Threading;
-using sys = libAtomixH.mscorlib.System;
+using libAtomixH.Drivers;
+
+using c = libAtomixH.mscorlib.System.Console;
 
 namespace Kernel_H
 {
@@ -11,18 +14,34 @@ namespace Kernel_H
 
         public static unsafe void Start ()
         {
-            Console.Clear ();
-            Console.WriteLine ("Hey Aman!");
-            Console.WriteLine ("The new Console can clear the whole Background :P");
-            Console.WriteLine ();
-            Console.WriteLine ("I got rid of the pointer and rewrote the Console" +
-                " to work with X and Y coordinates, which works pretty good :)");
-            Console.WriteLine ();
-            Console.WriteLine ("I also plugged the SetCursorPosition method ^^");
-            Console.WriteLine ();
-            Console.WriteLine ("Hope you enjoy :P");
+            // Initialize the Drivers
+            Global.Initialize ();
 
-            //Scheduler.CreateTask (pTask1, true);
+            // Set our wonderful colors
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.BackgroundColor = ConsoleColor.Cyan;
+
+            // Clear the console
+            Console.Clear ();
+
+            // Setup a thread
+            Scheduler.CreateTask (pTask1, true);
+
+            // Say hello
+            Console.WriteLine ("Hello from AtomixOS!");
+            Console.WriteLine ("Type any text to get it echoed back");
+        }
+
+        public static void Update ()
+        {
+            // Display the prompt
+            Console.Write ("Atomix> ");
+
+            // Read the input string
+            string str = Console.ReadLine ();
+
+            // Echo the input string back
+            Console.Write ("  Echo> " + str + "\n");
         }
 
         public static uint pTask1;
@@ -33,25 +52,22 @@ namespace Kernel_H
             {
                 for (int i = 0; i < tests.Length; i++)
                 {
-                    Console.SetCursorPosition (10, 20);
+                    // Backup our current cursor postion
+                    int x = Console.CursorLeft;
+                    int y = Console.CursorTop;
+
+                    // Set our new cursor position
+                    Console.SetCursorPosition (0, 0);
+
+                    // Write a number
                     Console.Write (tests[i]);
-                    Thread.Sleep (100);
+
+                    // Restore our old cursor position
+                    Console.SetCursorPosition (x, y);
+
+                    // Sleep for a short time period
+                    Thread.Sleep (20);
                 }
-            }
-        }
-
-        public static void Update ()
-        {
-
-        }
-
-        public static unsafe void WriteScreen (string s, int p)
-        {
-            byte* xA = (byte*)0xB8000;
-            for (int i = 0; i < s.Length; i++)
-            {
-                xA[p++] = (byte)s[i];
-                xA[p++] = 0x0B;
             }
         }
     }

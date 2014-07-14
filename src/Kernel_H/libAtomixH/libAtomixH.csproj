@@ -48,6 +48,10 @@
     <Compile Include="Core\Multiboot.cs" />
     <Compile Include="Core\PIC.cs" />
     <Compile Include="Drivers\Global.cs" />
+    <Compile Include="Drivers\Input\PS2\Keyboard.cs" />
+    <Compile Include="Drivers\Input\PS2\Keycode.cs" />
+    <Compile Include="Drivers\Input\PS2\Keys.cs" />
+    <Compile Include="Drivers\Input\PS2\PS2Ports.cs" />
     <Compile Include="IO\Ports\Native.cs" />
     <Compile Include="IO\Ports\Port.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

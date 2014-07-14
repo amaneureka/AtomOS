@@ -7,6 +7,7 @@ using Atomix.Assembler;
 using Atomix.Assembler.x86;
 using asm = Atomix.Assembler.AssemblyHelper;
 
+using libAtomixH;
 using libAtomixH.IO.Ports;
 
 namespace libAtomixH.Core
@@ -114,11 +115,11 @@ namespace libAtomixH.Core
             }
             else if (xINT >= 0x20 && xINT < 0x30) //[32, 48) --> Hardware Interrupts
             {
-#warning Disabled the Keyboard and Mouse handlers
+#warning Disabled the Mouse handler
                 switch (xINT - 0x20)
                 {
                     case 1:
-                        // Global.KBD.HandleIRQ ();
+                        Drivers.Global.keyboard.HandleIRQ ();
                         break;
                     case 12:
                         // Global.Mouse.HandleIRQ();

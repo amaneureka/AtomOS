@@ -38,7 +38,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="System\Console.cs" />
     <Compile Include="System\ConsoleColor.cs" />
-    <Compile Include="System\Exception.cs" />
+    <Compile Include="System\ConsoleKeyInfo.cs" />
+    <Compile Include="Text\StringBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

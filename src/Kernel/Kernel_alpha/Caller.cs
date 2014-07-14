@@ -65,7 +65,6 @@ namespace Kernel_alpha
         }
         public static unsafe void Update()
         {
-            
             var s = Global.KBD.ReadKey ();
             if (Global.KBD.Ctrl)
             {
