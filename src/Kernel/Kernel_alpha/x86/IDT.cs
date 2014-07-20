@@ -18,7 +18,7 @@ namespace Kernel_alpha.x86
     {
         private static uint _idtTable = 0x250020;
         private static uint _idtEntries = 0x250020 + 6;
-
+        
         private static IOPort idtTable;
 
         public enum Offset
@@ -117,7 +117,8 @@ namespace Kernel_alpha.x86
             }
             else if (xINT >= 0x20 && xINT < 0x30) //[32, 48) --> Hardware Interrupts
             {
-                switch (xINT - 0x20)
+                var xIRQ = (xINT - 0x20);
+                switch (xIRQ)
                 {
                     case 1:
                         Global.KBD.HandleIRQ ();
@@ -126,8 +127,13 @@ namespace Kernel_alpha.x86
                         Global.Mouse.HandleIRQ();
                         break;
                     case 7://Spurious IRQs
-                    case 15://Spurious IRQs
                         return;
+                    case 14:
+                        Global.PrimaryIDE.IRQInvoked = true;
+                        break;
+                    case 15:
+                        Global.SecondayIDE.IRQInvoked = true;
+                        break;
                 }
                 PIC.SendEndOfInterrupt((byte)xContext.Interrupt);
             }

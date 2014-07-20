@@ -12,9 +12,9 @@ namespace Kernel_alpha
 {
     public static class Caller
     {
-        public static DELTESTING Test;
         public static unsafe void Start()
         {
+            Console.Clear();
             Console.WriteLine ("                                         ");
 
             // Load System Elements
@@ -29,40 +29,8 @@ namespace Kernel_alpha
             // Just for mouse testing
             Multitasking.CreateTask(pTask1, true);
             Multitasking.CreateTask(pTask2, true);
+        }
 
-            Test = Yeah;
-            Test();
-            Test();
-            Test();
-        }
-        public delegate void DELTESTING();
-        public static void Yeah()
-        {
-            char[] s = new char[] { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J' };
-            int c = 0;
-            
-            for (int i = 0; i < s.Length; i++)
-            {
-                c++;
-                switch (s[i])
-                {
-                    case 'D':
-                        Console.Write('$');
-                        break;
-                    case 'E':
-                        Console.Write('%');
-                        break;
-                    case 'J':
-                        Console.Write('&');
-                        break;
-                    default:
-                        break;
-                }
-            }
-            Console.Write(c.ToString());
-            Console.Write("...");
-            Console.WriteLine(new String(s));
-        }
         public static unsafe void Update()
         {
             var s = Global.KBD.ReadKey ();

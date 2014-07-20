@@ -12,7 +12,10 @@ namespace Kernel_alpha
         public static Keyboard KBD;
         public static PS2Mouse Mouse;
         public static acpi ACPI;
-        
+
+        public static IDE PrimaryIDE;
+        public static IDE SecondayIDE;
+
         public static void Init()
         {
             // Setup PCI
@@ -52,8 +55,8 @@ namespace Kernel_alpha
             else
             {
                 //Now we check if parallel ATA is present
-                var xATAmaster = new IDE(false);
-                var xATASlave = new IDE(true);
+                PrimaryIDE = new IDE(false);
+                SecondayIDE = new IDE(true);
             }
         }
     }

@@ -119,5 +119,31 @@ namespace Kernel_alpha.x86.Intrinsic
                 xData[i] = this.Inw();
             }
         }
+
+        public void Read16(byte[] xData)
+        {
+            for (int i = 0; i < xData.Length; i+=2)
+            {
+                var aData  = this.Inw();                
+                xData[i] = (byte)(aData & 0xFF);
+                xData[i + 1] = (byte)(aData >> 8);                
+            }
+        }
+
+        public void Write16(ushort[] xData)
+        {
+            for (int i = 0; i < xData.Length; i++)
+            {
+                this.Outw(xData[i]);
+            }
+        }
+
+        public void Write16(byte[] xData)
+        {
+            for (int i = 0; i < xData.Length; i+=2)
+            {
+                this.Outw((ushort)(xData[i + 1] << 8 | xData[i]));
+            }
+        }
     }
 }

@@ -100,29 +100,28 @@ namespace Kernel_alpha.Drivers.Buses.ATA
         ATA_PRIMARY     = 0x0,
         ATA_SECONDARY   = 0x1,
     };
-
-    public enum DataDirection : byte
-    {
-        ATA_READ    = 0x0,
-        ATA_WRITE   = 0x1
-    };
-    
+        
     public class DriveInfo
     {
         public Device Device;
+        public DeviceType Type;
+        public Channel Channel;
         public uint Cylinder;
         public uint Heads;
         public ulong Size;
-        public uint Sectors;
+        public uint SectorsPerTrack;
         public uint CommandSet;
         public string Model;
         public string SerialNo;
         public bool LBASupport;
+        public bool IsRemovable;
+        /// <summary>
+        /// Size of sector in bytes
+        /// </summary>
+        public int BufferSize;
     }
     public static class misc
     {
-        public static byte[] ATAPI_Packet = new byte[12] { 0xA8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-
         public static UInt32 ToUInt32(this ushort[] xBuff, int loc)
         {
             return (UInt32)(xBuff[loc + 1] << 16 | xBuff[loc]);
