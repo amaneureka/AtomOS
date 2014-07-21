@@ -48,6 +48,10 @@
     <Compile Include="Drivers\Input\keyboard\Keys.cs" />
     <Compile Include="Drivers\Input\misc.cs" />
     <Compile Include="Drivers\Input\Mouse\PS2.cs" />
+    <Compile Include="Drivers\PartInfo\MBR.cs" />
+    <Compile Include="Drivers\PartInfo\Partition.cs" />
+    <Compile Include="FileSystem\FAT\FatFileSystem.cs" />
+    <Compile Include="FileSystem\FAT\misc.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="Kernel.cs" />
     <Compile Include="Multitasking.cs" />

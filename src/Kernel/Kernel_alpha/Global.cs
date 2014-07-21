@@ -16,6 +16,8 @@ namespace Kernel_alpha
         public static IDE PrimaryIDE;
         public static IDE SecondayIDE;
 
+        public static List<Partition> Parts;
+
         public static void Init()
         {
             // Setup PCI
@@ -41,8 +43,18 @@ namespace Kernel_alpha
             Console.WriteLine("OK");
 
             //Loading ATA
-            Console.WriteLine ("Loading ATA SubSystem... ");
+            Console.Write ("Loading ATA SubSystem... ");
             LoadATA();
+            Console.WriteLine("OK");
+
+            //Load Parts
+            Console.Write ("Loading Partitions... ");
+            if (PrimaryIDE != null)
+            {
+                var xMBR = new Drivers.PartInfo.MBR(PrimaryIDE);
+                Parts = xMBR.PartInfo;
+            }
+            Console.WriteLine("OK");            
         }
 
         private static void LoadATA()

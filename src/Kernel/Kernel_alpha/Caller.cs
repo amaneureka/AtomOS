@@ -7,6 +7,7 @@ using Atomix.Assembler;
 using Atomix.Assembler.x86;
 using Atomix.CompilerExt;
 using Core = Atomix.Assembler.AssemblyHelper;
+using Kernel_alpha.x86.Intrinsic;
 
 namespace Kernel_alpha
 {
@@ -25,12 +26,12 @@ namespace Kernel_alpha
 
             Console.WriteLine ("Shutdown: Ctrl+S");
             Console.WriteLine ("Reboot: Ctrl+R");
-                        
+            
             // Just for mouse testing
             Multitasking.CreateTask(pTask1, true);
             Multitasking.CreateTask(pTask2, true);
+            Console.WriteLine("Partition Count::" + Global.Parts.Count.ToString());
         }
-
         public static unsafe void Update()
         {
             var s = Global.KBD.ReadKey ();

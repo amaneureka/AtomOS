@@ -143,7 +143,7 @@ namespace Kernel_alpha.Drivers.Buses.ATA
             DriveInfo.SerialNo = xBuff.GetString((int)Identify.ATA_IDENT_SERIAL, 20);
 
             /* Print Config...just for testing */
-            Console.Write("Size:");
+            /*Console.Write("Size:");
             Console.WriteLine(((UInt32)DriveInfo.Size).ToString());
             Console.Write("Model:");
             Console.WriteLine(DriveInfo.Model);
@@ -154,7 +154,7 @@ namespace Kernel_alpha.Drivers.Buses.ATA
             if (DriveInfo.Device == Device.IDE_ATA)
                 Console.WriteLine("ATA");
             else if (DriveInfo.Device == Device.IDE_ATAPI)
-                Console.WriteLine("ATAPI");
+                Console.WriteLine("ATAPI");*/
         }
 
         public void Read(UInt32 SectorNo, uint SectorCount, byte[] xData)
