@@ -108,6 +108,7 @@
     <Compile Include="IL\Load\Ldarga.cs" />
     <Compile Include="IL\Load\Ldflda.cs" />
     <Compile Include="IL\Load\Ldind\Ldind_I2.cs" />
+    <Compile Include="IL\Load\Ldind\Ldind_Ref.cs" />
     <Compile Include="IL\Load\Ldind\Ldind_I8.cs" />
     <Compile Include="IL\Load\Ldind\Ldind_I4.cs" />
     <Compile Include="IL\Load\Ldind\Ldind_I1.cs" />

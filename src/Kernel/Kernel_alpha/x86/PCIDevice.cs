@@ -77,6 +77,8 @@ namespace Kernel_alpha.x86
         public const ushort ConfigAddressPort = 0xCF8;
         public const ushort ConfigDataPort = 0xCFC;
 
+        public PCIBaseAddressBar[] BaseAddressBar;
+
         public PCIDevice(uint bus, uint slot, uint function)
         {
             this.Bus = bus;
@@ -100,6 +102,16 @@ namespace Kernel_alpha.x86
             this.InterruptPIN = (PCIInterruptPIN)ReadRegister8((byte)Config.InterruptPIN);
 
             DeviceExists = (uint)VendorID != 0xFFFF && (uint)DeviceID != 0xFFFF;
+            if (HeaderType == PCIHeaderType.Normal)
+            {
+                BaseAddressBar = new PCIBaseAddressBar[6];
+                BaseAddressBar[0] = new PCIBaseAddressBar(ReadRegister32(0x10));
+                BaseAddressBar[1] = new PCIBaseAddressBar(ReadRegister32(0x14));
+                BaseAddressBar[2] = new PCIBaseAddressBar(ReadRegister32(0x18));
+                BaseAddressBar[3] = new PCIBaseAddressBar(ReadRegister32(0x1C));
+                BaseAddressBar[4] = new PCIBaseAddressBar(ReadRegister32(0x20));
+                BaseAddressBar[5] = new PCIBaseAddressBar(ReadRegister32(0x24));
+            }
         }
 
         #region IO Port
@@ -160,6 +172,59 @@ namespace Kernel_alpha.x86
                 | ((aFunction & 0x07) << 8));
         }
 
-        
+        public void EnableMemory(bool enable)
+        {
+            UInt16 command = ReadRegister16(0x04);
+
+            UInt16 flags = 0x0007;
+
+            if (enable)
+                command |= flags;
+            else
+                command &= (ushort)~flags;
+
+            WriteRegister16(0x04, command);
+        }
+    }
+    public class PCIBaseAddressBar
+    {
+        private uint baseAddress = 0;
+        private ushort prefetchable = 0;
+        private ushort type = 0;
+        private bool isIO = false;
+
+        public PCIBaseAddressBar(uint raw)
+        {
+            isIO = (raw & 0x01) == 1;
+
+            if (isIO)
+            {
+                baseAddress = raw & 0xFFFFFFFC;
+            }
+            else
+            {
+                type = (ushort)((raw >> 1) & 0x03);
+                prefetchable = (ushort)((raw >> 3) & 0x01);
+                switch (type)
+                {
+                    case 0x00:
+                        baseAddress = raw & 0xFFFFFFF0;
+                        break;
+                    case 0x01:
+                        baseAddress = raw & 0xFFFFFFF0;
+                        break;
+                }
+            }
+        }
+
+        public uint BaseAddress
+        {
+            get { return baseAddress; }
+        }
+
+        public bool IsIO
+        {
+            get { return isIO; }
+        }
     }
 }

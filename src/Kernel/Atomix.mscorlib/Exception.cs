@@ -21,13 +21,13 @@ namespace Atomix.mscorlib
         /// Well it is waste, just for compiler to build "exception" we set it string.empty
         /// </summary>
         [Plug("System_Void__System_Exception__cctor__")]
-        public static void ctor()
+        public static unsafe void ctor()
         {
             Exception = "";
         }
 
         [Plug("System_Void__System_Exception__ctor_System_String_")]
-        public static void ctor(string xm)
+        public static unsafe void ctor2(string xm)
         {
             Message = xm;
         }
@@ -38,9 +38,9 @@ namespace Atomix.mscorlib
         /// </summary>
         /// <param name="xr"></param>
         [Plug("System_String_System_Exception_get_Message__")]
-        public static void GetMessage(string xr)
+        public static unsafe string GetMessage()
         {
-            xr = Message;
+            return Message;
         }
     }
 }

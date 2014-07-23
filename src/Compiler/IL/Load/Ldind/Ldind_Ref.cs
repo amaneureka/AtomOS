@@ -12,28 +12,21 @@ using Core = Atomix.Assembler.AssemblyHelper;
 
 namespace Atomix.IL
 {
-    [ILOp(ILCode.Throw)]
-    public class Throw : MSIL
+    [ILOp(ILCode.Ldind_Ref)]
+    public class Ldind_Ref : MSIL
     {
-        public Throw(Compiler Cmp)
-            : base("throw", Cmp) { }
+        public Ldind_Ref(Compiler Cmp)
+            : base("ldind_ref", Cmp) { }
 
         public override void Execute(ILOpCode instr, MethodBase aMethod)
         {
-            var xEndException = aMethod.FullName() + ".Error";
-            if (instr.Ehc != null && instr.Ehc.HandlerOffset > instr.Position)
-            {
-                xEndException = ILHelper.GetLabel(aMethod, instr.Ehc.HandlerOffset);
-            }
             switch (ILCompiler.CPUArchitecture)
             {
                 #region _x86_
                 case CPUArch.x86:
                     {
                         Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
-                        Core.AssemblerCode.Add(new Mov { DestinationRef = ((FieldInfo)Core.StaticLabels["Exception"]).FullName(), DestinationIndirect = true, SourceReg = Registers.EAX });
-                        Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "0x2" });
-                        Core.AssemblerCode.Add(new Jmp { DestinationRef = xEndException });
+                        Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX, DestinationIndirect = true });
                     }
                     break;
                 #endregion
@@ -52,7 +45,6 @@ namespace Atomix.IL
                     break;
                 #endregion
             }
-            Core.vStack.Pop();
         }
     }
 }

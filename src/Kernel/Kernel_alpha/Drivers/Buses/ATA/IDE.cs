@@ -298,7 +298,7 @@ namespace Kernel_alpha.Drivers.Buses.ATA
                 if (IsReading)
                 {
                     // PIO Read.
-                    Poll(true);// Polling, set error and exit if there is.
+                    Poll(false);// Polling, set error and exit if there is.
                     DataReg.Read16(xData);
                 }
                 else

@@ -385,7 +385,7 @@ namespace Atomix
                                 xBranchLocations[i] = xNextOpPos + (int)BitConverter.ToInt32(msIL, xPos + i * 4);
                                 LabelTarget.Add(xBranchLocations[i]);
                             }
-                            xILOpCode = new ILOpCodes.OpSwitch(xOpCodeVal, xOpPos, xPos, xBranchLocations, xCurrentHandler);
+                            xILOpCode = new ILOpCodes.OpSwitch(xOpCodeVal, xOpPos, xNextOpPos, xBranchLocations, xCurrentHandler);
                             xPos = xNextOpPos;
                             break;
                         }

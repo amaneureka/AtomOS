@@ -54,7 +54,7 @@ namespace Kernel_alpha
                 var xMBR = new Drivers.PartInfo.MBR(PrimaryIDE);
                 Parts = xMBR.PartInfo;
             }
-            Console.WriteLine("OK");            
+            Console.WriteLine("OK");
         }
 
         private static void LoadATA()

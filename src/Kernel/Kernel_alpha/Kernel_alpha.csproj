@@ -50,10 +50,13 @@
     <Compile Include="Drivers\Input\Mouse\PS2.cs" />
     <Compile Include="Drivers\PartInfo\MBR.cs" />
     <Compile Include="Drivers\PartInfo\Partition.cs" />
+    <Compile Include="Drivers\Video\Vmware\misc.cs" />
+    <Compile Include="Drivers\Video\Vmware\VMWareSVGAII.cs" />
     <Compile Include="FileSystem\FAT\FatFileSystem.cs" />
     <Compile Include="FileSystem\FAT\misc.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="Kernel.cs" />
+    <Compile Include="Lib\MemoryBlock.cs" />
     <Compile Include="Multitasking.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="misc.cs" />
@@ -87,6 +90,7 @@
   <ItemGroup>
     <Content Include="x86\PCI.txt" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

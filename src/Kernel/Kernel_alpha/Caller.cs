@@ -32,6 +32,7 @@ namespace Kernel_alpha
             Multitasking.CreateTask(pTask2, true);
             Console.WriteLine("Partition Count::" + Global.Parts.Count.ToString());
         }
+
         public static unsafe void Update()
         {
             var s = Global.KBD.ReadKey ();
@@ -46,6 +47,16 @@ namespace Kernel_alpha
                 {
                     Console.WriteLine ("Reboot");
                     Global.ACPI.Reboot();
+                }
+                else if (s.Code == KeyCode.C)
+                {
+                    Console.Clear();
+                }
+                else if (s.Code == KeyCode.V)
+                {
+                    var svga = new Drivers.Video.VMWareSVGAII();
+                    svga.SetMode(1024, 768, 32);
+                    svga.Clear(0xFFFFFF);
                 }
             }
             else if (Global.KBD.Alt)
