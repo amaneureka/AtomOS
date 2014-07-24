@@ -290,6 +290,15 @@ namespace Kernel_alpha.x86.Intrinsic
             return 0; //just for c# error
         }
 
+        /// <summary>
+        /// Here compiler do some its magic
+        /// </summary>
+        [Assembly(0x0)]
+        public static void CompilerFlush()
+        {
+            Core.AssemblerCode.Add(new Call("__Compiler_Flush__"));
+        }
+
         public static void Wait()
         {
             Out8(0x80, 0x22);

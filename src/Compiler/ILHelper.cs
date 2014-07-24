@@ -702,5 +702,30 @@ namespace Atomix
             
             return xResult2;
         }
+        public static int GetTypeID(Type aType)
+        {
+            var str = aType.FullName;
+
+            char[] xResult = new char[aType.FullName.Length];
+            for (int i = 0; i < str.Length; i++)
+            {
+                if (!IllegalChars.Contains(str[i]))
+                    xResult[i] = str[i];
+                else
+                    xResult[i] = '_';
+            }
+
+            string xResult2 = ("TYPE_ID_LABEL__" + (new String(xResult)));
+
+            //Add it to Data Members
+            if (!TypeIDLabel.ContainsKey(xResult2))
+            {
+                Core.DataMember.Add(new AsmData(xResult2, "dd " + xCounter));
+                TypeIDLabel.Add(xResult2, xCounter);
+                xCounter++;
+            }
+
+            return TypeIDLabel[xResult2];
+        }
     }
 }

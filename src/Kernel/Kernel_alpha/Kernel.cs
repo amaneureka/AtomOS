@@ -77,10 +77,13 @@ namespace Kernel_alpha
 
             /* Enable Interrupts */
             Native.SetInterrupt();
-
+            
             /* Setup Multitasking */
             Multitasking.CreateTask(0, true); //This is System Update thread
             Multitasking.Init();//Start Multitasking
+
+            /* Call Compiler Flush : should be before any virtual class called */
+            Native.CompilerFlush();
 
             /* Call our kernel instance now */
             try

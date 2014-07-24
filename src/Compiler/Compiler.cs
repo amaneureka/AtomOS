@@ -52,6 +52,8 @@ namespace Atomix
         private Dictionary<FieldInfo, string> Pointers;
 
         private List<string> BuildMethods;
+        private List<MethodInfo> Virtuals;
+
         public Compiler()
         {
             ILCompiler.Logger.Write("@Compiler", "Main Compilation Process", "Loading Non-Static Parameters and starting up Compilation Process...");
@@ -66,6 +68,7 @@ namespace Atomix
             MSIL = new Dictionary<ILCode, MSIL>();
             Pointers = new Dictionary<FieldInfo, string>();
             BuildMethods = new List<string>();
+            Virtuals = new List<MethodInfo>();
             Core.StaticLabels = new Dictionary<string, _MemberInfo>();
 
             ILHelper.Compiler = this;
@@ -457,6 +460,11 @@ namespace Atomix
         private void ScanMethod(MethodBase aMethod)
         {
             //Just a basic patch to fix Null reference exception
+            var xBody = aMethod.GetMethodBody();
+
+            if (xBody == null) //Don't try to build null method
+                return;
+
             var xAssemblyName  = aMethod.DeclaringType.Assembly.GetName().Name;
             if ((xAssemblyName == "mscorlib" || xAssemblyName == "System") && Plugs.ContainsValue(aMethod.FullName()))
                 return;
@@ -469,7 +477,6 @@ namespace Atomix
                 ProcessDelegate(aMethod);
                 return;
             }
-
             //Tell logger that we are processing a method with given name and declaring type
             //Well declaring type is necessary because when we have a plugged method than
             //Its full name is the plugged value so we will not get where the plug is implemented
@@ -512,8 +519,7 @@ namespace Atomix
             ILCompiler.Logger.Write ("MSIL Codes Loaded... Count::" + OpCodes.Count);
 
             string xMethodLabel = aMethod.FullName();
-            var xBody = aMethod.GetMethodBody();
-            
+                        
             /* Method begin */            
             Core.AssemblerCode.Add(new Label(xMethodLabel));
             #warning Optimization
@@ -688,8 +694,59 @@ namespace Atomix
                 if (xCctor.DeclaringType == aType)
                     QueuedMember.Enqueue(xCctor);
             }
-            #warning Need to check virtuals
+            foreach (var xAB in aType.GetMethods())
+            {
+                /* For abstract methods conditions are :- 
+                 * 1) Its base defination type is not its declaring type
+                 * 2) Its base defination should be Abstract
+                 * 3) Its declaring type should not be abstract
+                 * 4) Method Body should not be null
+                 */
+                if (xAB.GetBaseDefinition().DeclaringType != xAB.DeclaringType &&
+                    xAB.GetBaseDefinition().IsAbstract &&
+                    !xAB.DeclaringType.IsAbstract)
+                {
+                    QueuedMember.Enqueue(xAB);
+                    Virtuals.Add(xAB);
+                    //Console.WriteLine(xAB.FullName() + ", " + ILHelper.GetTypeID(xAB.DeclaringType) + ", " + ILOpCodes.OpMethod.MethodUIDs[xAB.GetBaseDefinition()]);
+                }
+            }
             BuildDefinations.Add(aType);
+        }
+
+        private void CompilerFlush()
+        {
+            Core.AssemblerCode.Add(new Label("__Compiler_Flush__"));
+            /* Calli instructions */
+            Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EBP });
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBP, SourceReg = Registers.ESP });
+
+            #region _Virtual_Flush_
+            Core.AssemblerCode.Add(new Call("__VTable_Init_Methods_Table__"));
+
+            uint xUID = 0;
+            foreach (var xV in Virtuals)
+            {
+                var xTypeID = ILHelper.GetTypeID(xV.DeclaringType);                
+                ILOpCodes.OpMethod.MethodUIDs.TryGetValue(xV.GetBaseDefinition(), out xUID);
+
+                if (xUID == 0)
+                    continue;
+
+                /* Push type ID first
+                 * Push UID
+                 * Push Address
+                 */
+                Core.AssemblerCode.Add(new Push { DestinationRef = "0x" + xTypeID.ToString("X") });
+                Core.AssemblerCode.Add(new Push { DestinationRef = "0x" + xUID.ToString("X") });
+                Core.AssemblerCode.Add(new Push { DestinationRef = xV.FullName() });
+                Core.AssemblerCode.Add(new Call("__VTable_Set_Method__"));
+            }
+            #endregion
+
+            /* End of Calli Instructions */
+            Core.AssemblerCode.Add(new Leave());
+            Core.AssemblerCode.Add(new Ret { Address = 0x0 });
         }
 
         private void ProcessDelegate(MethodBase xMethod)
@@ -750,34 +807,14 @@ namespace Atomix
                 Core.AssemblerCode.Add(new Leave());
                 Core.AssemblerCode.Add(new Ret { Address = (byte)xSize });
             }
-            /*else if (lbl.Contains("Clone"))
-            {
-                //Load Argument
-                ((Ldarg)MSIL[ILCode.Ldarg]).Execute2(0, xMethod);
-
-                Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
-
-                var xParms = xMethod.GetParameters();
-                int xSize = (from item in xMethod.GetParameters()
-                             select (int)item.ParameterType.SizeOf().Align()).Sum() - 0x4;//For return int
-
-                for (ushort i = 1; i <= xParms.Length; i++)
-                {
-                    ((Ldarg)MSIL[ILCode.Ldarg]).Execute2(i, xMethod);
-                }
-
-                Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBP, DestinationIndirect = true, DestinationDisplacement = 0x8, SourceReg = Registers.EAX });
-                
-                //calli footer                
-                Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "0x0" });
-                Core.AssemblerCode.Add(new Leave());
-                Core.AssemblerCode.Add(new Ret { Address = (byte)xSize });
-            }*/
             BuildDefinations.Add(xMethod);
         }
 
         public void FlushAsmFile()
         {
+            //Flush some compiler code
+            CompilerFlush();
+
             //To Make output assembly looks good
             //But i comment this because the multiboot header comes to down
             //Core.DataMember.Sort();

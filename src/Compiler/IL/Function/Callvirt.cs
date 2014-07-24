@@ -20,11 +20,15 @@ namespace Atomix.IL
 
         public override void Execute(ILOpCode instr, MethodBase aMethod)
         {
+            var xOp = (OpMethod)instr;
             //The Target method base which we have to call
-            var xTarget = ((OpMethod)instr).Value;
+            var xTarget = xOp.Value;
             //Try to get if there is any method info of target method
             var xTargetInfo = xTarget as MethodInfo;
-            var xNormalAddress = xTarget.FullName(); //Target method full name
+            var xNormalAddress = string.Empty;
+
+            if (xTarget.IsStatic || !xTarget.IsVirtual || xTarget.IsFinal)
+                xNormalAddress = xTarget.FullName();//Target method full name
 
             var xParams = xTarget.GetParameters();            
             var xNextAddress = ILHelper.GetLabel(aMethod, instr.NextPosition);//Next address after call IL instruction
@@ -56,15 +60,25 @@ namespace Atomix.IL
                 foreach (var xp in xTarget.GetParameters())
                 {
                     SizeToReserve -= xp.ParameterType.SizeOf().Align();
-                    Core.vStack.Pop();
                 }
                 if (!xTargetInfo.IsStatic)
                 {
                     SizeToReserve -= (ILCompiler.CPUArchitecture == CompilerExt.CPUArch.x86 ? 4 : 8);
-                    Core.vStack.Pop();
                 }
             }
             #endregion
+
+            int xThisOffset = 0;
+            var xParameters = xTarget.GetParameters();
+            foreach (var xItem in xParameters)
+            {
+                xThisOffset += xItem.ParameterType.SizeOf().Align();
+                Core.vStack.Pop();
+            }
+            if (!xTarget.IsStatic)
+            {
+                Core.vStack.Pop();
+            }
 
             /*
                 Method arguments arg1 through argN are pushed onto the stack.
@@ -90,7 +104,36 @@ namespace Atomix.IL
                         }
                         else
                         {
-                            throw new Exception("Not implemented yet");
+                            if (xOp.MethodUID == 0)
+                            {
+                                //Same as above
+                                if (SizeToReserve > 0)
+                                    Core.AssemblerCode.Add(new Sub { DestinationReg = Registers.ESP, SourceRef = SizeToReserve.ToString("X") });
+
+                                Core.AssemblerCode.Add(new Call(xTarget.FullName()));
+                            }
+                            else
+                            {
+                                Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.ESP, SourceIndirect = true, SourceDisplacement = (int)xThisOffset });
+                                Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX, DestinationIndirect = true });
+                                Core.AssemblerCode.Add(new Push { DestinationRef = "0x" + xOp.MethodUID.ToString("X") });                                
+                                Core.AssemblerCode.Add(new Call("__VTable_Get_Method__"));
+                                if (xTarget.DeclaringType == typeof(object))
+                                {
+                                    throw new Exception("@Callvirt:: Not implemented");
+                                }
+
+                                if (SizeToReserve > 0)
+                                {
+                                    xThisOffset -= SizeToReserve;
+                                }
+                                Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
+                                if (SizeToReserve > 0)
+                                {
+                                    Core.AssemblerCode.Add(new Sub { DestinationReg = Registers.ESP, SourceRef = SizeToReserve.ToString("X") });
+                                }
+                                Core.AssemblerCode.Add(new Call("EAX"));
+                            }
                         }
 
                         //Check if ECX register has no error value that is 0x1
