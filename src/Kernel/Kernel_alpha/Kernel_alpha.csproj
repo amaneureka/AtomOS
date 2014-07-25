@@ -72,6 +72,7 @@
     <Compile Include="x86\PCI.cs" />
     <Compile Include="x86\PCIDevice.cs" />
     <Compile Include="x86\PIC.cs" />
+    <Compile Include="x86\xINT.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Compiler\CompilerExt\CompilerExt.csproj">

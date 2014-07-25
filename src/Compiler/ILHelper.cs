@@ -595,8 +595,8 @@ namespace Atomix
                 var xField = xFields[i];
 
                 //Maybe the entry is not what we want
-                if (xField.DeclaringType != aDeclaringType)
-                    continue;
+                //if (xField.DeclaringType != aDeclaringType)
+                //    continue;
 
                 xOffset += xField.FieldType.SizeOf();
             }

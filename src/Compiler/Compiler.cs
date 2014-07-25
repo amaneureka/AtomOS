@@ -461,10 +461,7 @@ namespace Atomix
         {
             //Just a basic patch to fix Null reference exception
             var xBody = aMethod.GetMethodBody();
-
-            if (xBody == null) //Don't try to build null method
-                return;
-
+            
             var xAssemblyName  = aMethod.DeclaringType.Assembly.GetName().Name;
             if ((xAssemblyName == "mscorlib" || xAssemblyName == "System") && Plugs.ContainsValue(aMethod.FullName()))
                 return;
@@ -477,6 +474,10 @@ namespace Atomix
                 ProcessDelegate(aMethod);
                 return;
             }
+
+            if (xBody == null) //Don't try to build null method
+                return;
+
             //Tell logger that we are processing a method with given name and declaring type
             //Well declaring type is necessary because when we have a plugged method than
             //Its full name is the plugged value so we will not get where the plug is implemented
@@ -531,6 +532,7 @@ namespace Atomix
                 Core.AssemblerCode.Add(new Cmp() { DestinationRef = aData, DestinationIndirect = true, SourceRef = "0x0", Size = 8 });
                 Core.AssemblerCode.Add(new Jmp() { Condition = ConditionalJumpEnum.JE, DestinationRef = Label.PrimaryLabel + ".Load" });
                 /* Footer of method */
+                Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "0x0" });
                 Core.AssemblerCode.Add(new Ret());
 
                 Core.AssemblerCode.Add(new Label(".Load"));
@@ -722,8 +724,6 @@ namespace Atomix
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBP, SourceReg = Registers.ESP });
 
             #region _Virtual_Flush_
-            Core.AssemblerCode.Add(new Call("__VTable_Init_Methods_Table__"));
-
             uint xUID = 0;
             foreach (var xV in Virtuals)
             {
@@ -752,6 +752,9 @@ namespace Atomix
         private void ProcessDelegate(MethodBase xMethod)
         {
             var lbl = xMethod.FullName();
+            var lbl_exception = lbl + ".Error";
+            var lbl_end = lbl + ".End";
+
             Core.AssemblerCode.Add(new Label(lbl));
 
             //Calli header
@@ -760,16 +763,16 @@ namespace Atomix
 
             if (lbl.Contains("ctor"))
             {
-                ((Ldarg)MSIL[ILCode.Ldarg]).Execute2(0, xMethod);
-                var xArray_ctor = typeof(Array).GetConstructors(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance)[0];
-                Core.AssemblerCode.Add(new Call(xArray_ctor.FullName()));
+                //((Ldarg)MSIL[ILCode.Ldarg]).Execute2(0, xMethod);
+                //var xArray_ctor = typeof(Array).GetConstructors(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance)[0];
+                //Core.AssemblerCode.Add(new Call(xArray_ctor.FullName()));
                 
                 //Load Argument
                 ((Ldarg)MSIL[ILCode.Ldarg]).Execute2(0, xMethod);
                 
                 ((Ldarg)MSIL[ILCode.Ldarg]).Execute2(2, xMethod);//The pointer
                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.ESP, SourceDisplacement = 0x4, SourceIndirect = true });
-                Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EBX, SourceRef = "0x8" });
+                Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EBX, SourceRef = "0xC" });
                 Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, DestinationIndirect = true, SourceReg = Registers.EAX });
                 Core.AssemblerCode.Add(new Add { DestinationReg = Registers.ESP, SourceRef = "0x4" });
@@ -777,7 +780,7 @@ namespace Atomix
                 //calli footer
                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "0x0" });
                 Core.AssemblerCode.Add(new Leave());
-                Core.AssemblerCode.Add(new Ret { Address = 0xC });
+                Core.AssemblerCode.Add(new Ret { Address = 0xC });//Memory location + Object + Intptr
             }
             else if (lbl.Contains("Invoke"))
             {
@@ -785,7 +788,7 @@ namespace Atomix
                 ((Ldarg)MSIL[ILCode.Ldarg]).Execute2(0, xMethod);
                 
                 Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
-                Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EAX, SourceRef = "0x8" });
+                Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EAX, SourceRef = "0xC" });
 
                 var xParms = xMethod.GetParameters();
                 int xSize = (from item in xMethod.GetParameters()
@@ -797,15 +800,16 @@ namespace Atomix
                 }
                 
                 Core.AssemblerCode.Add(new Call("[EAX]"));
-                //Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EBX });
-                //Core.AssemblerCode.Add(new Call("System_String_System_UInt32_ToString__"));
-                //Core.AssemblerCode.Add(new Call("System_Void_System_Console_WriteLine_System_String_"));
-
-                //Core.AssemblerCode.Add(new Add { DestinationReg = Registers.ESP, SourceRef = "0x" + xSize.ToString("X") });
+                Core.AssemblerCode.Add(new Test { DestinationReg = Registers.ECX, SourceRef = "0x2" });
+                Core.AssemblerCode.Add(new Jmp { Condition = ConditionalJumpEnum.JNE, DestinationRef = lbl_exception });
+                
                 //calli footer
+                Core.AssemblerCode.Add(new Label(lbl_end));
                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "0x0" });
+
+                Core.AssemblerCode.Add(new Label(lbl_exception));
                 Core.AssemblerCode.Add(new Leave());
-                Core.AssemblerCode.Add(new Ret { Address = (byte)xSize });
+                Core.AssemblerCode.Add(new Ret { Address = (byte)(xSize + 0x4) });//Parameter + Memory
             }
             BuildDefinations.Add(xMethod);
         }

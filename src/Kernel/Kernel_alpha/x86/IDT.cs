@@ -48,9 +48,9 @@ namespace Kernel_alpha.x86
         [Plug("__Interrupt_Handler__")]
         private static unsafe void ProcessInterrupt(ref IRQContext xContext)
         {
-            var xINT = xContext.Interrupt;
+            var INT = xContext.Interrupt;
 
-            if (xINT < 0x13 && xINT >= 0) // [0, 19) --> Exceptions
+            if (INT < 0x13 && INT >= 0) // [0, 19) --> Exceptions
             {
                 #region Handle
                 const string xHex = "0123456789ABCDEF";
@@ -97,9 +97,9 @@ namespace Kernel_alpha.x86
                     xAddress[37] = 0x0C;
                     xAddress[38] = (byte)'x';
                     xAddress[39] = 0x0C;
-                    xAddress[40] = (byte)xHex[(int)((xINT >> 4) & 0xF)];
+                    xAddress[40] = (byte)xHex[(int)((INT >> 4) & 0xF)];
                     xAddress[41] = 0x0C;
-                    xAddress[42] = (byte)xHex[(int)(xINT & 0xF)];
+                    xAddress[42] = (byte)xHex[(int)(INT & 0xF)];
                     xAddress[43] = 0x0C;
                     xAddress[44] = (byte)' ';
                     xAddress[45] = 0x0C;
@@ -115,9 +115,9 @@ namespace Kernel_alpha.x86
                 #endregion
                 while (true) ;
             }
-            else if (xINT >= 0x20 && xINT < 0x30) //[32, 48) --> Hardware Interrupts
+            else if (INT >= 0x20 && INT < 0x30) //[32, 48) --> Hardware Interrupts
             {
-                var xIRQ = (xINT - 0x20);
+                var xIRQ = (INT - 0x20);
                 switch (xIRQ)
                 {
                     case 1:

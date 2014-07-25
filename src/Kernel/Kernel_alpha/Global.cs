@@ -34,7 +34,7 @@ namespace Kernel_alpha
             // Setup Mouse
             Console.Write ("Setting up PS/2 Mouse... ");
             Mouse = new PS2Mouse();
-            Mouse.Initialize();            
+            Mouse.Initialize();
             Console.WriteLine ("OK");
 
             // Setup Keyboard
@@ -49,7 +49,8 @@ namespace Kernel_alpha
 
             //Load Parts
             Console.Write ("Loading Partitions... ");
-            if (PrimaryIDE != null)
+            Parts = new List<Partition>();
+            if (PrimaryIDE != null && PrimaryIDE.DriveInfo.Device == Device.IDE_ATA)
             {
                 var xMBR = new Drivers.PartInfo.MBR(PrimaryIDE);
                 Parts = xMBR.PartInfo;

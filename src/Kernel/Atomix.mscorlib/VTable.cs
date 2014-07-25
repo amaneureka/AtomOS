@@ -10,29 +10,18 @@ namespace Atomix.mscorlib
 {
     public static class VTable
     {
-        private static VTypes[] xTypes = new VTypes[100];
-
-        [Plug("__VTable_Init_Methods_Table__")]
-        public static void Init()
-        {
-            for (int i = 0; i < xTypes.Length; i++)
-                xTypes[i] = new VTypes();
-        }
+        private static uint[] xAddress = new uint[100 * 50];
 
         [Plug("__VTable_Get_Method__")]
         public static uint GetMethod(int aType, int aMethodIndex)
         {
-            return xTypes[aType].xMethodAddress[aMethodIndex];
+            return xAddress[(int)((int)(aType * 50) + aMethodIndex)];
         }
 
         [Plug("__VTable_Set_Method__")]
         public static void SetMethod(int aType, int aMethodIndex, uint Address)
         {
-            xTypes[aType].xMethodAddress[aMethodIndex] = Address;
+            xAddress[(int)((int)(aType * 50) + aMethodIndex)] = Address;
         }
-    }
-    public class VTypes
-    {
-        public uint[] xMethodAddress = new uint[20];
     }
 }

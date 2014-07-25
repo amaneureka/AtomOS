@@ -68,8 +68,8 @@ namespace Kernel_alpha.Drivers.Buses.ATA
         /// </summary>
         private void Discover()
         {
-            DriveInfo.Device = Device.IDE_ATA;
-            DriveInfo.BufferSize = 512;
+            DriveInfo.Device = Device.IDE_None;
+            DriveInfo.BufferSize = 0;
 
             Status xStatus;
             bool Error = false;
@@ -97,7 +97,10 @@ namespace Kernel_alpha.Drivers.Buses.ATA
                     break; //Everything is fine
                 Wait();
             }
-            
+
+            DriveInfo.Device = Device.IDE_ATA;
+            DriveInfo.BufferSize = 512;
+
             // (IV) Probe for ATAPI Devices:
             if (Error)
             {
@@ -108,7 +111,11 @@ namespace Kernel_alpha.Drivers.Buses.ATA
                     DriveInfo.BufferSize = 2048;
                 }
                 else
+                {
+                    DriveInfo.Device = Device.IDE_None;
+                    DriveInfo.BufferSize = 0;
                     return;
+                }
 
                 //Send Identify packet command
                 CommandReg.Byte = (byte)Cmd.ATA_CMD_IDENTIFY_PACKET;
@@ -298,7 +305,7 @@ namespace Kernel_alpha.Drivers.Buses.ATA
                 if (IsReading)
                 {
                     // PIO Read.
-                    Poll(false);// Polling, set error and exit if there is.
+                    Poll(true);// Polling, set error and exit if there is.
                     DataReg.Read16(xData);
                 }
                 else
@@ -394,7 +401,7 @@ namespace Kernel_alpha.Drivers.Buses.ATA
                 // (V) Check DRQ:
                 // -------------------------------------------------
                 // BSY = 0; DF = 0; ERR = 0 so we should check for DRQ now.
-                if ((xState & Status.ATA_SR_DRQ) != 0)
+                if ((xState & Status.ATA_SR_DRQ) == 0)
                     throw new Exception("ATA DRQ should be set");
             }
         }

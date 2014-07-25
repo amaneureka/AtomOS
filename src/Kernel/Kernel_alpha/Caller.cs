@@ -72,7 +72,7 @@ namespace Kernel_alpha
 
         private static uint pTask1;
         public static unsafe void Task1()
-        {            
+        {
             do
             {
                 WriteScreen("X:", 6);
@@ -141,6 +141,48 @@ namespace Kernel_alpha
                 Console.WriteLine(e.Message);
                 Thread.Die();
             }
+        }
+    }
+    public abstract class ABC
+    {
+        protected string ID;
+
+        public abstract void Read();
+
+        public abstract void Write();
+    }
+    public class Test123 : ABC
+    {
+        public Test123(string str)
+        {
+            this.ID = str;
+        }
+
+        public override void Read()
+        {
+            Console.WriteLine("Read::" + ID);
+        }
+
+        public override void Write()
+        {
+            Console.WriteLine("Write::" + ID);
+        }
+    }
+    public class Test124 : ABC
+    {
+        public Test124(string str)
+        {
+            this.ID = str;
+        }
+
+        public override void Read()
+        {
+            Console.WriteLine("Read2::" + ID);
+        }
+
+        public override void Write()
+        {
+            Console.WriteLine("Write2::" + ID);
         }
     }
 }

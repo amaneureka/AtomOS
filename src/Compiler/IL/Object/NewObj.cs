@@ -129,7 +129,7 @@ namespace Atomix.IL
                                     throw new NotImplementedException("In NewObj is a string ctor implementation missing!");
                             }
 
-                            int xMemSize = ILHelper.StorageSize(xTargetType) + 16;
+                            int xMemSize = ILHelper.StorageSize(xTargetType) + 12;
                             Core.AssemblerCode.Add(new Push { DestinationRef = "0x" + xMemSize.ToString("X") });
                             if (xHasCalcSize)
                             {
