@@ -16,7 +16,7 @@ namespace Kernel_alpha
         public static IDE PrimaryIDE;
         public static IDE SecondayIDE;
 
-        public static List<Partition> Parts;
+        public static List<BlockDevice> Devices = new List<BlockDevice>();
 
         public static void Init()
         {
@@ -48,12 +48,12 @@ namespace Kernel_alpha
             Console.WriteLine("OK");
 
             //Load Parts
-            Console.Write ("Loading Partitions... ");
-            Parts = new List<Partition>();
+            Console.Write ("Loading Partitions... ");            
             if (PrimaryIDE != null && PrimaryIDE.DriveInfo.Device == Device.IDE_ATA)
             {
                 var xMBR = new Drivers.PartInfo.MBR(PrimaryIDE);
-                Parts = xMBR.PartInfo;
+                for (int i = 0; i < xMBR.PartInfo.Count; i++)
+                    Devices.Add(xMBR.PartInfo[i]);
             }
             Console.WriteLine("OK");
         }
@@ -70,6 +70,8 @@ namespace Kernel_alpha
                 //Now we check if parallel ATA is present
                 PrimaryIDE = new IDE(false);
                 SecondayIDE = new IDE(true);
+                Devices.Add(PrimaryIDE);
+                Devices.Add(SecondayIDE);
             }
         }
     }

@@ -187,6 +187,8 @@
     <Compile Include="IL\Conversion\Conv_I1.cs" />
     <Compile Include="IL\Load\Ldnull.cs" />
     <Compile Include="IL\SizeOf.cs" />
+    <Compile Include="IL\Isinst.cs" />
+    <Compile Include="IL\Volatile.cs" />
     <Compile Include="IL\Throw.cs" />
     <Compile Include="IL\Branch\Brfalse.cs" />
     <Compile Include="IL\Leave.cs" />

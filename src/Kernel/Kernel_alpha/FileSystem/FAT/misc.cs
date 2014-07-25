@@ -13,4 +13,21 @@ namespace Kernel_alpha.FileSystem.FAT
     {
         //Here all helpful fat libs, like ToUInt32...i guess you don't need this class
     }
+    public enum FatType : byte
+    {
+        /// <summary>
+        /// Represents a 12-bit FAT.
+        /// </summary>
+        FAT12 = 12,
+
+        /// <summary>
+        /// Represents a 16-bit FAT.
+        /// </summary>
+        FAT16 = 16,
+
+        /// <summary>
+        /// Represents a 32-bit FAT.
+        /// </summary>
+        FAT32 = 32
+    }
 }

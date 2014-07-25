@@ -4,7 +4,7 @@ using Kernel_alpha.Drivers.Buses.ATA;
 
 namespace Kernel_alpha.Drivers
 {
-    public class Partition
+    public class Partition : BlockDevice
     {
         protected IDE aDisk;
         protected UInt32 aStartSector;
@@ -17,13 +17,13 @@ namespace Kernel_alpha.Drivers
             this.aSectorCount = SectorCount;
         }
 
-        public void Read(UInt32 BlockNo, UInt32 BlockCount, byte[] aData)
+        public override void Read(UInt32 BlockNo, UInt32 BlockCount, byte[] aData)
         {
             #warning Add Overflow exception
             aDisk.Read(BlockNo + aStartSector, BlockCount, aData);
         }
 
-        public void Write(UInt32 BlockNo, UInt32 BlockCount, byte[] aData)
+        public override void Write(UInt32 BlockNo, UInt32 BlockCount, byte[] aData)
         {
             #warning Add Overflow exception
             aDisk.Write(BlockNo + aStartSector, BlockCount, aData);

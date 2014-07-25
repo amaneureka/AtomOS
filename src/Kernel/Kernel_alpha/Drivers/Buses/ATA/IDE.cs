@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 using Kernel_alpha.x86;
 using Kernel_alpha.x86.Intrinsic;
+using Kernel_alpha.Drivers;
 
 namespace Kernel_alpha.Drivers.Buses.ATA
 {
-    public class IDE
+    public class IDE : BlockDevice
     {
         private IOPort DataReg;
         private IOPort FeatureReg;
@@ -164,12 +165,12 @@ namespace Kernel_alpha.Drivers.Buses.ATA
                 Console.WriteLine("ATAPI");*/
         }
 
-        public void Read(UInt32 SectorNo, uint SectorCount, byte[] xData)
+        public override void Read(UInt32 SectorNo, uint SectorCount, byte[] xData)
         {
             Access_Disk(SectorNo, SectorCount, xData, true);
         }
 
-        public void Write(UInt32 SectorNo, uint SectorCount, byte[] xData)
+        public override void Write(UInt32 SectorNo, uint SectorCount, byte[] xData)
         {
             Access_Disk(SectorNo, SectorCount, xData, false);
         }

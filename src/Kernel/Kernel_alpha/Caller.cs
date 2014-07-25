@@ -30,7 +30,18 @@ namespace Kernel_alpha
             // Just for mouse testing
             Multitasking.CreateTask(pTask1, true);
             Multitasking.CreateTask(pTask2, true);
-            Console.WriteLine("Partition Count::" + Global.Parts.Count.ToString());
+            Console.WriteLine("Block Device Count::" + Global.Devices.Count.ToString());
+            uint c = 0;
+            for (int i = 0; i < Global.Devices.Count; i++)
+            {
+                if (Global.Devices[i] is Drivers.Partition)
+                    c++;
+            }
+            Console.WriteLine("Partition Count::" + c.ToString());
+            var xFAT = new FileSystem.FatFileSystem(Global.Devices[2]);
+            Console.Clear();
+            Console.WriteLine();
+            xFAT.FlushDetails();
         }
 
         public static unsafe void Update()

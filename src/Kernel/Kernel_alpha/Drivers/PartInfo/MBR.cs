@@ -16,6 +16,8 @@ namespace Kernel_alpha.Drivers.PartInfo
         public MBR(IDE mDisk)
         {
             this.aDisk = mDisk;
+            this.aPartitions = new List<Partition>();
+
             var aMBR = new byte[512];
             mDisk.Read(0U, 1U, aMBR);
             ParseData(aMBR, 446);

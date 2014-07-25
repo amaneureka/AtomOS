@@ -42,6 +42,7 @@
     <Compile Include="Caller.cs" />
     <Compile Include="Drivers\ACPI\ACPI.cs" />
     <Compile Include="Drivers\ACPI\misc.cs" />
+    <Compile Include="Drivers\BlockDevice.cs" />
     <Compile Include="Drivers\Buses\ATA\IDE.cs" />
     <Compile Include="Drivers\Buses\ATA\misc.cs" />
     <Compile Include="Drivers\Input\keyboard\Keyboard.cs" />
@@ -54,8 +55,10 @@
     <Compile Include="Drivers\Video\Vmware\VMWareSVGAII.cs" />
     <Compile Include="FileSystem\FAT\FatFileSystem.cs" />
     <Compile Include="FileSystem\FAT\misc.cs" />
+    <Compile Include="FileSystem\GenericFileSystem.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="Kernel.cs" />
+    <Compile Include="Lib\Encoding\ASCII.cs" />
     <Compile Include="Lib\MemoryBlock.cs" />
     <Compile Include="Multitasking.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
