@@ -3,11 +3,8 @@ using Atomix.CompilerExt;
 using Atomix.CompilerExt.Attributes;
 using Kernel_alpha.x86.Intrinsic;
 
-// Only compile for the old Kernel
-// I created a new class for the new Kernel
-#if (!COMPILE_H)
-namespace Atomix.mscorlib
-{    
+namespace Kernel_alpha.Lib
+{
     public class ConsoleImpl
     {
         /// <summary>
@@ -23,7 +20,7 @@ namespace Atomix.mscorlib
         /// </summary>
         public static bool ShowCursor;
 
-        #region _x86_        
+        #region _x86_
         [Plug("System_Void_System_Console_WriteLine_System_String_", CPUArch.x86)]
         public static void WriteLine_x86(string str)
         {
@@ -45,7 +42,7 @@ namespace Atomix.mscorlib
                 Console.Write(str[i]);
             }
         }
-        
+
         [Plug("System_Void_System_Console_Write_System_Char_", CPUArch.x86)]
         public static void Write_x86(char chr)
         {
@@ -119,4 +116,3 @@ namespace Atomix.mscorlib
         }
     }
 }
-#endif

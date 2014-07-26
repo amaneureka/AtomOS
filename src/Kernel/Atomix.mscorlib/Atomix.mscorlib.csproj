@@ -56,7 +56,6 @@
     <Compile Include="SR.cs" />
     <Compile Include="Type.cs" />
     <Compile Include="SByte.cs" />
-    <Compile Include="Console.cs" />
     <Compile Include="Enum.cs" />
     <Compile Include="Environment.cs" />
     <Compile Include="Exception.cs" />

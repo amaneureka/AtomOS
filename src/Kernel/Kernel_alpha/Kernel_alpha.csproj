@@ -58,6 +58,7 @@
     <Compile Include="FileSystem\GenericFileSystem.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="Kernel.cs" />
+    <Compile Include="Lib\Console.cs" />
     <Compile Include="Lib\Encoding\ASCII.cs" />
     <Compile Include="Lib\MemoryBlock.cs" />
     <Compile Include="Multitasking.cs" />
