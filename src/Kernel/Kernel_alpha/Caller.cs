@@ -69,6 +69,20 @@ namespace Kernel_alpha
                     svga.SetMode(1024, 768, 32);
                     svga.Clear(0xFFFFFF);
                 }
+                else if (s.Code == KeyCode.G)
+                {
+                    var vga = new Drivers.Video.VGAScreen();
+                    vga.SetMode0();
+                    byte c = 0;
+                    for (uint i = 0; i < vga.Width; i ++)
+                    {
+                        for (uint j = 0; j < vga.Height; j++)
+                        {
+                            vga.SetPixel_8(i, j, c);
+                        }
+                        c++;
+                    }
+                }
             }
             else if (Global.KBD.Alt)
             {

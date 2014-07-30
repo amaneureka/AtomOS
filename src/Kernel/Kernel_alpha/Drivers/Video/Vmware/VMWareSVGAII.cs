@@ -13,8 +13,8 @@ namespace Kernel_alpha.Drivers.Video
         private IOPort IndexPort;
         private IOPort ValuePort;
 
-        private MemoryBlock FB_Memory;
-        private MemoryBlock FIFO_Memory;
+        private MemoryBlock32 FB_Memory;
+        private MemoryBlock32 FIFO_Memory;
 
         private UInt32 VersionID;
         private UInt32 Capabilities;
@@ -38,8 +38,8 @@ namespace Kernel_alpha.Drivers.Video
             ValuePort = new IOPort((ushort)(IOBase + (ushort)IOPortOffset.Value));
             
             //Memory Block
-            FB_Memory = new MemoryBlock(Device.BaseAddressBar[1].BaseAddress);
-            FIFO_Memory = new MemoryBlock(Device.BaseAddressBar[2].BaseAddress);
+            FB_Memory = new MemoryBlock32(Device.BaseAddressBar[1].BaseAddress);
+            FIFO_Memory = new MemoryBlock32(Device.BaseAddressBar[2].BaseAddress);
             
            //Version Check
             VersionID = (UInt32)Versions.SVGA_ID_2;

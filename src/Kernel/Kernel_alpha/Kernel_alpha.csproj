@@ -51,6 +51,8 @@
     <Compile Include="Drivers\Input\Mouse\PS2.cs" />
     <Compile Include="Drivers\PartInfo\MBR.cs" />
     <Compile Include="Drivers\PartInfo\Partition.cs" />
+    <Compile Include="Drivers\Video\VGA\modes.cs" />
+    <Compile Include="Drivers\Video\VGA\VGAScreen.cs" />
     <Compile Include="Drivers\Video\Vmware\misc.cs" />
     <Compile Include="Drivers\Video\Vmware\VMWareSVGAII.cs" />
     <Compile Include="FileSystem\FAT\FatFileSystem.cs" />
@@ -58,9 +60,13 @@
     <Compile Include="FileSystem\GenericFileSystem.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="Kernel.cs" />
+    <Compile Include="Lib\BinaryFormat.cs" />
     <Compile Include="Lib\Console.cs" />
     <Compile Include="Lib\Encoding\ASCII.cs" />
     <Compile Include="Lib\MemoryBlock.cs" />
+    <Compile Include="Lib\MemoryBlock08.cs" />
+    <Compile Include="Lib\MemoryBlock16.cs" />
+    <Compile Include="Lib\MemoryBlock32.cs" />
     <Compile Include="Multitasking.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="misc.cs" />
@@ -73,6 +79,7 @@
     <Compile Include="x86\Intrinsic\Native.cs" />
     <Compile Include="x86\Memory.cs" />
     <Compile Include="x86\Multiboot.cs" />
+    <Compile Include="x86\Paging.cs" />
     <Compile Include="x86\PCI.cs" />
     <Compile Include="x86\PCIDevice.cs" />
     <Compile Include="x86\PIC.cs" />

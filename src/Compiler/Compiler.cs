@@ -772,7 +772,7 @@ namespace Atomix
                 
                 ((Ldarg)MSIL[ILCode.Ldarg]).Execute2(2, xMethod);//The pointer
                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.ESP, SourceDisplacement = 0x4, SourceIndirect = true });
-                Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EBX, SourceRef = "0xC" });
+                Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EBX, SourceRef = "0x8" });
                 Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, DestinationIndirect = true, SourceReg = Registers.EAX });
                 Core.AssemblerCode.Add(new Add { DestinationReg = Registers.ESP, SourceRef = "0x4" });
@@ -788,7 +788,7 @@ namespace Atomix
                 ((Ldarg)MSIL[ILCode.Ldarg]).Execute2(0, xMethod);
                 
                 Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
-                Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EAX, SourceRef = "0xC" });
+                Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EAX, SourceRef = "0x8" });
 
                 var xParms = xMethod.GetParameters();
                 int xSize = (from item in xMethod.GetParameters()

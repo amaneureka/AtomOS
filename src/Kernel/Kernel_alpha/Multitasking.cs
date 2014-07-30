@@ -156,6 +156,7 @@ namespace Kernel_alpha
             Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
 
             Core.AssemblerCode.Add(new Call("__Task_Switcher__"));
+            Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });//This is just to add ESP, because EAX already have return value
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ESP, SourceReg = Registers.EAX });
 
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.AL, SourceRef = "0x20", Size = 8 });

@@ -47,14 +47,14 @@ namespace Atomix.IL
                             case 1:
                                 {
                                     Core.AssemblerCode.Add(new Xor { DestinationReg = Registers.EBX, SourceReg = Registers.EBX });
-                                    Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.BL, SourceIndirect = true, SourceReg = Registers.EAX });
+                                    Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.BL, SourceIndirect = true, SourceReg = Registers.EAX, Size = 8 });
                                     Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EBX });
                                     break;
                                 }
                             case 2:
                                 {
                                     Core.AssemblerCode.Add(new Xor { DestinationReg = Registers.EBX, SourceReg = Registers.EBX });
-                                    Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.BX, SourceIndirect = true, SourceReg = Registers.EAX });
+                                    Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.BX, SourceIndirect = true, SourceReg = Registers.EAX, Size = 16 });
                                     Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EBX });
                                     break;
                                 }

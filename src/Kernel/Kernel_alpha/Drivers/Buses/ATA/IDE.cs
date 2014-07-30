@@ -372,7 +372,7 @@ namespace Kernel_alpha.Drivers.Buses.ATA
             WaitIRQ();
 
             //Poll and check for error
-            Poll(true);
+            Poll(false);
         }
 
         private void Poll(bool AdvancedCheck)
