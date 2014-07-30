@@ -30,4 +30,22 @@ namespace Kernel_alpha.FileSystem.FAT
         /// </summary>
         FAT32 = 32
     }
+
+    internal struct Entry
+    {
+        internal const uint DOSName = 0x00; // 8
+        internal const uint DOSExtension = 0x08;	// 3
+        internal const uint FileAttributes = 0x0B;	// 1
+        internal const uint Reserved = 0x0C;	// 1
+        internal const uint CreationTimeFine = 0x0D; // 1
+        internal const uint CreationTime = 0x0E; // 2
+        internal const uint CreationDate = 0x10; // 2
+        internal const uint LastAccessDate = 0x12; // 2
+        internal const uint EAIndex = 0x14; // 2
+        internal const uint LastModifiedTime = 0x16; // 2
+        internal const uint LastModifiedDate = 0x18; // 2
+        internal const uint FirstCluster = 0x1A; // 2
+        internal const uint FileSize = 0x1C; // 4
+        internal const uint EntrySize = 32;
+    }
 }

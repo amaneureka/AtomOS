@@ -42,6 +42,7 @@ namespace Kernel_alpha
             Console.Clear();
             Console.WriteLine();
             xFAT.FlushDetails();
+            xFAT.ReadRootDir();
         }
 
         public static unsafe void Update()

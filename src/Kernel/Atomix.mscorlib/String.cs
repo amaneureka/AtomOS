@@ -208,5 +208,70 @@ namespace Atomix.mscorlib
             }
             return new String(xResult);
         }
+
+        [Plug("System_String___System_String_Split_System_Char___")]
+        public static string[] Split(string str, char[] c)
+        {
+            int counter = 0;
+            for (int i = 0; i < str.Length; i++)
+            {
+                if (str[i] == c[0])
+                {
+                    counter++;
+                }
+            }
+            string[] xResult = new string[counter + 1];
+            char[] xTemp = new char[255];
+
+            int mcounter = 0;
+            int zcounter = 0;
+            for (int i = 0; i < str.Length; i++)
+            {
+                if (str[i] == c[0])
+                {
+                    char[] xTemp2 = new char[mcounter + 1];
+                    for (int j = 0; j < mcounter; j++)
+                    {
+                        xTemp2[j] = xTemp[j];
+                    }
+                    mcounter = 0;
+                    xResult[zcounter] = new string(xTemp2);
+                    zcounter++;
+                }
+                else
+                {
+                    xTemp[mcounter] = str[i];
+                    mcounter++;
+
+                    if (i == str.Length - 1)
+                    {
+                        char[] xTemp2 = new char[mcounter + 1];
+                        for (int j = 0; j < mcounter; j++)
+                        {
+                            xTemp2[j] = xTemp[j];
+                        }
+                        mcounter = 0;
+                        xResult[zcounter] = new string(xTemp2);
+                        zcounter++;
+                    }
+                }
+            }
+            return xResult;
+        }
+
+        [Plug("System_String_System_String_Trim_System_Char___")]
+        public static string Trim(string aThis, char[] aChar)
+        {
+            /* Done it in very hurry, haha...so it do limited work */
+            int c = 0;
+            for (int i = 0; i < aThis.Length; i++)
+            {
+                if (aThis[i] == aChar[0])
+                    break;
+                c++;
+            }
+            return aThis.Substring(0, c);
+        }
+
     }
 }

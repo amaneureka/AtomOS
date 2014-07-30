@@ -56,6 +56,10 @@
     <Compile Include="Drivers\Video\Vmware\misc.cs" />
     <Compile Include="Drivers\Video\Vmware\VMWareSVGAII.cs" />
     <Compile Include="FileSystem\FAT\FatFileSystem.cs" />
+    <Compile Include="FileSystem\FAT\Lists\Base.cs" />
+    <Compile Include="FileSystem\FAT\Lists\Directory.cs" />
+    <Compile Include="FileSystem\FAT\Lists\File.cs" />
+    <Compile Include="FileSystem\FAT\Lists\FileSystem.cs" />
     <Compile Include="FileSystem\FAT\misc.cs" />
     <Compile Include="FileSystem\GenericFileSystem.cs" />
     <Compile Include="Global.cs" />
