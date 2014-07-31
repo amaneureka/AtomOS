@@ -4,30 +4,19 @@ namespace Kernel_alpha.FileSystem.FAT.Lists
 {
     public abstract class Base
     {
-        public readonly FileSystem FileSystem;
-        public readonly string Name;
+        protected string Name;
+        protected Details Details;
 
-        protected Base(string aName)
+        public string EntryName
+        { get { return Name; } }
+
+        public Details EntryDetails
+        { get { return Details; } }
+
+        public Base(string aName, Details aDetail)
         {
-            //FileSystem = aFileSystem;
-            Name = aName;
+            this.Name = aName;
+            this.Details = aDetail;
         }
-
-        // Size might be updated in an ancestor destructor or on demand,
-        // so its not a readonly field
-        protected UInt64 mSize;
-        public virtual UInt64 Size
-        {
-            get { return mSize; }
-        }
-
-        string xdate;
-
-        public virtual string ModifiedDate
-        {
-            get { return xdate; }
-            set { xdate = value; }
-        }
-
     }
 } 

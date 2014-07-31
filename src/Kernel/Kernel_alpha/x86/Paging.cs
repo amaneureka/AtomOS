@@ -10,18 +10,17 @@ using Kernel_alpha.x86.Intrinsic;
 namespace Kernel_alpha.x86
 {
     public static unsafe class Paging
-    {
-        private static uint PageDirectory;
-
+    {        
         public static void Setup()
         {
-            PageDirectory = (Native.EndOfKernel() & 0xFFFFF000) + 0x1000;
+            var PageDirectory = (Native.EndOfKernel() & 0xFFFFF000) + 0x1000;
 
-            //set each entry to not present
+            UInt32* PageDir = (UInt32*)PageDirectory;
+
             for (int i = 0; i < 1024; i++)
             {
                 //attribute: supervisor level, read/write, not present.
-                *(UInt32*)(PageDirectory + i) = 0x0 | 0x2;
+                PageDir[i] = 0x0 | 0x2;
             }
 
             //First Page table --> Map 4MB of memory
@@ -33,9 +32,9 @@ namespace Kernel_alpha.x86
                 Page_Table[i] = Address | 0x3; // attributes: supervisor level, read/write, present.
                 Address += 4096;//advance the address to the next page boundary
             }
-
-            // attributes: supervisor level, read/write, present
-            *(UInt32*)(PageDirectory + 0) = *(UInt32*)Page_Table | 0x3;
+            
+            PageDir[0] = PageDirectory + 1024;
+            PageDir[0] |= 0x1;// attributes: supervisor level, read/write, present
 
             EnablePaging(PageDirectory);
         }
@@ -43,11 +42,11 @@ namespace Kernel_alpha.x86
         [Assembly(0x4)]
         private static void EnablePaging(uint PageDirectory)
         {
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.CR3,  SourceReg = Registers.EBX });
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.CR0 });
-            Core.AssemblerCode.Add(new Or { DestinationReg = Registers.EAX, SourceRef = "0x80000000" });
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.CR0, SourceReg = Registers.EAX });
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.CR0 });
+            Core.AssemblerCode.Add(new Or { DestinationReg = Registers.EBX, SourceRef = "0x80000000" });
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.CR0, SourceReg = Registers.EBX });
         }
     }
 }

@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kernel_alpha.FileSystem.FAT
 {
-    /*
-     * here all structures/enums etc will coded
-    */
-    public static class misc
+    public struct Details
     {
-        //Here all helpful fat libs, like ToUInt32...i guess you don't need this class
+        public UInt32 Attribute;
+        public UInt32 CrtTime;
+        public UInt32 CrtDate;
+        public UInt32 WrtTime;
+        public UInt32 WrtDate;
+        public UInt32 FileSize;
+        public UInt32 StartCluster;
     }
     public enum FatType : byte
     {

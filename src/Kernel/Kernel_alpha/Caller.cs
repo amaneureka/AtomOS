@@ -9,6 +9,8 @@ using Atomix.CompilerExt;
 using Core = Atomix.Assembler.AssemblyHelper;
 using Kernel_alpha.x86.Intrinsic;
 
+using Kernel_alpha.FileSystem.FAT.Lists;
+
 namespace Kernel_alpha
 {
     public static class Caller
@@ -38,11 +40,33 @@ namespace Kernel_alpha
                     c++;
             }
             Console.WriteLine("Partition Count::" + c.ToString());
+            byte[] xData = new byte[512 * 4];
+            
             var xFAT = new FileSystem.FatFileSystem(Global.Devices[2]);
             Console.Clear();
             Console.WriteLine();
-            xFAT.FlushDetails();
-            xFAT.ReadRootDir();
+            //xFAT.FlushDetails();
+            var xEntries = xFAT.ReadDirectory(2).GetEntries;
+            int filecount = 0;
+            int dircount = 0;
+            for (int i = 0; i < xEntries.Count; i++)
+            {
+                var Entry = xEntries[i];
+                if (Entry is Directory)
+                {
+                    dircount++;
+                    Console.WriteLine("<DIR>    " + Entry.EntryName);
+                }
+                else if (Entry is File)
+                {
+                    filecount++;
+                    Console.WriteLine("<File>    " + Entry.EntryName + "    ");
+                }
+            }
+            Console.WriteLine();
+            Console.WriteLine("\t   " + xEntries.Count.ToString() + " " + "Entry(s)");
+            Console.WriteLine("\t   " + filecount.ToString() + " " + "File(s)");
+            Console.WriteLine("\t   " + dircount.ToString() + " " + "Dir(s)");
         }
 
         public static unsafe void Update()
@@ -167,48 +191,6 @@ namespace Kernel_alpha
                 Console.WriteLine(e.Message);
                 Thread.Die();
             }
-        }
-    }
-    public abstract class ABC
-    {
-        protected string ID;
-
-        public abstract void Read();
-
-        public abstract void Write();
-    }
-    public class Test123 : ABC
-    {
-        public Test123(string str)
-        {
-            this.ID = str;
-        }
-
-        public override void Read()
-        {
-            Console.WriteLine("Read::" + ID);
-        }
-
-        public override void Write()
-        {
-            Console.WriteLine("Write::" + ID);
-        }
-    }
-    public class Test124 : ABC
-    {
-        public Test124(string str)
-        {
-            this.ID = str;
-        }
-
-        public override void Read()
-        {
-            Console.WriteLine("Read2::" + ID);
-        }
-
-        public override void Write()
-        {
-            Console.WriteLine("Write2::" + ID);
         }
     }
 }

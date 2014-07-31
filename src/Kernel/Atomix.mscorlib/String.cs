@@ -259,6 +259,19 @@ namespace Atomix.mscorlib
             return xResult;
         }
 
+        [Plug("System_String_System_String_Trim__")]
+        public static string Trim(string aThis)
+        {
+            int c = 0;
+            for (int i = 0; i < aThis.Length; i++)
+            {
+                if (aThis[i] == ' ')
+                    break;
+                c++;
+            }
+            return aThis.Substring(0, c);
+        }
+
         [Plug("System_String_System_String_Trim_System_Char___")]
         public static string Trim(string aThis, char[] aChar)
         {

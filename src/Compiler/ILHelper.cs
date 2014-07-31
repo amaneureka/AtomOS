@@ -636,8 +636,8 @@ namespace Atomix
                 var xField = xFields[i];
 
                 //Maybe the entry is not what we want
-                if (xField.DeclaringType != aDeclaringType)
-                    continue;
+                //if (xField.DeclaringType != aDeclaringType)
+                //    continue;
 
                 //Check if this is what we want
                 if (xField.FullName() == aFieldId)

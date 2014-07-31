@@ -61,6 +61,7 @@
     <Compile Include="FileSystem\FAT\Lists\File.cs" />
     <Compile Include="FileSystem\FAT\Lists\FileSystem.cs" />
     <Compile Include="FileSystem\FAT\misc.cs" />
+    <Compile Include="FileSystem\FAT\RootDirectory.cs" />
     <Compile Include="FileSystem\GenericFileSystem.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="Kernel.cs" />

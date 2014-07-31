@@ -3,13 +3,11 @@ using System.Collections.Generic;
 
 namespace Kernel_alpha.FileSystem.FAT.Lists
 {
-    class File : Base
+    public class File : Base
     {
-        public File( string aName, UInt64 aSize, string adate)
-            : base(aName)
+        public File(string aName, Details aDetail)
+            : base(aName, aDetail)
         {
-            mSize = aSize;
-            ModifiedDate = adate;
         }
     }
 }
