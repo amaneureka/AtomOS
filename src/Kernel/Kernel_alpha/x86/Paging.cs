@@ -24,7 +24,7 @@ namespace Kernel_alpha.x86
             }
 
             //First Page table --> Map 4MB of memory
-            UInt32* Page_Table = (UInt32*)(PageDirectory + 1024);
+            UInt32* Page_Table = (UInt32*)(PageDirectory + 4096);
 
             uint Address = 0;
             for (int i = 0; i < 1024; i++)
@@ -33,8 +33,8 @@ namespace Kernel_alpha.x86
                 Address += 4096;//advance the address to the next page boundary
             }
             
-            PageDir[0] = PageDirectory + 1024;
-            PageDir[0] |= 0x1;// attributes: supervisor level, read/write, present
+            PageDir[0] = PageDirectory + 4096;
+            PageDir[0] |= 0x3;// attributes: supervisor level, read/write, present
 
             EnablePaging(PageDirectory);
         }
@@ -43,7 +43,7 @@ namespace Kernel_alpha.x86
         private static void EnablePaging(uint PageDirectory)
         {
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.CR3,  SourceReg = Registers.EBX });
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.CR3,  SourceReg = Registers.EAX });
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.CR0 });
             Core.AssemblerCode.Add(new Or { DestinationReg = Registers.EBX, SourceRef = "0x80000000" });
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.CR0, SourceReg = Registers.EBX });

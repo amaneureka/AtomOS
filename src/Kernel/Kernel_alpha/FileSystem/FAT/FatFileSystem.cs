@@ -128,7 +128,7 @@ namespace Kernel_alpha.FileSystem
 
         public RootDirectory ReadDirectory(UInt32 Cluster)
         {
-            UInt32 xSector = DataSector + ((Cluster - 2) * SectorsPerCluster);
+            UInt32 xSector = DataSector + ((Cluster - RootCluster) * SectorsPerCluster);
             var xResult = new RootDirectory(this, xSector);
             
             byte[] aData = new byte[(UInt32)(512 * SectorsPerCluster)];
@@ -257,31 +257,33 @@ namespace Kernel_alpha.FileSystem
 
         public FatFileLocation FindEntry(ACompare compare, uint startCluster)
         {
-            uint activeSector = (startCluster * SectorsPerCluster) + DataSector;
+            uint activeSector = ((startCluster - RootCluster) * SectorsPerCluster) + DataSector;
 
             if (startCluster == 0)
                 activeSector = (FatType == FatType.FAT32) ? GetSectorByCluster(RootCluster) : RootSector;
+                        
+            byte[] aData = new byte[512 * SectorsPerCluster];
+            this.IDevice.Read(activeSector, SectorsPerCluster, aData);
 
-            uint increment = 0;
-
-            byte[] xdata = new byte[512 * SectorsPerCluster];
-            for (; ; )
+            BinaryFormat directory = new BinaryFormat(aData);
+            for (uint index = 0; index < EntriesPerSector * SectorsPerCluster; index++)
             {
-                byte[] aData = new byte[SectorsPerCluster * 512];
-                this.IDevice.Read(activeSector, SectorsPerCluster, aData);
-                BinaryFormat directory = new BinaryFormat(aData);
-                for (uint index = 0; index < EntriesPerSector; index++)
+                if (compare.Compare(directory.Data, index * 32, FatType))
                 {
-                    if (compare.Compare(directory.Data, index * 32, FatType))
-                    {
-                        FatFileAttributes attribute = (FatFileAttributes)directory.GetByte((index * Entry.EntrySize) + Entry.FileAttributes); 
-                        return new FatFileLocation(GetClusterEntry(directory.Data, index, FatType), activeSector, index, (attribute & FatFileAttributes.SubDirectory) != 0, directory.GetUInt((index * Entry.EntrySize) + Entry.FileSize));
-                    }
-
-                    if (directory.GetByte(Entry.DOSName + (index * Entry.EntrySize)) == FileNameAttribute.LastEntry)
-                        return new FatFileLocation();
+                    FatFileAttributes attribute = (FatFileAttributes)directory.GetByte((index * Entry.EntrySize) + Entry.FileAttributes);
+                    return new FatFileLocation(GetClusterEntry(directory.Data, index, FatType), activeSector, index, (attribute & FatFileAttributes.SubDirectory) != 0, directory.GetUInt((index * Entry.EntrySize) + Entry.FileSize));
                 }
 
+                if (directory.GetByte(Entry.DOSName + (index * Entry.EntrySize)) == FileNameAttribute.LastEntry)
+                    return null;
+            }
+            return null;
+            /*
+            Well this code is equivalent to above code =D
+             * So, no need this, as we scan all sectors of cluster at same time rather,
+             * reading each sector one by one =D
+            for (; ; )
+            {
                 ++increment;
 
                 // subdirectory
@@ -296,19 +298,20 @@ namespace Kernel_alpha.FileSystem
                 uint cluster = GetClusterBySector(startCluster);
 
                 if (cluster == 0)
-                    return new FatFileLocation();
+                    return null;
 
                 uint nextCluster = GetClusterEntryValue(cluster);
 
                 if ((IsClusterLast(nextCluster)) || (IsClusterBad(nextCluster)) || (IsClusterFree(nextCluster)) || (IsClusterReserved(nextCluster)))
-                    return new FatFileLocation();
+                    return null;
 
                 activeSector = (uint)(DataSector + (nextCluster - 1 * SectorsPerCluster));
 
                 continue;
-            }
+            }*/
         }
 
+        //One question: Why this?
         public  bool Compare(byte[] data, uint offset, FatType type)
         {
             throw new NotImplementedException();
@@ -319,7 +322,7 @@ namespace Kernel_alpha.FileSystem
             if (IsValid)
             {
                 Console.WriteLine("FAT Version:" + ((FatType == FatType.FAT32) ? "FAT32" : "FAT16/12"));                
-                //Console.WriteLine("Disk Volume:" + (VolumeLabel == "NO NAME" ? VolumeLabel + "<Extended>" : VolumeLabel));
+                Console.WriteLine("Disk Volume:" + (VolumeLabel == "NO NAME" ? VolumeLabel + "<Extended>" : VolumeLabel));
                 Console.WriteLine("Bytes Per Sector:" + BytePerSector.ToString());
                 Console.WriteLine("Sectors Per Cluster:" + SectorsPerCluster.ToString());
                 Console.WriteLine("Reserved Sector:" + ReservedSector.ToString());

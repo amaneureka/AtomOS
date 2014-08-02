@@ -40,15 +40,23 @@ namespace Kernel_alpha
                 if (Global.Devices[i] is Drivers.Partition)
                     c++;
             }
-            Console.WriteLine("Partition Count::" + c.ToString());
-            byte[] xData = new byte[512 * 4];
-            
+            Console.WriteLine("Partition Count::" + c.ToString());            
             var xFAT = new FileSystem.FatFileSystem(Global.Devices[2]);
             Console.Clear();
             Console.WriteLine();
             //xFAT.FlushDetails();
             
             var xEntries = xFAT.ReadDirectory(2).GetEntries;
+            PrintEntries(xEntries);
+            var location = xFAT.FindEntry(new FileSystem.Find.WithName("AMANP"), 2);
+            if (location != null)
+            {
+                PrintEntries(xFAT.ReadDirectory(location.FirstCluster).GetEntries);
+            }
+        }
+
+        public static void PrintEntries(List<Base> xEntries)
+        {
             int filecount = 0;
             int dircount = 0;
             for (int i = 0; i < xEntries.Count; i++)
@@ -66,12 +74,9 @@ namespace Kernel_alpha
                 }
             }
             Console.WriteLine();
-            Console.WriteLine("\t   " + xEntries.Count.ToString() + " " + "Entry(s)");
-            Console.WriteLine("\t   " + filecount.ToString() + " " + "File(s)");
-            Console.WriteLine("\t   " + dircount.ToString() + " " + "Dir(s)");
-
-            FatFileLocation location = xFAT.FindEntry(new FileSystem.Find.WithName("ATOM1"),2);
-           
+            Console.WriteLine("#   " + xEntries.Count.ToString() + " " + "Entry(s)");
+            Console.WriteLine("#   " + filecount.ToString() + " " + "File(s)");
+            Console.WriteLine("#   " + dircount.ToString() + " " + "Dir(s)");
         }
 
         public static unsafe void Update()
