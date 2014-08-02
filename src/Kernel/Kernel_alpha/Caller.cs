@@ -10,6 +10,7 @@ using Core = Atomix.Assembler.AssemblyHelper;
 using Kernel_alpha.x86.Intrinsic;
 
 using Kernel_alpha.FileSystem.FAT.Lists;
+using Kernel_alpha.FileSystem.FAT;
 
 namespace Kernel_alpha
 {
@@ -46,6 +47,7 @@ namespace Kernel_alpha
             Console.Clear();
             Console.WriteLine();
             //xFAT.FlushDetails();
+            
             var xEntries = xFAT.ReadDirectory(2).GetEntries;
             int filecount = 0;
             int dircount = 0;
@@ -67,6 +69,9 @@ namespace Kernel_alpha
             Console.WriteLine("\t   " + xEntries.Count.ToString() + " " + "Entry(s)");
             Console.WriteLine("\t   " + filecount.ToString() + " " + "File(s)");
             Console.WriteLine("\t   " + dircount.ToString() + " " + "Dir(s)");
+
+            FatFileLocation location = xFAT.FindEntry(new FileSystem.Find.WithName("ATOM1"),2);
+           
         }
 
         public static unsafe void Update()

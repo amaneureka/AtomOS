@@ -55,7 +55,12 @@
     <Compile Include="Drivers\Video\VGA\VGAScreen.cs" />
     <Compile Include="Drivers\Video\Vmware\misc.cs" />
     <Compile Include="Drivers\Video\Vmware\VMWareSVGAII.cs" />
+    <Compile Include="FileSystem\FAT\FatFileLocation.cs" />
     <Compile Include="FileSystem\FAT\FatFileSystem.cs" />
+    <Compile Include="FileSystem\FAT\Find\Any.cs" />
+    <Compile Include="FileSystem\FAT\Find\ByCluster.cs" />
+    <Compile Include="FileSystem\FAT\Find\Empty.cs" />
+    <Compile Include="FileSystem\FAT\Find\WithName.cs" />
     <Compile Include="FileSystem\FAT\Lists\Base.cs" />
     <Compile Include="FileSystem\FAT\Lists\Directory.cs" />
     <Compile Include="FileSystem\FAT\Lists\File.cs" />

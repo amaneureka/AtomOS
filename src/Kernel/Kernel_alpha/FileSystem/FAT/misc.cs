@@ -1,4 +1,10 @@
-﻿using System;
+﻿/* Copyright (C) Atomix OS Development, Inc - All Rights Reserved
+* Unauthorized copying of this file, via any medium is strictly prohibited
+* Proprietary and confidential
+* Written by SANDEEP ILIGER <sandeep.iliger@gmail.com>, 07-2014
+*/
+
+using System;
 using System.Collections.Generic;
 
 namespace Kernel_alpha.FileSystem.FAT
@@ -47,5 +53,68 @@ namespace Kernel_alpha.FileSystem.FAT
         internal const uint FirstCluster = 0x1A; // 2
         internal const uint FileSize = 0x1C; // 4
         internal const uint EntrySize = 32;
+    }
+
+    internal struct ClusterMark
+    {
+        internal const UInt32 fatMask = 0x0FFFFFFF;
+        internal const UInt32 badClusterMark = 0x0FFFFFF7;
+        internal const UInt32 endOfClusterMark = 0x0FFFFFF8;
+    }
+
+    internal struct FileNameAttribute
+    {
+        internal const uint LastEntry = 0x00;
+        internal const uint Escape = 0x05;	// special msdos hack where 0x05 really means 0xE5 (since 0xE5 was already used for delete)
+        internal const uint Dot = 0x2E;
+        internal const uint Deleted = 0xE5;
+    }
+
+    public enum FatFileAttributes : byte
+    {
+        /// <summary>
+        /// Flag represents the file is read-only.
+        /// </summary>
+        ReadOnly = 0x01,
+
+        /// <summary>
+        /// Flag represents the file is hidden.
+        /// </summary>
+        Hidden = 0x02,
+
+        /// <summary>
+        /// Flag represents the file is a system file.
+        /// </summary>
+        System = 0x04,
+
+        /// <summary>
+        /// Flag represents the file entry is a volume label.
+        /// </summary>
+        VolumeLabel = 0x08,
+
+        /// <summary>
+        /// Flag represents the file entry is a subdirectory.
+        /// </summary>
+        SubDirectory = 0x10,
+
+        /// <summary>
+        /// Flag represents the file has the archive bit set.
+        /// </summary>
+        Archive = 0x20,
+
+        /// <summary>
+        /// Flag represents the file entry is for a device.
+        /// </summary>
+        Device = 0x40,
+
+        /// <summary>
+        /// Flag is unused.
+        /// </summary>
+        Unused = 0x80,
+
+        /// <summary>
+        /// Flag represents the file has a long file name.
+        /// </summary>
+        LongFileName = 0x0F
     }
 }

@@ -1,9 +1,17 @@
-﻿using System;
+﻿/* Copyright (C) Atomix OS Development, Inc - All Rights Reserved
+* Unauthorized copying of this file, via any medium is strictly prohibited
+* Proprietary and confidential
+* Written by SANDEEP ILIGER <sandeep.iliger@gmail.com>, 07-2014
+*/
+
+using System;
 using System.Collections.Generic;
 using Kernel_alpha.Drivers;
 using Kernel_alpha.FileSystem.FAT;
 using Kernel_alpha.Lib.Encoding;
 using Kernel_alpha.FileSystem.FAT.Lists;
+using Kernel_alpha.Lib;
+
 
 namespace Kernel_alpha.FileSystem
 {
@@ -122,10 +130,9 @@ namespace Kernel_alpha.FileSystem
         {
             UInt32 xSector = DataSector + ((Cluster - 2) * SectorsPerCluster);
             var xResult = new RootDirectory(this, xSector);
-
+            
             byte[] aData = new byte[(UInt32)(512 * SectorsPerCluster)];
             this.IDevice.Read(xSector, SectorsPerCluster, aData);
-
             #region ReadingCode
             uint Entry_offset = 0;
             bool Entry_Type; //True -> Directory & False -> File
@@ -182,6 +189,129 @@ namespace Kernel_alpha.FileSystem
             #endregion
 
             return xResult;
+        }
+
+      
+        public uint GetClusterBySector(uint sector)
+        {
+            if (sector < DataSector)
+                return 0;
+
+            return (sector - DataSector) / SectorsPerCluster;
+        }
+
+        public uint GetSectorByCluster(uint cluster)
+        {
+            return DataSector + ((cluster - 2) * SectorsPerCluster);
+        }
+        static public uint GetClusterEntry(byte[] data, uint index, FatType type)
+        {
+            BinaryFormat entry = new BinaryFormat(data);
+            uint cluster = entry.GetUShort(Entry.FirstCluster + (index * Entry.EntrySize));
+
+            if (type == FatType.FAT32)
+                cluster |= ((uint)entry.GetUShort(Entry.EAIndex + (index * Entry.EntrySize))) << 16;
+
+            return cluster;
+        }
+
+        protected bool IsClusterFree(uint cluster)
+        {
+            return ((cluster & ClusterMark.fatMask) == 0x00);
+        }
+
+        protected bool IsClusterReserved(uint cluster)
+        {
+            return (((cluster & ClusterMark.fatMask) == 0x00) || ((cluster & ClusterMark.fatMask) >= ReservedSector) && ((cluster & ClusterMark.fatMask) < ClusterMark.badClusterMark));
+        }
+
+        protected bool IsClusterBad(uint cluster)
+        {
+            return ((cluster & ClusterMark.fatMask) == ClusterMark.badClusterMark);
+        }
+
+        protected bool IsClusterLast(uint cluster)
+        {
+            return ((cluster & ClusterMark.fatMask) >= ClusterMark.endOfClusterMark);
+        }
+
+        protected uint GetClusterEntryValue(uint cluster)
+        {
+            uint fatoffset = 0;
+
+            fatoffset = cluster * 4;
+
+            uint sector = ReservedSector + (fatoffset / BytePerSector);
+            uint sectorOffset = fatoffset % BytePerSector;
+            uint nbrSectors = 1;
+
+            byte[] aData = new byte[512 * nbrSectors];
+            this.IDevice.Read(sector, nbrSectors, aData);
+            BinaryFormat fat = new BinaryFormat(aData);
+
+            uint clusterValue = fat.GetUInt(sectorOffset) & 0x0FFFFFFF;
+
+            return clusterValue;
+        }
+
+
+        public FatFileLocation FindEntry(ACompare compare, uint startCluster)
+        {
+            uint activeSector = (startCluster * SectorsPerCluster) + DataSector;
+
+            if (startCluster == 0)
+                activeSector = (FatType == FatType.FAT32) ? GetSectorByCluster(RootCluster) : RootSector;
+
+            uint increment = 0;
+
+            byte[] xdata = new byte[512 * SectorsPerCluster];
+            for (; ; )
+            {
+                byte[] aData = new byte[SectorsPerCluster * 512];
+                this.IDevice.Read(activeSector, SectorsPerCluster, aData);
+                BinaryFormat directory = new BinaryFormat(aData);
+                for (uint index = 0; index < EntriesPerSector; index++)
+                {
+                    if (compare.Compare(directory.Data, index * 32, FatType))
+                    {
+                        FatFileAttributes attribute = (FatFileAttributes)directory.GetByte((index * Entry.EntrySize) + Entry.FileAttributes); 
+                        return new FatFileLocation(GetClusterEntry(directory.Data, index, FatType), activeSector, index, (attribute & FatFileAttributes.SubDirectory) != 0, directory.GetUInt((index * Entry.EntrySize) + Entry.FileSize));
+                    }
+
+                    if (directory.GetByte(Entry.DOSName + (index * Entry.EntrySize)) == FileNameAttribute.LastEntry)
+                        return new FatFileLocation();
+                }
+
+                ++increment;
+
+                // subdirectory
+                if (increment < SectorsPerCluster)
+                {
+                    // still within cluster
+                    activeSector = startCluster + increment;
+                    continue;
+                }
+
+                // go to next cluster (if any)
+                uint cluster = GetClusterBySector(startCluster);
+
+                if (cluster == 0)
+                    return new FatFileLocation();
+
+                uint nextCluster = GetClusterEntryValue(cluster);
+
+                if ((IsClusterLast(nextCluster)) || (IsClusterBad(nextCluster)) || (IsClusterFree(nextCluster)) || (IsClusterReserved(nextCluster)))
+                    return new FatFileLocation();
+
+                activeSector = (uint)(DataSector + (nextCluster - 1 * SectorsPerCluster));
+
+                continue;
+            }
+        }
+
+        public  bool Compare(byte[] data, uint offset, FatType type)
+        {
+            throw new NotImplementedException();
         }
 
         public void FlushDetails()
