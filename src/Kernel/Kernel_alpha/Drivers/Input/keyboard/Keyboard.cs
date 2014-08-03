@@ -260,5 +260,13 @@ namespace Kernel_alpha.Drivers.Input
 
             return Buffer.Dequeue();
         }
+
+        public Keys Peekkey()
+        {
+            if (Buffer.Count == 0)
+                return null;
+
+            return Buffer.Peek();
+        }
     }
 }

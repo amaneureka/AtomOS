@@ -7,10 +7,10 @@ using Atomix.CompilerExt.Attributes;
 
 namespace Atomix.mscorlib
 {
-    public static class Enum
+    public static unsafe class Enum
     {
         [Plug("System_Void__System_Enum__cctor__")]
-        public static void Cctor()
+        public static void Cctor(byte* Address)
         {
             return;
         }

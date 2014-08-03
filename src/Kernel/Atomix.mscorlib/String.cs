@@ -286,5 +286,19 @@ namespace Atomix.mscorlib
             return aThis.Substring(0, c);
         }
 
+        [Plug("System_Boolean_System_String_op_Equality_System_String__System_String_")]
+        public static bool Equality(string str1, string str2)
+        {
+            var len = str1.Length;
+            if (len != str2.Length)
+                return false;
+
+            for (int i = 0; i < len; i++)
+            {
+                if (str1[i] != str2[i])
+                    return false;
+            }
+            return true;
+        }
     }
 }

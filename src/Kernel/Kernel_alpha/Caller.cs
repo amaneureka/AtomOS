@@ -42,11 +42,9 @@ namespace Kernel_alpha
             }
             Console.WriteLine("Partition Count::" + c.ToString());
             Console.Clear();
-            // fat32 testing
+            Console.WriteLine();
             Multitasking.CreateTask(pFAT32test, true);
             //xFAT.FlushDetails();
-          
-          
         }
 
         public static void PrintEntries(List<Base> xEntries)
@@ -74,10 +72,10 @@ namespace Kernel_alpha
         }
 
         public static unsafe void Update()
-        {
-            var s = Global.KBD.ReadKey ();
+        {            
             if (Global.KBD.Ctrl)
             {
+                var s = Global.KBD.ReadKey();
                 if (s.Code == KeyCode.S)
                 {
                     Console.WriteLine ("Shutdown");
@@ -113,15 +111,6 @@ namespace Kernel_alpha
                     }
                 }
             }
-            else if (Global.KBD.Alt)
-            {
-                //if (s.Code == KeyCode.A)
-                //    Test();
-                //else if (s.Code == KeyCode.B)
-                    //Test2("WIN");
-            }
-            else if (s != null)
-                Console.Write(s.Char);
         }
 
         private static uint pTask1;

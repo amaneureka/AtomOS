@@ -27,7 +27,7 @@ namespace Atomix.mscorlib
         }
 
         [Plug("System_Void__System_Exception__ctor_System_String_")]
-        public static unsafe void ctor2(string xm)
+        public static unsafe void ctor2(byte* Address, string xm)
         {
             Message = xm;
         }
