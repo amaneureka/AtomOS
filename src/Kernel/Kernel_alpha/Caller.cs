@@ -193,9 +193,17 @@ namespace Kernel_alpha
             PrintEntries(xFAT.ReadDirectory(null).GetEntries);
             for (; ; )
             {
-                Console.WriteLine("Which Directory you wants to Read : ");
-                string DirName = Console.ReadLine();
-                PrintEntries(xFAT.ReadDirectory(DirName).GetEntries);
+                string xTemp = Console.ReadLine();
+                string[] xStrName = xTemp.Split(' ');
+                string xCommand = xStrName[0].Trim('\0');
+                string xDirName = xStrName[1].Trim('\0');
+                switch (xCommand)
+                {
+                    case "cd": PrintEntries(xFAT.ReadDirectory(xDirName).GetEntries);
+                        break;
+                    default: Console.WriteLine("No such command exist");
+                        break;
+                }
             }
         }
     }

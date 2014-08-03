@@ -54,6 +54,7 @@
     <Compile Include="Int64.cs" />
     <Compile Include="Int32.cs" />
     <Compile Include="SR.cs" />
+    <Compile Include="StringBuilder.cs" />
     <Compile Include="Type.cs" />
     <Compile Include="SByte.cs" />
     <Compile Include="Enum.cs" />
