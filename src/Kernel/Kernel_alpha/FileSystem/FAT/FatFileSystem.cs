@@ -142,7 +142,7 @@ namespace Kernel_alpha.FileSystem
                 if (location != null)
                 {
                     FatCurrentDirectoryEntry = location.FirstCluster;
-                    xEntries = ReadDirectory(location.FirstCluster);
+                    xEntries = ReadDirectory(FatCurrentDirectoryEntry);
                 }
             }
             return xEntries;
@@ -224,7 +224,7 @@ namespace Kernel_alpha.FileSystem
 
         public uint GetSectorByCluster(uint cluster)
         {
-            return DataSector + ((cluster - 2) * SectorsPerCluster);
+            return DataSector + ((cluster - RootCluster) * SectorsPerCluster);
         }
         static public uint GetClusterEntry(byte[] data, uint index, FatType type)
         {
@@ -233,6 +233,9 @@ namespace Kernel_alpha.FileSystem
 
             if (type == FatType.FAT32)
                 cluster |= ((uint)entry.GetUShort(Entry.EAIndex + (index * Entry.EntrySize))) << 16;
+
+            if (cluster == 0)
+                cluster = 2;
 
             return cluster;
         }
@@ -300,37 +303,6 @@ namespace Kernel_alpha.FileSystem
                     return null;
             }
             return null;
-            /*
-            Well this code is equivalent to above code =D
-             * So, no need this, as we scan all sectors of cluster at same time rather,
-             * reading each sector one by one =D
-            for (; ; )
-            {
-                ++increment;
-
-                // subdirectory
-                if (increment < SectorsPerCluster)
-                {
-                    // still within cluster
-                    activeSector = startCluster + increment;
-                    continue;
-                }
-
-                // go to next cluster (if any)
-                uint cluster = GetClusterBySector(startCluster);
-
-                if (cluster == 0)
-                    return null;
-
-                uint nextCluster = GetClusterEntryValue(cluster);
-
-                if ((IsClusterLast(nextCluster)) || (IsClusterBad(nextCluster)) || (IsClusterFree(nextCluster)) || (IsClusterReserved(nextCluster)))
-                    return null;
-
-                activeSector = (uint)(DataSector + (nextCluster - 1 * SectorsPerCluster));
-
-                continue;
-            }*/
         }
 
         //One question: Why this?
