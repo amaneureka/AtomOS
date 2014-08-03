@@ -40,19 +40,13 @@ namespace Kernel_alpha
                 if (Global.Devices[i] is Drivers.Partition)
                     c++;
             }
-            Console.WriteLine("Partition Count::" + c.ToString());            
-            var xFAT = new FileSystem.FatFileSystem(Global.Devices[2]);
+            Console.WriteLine("Partition Count::" + c.ToString());
             Console.Clear();
-            Console.WriteLine();
+            // fat32 testing
+            Multitasking.CreateTask(pFAT32test, true);
             //xFAT.FlushDetails();
-            
-            var xEntries = xFAT.ReadDirectory(2).GetEntries;
-            PrintEntries(xEntries);
-            var location = xFAT.FindEntry(new FileSystem.Find.WithName("AMANP"), 2);
-            if (location != null)
-            {
-                PrintEntries(xFAT.ReadDirectory(location.FirstCluster).GetEntries);
-            }
+          
+          
         }
 
         public static void PrintEntries(List<Base> xEntries)
@@ -200,6 +194,19 @@ namespace Kernel_alpha
                 Console.Write("Died::");
                 Console.WriteLine(e.Message);
                 Thread.Die();
+            }
+        }
+
+        private static uint pFAT32test;
+        public static void FAT32test()
+        {
+            var xFAT = new FileSystem.FatFileSystem(Global.Devices[2]);
+            PrintEntries(xFAT.ReadDirectory(null).GetEntries);
+            for (; ; )
+            {
+                Console.WriteLine("Which Directory you wants to Read : ");
+                string DirName = Console.ReadLine();
+                PrintEntries(xFAT.ReadDirectory(DirName).GetEntries);
             }
         }
     }

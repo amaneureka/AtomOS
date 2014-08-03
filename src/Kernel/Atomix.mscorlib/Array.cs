@@ -12,6 +12,12 @@ namespace Atomix.mscorlib
 {
     public static class ArrayImpl
     {
+        [Assembly(0x14), Plug("System_Void_System_Array_Copy_System_Array__System_Int32__System_Array__System_Int32__System_Int32_")]
+        public static void Copy(Array sourceArray, int sourceIndex, Array destinationArray, int destinationIndex, int length)
+        {
+            Copy(sourceArray, sourceIndex, destinationArray, destinationIndex, length, true);
+        }
+
         [Assembly(0x18), Plug("System_Void_System_Array_Copy_System_Array__System_Int32__System_Array__System_Int32__System_Int32__System_Boolean_")]
         public static void Copy(Array sourceArray, int sourceIndex, Array destinationArray, int destinationIndex, int length, bool reliable)
         {

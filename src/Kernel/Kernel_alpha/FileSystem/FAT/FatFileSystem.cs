@@ -35,7 +35,8 @@ namespace Kernel_alpha.FileSystem
         private UInt32 EntriesPerSector;
         private UInt32 fatEntries;
         private string VolumeLabel;
-                
+        private UInt32 FatCurrentDirectoryEntry;
+
         public FatFileSystem(BlockDevice aDevice)
         {
             this.IDevice = aDevice;
@@ -126,7 +127,28 @@ namespace Kernel_alpha.FileSystem
             return true;
         }
 
-        public RootDirectory ReadDirectory(UInt32 Cluster)
+        /* Getting directory name to read  */
+        public RootDirectory ReadDirectory(string DirName)
+        {
+            var xEntries = (RootDirectory)null;
+            if (DirName == null)
+            {
+                FatCurrentDirectoryEntry = 2;
+                xEntries = ReadDirectory(FatCurrentDirectoryEntry);
+            }
+            else
+            {
+                var location = FindEntry(new FileSystem.Find.WithName(DirName), FatCurrentDirectoryEntry);
+                if (location != null)
+                {
+                    FatCurrentDirectoryEntry = location.FirstCluster;
+                    xEntries = ReadDirectory(location.FirstCluster);
+                }
+            }
+            return xEntries;
+        }
+
+        private RootDirectory ReadDirectory(UInt32 Cluster)
         {
             UInt32 xSector = DataSector + ((Cluster - RootCluster) * SectorsPerCluster);
             var xResult = new RootDirectory(this, xSector);
