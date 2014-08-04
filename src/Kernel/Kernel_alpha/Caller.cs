@@ -69,6 +69,7 @@ namespace Kernel_alpha
             Console.WriteLine("#   " + xEntries.Count.ToString() + " " + "Entry(s)");
             Console.WriteLine("#   " + filecount.ToString() + " " + "File(s)");
             Console.WriteLine("#   " + dircount.ToString() + " " + "Dir(s)");
+            Console.WriteLine();
         }
 
         public static unsafe void Update()
@@ -197,9 +198,13 @@ namespace Kernel_alpha
                 string[] xStrName = xTemp.Split(' ');
                 string xCommand = xStrName[0].Trim('\0');
                 string xDirName = xStrName[1].Trim('\0');
-                switch (xCommand)
+                
+                switch (xCommand.ToLower())
                 {
                     case "cd": PrintEntries(xFAT.ReadDirectory(xDirName).GetEntries);
+                        break;
+                    case "open": Console.WriteLine(xFAT.ReadFile(xDirName));
+                        Console.WriteLine();
                         break;
                     default: Console.WriteLine("No such command exist");
                         break;

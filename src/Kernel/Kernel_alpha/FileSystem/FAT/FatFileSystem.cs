@@ -213,6 +213,20 @@ namespace Kernel_alpha.FileSystem
             return xResult;
         }
 
+        public string ReadFile(string FileName)
+        {
+            byte[] xFileData = new byte[(UInt32)SectorsPerCluster * 512];
+            byte[] xReturnData = new byte[10]; 
+            var location = FindEntry(new FileSystem.Find.WithName(FileName), FatCurrentDirectoryEntry);
+            if (location != null)
+            {
+                xReturnData = new byte[location.Size];
+                UInt32 xSector = DataSector + ((location.FirstCluster - RootCluster) * SectorsPerCluster);
+                this.IDevice.Read(xSector, SectorsPerCluster, xFileData);
+                Array.Copy(xFileData, 0, xReturnData, 0, location.Size);
+            }
+            return ASCII.GetString(xReturnData, 0, xReturnData.Length);
+        }
       
         public uint GetClusterBySector(uint sector)
         {

@@ -34,33 +34,24 @@ namespace Kernel_alpha.FileSystem.Find
             if (first == FileNameAttribute.Escape)
                 return false;
 
-            // Have to modify some things -- SANDEEP
-
-            //	string entryname = FatFileSystem.ExtractFileName(data, offset);
+            
             string entryname = ASCII.GetString(data, (int)offset, 8).Trim();
             string entryExt = ASCII.GetString(data, (int)(offset + 8), 3).Trim();
 
+            string[] xStr = name.Split('.');
+            if (xStr.Length > 1)
+            {
+                if (entryname.ToLower() == xStr[0].Trim('\0').ToLower() && entryExt.ToLower() == xStr[1].Trim('\0').ToLower())
+                {
+                    return true;
+                }
+            }
 
-            //string[] names;
-            //if (name == ".." || name == ".")
-            //    names = name.Split(' ');
-            //else
-            //    names = name.Split('.');
-
-            ////Array.Resize(ref names, 2);  have to change SANDEEP
-            //if (names[1] == null)
-            //    names[1] = "";
-
-            // Only for Directories
-            if(entryname.ToLower() == this.name.Trim().ToLower())
+            if (entryname.ToLower() == this.name.Trim().ToLower())
             {
                 return true;
             }
-            //if (entryname.ToLower() == names[0].Trim().ToLower() && entryExt.ToLower() == names[1].Trim().ToLower())
-            //{
-            //    return true;
-            //}
-           
+               
 			return false;
 		}
 	}

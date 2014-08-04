@@ -17,11 +17,11 @@ namespace Kernel_alpha.FileSystem.FAT
 
 		public uint DirectorySectorIndex;
 
-		private bool directory;
+		public bool directory;
 
 		private bool IsDirectory { get { return directory; } }
 
-        private uint Size;
+        public uint Size;
 
 	    public FatFileLocation()
         {
