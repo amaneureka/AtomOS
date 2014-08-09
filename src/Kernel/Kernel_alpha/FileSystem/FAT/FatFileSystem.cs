@@ -223,7 +223,7 @@ namespace Kernel_alpha.FileSystem
             bool Entry_Type; //True -> Directory & False -> File
             string Entry_Name;
             string Entry_Ext;
-            Details Entry_Detail = new Details();//We init it once, because we love memory =P
+            Details Entry_Detail;
             for (uint i = 0; i < SectorsPerCluster * 512; i+= 32)
             {
                 if (aData[i] == 0x0)
@@ -247,10 +247,9 @@ namespace Kernel_alpha.FileSystem
 
                     if (aData[i] != 0xE5)//Entry Exist
                     {
+                        Entry_Detail = new Details();
                         Entry_Name = ASCII.GetString(aData, (int)i, 8).Trim();
-
-                        /*
-                         * plz leave this one me =D
+                                               
                         Entry_Detail.Attribute = 0;
                         Entry_Detail.CrtDate = 0;
                         Entry_Detail.CrtTime = 0;
@@ -258,7 +257,7 @@ namespace Kernel_alpha.FileSystem
                         Entry_Detail.StartCluster = 0;
                         Entry_Detail.WrtDate = 0;
                         Entry_Detail.WrtTime = 0;
-                        */
+                       
                         if (!Entry_Type)
                         {
                             Entry_Ext = ASCII.GetString(aData, (int)(i + 8), 3).Trim();
@@ -276,10 +275,10 @@ namespace Kernel_alpha.FileSystem
             return xResult;
         }
 
-        public string ReadFile(string FileName)
+        public byte[] ReadFile(string FileName)
         {
             byte[] xFileData = new byte[(UInt32)SectorsPerCluster * 512];
-            byte[] xReturnData = new byte[10]; 
+            byte[] xReturnData = null; 
             var location = FindEntry(new FileSystem.Find.WithName(FileName), FatCurrentDirectoryEntry);
             if (location != null)
             {
@@ -288,7 +287,7 @@ namespace Kernel_alpha.FileSystem
                 this.IDevice.Read(xSector, SectorsPerCluster, xFileData);
                 Array.Copy(xFileData, 0, xReturnData, 0, location.Size);
             }
-            return ASCII.GetString(xReturnData, 0, xReturnData.Length);
+            return xReturnData;
         }
       
         public uint GetClusterBySector(uint sector)

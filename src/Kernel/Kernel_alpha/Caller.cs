@@ -13,6 +13,8 @@ using Kernel_alpha.x86.Intrinsic;
 using Kernel_alpha.FileSystem.FAT.Lists;
 using Kernel_alpha.FileSystem.FAT;
 
+using Kernel_alpha.Lib.Encoding;
+
 namespace Kernel_alpha
 {
     public static class Caller
@@ -63,7 +65,7 @@ namespace Kernel_alpha
                 else if (Entry is File)
                 {
                     filecount++;
-                    Console.WriteLine("<File>    " + Entry.EntryName + "    ");
+                    Console.WriteLine("<File>    " + Entry.EntryName + "    " + Entry.EntryDetails.FileSize.ToString());
                 }
             }
             Console.WriteLine();
@@ -202,20 +204,49 @@ namespace Kernel_alpha
                 
                 switch (xCommand.ToLower())
                 {
-                    case "cd": PrintEntries(xFAT.ReadDirectory(xDirName).GetEntries);
+                    case "cd": 
+                        PrintEntries(xFAT.ReadDirectory(xDirName).GetEntries);
                         break;
-                    case "open": Console.WriteLine(xFAT.ReadFile(xDirName));
-                        Console.WriteLine();
+                    case "open":
+                        {
+                            var xData = xFAT.ReadFile(xDirName);
+                            Console.WriteLine(ASCII.GetString(xData, 0, xData.Length));
+                            Console.WriteLine();
+                        }
                         break;
                     case "mkdir": if (xFAT.MakeDirectory(xDirName))
                         {
                             Console.WriteLine("Directory Created");
                         }
                         break;
-                    default: Console.WriteLine("No such command exist");
+                    case "run":
+                        {
+                            var xData = xFAT.ReadFile(xDirName);
+                            unsafe
+                            {
+                                var len = xData.Length;
+                                var xAdd = x86.Heap.AllocateMem((uint)len + 5);
+                                var Mem = (byte*)xAdd;
+                                for (int i = 0; i < len; i++)
+                                {
+                                    Mem[i] = xData[i];
+                                }
+                                CallExecutableFile(xAdd);
+                            }
+                        }
+                        break;
+                    default: 
+                        Console.WriteLine("No such command exist");
                         break;
                 }
             }
+        }
+
+        [Assembly(0x4)]
+        private static void CallExecutableFile(uint pos)
+        {
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 0x8 });
+            Core.AssemblerCode.Add(new Call("EAX"));
         }
     }
 }

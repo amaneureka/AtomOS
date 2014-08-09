@@ -6,10 +6,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace Kernel_alpha.FileSystem.FAT
 {
-    public struct Details
+    public class Details
     {
         public UInt32 Attribute;
         public UInt32 CrtTime;
@@ -19,6 +20,7 @@ namespace Kernel_alpha.FileSystem.FAT
         public UInt32 FileSize;
         public UInt32 StartCluster;
     }
+
     public enum FatType : byte
     {
         /// <summary>
