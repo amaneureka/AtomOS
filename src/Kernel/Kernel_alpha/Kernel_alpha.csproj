@@ -45,6 +45,7 @@
     <Compile Include="Drivers\BlockDevice.cs" />
     <Compile Include="Drivers\Buses\ATA\IDE.cs" />
     <Compile Include="Drivers\Buses\ATA\misc.cs" />
+    <Compile Include="Drivers\CMOS.cs" />
     <Compile Include="Drivers\Input\keyboard\Keyboard.cs" />
     <Compile Include="Drivers\Input\keyboard\Keys.cs" />
     <Compile Include="Drivers\Input\misc.cs" />
