@@ -148,6 +148,69 @@ namespace Kernel_alpha.FileSystem
             return xEntries;
         }
 
+        public bool MakeDirectory(string DirName)
+        {
+            var xResult = new RootDirectory(this, FatCurrentDirectoryEntry);
+            Details Entry_Detail = new Details();
+
+            FatFileLocation location = FindEntry(new FileSystem.Find.Empty(), FatCurrentDirectoryEntry);
+
+            uint FirstCluster = AllocateFirstCluster();
+
+            var xdata = new byte[512 * SectorsPerCluster];
+            this.IDevice.Read(location.DirectorySector, SectorsPerCluster, xdata);
+            BinaryFormat directory = new BinaryFormat(xdata);
+            directory.SetString(Entry.DOSName + location.DirectorySectorIndex * 32, "            ", 11);
+            directory.SetString(Entry.DOSName + location.DirectorySectorIndex * 32, DirName);
+
+            directory.SetByte(Entry.FileAttributes + location.DirectorySectorIndex * 32, (byte)0x10);
+            directory.SetByte(Entry.Reserved + location.DirectorySectorIndex * 32, 0);
+            directory.SetByte(Entry.CreationTimeFine + location.DirectorySectorIndex * 32, 0);
+            directory.SetUShort(Entry.CreationTime + location.DirectorySectorIndex * 32, 0);
+            directory.SetUShort(Entry.CreationDate + location.DirectorySectorIndex * 32, 0);
+            directory.SetUShort(Entry.LastAccessDate + location.DirectorySectorIndex * 32, 0);
+            directory.SetUShort(Entry.LastModifiedTime + location.DirectorySectorIndex * 32, 0);
+            directory.SetUShort(Entry.LastModifiedDate + location.DirectorySectorIndex * 32, 0);
+            directory.SetUShort(Entry.FirstCluster + location.DirectorySectorIndex * 32, (ushort)FirstCluster);
+            directory.SetUInt(Entry.FileSize + location.DirectorySectorIndex * 32, 0);
+            this.IDevice.Write(location.DirectorySector, SectorsPerCluster, xdata);
+
+            xResult.AddEntry(new Directory(DirName, Entry_Detail));
+
+            FatFileLocation loc = FindEntry(new FileSystem.Find.Empty(), FirstCluster);
+
+            xdata = new byte[512 * SectorsPerCluster];
+            this.IDevice.Read(loc.DirectorySector, SectorsPerCluster, xdata);
+            directory = new BinaryFormat(xdata);
+            for (int i = 0; i < 2; i++)
+            {
+                directory.SetString(Entry.DOSName + loc.DirectorySectorIndex * 32, "            ", 11);
+                if (i == 0)
+                {
+                    directory.SetString(Entry.DOSName + loc.DirectorySectorIndex * 32, ".");
+                    directory.SetUShort(Entry.FirstCluster + loc.DirectorySectorIndex * 32, (ushort)FirstCluster);
+                }
+                else
+                {
+                    directory.SetString(Entry.DOSName + loc.DirectorySectorIndex * 32, "..");
+                    directory.SetUShort(Entry.FirstCluster + loc.DirectorySectorIndex * 32, (ushort)FatCurrentDirectoryEntry);
+                }
+                directory.SetByte(Entry.FileAttributes + loc.DirectorySectorIndex * 32, (byte)0x10);
+                directory.SetByte(Entry.Reserved + loc.DirectorySectorIndex * 32, 0);
+                directory.SetByte(Entry.CreationTimeFine + loc.DirectorySectorIndex * 32, 0);
+                directory.SetUShort(Entry.CreationTime + loc.DirectorySectorIndex * 32, 0);
+                directory.SetUShort(Entry.CreationDate + loc.DirectorySectorIndex * 32, 0);
+                directory.SetUShort(Entry.LastAccessDate + loc.DirectorySectorIndex * 32, 0);
+                directory.SetUShort(Entry.LastModifiedTime + loc.DirectorySectorIndex * 32, 0);
+                directory.SetUShort(Entry.LastModifiedDate + loc.DirectorySectorIndex * 32, 0);
+                directory.SetUInt(Entry.FileSize + loc.DirectorySectorIndex * 32, 0);
+                loc.DirectorySectorIndex += 1;
+            }
+
+            this.IDevice.Write(loc.DirectorySector, SectorsPerCluster, xdata);
+            return true;
+        }
+
         private RootDirectory ReadDirectory(UInt32 Cluster)
         {
             UInt32 xSector = DataSector + ((Cluster - RootCluster) * SectorsPerCluster);
@@ -254,6 +317,74 @@ namespace Kernel_alpha.FileSystem
             return cluster;
         }
 
+        public uint AllocateFirstCluster()
+        {
+            uint newCluster = AllocateCluster();
+
+            if (newCluster == 0)
+                return 0;
+
+            return newCluster;
+        }
+
+        protected bool SetClusterEntryValue(uint cluster, uint nextcluster)
+        {
+            uint fatOffset = 0;
+
+           fatOffset = cluster * 4;
+
+            uint sector = ReservedSector + (fatOffset / BytePerSector);
+            uint sectorOffset = fatOffset % BytePerSector;
+            uint nbrSectors = 1;
+
+            if ((FatType == FatType.FAT12) && (sectorOffset == BytePerSector - 1))
+                nbrSectors = 2;
+
+            var xData = new byte[512 * nbrSectors];
+            this.IDevice.Read(sector, nbrSectors, xData);
+            BinaryFormat fat = new BinaryFormat(xData);
+
+            
+            fat.SetUInt(sectorOffset, nextcluster);
+
+            this.IDevice.Write(sector, nbrSectors, fat.Data);
+
+            return true;
+        }
+
+        protected uint lastFreeHint = 0;
+        protected uint AllocateCluster()
+        {
+            uint at = lastFreeHint + 1;
+
+            if (at < 2)
+                at = 2;
+
+            uint last = at - 1;
+
+            if (last == 1)
+                last = fatEntries;
+
+            while (at != last)
+            {
+                uint value = GetClusterEntryValue(at);
+
+                if (IsClusterFree(value))
+                {
+                    SetClusterEntryValue(at, 0xFFFFFFFF /*endOfClusterMark*/);
+                    lastFreeHint = at;
+                    return at;
+                }
+
+                at++;
+
+                //if (at >= fatEntries)
+                //at = 2;
+            }
+
+            return 0;	// mean no free space
+        }
+
         protected bool IsClusterFree(uint cluster)
         {
             return ((cluster & ClusterMark.fatMask) == 0x00);
@@ -278,17 +409,23 @@ namespace Kernel_alpha.FileSystem
         {
             uint fatoffset = 0;
 
+            
             fatoffset = cluster * 4;
 
             uint sector = ReservedSector + (fatoffset / BytePerSector);
             uint sectorOffset = fatoffset % BytePerSector;
             uint nbrSectors = 1;
 
-            byte[] aData = new byte[512 * nbrSectors];
-            this.IDevice.Read(sector, nbrSectors, aData);
-            BinaryFormat fat = new BinaryFormat(aData);
+            if ((FatType == FatType.FAT12) && (sectorOffset == BytePerSector - 1))
+                nbrSectors = 2;
 
-            uint clusterValue = fat.GetUInt(sectorOffset) & 0x0FFFFFFF;
+            var xdata = new byte[512 * nbrSectors];
+            this.IDevice.Read(sector, nbrSectors, xdata);
+            BinaryFormat fat = new BinaryFormat(xdata);
+
+            uint clusterValue;
+
+             clusterValue = fat.GetUInt(sectorOffset) & 0x0FFFFFFF;
 
             return clusterValue;
         }

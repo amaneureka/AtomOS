@@ -74,7 +74,7 @@ namespace Kernel_alpha
 
             /* Setup IDT */
             IDT.Setup();
-
+            
             /* Enable Interrupts */
             Native.SetInterrupt();
             

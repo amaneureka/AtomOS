@@ -206,6 +206,11 @@ namespace Kernel_alpha
                     case "open": Console.WriteLine(xFAT.ReadFile(xDirName));
                         Console.WriteLine();
                         break;
+                    case "mkdir": if (xFAT.MakeDirectory(xDirName))
+                        {
+                            Console.WriteLine("Directory Created");
+                        }
+                        break;
                     default: Console.WriteLine("No such command exist");
                         break;
                 }

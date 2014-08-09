@@ -83,13 +83,13 @@ namespace Kernel_alpha.Lib
         public void SetString(uint offset, string value)
         {
             for (int index = 0; index < value.Length; ++index)
-                this.data[(long)offset + (long)index] = (byte)value[index];
+                this.data[(uint)offset + (uint)index] = (byte)value[index];
         }
 
         public void SetString(uint offset, string value, uint length)
         {
-            for (int index = 0; (long)index < (long)length; ++index)
-                this.data[(long)offset + (long)index] = (byte)value[index];
+            for (int index = 0; (uint)index < (uint)length; ++index)
+                this.data[(uint)offset + (uint)index] = (byte)value[index];
         }
 
         public uint GetUInt(uint offset)
