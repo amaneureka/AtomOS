@@ -5,8 +5,6 @@
 */
 
 using System;
-using System.Collections.Generic;
-
 
 namespace Kernel_alpha.FileSystem.FAT.Lists
 {

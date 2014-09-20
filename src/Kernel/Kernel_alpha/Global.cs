@@ -20,6 +20,11 @@ namespace Kernel_alpha
 
         public static void Init()
         {
+            //Load Serial Port at COM-1
+            Console.Write("Loading Serial Ports... ");
+            Serials.SetupPort();
+            Console.WriteLine("OK");
+
             // Setup PCI
             Console.Write ("Setting up PCI... ");
             PCI.Setup();
@@ -48,7 +53,7 @@ namespace Kernel_alpha
             Console.WriteLine("OK");
 
             //Load Parts
-            Console.Write ("Loading Partitions... ");            
+            Console.Write ("Loading Partitions... ");
             if (PrimaryIDE != null && PrimaryIDE.DriveInfo.Device == Device.IDE_ATA)
             {
                 var xMBR = new Drivers.PartInfo.MBR(PrimaryIDE);

@@ -48,6 +48,22 @@ namespace Kernel_alpha
             Console.WriteLine();
             Multitasking.CreateTask(pFAT32test, true);
             //xFAT.FlushDetails();
+            
+            Multitasking.CreateTask(pSerialTest, true);
+        }
+
+        private static uint pSerialTest;
+        private static void SerialTest()
+        {
+            while (true)
+            {                
+                var xRAM = x86.Heap.pointer;
+                x86.Serials.Write(0xFA);
+                x86.Serials.Write((byte)(xRAM >> 0));
+                x86.Serials.Write((byte)(xRAM >> 8));
+                x86.Serials.Write((byte)(xRAM >> 16));
+                x86.Serials.Write((byte)(xRAM >> 24));
+            }
         }
 
         public static void PrintEntries(List<Base> xEntries)
@@ -65,7 +81,7 @@ namespace Kernel_alpha
                 else if (Entry is File)
                 {
                     filecount++;
-                    Console.WriteLine("<File>    " + Entry.EntryName + "    " + Entry.EntryDetails.FileSize.ToString());
+                    Console.WriteLine("<File>    " + Entry.EntryName + "    " + ((File)Entry).EntryDetails.FileSize.ToString());
                 }
             }
             Console.WriteLine();
@@ -193,39 +209,85 @@ namespace Kernel_alpha
         private static uint pFAT32test;
         public static void FAT32test()
         {
-            var xFAT = new FileSystem.FatFileSystem(Global.Devices[2]);
-            PrintEntries(xFAT.ReadDirectory(null).GetEntries);
+            var xFAT = new FileSystem.FatFileSystem(Global.Devices[2]);            
+            //PrintEntries(xFAT.ReadFATDirectory());
+
             for (; ; )
             {
                 string xTemp = Console.ReadLine();
                 string[] xStrName = xTemp.Split(' ');
                 string xCommand = xStrName[0].Trim('\0');
-                string xDirName = xStrName[1].Trim('\0');
+
+                string xDirName = null;
+                if (xStrName.Length > 1)
+                    xDirName = xStrName[1].Trim('\0');
                 
                 switch (xCommand.ToLower())
                 {
-                    case "cd": 
-                        PrintEntries(xFAT.ReadDirectory(xDirName).GetEntries);
-                        break;
+                    case "cd":
+                        {
+                            try
+                            {
+                                xFAT.ChangeDirectory(xDirName);
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine(e.Message);
+                            }
+                            break;
+                        }
+                    case "dir":
+                        {
+                            try
+                            {
+                                PrintEntries(xFAT.ReadFATDirectory(xDirName));
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine(e.Message);
+                            }                            
+                            break;
+                        }
                     case "open":
                         {
                             var xData = xFAT.ReadFile(xDirName);
                             Console.WriteLine(ASCII.GetString(xData, 0, xData.Length));
                             Console.WriteLine();
+                            break;
                         }
-                        break;
-                    case "mkdir": if (xFAT.MakeDirectory(xDirName))
+                    case "mkdir":
                         {
-                            Console.WriteLine("Directory Created");
+                            try
+                            {
+                                xFAT.MakeDirectory(xDirName);
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine(e.Message);
+                            }
+                            break;
                         }
-                        break;
                     case "run":
                         {
                             var xData = xFAT.ReadFile(xDirName);
                             unsafe
                             {
+                                //Okay this code is working fine
+                                /* ; Example code
+                                 * use32
+                                 * main:
+	                             *  push dword EBP
+	                             *  mov dword EBP, ESP
+	                             *  mov dword EAX, 0xB8000
+	                             *  mov dword [EAX + 0x2], 0x0A41
+	                             *  leave
+	                             *  ret 0x0
+                                 *  
+                                 * ; Command Line 
+                                 * nasm -fbin test.asm -o test.atm
+                                 */
                                 var len = xData.Length;
-                                var xAdd = x86.Heap.AllocateMem((uint)len + 5);
+                                var xAdd = x86.Heap.AllocateMem((uint)len);
                                 var Mem = (byte*)xAdd;
                                 for (int i = 0; i < len; i++)
                                 {
@@ -245,7 +307,7 @@ namespace Kernel_alpha
         [Assembly(0x4)]
         private static void CallExecutableFile(uint pos)
         {
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 0x8 });
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });            
             Core.AssemblerCode.Add(new Call("EAX"));
         }
     }

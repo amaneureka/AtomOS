@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ILCompiler", "Compiler\ILCompiler.csproj", "{5F140860-2A9A-44DD-831E-61C0D052CC6B}"
 	ProjectSection(ProjectDependencies) = postProject
 		{4C45ED0B-E904-43EC-9C68-F5D6446DBCE1} = {4C45ED0B-E904-43EC-9C68-F5D6446DBCE1}
+		{38E89611-ED10-4B9F-8E9D-1FAA4EF97E73} = {38E89611-ED10-4B9F-8E9D-1FAA4EF97E73}
 		{CACCFB22-A659-459F-9891-504224635A3F} = {CACCFB22-A659-459F-9891-504224635A3F}
 		{31896A26-F45D-46C2-AF40-D6D409DECBEA} = {31896A26-F45D-46C2-AF40-D6D409DECBEA}
 		{ECA9C753-5F48-427C-B432-E7D61324AB41} = {ECA9C753-5F48-427C-B432-E7D61324AB41}
@@ -62,9 +63,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "libAtomixH", "Kernel_H\libA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "libAtomixH.mscorlib", "Kernel_H\libAtomixH.mscorlib\libAtomixH.mscorlib.csproj", "{EDBB1281-ABFA-41D8-882B-E787F85047BB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Debug Window", "Virtual Resources\Debug Window\Debug Window.csproj", "{38E89611-ED10-4B9F-8E9D-1FAA4EF97E73}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 12
+		SccNumberOfProjects = 13
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://atomos-il2asm.visualstudio.com/defaultcollection
 		SccLocalPath0 = .
@@ -112,6 +115,10 @@ Global
 		SccProjectTopLevelParentUniqueName11 = Atomix.sln
 		SccProjectName11 = Kernel_H/libAtomixH.mscorlib
 		SccLocalPath11 = Kernel_H\\libAtomixH.mscorlib
+		SccProjectUniqueName12 = Virtual\u0020Resources\\Debug\u0020Window\\Debug\u0020Window.csproj
+		SccProjectTopLevelParentUniqueName12 = Atomix.sln
+		SccProjectName12 = Virtual\u0020Resources/Debug\u0020Window
+		SccLocalPath12 = Virtual\u0020Resources\\Debug\u0020Window
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -184,6 +191,12 @@ Global
 		{EDBB1281-ABFA-41D8-882B-E787F85047BB}.Release H|Any CPU.Build.0 = Release|Any CPU
 		{EDBB1281-ABFA-41D8-882B-E787F85047BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EDBB1281-ABFA-41D8-882B-E787F85047BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38E89611-ED10-4B9F-8E9D-1FAA4EF97E73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38E89611-ED10-4B9F-8E9D-1FAA4EF97E73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38E89611-ED10-4B9F-8E9D-1FAA4EF97E73}.Release H|Any CPU.ActiveCfg = Release|Any CPU
+		{38E89611-ED10-4B9F-8E9D-1FAA4EF97E73}.Release H|Any CPU.Build.0 = Release|Any CPU
+		{38E89611-ED10-4B9F-8E9D-1FAA4EF97E73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38E89611-ED10-4B9F-8E9D-1FAA4EF97E73}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -197,6 +210,7 @@ Global
 		{31896A26-F45D-46C2-AF40-D6D409DECBEA} = {C53B4F01-2D9E-4AE6-A0FA-D849A9B61EF2}
 		{4C45ED0B-E904-43EC-9C68-F5D6446DBCE1} = {C53B4F01-2D9E-4AE6-A0FA-D849A9B61EF2}
 		{08E83764-C281-48BB-9413-FD0D65CCA57D} = {FF33C910-44B2-4135-822D-38BE75CA45BF}
+		{38E89611-ED10-4B9F-8E9D-1FAA4EF97E73} = {FF33C910-44B2-4135-822D-38BE75CA45BF}
 		{CACCFB22-A659-459F-9891-504224635A3F} = {08E83764-C281-48BB-9413-FD0D65CCA57D}
 		{FC738CC5-C45D-4CCE-8820-0A090C2912AC} = {AD86D26A-9AB6-4BF3-99B9-043FD22EB1A5}
 		{CEDFEDB7-CF1C-4BE7-AECB-5B0B34C19510} = {39D9498C-2D10-44DB-9B99-1286592965E8}

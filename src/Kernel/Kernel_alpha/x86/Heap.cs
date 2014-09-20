@@ -13,7 +13,7 @@ namespace Kernel_alpha.x86
 {
     public static class Heap
     {
-        private static uint pointer = 0;
+        public static uint pointer = 0;
         private static uint _start = 0;
         [Label("Heap")]
         public static uint AllocateMem(uint aLength)

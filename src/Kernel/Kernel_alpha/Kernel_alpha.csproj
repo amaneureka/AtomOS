@@ -69,6 +69,10 @@
     <Compile Include="FileSystem\FAT\misc.cs" />
     <Compile Include="FileSystem\FAT\RootDirectory.cs" />
     <Compile Include="FileSystem\GenericFileSystem.cs" />
+    <Compile Include="FileSystem\VFS\Entry\Base.cs" />
+    <Compile Include="FileSystem\VFS\Entry\Directory.cs" />
+    <Compile Include="FileSystem\VFS\Entry\File.cs" />
+    <Compile Include="FileSystem\VFS\VirtualFileSystem.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="Kernel.cs" />
     <Compile Include="Lib\BinaryFormat.cs" />
@@ -95,6 +99,7 @@
     <Compile Include="x86\PCI.cs" />
     <Compile Include="x86\PCIDevice.cs" />
     <Compile Include="x86\PIC.cs" />
+    <Compile Include="x86\Serials.cs" />
     <Compile Include="x86\xINT.cs" />
   </ItemGroup>
   <ItemGroup>

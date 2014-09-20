@@ -1,8 +1,12 @@
-﻿/* Copyright (C) Atomix OS Development, Inc - All Rights Reserved
-* Unauthorized copying of this file, via any medium is strictly prohibited
-* Proprietary and confidential
-* Written by SANDEEP ILIGER <sandeep.iliger@gmail.com>, 07-2014
-*/
+﻿/*  Copyright (C) Atomix OS Development, Inc - All Rights Reserved
+ *  Unauthorized copying of this file, via any medium is strictly prohibited
+ *  Proprietary and confidential
+ *  Written by SANDEEP ILIGER <sandeep.iliger@gmail.com>, 07-2014
+ *  
+ *  History
+ *      AMAN PRIYADARSHU <aman.eureka@gmail.com>, 09-2014
+ * 
+ */
 
 using System;
 using System.Collections.Generic;
@@ -40,7 +44,7 @@ namespace Kernel_alpha.FileSystem
         public FatFileSystem(BlockDevice aDevice)
         {
             this.IDevice = aDevice;
-            this.mIsValid = IsFAT();
+            this.mIsValid = IsFAT();            
         }
 
         private bool IsFAT()
@@ -124,37 +128,157 @@ namespace Kernel_alpha.FileSystem
             /* Now it shows our forward path ;) */
             EntriesPerSector = (UInt32)(BytePerSector / 32);
             DataSector = ReservedSector + (TotalFAT * SectorsPerFAT) + RootSectorCount;
+
+            FatCurrentDirectoryEntry = RootCluster;
+            this.mFSType = FileSystemType.FAT;
             return true;
         }
 
-        /* Getting directory name to read  */
-        public RootDirectory ReadDirectory(string DirName)
+        public override void ChangeDirectory(string DirName)
         {
-            var xEntries = (RootDirectory)null;
             if (DirName == null)
+                return;
+
+            var location = FindEntry(new FileSystem.Find.WithName(DirName), FatCurrentDirectoryEntry);
+            if (location != null)
             {
-                FatCurrentDirectoryEntry = 2;
-                xEntries = ReadDirectory(FatCurrentDirectoryEntry);
+                FatCurrentDirectoryEntry = location.FirstCluster;
+                return;
             }
-            else
+
+            throw new Exception("Directory Not Found!");
+        }
+        
+        public override List<VFS.Entry.Base> ReadDirectory(string DirName = null)
+        {
+            ChangeDirectory(DirName);
+
+            var xResult = new List<VFS.Entry.Base>();
+            
+            byte[] aData = new byte[(UInt32)(512 * SectorsPerCluster)];
+
+            UInt32 xSector = DataSector + ((FatCurrentDirectoryEntry - RootCluster) * SectorsPerCluster);
+            this.IDevice.Read(xSector, SectorsPerCluster, aData);
+
+            #region ReadingCode
+            uint Entry_offset = 0;
+            bool Entry_Type; //True -> Directory & False -> File
+            string Entry_Name;
+            string Entry_Ext;
+            for (uint i = 0; i < SectorsPerCluster * 512; i += 32)
             {
-                var location = FindEntry(new FileSystem.Find.WithName(DirName), FatCurrentDirectoryEntry);
-                if (location != null)
+                if (aData[i] == 0x0)
+                    break;
+                else
                 {
-                    FatCurrentDirectoryEntry = location.FirstCluster;
-                    xEntries = ReadDirectory(FatCurrentDirectoryEntry);
+                    //Find Entry Type
+                    switch (aData[i + 11])
+                    {
+                        case 0x10:
+                            Entry_Type = true;
+                            break;
+                        case 0x20:
+                            Entry_Type = false;
+                            break;
+                        default:
+                            continue;
+                    }
+
+                    Entry_offset = i;
+
+                    if (aData[i] != 0xE5)//Entry Exist
+                    {
+                        Entry_Name = ASCII.GetString(aData, (int)i, 8).Trim();
+                        if (!Entry_Type)
+                        {
+                            Entry_Ext = ASCII.GetString(aData, (int)(i + 8), 3).Trim();
+                            xResult.Add(new VFS.Entry.File(Entry_Name + "." + Entry_Ext, BitConverter.ToUInt32(aData, (int)(i + Entry.FileSize))));
+                        }
+                        else
+                        {
+                            xResult.Add(new VFS.Entry.Directory(Entry_Name));
+                        }
+                    }
                 }
             }
-            return xEntries;
+            #endregion
+
+            return xResult;
         }
 
-        public bool MakeDirectory(string DirName)
+        public List<Base> ReadFATDirectory(string DirName = null)
         {
-            var xResult = new RootDirectory(this, FatCurrentDirectoryEntry);
-            Details Entry_Detail = new Details();
+            ChangeDirectory(DirName);
 
+            var xResult = new List<Base>();
+
+            byte[] aData = new byte[(UInt32)(512 * SectorsPerCluster)];
+
+            UInt32 xSector = DataSector + ((FatCurrentDirectoryEntry - RootCluster) * SectorsPerCluster);
+            this.IDevice.Read(xSector, SectorsPerCluster, aData);
+
+            #region ReadingCode
+            uint Entry_offset = 0;
+            bool Entry_Type; //True -> Directory & False -> File
+            string Entry_Name;
+            string Entry_Ext;
+            Details Entry_Detail;
+            for (uint i = 0; i < SectorsPerCluster * 512; i += 32)
+            {
+                if (aData[i] == 0x0)
+                    break;
+                else
+                {
+                    //Find Entry Type
+                    switch (aData[i + 11])
+                    {
+                        case 0x10:
+                            Entry_Type = true;
+                            break;
+                        case 0x20:
+                            Entry_Type = false;
+                            break;
+                        default:
+                            continue;
+                    }
+
+                    Entry_offset = i;
+
+                    if (aData[i] != 0xE5)//Entry Exist
+                    {
+                        Entry_Detail = new Details();
+                        Entry_Name = ASCII.GetString(aData, (int)i, 8).Trim();
+
+                        Entry_Detail.Attribute = 0;
+                        Entry_Detail.CrtDate = 0;
+                        Entry_Detail.CrtTime = 0;
+                        Entry_Detail.FileSize = BitConverter.ToUInt32(aData, (int)(i + Entry.FileSize));
+                        Entry_Detail.StartCluster = 0;
+                        Entry_Detail.WrtDate = 0;
+                        Entry_Detail.WrtTime = 0;
+
+                        if (!Entry_Type)
+                        {
+                            Entry_Ext = ASCII.GetString(aData, (int)(i + 8), 3).Trim();
+                            xResult.Add(new File(Entry_Name + "." + Entry_Ext, Entry_Detail));
+                        }
+                        else
+                        {
+                            xResult.Add(new Directory(Entry_Name, Entry_Detail));
+                        }
+                    }
+                }
+            }
+            #endregion
+
+            return xResult;
+        }
+
+        public override void MakeDirectory(string DirName)
+        {
+            //TODO: Same Entry Exist exception.
             FatFileLocation location = FindEntry(new FileSystem.Find.Empty(), FatCurrentDirectoryEntry);
-
+            
             uint FirstCluster = AllocateFirstCluster();
 
             var xdata = new byte[512 * SectorsPerCluster];
@@ -175,10 +299,7 @@ namespace Kernel_alpha.FileSystem
             directory.SetUInt(Entry.FileSize + location.DirectorySectorIndex * 32, 0);
             this.IDevice.Write(location.DirectorySector, SectorsPerCluster, xdata);
 
-            xResult.AddEntry(new Directory(DirName, Entry_Detail));
-
             FatFileLocation loc = FindEntry(new FileSystem.Find.Empty(), FirstCluster);
-
             xdata = new byte[512 * SectorsPerCluster];
             this.IDevice.Read(loc.DirectorySector, SectorsPerCluster, xdata);
             directory = new BinaryFormat(xdata);
@@ -208,100 +329,28 @@ namespace Kernel_alpha.FileSystem
             }
 
             this.IDevice.Write(loc.DirectorySector, SectorsPerCluster, xdata);
-            return true;
         }
 
-        private RootDirectory ReadDirectory(UInt32 Cluster)
-        {
-            UInt32 xSector = DataSector + ((Cluster - RootCluster) * SectorsPerCluster);
-            var xResult = new RootDirectory(this, xSector);
-            
-            byte[] aData = new byte[(UInt32)(512 * SectorsPerCluster)];
-            this.IDevice.Read(xSector, SectorsPerCluster, aData);
-            #region ReadingCode
-            uint Entry_offset = 0;
-            bool Entry_Type; //True -> Directory & False -> File
-            string Entry_Name;
-            string Entry_Ext;
-            Details Entry_Detail;
-            for (uint i = 0; i < SectorsPerCluster * 512; i+= 32)
-            {
-                if (aData[i] == 0x0)
-                    break;
-                else
-                {
-                    //Find Entry Type
-                    switch(aData[i + 11])
-                    {
-                        case 0x10:
-                            Entry_Type = true;
-                            break;
-                        case 0x20:
-                            Entry_Type = false;
-                            break;
-                        default:
-                            continue;
-                    }
-
-                    Entry_offset = i;
-
-                    if (aData[i] != 0xE5)//Entry Exist
-                    {
-                        Entry_Detail = new Details();
-                        Entry_Name = ASCII.GetString(aData, (int)i, 8).Trim();
-                                               
-                        Entry_Detail.Attribute = 0;
-                        Entry_Detail.CrtDate = 0;
-                        Entry_Detail.CrtTime = 0;
-                        Entry_Detail.FileSize = BitConverter.ToUInt32(aData, (int)(i + Entry.FileSize));
-                        Entry_Detail.StartCluster = 0;
-                        Entry_Detail.WrtDate = 0;
-                        Entry_Detail.WrtTime = 0;
-                       
-                        if (!Entry_Type)
-                        {
-                            Entry_Ext = ASCII.GetString(aData, (int)(i + 8), 3).Trim();
-                            xResult.AddEntry(new File(Entry_Name + "." + Entry_Ext, Entry_Detail));
-                        }
-                        else
-                        {
-                            xResult.AddEntry(new Directory(Entry_Name, Entry_Detail));
-                        }
-                    }
-                }
-            }
-            #endregion
-
-            return xResult;
-        }
-
-        public byte[] ReadFile(string FileName)
+        public override byte[] ReadFile(string FileName)
         {
             byte[] xFileData = new byte[(UInt32)SectorsPerCluster * 512];
-            byte[] xReturnData = null; 
+            
             var location = FindEntry(new FileSystem.Find.WithName(FileName), FatCurrentDirectoryEntry);
-            if (location != null)
-            {
-                xReturnData = new byte[location.Size];
-                UInt32 xSector = DataSector + ((location.FirstCluster - RootCluster) * SectorsPerCluster);
-                this.IDevice.Read(xSector, SectorsPerCluster, xFileData);
-                Array.Copy(xFileData, 0, xReturnData, 0, location.Size);
-            }
+            if (location == null)
+                throw new Exception("File Not Found!");
+
+            byte[] xReturnData = new byte[location.Size];
+            UInt32 xSector = DataSector + ((location.FirstCluster - RootCluster) * SectorsPerCluster);
+            this.IDevice.Read(xSector, SectorsPerCluster, xFileData);
+            Array.Copy(xFileData, 0, xReturnData, 0, location.Size);
             return xReturnData;
         }
       
-        public uint GetClusterBySector(uint sector)
-        {
-            if (sector < DataSector)
-                return 0;
-
-            return (sector - DataSector) / SectorsPerCluster;
-        }
-
         public uint GetSectorByCluster(uint cluster)
         {
             return DataSector + ((cluster - RootCluster) * SectorsPerCluster);
         }
+
         static public uint GetClusterEntry(byte[] data, uint index, FatType type)
         {
             BinaryFormat entry = new BinaryFormat(data);
@@ -381,7 +430,8 @@ namespace Kernel_alpha.FileSystem
                 //at = 2;
             }
 
-            return 0;	// mean no free space
+            throw new Exception("No Free Cluster Found!");
+            //return 0;	// mean no free space
         }
 
         protected bool IsClusterFree(uint cluster)
@@ -454,13 +504,7 @@ namespace Kernel_alpha.FileSystem
             }
             return null;
         }
-
-        //One question: Why this?
-        public  bool Compare(byte[] data, uint offset, FatType type)
-        {
-            throw new NotImplementedException();
-        }
-
+        
         public void FlushDetails()
         {
             if (IsValid)

@@ -100,6 +100,7 @@
     <Compile Include="IL\Branch\Blt.cs" />
     <Compile Include="IL\Branch\Ble.cs" />
     <Compile Include="IL\Branch\Ble_Un.cs" />
+    <Compile Include="IL\CastClass.cs" />
     <Compile Include="IL\Cgt_Un.cs" />
     <Compile Include="IL\Clt_Un.cs" />
     <Compile Include="IL\Conversion\Conv_U.cs" />
