@@ -1,5 +1,6 @@
 ﻿using System;
 using Kernel_alpha.x86;
+using Kernel_alpha.x86.Intrinsic;
 using System.Collections.Generic;
 using Kernel_alpha.Drivers;
 using Kernel_alpha.Drivers.Input;
@@ -35,18 +36,20 @@ namespace Kernel_alpha
             Console.Write ("Setting up ACPI... ");
             ACPI = new acpi(true, true);
             Console.WriteLine ("OK");
-
+                        
             // Setup Mouse
+            Native.SetInterrupt();
             Console.Write ("Setting up PS/2 Mouse... ");
             Mouse = new PS2Mouse();
             Mouse.Initialize();
             Console.WriteLine ("OK");
 
             // Setup Keyboard
+            Native.SetInterrupt();
             Console.Write("Setting up PS/2 Keyboard... ");
             KBD = new Keyboard();
             Console.WriteLine("OK");
-
+            
             //Loading ATA
             Console.Write ("Loading ATA SubSystem... ");
             LoadATA();
@@ -55,7 +58,7 @@ namespace Kernel_alpha
             //Load Parts
             Console.Write ("Loading Partitions... ");
             if (PrimaryIDE != null && PrimaryIDE.DriveInfo.Device == Device.IDE_ATA)
-            {
+            {   
                 var xMBR = new Drivers.PartInfo.MBR(PrimaryIDE);
                 for (int i = 0; i < xMBR.PartInfo.Count; i++)
                     Devices.Add(xMBR.PartInfo[i]);

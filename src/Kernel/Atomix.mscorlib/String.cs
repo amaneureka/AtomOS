@@ -18,22 +18,7 @@ namespace Atomix.mscorlib
         [Plug("System_Void__System_String__ctor_System_Char___")]
         public static unsafe void ctor(byte* aFirstChar, char[] aChar)
         {
-            int _l = aChar.Length;
-                        
-            byte* length = (byte*)(aFirstChar + 0xC);
-
-            var _a = BitConverter.GetBytes(_l);
-            length[0] = _a[0];
-            length[1] = _a[1];
-            length[2] = _a[2];
-            length[3] = _a[3];
-            
-            char* chars = (char*)(aFirstChar + 0x10);
-            for (int i = 0; i < _l; i++)
-            {
-                chars[i] = aChar[i];
-            }
-            #warning TODO: Trim the last null chars
+            ctor(aFirstChar, aChar, 0, aChar.Length);
         }
 
         [Plug("System_Void__System_String__ctor_System_Char____System_Int32__System_Int32_")]

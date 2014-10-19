@@ -34,7 +34,8 @@ namespace Kernel_alpha
             Core.DataMember.Add(new AsmData("Stack_Entrypoint:", string.Empty));
 
             /* Here is Entrypoint Method */
-            Core.AssemblerCode.Add(new Cli()); //Clear interrupts first !!            
+            //Core.AssemblerCode.Add(new Cli()); //Clear interrupts first !!
+            /*
             //SSE Init
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.CR4 });
             Core.AssemblerCode.Add(new Or { DestinationReg = Registers.EAX, SourceRef = "0x100" });
@@ -51,9 +52,9 @@ namespace Kernel_alpha
 
             Core.AssemblerCode.Add(new And { DestinationReg = Registers.EAX, SourceRef = "0x1" });
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.CR0, SourceReg = Registers.EAX });
-            
+            */
             //Setup Stack pointer, We do rest things later (i.e. Another method) because they are managed :)
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ESP, SourceRef = "Stack_Entrypoint" });
+            //Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ESP, SourceRef = "Stack_Entrypoint" });
             Core.AssemblerCode.Add(new Jmp { DestinationRef = "Kernel_Start" });
         }
 
@@ -74,14 +75,15 @@ namespace Kernel_alpha
 
             /* Setup IDT */
             IDT.Setup();
-            
+
             /* Enable Interrupts */
             Native.SetInterrupt();
-                                    
+            //PageTable.Setup();
+            
             /* Setup Multitasking */
             Multitasking.CreateTask(0, true); //This is System Update thread
             Multitasking.Init();//Start Multitasking
-
+                        
             /* Call Compiler Flush : should be before any virtual class called */
             Native.CompilerFlush();
             

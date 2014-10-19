@@ -52,6 +52,7 @@
     <Compile Include="Drivers\Input\Mouse\PS2.cs" />
     <Compile Include="Drivers\PartInfo\MBR.cs" />
     <Compile Include="Drivers\PartInfo\Partition.cs" />
+    <Compile Include="Drivers\Video\VBE\Bochslfb.cs" />
     <Compile Include="Drivers\Video\VGA\modes.cs" />
     <Compile Include="Drivers\Video\VGA\VGAScreen.cs" />
     <Compile Include="Drivers\Video\Vmware\misc.cs" />
@@ -95,7 +96,7 @@
     <Compile Include="x86\Intrinsic\Native.cs" />
     <Compile Include="x86\Memory.cs" />
     <Compile Include="x86\Multiboot.cs" />
-    <Compile Include="x86\Paging.cs" />
+    <Compile Include="x86\PageTable.cs" />
     <Compile Include="x86\PCI.cs" />
     <Compile Include="x86\PCIDevice.cs" />
     <Compile Include="x86\PIC.cs" />

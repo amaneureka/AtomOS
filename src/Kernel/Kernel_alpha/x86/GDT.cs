@@ -37,8 +37,8 @@ namespace Kernel_alpha.x86
             Set_GDT_Gate(0, 0, 0, 0, 0);                // Null segment
             Set_GDT_Gate(1, 0, 0xFFFFFFFF, 0x9A, 0xCF); // Code segment
             Set_GDT_Gate(2, 0, 0xFFFFFFFF, 0x92, 0xCF); // Data segment
-            Set_GDT_Gate(3, 0, 0xFFFFFFFF, 0xFA, 0xCF); // User mode code segment
-            Set_GDT_Gate(4, 0, 0xFFFFFFFF, 0xF2, 0xCF); // User mode data segment
+            //Set_GDT_Gate(3, 0, 0xFFFFFFFF, 0xFA, 0xCF); // User mode code segment
+            //Set_GDT_Gate(4, 0, 0xFFFFFFFF, 0xF2, 0xCF); // User mode data segment
 
             Native.Lgdt(_gdtTable);
                         

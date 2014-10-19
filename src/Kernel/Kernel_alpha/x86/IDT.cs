@@ -113,6 +113,10 @@ namespace Kernel_alpha.x86
                     xAddress[53] = 0x0C;
                 }
                 #endregion
+                if (INT == 0xE)//Page Fault TODO
+                {
+                    Console.WriteLine(xContext.EFlags.ToString());
+                }
                 while (true) ;
             }
             else if (INT >= 0x20 && INT < 0x30) //[32, 48) --> Hardware Interrupts
