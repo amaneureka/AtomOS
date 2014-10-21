@@ -14,8 +14,8 @@ namespace Kernel_alpha.x86
 {
     public static class GDT
     {
-        private static uint _gdtTable = 0x25082C; //0x200020 + 2048 (IDT Content) + 6 (IDT Pointer) + <Some space unused>
-        private static uint _gdtEntries = 0x25082C + 6;
+        private static uint _gdtTable = 0x10582C; //0x200020 + 2048 (IDT Content) + 6 (IDT Pointer) + <Some space unused>
+        private static uint _gdtEntries = 0x10582C + 6;
         
         public enum Offset : byte
         {

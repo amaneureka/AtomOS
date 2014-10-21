@@ -87,7 +87,7 @@ namespace Kernel_alpha.Drivers.Input
             Buffer = new Queue<Keys>(MaxBuffer);
             
             /* Set LEDs */
-            UpdateLEDs();
+            //UpdateLEDs();
         }
         
         private bool IsExtended = false;

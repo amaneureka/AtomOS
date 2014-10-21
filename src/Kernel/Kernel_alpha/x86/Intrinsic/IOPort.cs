@@ -130,6 +130,14 @@ namespace Kernel_alpha.x86.Intrinsic
             }
         }
 
+        public void Read16(byte[] xData, uint size)
+        {
+            Read16(xData);
+
+            for (int i = xData.Length - 1; i < size; i += 2)
+                this.Inw();
+        }
+
         public void Write16(ushort[] xData)
         {
             for (int i = 0; i < xData.Length; i++)

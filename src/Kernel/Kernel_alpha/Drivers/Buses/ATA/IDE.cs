@@ -149,20 +149,6 @@ namespace Kernel_alpha.Drivers.Buses.ATA
             //Read Model, Firmware, SerialNo.
             DriveInfo.Model = xBuff.GetString((int)Identify.ATA_IDENT_MODEL, 40);
             DriveInfo.SerialNo = xBuff.GetString((int)Identify.ATA_IDENT_SERIAL, 20);
-
-            /* Print Config...just for testing */
-            /*Console.Write("Size:");
-            Console.WriteLine(((UInt32)DriveInfo.Size).ToString());
-            Console.Write("Model:");
-            Console.WriteLine(DriveInfo.Model);
-            Console.Write("Serial:");
-            Console.WriteLine(DriveInfo.SerialNo);
-
-            Console.Write("Type:");
-            if (DriveInfo.Device == Device.IDE_ATA)
-                Console.WriteLine("ATA");
-            else if (DriveInfo.Device == Device.IDE_ATAPI)
-                Console.WriteLine("ATAPI");*/
         }
 
         public override void Read(UInt32 SectorNo, uint SectorCount, byte[] xData)
@@ -218,7 +204,7 @@ namespace Kernel_alpha.Drivers.Buses.ATA
                     UInt32 size = (UInt32)(LBA2.Byte << 8 | LBA1.Byte);
 
                     //Read the data
-                    DataReg.Read16(xData);
+                    DataReg.Read16(xData, size);
 
                     WaitIRQ();
                     while (((Status)StatusReg.Byte & (Status.ATA_SR_BSY | Status.ATA_SR_DRQ)) != 0) ;

@@ -51,10 +51,10 @@ namespace Kernel_alpha
             Console.WriteLine("OK");
             
             //Loading ATA
-            Console.Write ("Loading ATA SubSystem... ");
+            Console.Write ("Loading ATA/SATA SubSystem... ");
             LoadATA();
             Console.WriteLine("OK");
-
+            
             //Load Parts
             Console.Write ("Loading Partitions... ");
             if (PrimaryIDE != null && PrimaryIDE.DriveInfo.Device == Device.IDE_ATA)
@@ -68,19 +68,25 @@ namespace Kernel_alpha
 
         private static void LoadATA()
         {
-            var xDevice = PCI.GetDeviceClass(0x1, 0x1); //media storage IDE controller device
+            PCIDevice xDevice = PCI.GetDeviceClass(0x1, 0x1); //Media Storage - IDE Controller
             if (xDevice != null)
             {
-                //Have to work here
-            }
-            else
-            {
-                //Now we check if parallel ATA is present
+                //We are going to support only parallel ata
                 PrimaryIDE = new IDE(false);
                 SecondayIDE = new IDE(true);
-                Devices.Add(PrimaryIDE);
-                Devices.Add(SecondayIDE);
+
+                if (PrimaryIDE.DriveInfo.Device != Device.IDE_None)
+                    Devices.Add(PrimaryIDE);
+
+                if (SecondayIDE.DriveInfo.Device != Device.IDE_None)
+                    Devices.Add(SecondayIDE);
             }
+            /*
+            xDevice = PCI.GetDeviceClass(0x1, 0x6);//Media Storage - SATA
+            if (xDevice != null)
+            {
+                
+            }*/
         }
     }
 }

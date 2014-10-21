@@ -18,28 +18,52 @@ namespace Kernel_alpha.x86
         public static void Setup()
         {
             Devices = new List<PCIDevice>();
-            EnumerateBus(0x0, 0x0);
+
+            //EnumerateBus(0x0);
+            if ((PCIDevice.GetHeaderType(0x0, 0x0, 0x0) & 0x80) == 0)
+            {
+                /* Single PCI host controller */
+                CheckBus(0x0);
+            }
+            else
+            {
+                /* Multiple PCI host controllers */
+                for (ushort fn = 0; fn < 8; fn++)
+                {
+                    if (PCIDevice.GetVendorID(0x0, 0x0, fn) != 0xFFFF)
+                        break;
+
+                    CheckBus(fn);
+                }
+            }
         }
 
-        private static void EnumerateBus(ushort xBus, ushort step)
+        private static void CheckBus(ushort xBus)
         {
-            PCIDevice xPCIDevice;
-
-            for (uint i = 0; i < 32; i++)
+            for (ushort device = 0; device < 32; device++)
             {
-                xPCIDevice = new PCIDevice(xBus, i, 0x0);
-                if (xPCIDevice.DeviceExists)
+                if (PCIDevice.GetVendorID(xBus, device, 0x0) == 0xFFFF)
+                    continue;
+
+                CheckFunction(new PCIDevice(xBus, device, 0x0));
+                if ((PCIDevice.GetHeaderType(xBus, device, 0x0) & 0x80) != 0)
                 {
-                    if (xPCIDevice.HeaderType == PCIDevice.PCIHeaderType.Bridge)
+                    /* It is a multi-function device, so check remaining functions */
+                    for (ushort fn = 1; fn < 8; fn++)
                     {
-                        //Have to do work here
-                    }
-                    else
-                    {                        
-                        Devices.Add(xPCIDevice);
+                        if (PCIDevice.GetVendorID(xBus, device, fn) != 0xFFFF)
+                            CheckFunction(new PCIDevice(xBus, device, fn));
                     }
                 }
             }
+        }
+
+        private static void CheckFunction(PCIDevice xPCIDevice)
+        {
+            Devices.Add(xPCIDevice);
+
+            if (xPCIDevice.ClassCode == 0x6 && xPCIDevice.Subclass == 0x4)
+                CheckBus(xPCIDevice.SecondaryBusNumber);
         }
 
         public static PCIDevice GetDeviceVendorID(ushort VendorID, ushort DeviceID)

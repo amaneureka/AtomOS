@@ -67,6 +67,7 @@ namespace Kernel_alpha.x86
         public readonly byte ProgIF;
         public readonly byte Subclass;
         public readonly byte ClassCode;
+        public readonly byte SecondaryBusNumber;
 
         public readonly bool DeviceExists;
 
@@ -96,6 +97,7 @@ namespace Kernel_alpha.x86
             this.ProgIF = ReadRegister8((byte)Config.ProgIF);
             this.Subclass = ReadRegister8((byte)Config.SubClass);
             this.ClassCode = ReadRegister8((byte)Config.Class);
+            this.SecondaryBusNumber = ReadRegister8((byte)Config.SecondaryBusNo);
 
             this.HeaderType = (PCIHeaderType)ReadRegister8((byte)Config.HeaderType);
             this.BIST = (PCIBist)ReadRegister8((byte)Config.BIST);
@@ -112,6 +114,20 @@ namespace Kernel_alpha.x86
                 BaseAddressBar[4] = new PCIBaseAddressBar(ReadRegister32(0x20));
                 BaseAddressBar[5] = new PCIBaseAddressBar(ReadRegister32(0x24));
             }
+        }
+
+        public static ushort GetHeaderType(ushort Bus, ushort Slot, ushort Function)
+        {
+            UInt32 xAddr = GetAddressBase(Bus, Slot, Function) | ((UInt32)(0xE & 0xFC));
+            Native.Out32(ConfigAddressPort, xAddr);
+            return (byte)(Native.In32(ConfigDataPort) >> ((0xE % 4) * 8) & 0xFF);
+        }
+
+        public static UInt16 GetVendorID(ushort Bus, ushort Slot, ushort Function)
+        {
+            UInt32 xAddr = GetAddressBase(Bus, Slot, Function) | ((UInt32)(0x0 & 0xFC));
+            Native.Out32(ConfigAddressPort, xAddr);
+            return (UInt16)(Native.In32(ConfigDataPort) >> ((0x0 % 4) * 8) & 0xFFFF); ;
         }
 
         #region IO Port
@@ -157,7 +173,7 @@ namespace Kernel_alpha.x86
             Native.Out32(ConfigDataPort, value);
         }
         #endregion
-        protected UInt32 GetAddressBase(uint aBus, uint aSlot, uint aFunction)
+        protected static UInt32 GetAddressBase(uint aBus, uint aSlot, uint aFunction)
         {
             // 31 	        30 - 24    23 - 16      15 - 11 	    10 - 8 	          7 - 2 	        1 - 0
             // Enable Bit 	Reserved   Bus Number 	Device Number 	Function Number   Register Number 	00 

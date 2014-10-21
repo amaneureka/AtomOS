@@ -12,7 +12,7 @@ using Core = Atomix.Assembler.AssemblyHelper;
 
 namespace Kernel_alpha
 {
-    [Kernel(CPUArch.x86, "0x200000")]//Fixed Entrypoint, if you change it than i kill you :)
+    [Kernel(CPUArch.x86, "0x100000")]//Fixed Entrypoint, if you change it than i kill you :)
     public static class Kernel_x86
     {
         [Assembly, Plug("Kernel_Main")]
@@ -21,16 +21,16 @@ namespace Kernel_alpha
             /* Will do some assembly, because it can't be managed via C# :(
              * So, first task is to set Multiboot header
              */
-            Core.DataMember.Add(new AsmData("MultibootSignature", BitConverter.GetBytes(0x1BADB002))); //0x200000
-            Core.DataMember.Add(new AsmData("MultibootFlags", BitConverter.GetBytes(65539)));//0x200004
-            Core.DataMember.Add(new AsmData("MultibootChecksum", BitConverter.GetBytes(-464433157)));//0x200008
-            Core.DataMember.Add(new AsmData("MultibootHeaderAddr", "dd MultibootSignature"));//0x20000C
-            Core.DataMember.Add(new AsmData("MultibootLoadAddr", "dd MultibootSignature"));//0x200010
-            Core.DataMember.Add(new AsmData("MultibootLoadEndAddr", "dd Compiler_End"));//0x200014
-            Core.DataMember.Add(new AsmData("MultibootBSSEndAddr", "dd Compiler_End"));//0x200018
-            Core.DataMember.Add(new AsmData("MultibootEntryAddr", "dd Kernel_Main")); //0x20001C
-            Core.DataMember.Add(new AsmData("Before_Kernel_Stack:", "TIMES 0x50000 db 0"));
-            Core.DataMember.Add(new AsmData("GDT_And_IDT_Content:", "TIMES 3000 db 0"));//0x250020 --> First IDT than GDT            
+            Core.DataMember.Add(new AsmData("MultibootSignature", BitConverter.GetBytes(0x1BADB002))); //0x100000
+            Core.DataMember.Add(new AsmData("MultibootFlags", BitConverter.GetBytes(65539)));//0x100004
+            Core.DataMember.Add(new AsmData("MultibootChecksum", BitConverter.GetBytes(-464433157)));//0x100008
+            Core.DataMember.Add(new AsmData("MultibootHeaderAddr", "dd MultibootSignature"));//0x10000C
+            Core.DataMember.Add(new AsmData("MultibootLoadAddr", "dd MultibootSignature"));//0x100010
+            Core.DataMember.Add(new AsmData("MultibootLoadEndAddr", "dd Compiler_End"));//0x100014
+            Core.DataMember.Add(new AsmData("MultibootBSSEndAddr", "dd Compiler_End"));//0x100018
+            Core.DataMember.Add(new AsmData("MultibootEntryAddr", "dd Kernel_Main")); //0x10001C
+            Core.DataMember.Add(new AsmData("Before_Kernel_Stack:", "TIMES 0x5000 db 0"));
+            Core.DataMember.Add(new AsmData("GDT_And_IDT_Content:", "TIMES 3000 db 0"));//0x105020 --> First IDT than GDT            
             Core.DataMember.Add(new AsmData("Stack_Entrypoint:", string.Empty));
 
             /* Here is Entrypoint Method */

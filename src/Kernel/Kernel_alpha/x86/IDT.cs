@@ -16,11 +16,9 @@ namespace Kernel_alpha.x86
 {
     public static class IDT
     {
-        private static uint _idtTable = 0x250020;
-        private static uint _idtEntries = 0x250020 + 6;
+        private static uint _idtTable = 0x105020;
+        private static uint _idtEntries = 0x105020 + 6;
         
-        private static IOPort idtTable;
-
         public enum Offset
         {
             BaseLow = 0x00,
@@ -48,8 +46,8 @@ namespace Kernel_alpha.x86
         [Plug("__Interrupt_Handler__")]
         private static unsafe void ProcessInterrupt(ref IRQContext xContext)
         {
+            Native.ClearInterrupt();
             var INT = xContext.Interrupt;
-
             if (INT < 0x13 && INT >= 0) // [0, 19) --> Exceptions
             {
                 #region Handle
@@ -141,6 +139,7 @@ namespace Kernel_alpha.x86
                 }
                 PIC.SendEndOfInterrupt((byte)xContext.Interrupt);
             }
+            Native.SetInterrupt();
         }
 
         [Assembly(0x0)]

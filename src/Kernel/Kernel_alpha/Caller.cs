@@ -45,10 +45,10 @@ namespace Kernel_alpha
 
             Console.WriteLine("Partition Count::" + c.ToString());
             Console.Clear();
-            Console.WriteLine();            
+            Console.WriteLine();
             Multitasking.CreateTask(pFAT32test, true);
             Multitasking.CreateTask(pSerialTest, true);
-            Multitasking.CreateTask(pIdleTask, true);
+            Multitasking.CreateTask(pIdleTask, true);            
         }
 
         private static uint pIdleTask;
@@ -64,7 +64,7 @@ namespace Kernel_alpha
         private static void SerialTest()
         {
             while (true)
-            {                
+            {
                 var xRAM = x86.Heap.AllocateMem(0);
                 x86.Serials.Write(0xFA);
                 x86.Serials.Write((byte)(xRAM >> 0));
@@ -100,7 +100,7 @@ namespace Kernel_alpha
         }
 
         public static unsafe void Update()
-        {            
+        {
             if (Global.KBD.Ctrl)
             {
                 var s = Global.KBD.ReadKey();
@@ -141,8 +141,7 @@ namespace Kernel_alpha
                 else if (s.Code == KeyCode.B)
                 {
                     var bochs = new Drivers.Video.VBE.Bochslfb();
-                    bochs.SetMode(1024, 768, 24);
-                    uint c = 0;
+                    bochs.SetMode(1024, 768, 24);                    
                     for (uint i = 0; i < 1024; i++)
                     {
                         for (uint j = 0; j < 768; j++)
