@@ -14,8 +14,8 @@ namespace Kernel_alpha.x86
 {
     public static class GDT
     {
-        private static uint _gdtTable = 0x10582C; //0x200020 + 2048 (IDT Content) + 6 (IDT Pointer) + <Some space unused>
-        private static uint _gdtEntries = 0x10582C + 6;
+        private static uint _gdtTable = 0x10082C; //0x200020 + 2048 (IDT Content) + 6 (IDT Pointer) + <Some space unused>
+        private static uint _gdtEntries = 0x10082C + 6;
         
         public enum Offset : byte
         {
@@ -33,12 +33,12 @@ namespace Kernel_alpha.x86
             Memory.Clear(_gdtTable, 6);
             Native.Write16(_gdtTable, ((byte)Offset.TotalSize * 5) - 1);
             Native.Write32(_gdtTable + 2, _gdtEntries);
-            
+
             Set_GDT_Gate(0, 0, 0, 0, 0);                // Null segment
             Set_GDT_Gate(1, 0, 0xFFFFFFFF, 0x9A, 0xCF); // Code segment
             Set_GDT_Gate(2, 0, 0xFFFFFFFF, 0x92, 0xCF); // Data segment
-            //Set_GDT_Gate(3, 0, 0xFFFFFFFF, 0xFA, 0xCF); // User mode code segment
-            //Set_GDT_Gate(4, 0, 0xFFFFFFFF, 0xF2, 0xCF); // User mode data segment
+            Set_GDT_Gate(3, 0, 0xFFFFFFFF, 0xFA, 0xCF); // User mode code segment
+            Set_GDT_Gate(4, 0, 0xFFFFFFFF, 0xF2, 0xCF); // User mode data segment
 
             Native.Lgdt(_gdtTable);
                         
@@ -65,7 +65,7 @@ namespace Kernel_alpha.x86
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.FS, SourceReg = Registers.AX, Size = 16 });
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.GS, SourceReg = Registers.AX, Size = 16 });
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.SS, SourceReg = Registers.AX, Size = 16 });
-            Core.AssemblerCode.Add(new Literal("jmp 8:Far_Jumper.End"));
+            Core.AssemblerCode.Add(new Literal("jmp 0x8:Far_Jumper.End"));
             Core.AssemblerCode.Add(new Label("Far_Jumper.End"));
         }
     }

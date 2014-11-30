@@ -96,7 +96,7 @@
     <Compile Include="x86\Intrinsic\Native.cs" />
     <Compile Include="x86\Memory.cs" />
     <Compile Include="x86\Multiboot.cs" />
-    <Compile Include="x86\PageTable.cs" />
+    <Compile Include="x86\Paging.cs" />
     <Compile Include="x86\PCI.cs" />
     <Compile Include="x86\PCIDevice.cs" />
     <Compile Include="x86\PIC.cs" />

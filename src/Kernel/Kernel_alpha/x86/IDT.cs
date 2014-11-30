@@ -16,8 +16,8 @@ namespace Kernel_alpha.x86
 {
     public static class IDT
     {
-        private static uint _idtTable = 0x105020;
-        private static uint _idtEntries = 0x105020 + 6;
+        private static uint _idtTable = 0x100020;
+        private static uint _idtEntries = 0x100020 + 6;
         
         public enum Offset
         {
@@ -50,6 +50,12 @@ namespace Kernel_alpha.x86
             var INT = xContext.Interrupt;
             if (INT < 0x13 && INT >= 0) // [0, 19) --> Exceptions
             {
+                /*
+                if (INT == 0xE)//Page Fault TODO
+                {
+                    Console.WriteLine(xContext.EFlags.ToString());
+                    while (true) ;
+                }*/
                 #region Handle
                 const string xHex = "0123456789ABCDEF";
                 unsafe
@@ -109,12 +115,14 @@ namespace Kernel_alpha.x86
                     xAddress[51] = 0x0C;
                     xAddress[52] = (byte)' ';
                     xAddress[53] = 0x0C;
+
+                    xAddress[54] = (byte)xHex[(int)((xContext.EFlags >> 4) & 0xF)];
+                    xAddress[55] = 0x0C;
+                    xAddress[56] = (byte)xHex[(int)(xContext.EFlags & 0xF)];
+                    xAddress[57] = 0x0C;
                 }
                 #endregion
-                if (INT == 0xE)//Page Fault TODO
-                {
-                    Console.WriteLine(xContext.EFlags.ToString());
-                }
+                
                 while (true) ;
             }
             else if (INT >= 0x20 && INT < 0x30) //[32, 48) --> Hardware Interrupts

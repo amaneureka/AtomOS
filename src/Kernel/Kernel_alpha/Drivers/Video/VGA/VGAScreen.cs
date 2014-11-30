@@ -67,10 +67,10 @@ namespace Kernel_alpha.Drivers.Video
 
         public void SetMode0()
         {
-            WriteRegister(modes.g_320x200x256);
-            width = 320;
-            height = 200;
-
+            WriteRegister(modes.g_640x480x16);
+            width = 640;
+            height = 480;
+            
             byte[] xHex = new byte[] { 0x00, 0x33, 0x66, 0x99, 0xCC, 0xFF };
             int c = 0;
             for (byte i = 0; i < 6; i++)
@@ -151,6 +151,40 @@ namespace Kernel_alpha.Drivers.Video
         {
             var xOffset = (uint)((y * Width) + x);
             VideoMemory[xOffset] = color;
+        }
+        public void SetPixel_640_480(uint x, uint y, byte color)
+        {
+            int wd_in_bytes = width / 8;
+            int off = (int)((wd_in_bytes * y) + (int)(x / 8));
+            int posx = (int)((x & 7) * 1);
+            int mask = 0x80 >> posx;
+            int pmask = 1;
+            for (int p = 0; p < 4; p++)
+            {
+                Setplane(p);
+                if((pmask & color) != 0)
+                {
+                    VideoMemory[(uint)off] |= (byte)mask;
+                }
+                else
+                {
+                    VideoMemory[(uint)off] &= (byte)~mask;
+                }
+                pmask <<= 1;
+            }
+        }
+
+        private void Setplane(int p)
+        {
+            byte pmask;
+            int p2 = p & 3;
+            pmask = (byte)(1 << p2);
+
+            GraphicsController_Index.Byte = 4;
+            GraphicsController_Data.Byte = (byte)p2;
+
+            Sequencer_Index.Byte = 2;
+            Sequencer_Data.Byte = pmask;
         }
     }
 }

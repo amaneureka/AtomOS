@@ -3,54 +3,62 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Kernel_alpha.x86.Intrinsic;
+using System.Runtime.InteropServices;
 
 namespace Kernel_alpha.x86
 {
-    public static class Multiboot
+    public static unsafe class Multiboot
     {
-        public static uint MultibootStructure;
+        private static uint MultibootHeader;
 
         /// <summary>
-        /// Standard Multiboot Address
+        /// For now it is fine, http://git.savannah.gnu.org/cgit/grub.git/tree/doc/multiboot.h?h=multiboot
         /// </summary>
-        public const uint MagicNumber = 0x1BADB002;
-        /// <summary>
-        /// Standard Multiboot Magic Number Address
-        /// </summary>
-        public const uint MultiBootMagicAddress = 0x200000;
-        /// <summary>
-        /// Standard Multiboot Structure pointer Address
-        /// </summary>
-        public const uint MultiBootStructAddress = 0x200004;
-        /// <summary>
-        /// Is ValidMultiboot Magic Number
-        /// </summary>
-        public static bool IsValidMultiboot;
-
-        public static void Setup()
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public unsafe struct Multiboot_Info
         {
-            MultibootStructure = 0;
-            IsValidMultiboot =  LocateMultiboot();
+            /* Multiboot info version number */
+            public uint Flags;
+
+            /* Available memory from BIOS */
+            public uint mem_lower;
+            public uint mem_upper;
+
+            /* "root" partition */
+            public uint boot_device;
+
+            /* Kernel command line */
+            public uint cmdline;
+
+            /* Boot-Module list */
+            public uint mods_count;
+            public uint mods_addr;
         }
 
-        private static bool LocateMultiboot()
+        private static Multiboot_Info* Mb_Info;
+
+        public const uint MULTIBOOT_BOOTLOADER_MAGIC = 0x2BADB002;
+        public static void Setup(uint magic, uint address)
         {
-            uint _magic = Native.Read32(MultiBootMagicAddress);
-            uint _ptr = Native.Read32(MultiBootStructAddress);
-            
-            if (_magic != MagicNumber) 
-                return false; //Wrong Multiboot Address
-
-            MultibootStructure = _ptr; //Set Structure pointer
-
-            return true;
+            if (magic != MULTIBOOT_BOOTLOADER_MAGIC)
+                return;            
+            MultibootHeader = address;
+            Mb_Info = (Multiboot_Info*)MultibootHeader;
         }
 
-        public static uint GetRAM
+        public static uint Address
         {
             get
             {
-                return Native.Read32(MultiBootStructAddress + 0x4);
+                return MultibootHeader;
+            }
+        }
+
+        public static uint RAM
+        {
+            get
+            {
+                return (Mb_Info->mem_upper + Mb_Info->mem_lower) * 1024;
             }
         }
     }

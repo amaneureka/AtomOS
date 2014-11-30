@@ -48,7 +48,7 @@ namespace Kernel_alpha
             Console.WriteLine();
             Multitasking.CreateTask(pFAT32test, true);
             Multitasking.CreateTask(pSerialTest, true);
-            Multitasking.CreateTask(pIdleTask, true);            
+            Multitasking.CreateTask(pIdleTask, true);
         }
 
         private static uint pIdleTask;
@@ -123,19 +123,41 @@ namespace Kernel_alpha
                     var svga = new Drivers.Video.VMWareSVGAII();
                     svga.SetMode(1024, 768, 32);
                     svga.Clear(0xFFFFFF);
+                    svga.Update(0, 0, 1024, 768);
                 }
                 else if (s.Code == KeyCode.G)
                 {
                     var vga = new Drivers.Video.VGAScreen();
                     vga.SetMode0();
                     byte c = 0;
-                    for (uint i = 0; i < vga.Width; i ++)
+                    /*for (uint i = 0; i < vga.Width; i ++)
                     {
                         for (uint j = 0; j < vga.Height; j++)
                         {
-                            vga.SetPixel_8(i, j, c);
+                            vga.SetPixel_640_480(i, j, 0);
                         }
-                        c++;
+                    }*/
+                    for (uint i = 0; i < 10; i++)
+                    {
+                        for (uint j = 0; j < 400; j++)
+                        {
+                            vga.SetPixel_640_480(i, j, 0x0);
+                            vga.SetPixel_640_480(i + 10, j, 0x1);
+                            vga.SetPixel_640_480(i + 20, j, 0x2);
+                            vga.SetPixel_640_480(i + 30, j, 0x3);
+                            vga.SetPixel_640_480(i + 40, j, 0x4);
+                            vga.SetPixel_640_480(i + 50, j, 0x5);
+                            vga.SetPixel_640_480(i + 60, j, 0x6);
+                            vga.SetPixel_640_480(i + 70, j, 0x7);
+                            vga.SetPixel_640_480(i + 80, j, 0x8);
+                            vga.SetPixel_640_480(i + 90, j, 0x9);
+                            vga.SetPixel_640_480(i + 100, j, 0xA);
+                            vga.SetPixel_640_480(i + 110, j, 0xB);
+                            vga.SetPixel_640_480(i + 120, j, 0xC);
+                            vga.SetPixel_640_480(i + 130, j, 0xD);
+                            vga.SetPixel_640_480(i + 140, j, 0xE);
+                            vga.SetPixel_640_480(i + 150, j, 0xF);
+                        }
                     }
                 }
                 else if (s.Code == KeyCode.B)
@@ -146,9 +168,14 @@ namespace Kernel_alpha
                     {
                         for (uint j = 0; j < 768; j++)
                         {
-                            bochs.SetPixel(i, j, 0xFF8040);
+                            bochs.SetPixel(i, j, 0xFFFFFF);
                         }
                     }
+                }
+                else if (s.Code == KeyCode.P)
+                {
+                    uint* p = (uint*)0xA0000000;
+                    uint t = *p;
                 }
             }
         }
@@ -158,12 +185,10 @@ namespace Kernel_alpha
         {
             do
             {
-                WriteScreen("X:", 6);
-                
+                WriteScreen("X:", 6);                
                 //var s = ((uint)Global.Mouse.X).ToString();
                 //var J = ((uint)Global.Mouse.Y).ToString();
-                WriteScreen("Y:", 24);
-                
+                WriteScreen("Y:", 24);                
                 
                 switch (Global.Mouse.Button)
                 {
@@ -344,8 +369,8 @@ namespace Kernel_alpha
         [Assembly(0x4)]
         private static void CallExecutableFile(uint pos)
         {
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });            
-            Core.AssemblerCode.Add(new Call("EAX"));
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
+            Core.AssemblerCode.Add(new Call("EAX"));        
         }
     }
 }

@@ -13,27 +13,24 @@ namespace Kernel_alpha.x86
 {
     public static class Heap
     {
-        private static uint pointer = 0;
-        private static uint _start = 0;
-
+        public static uint PlacementAddress = 0;
+        
         [Label("Heap")]
-        public static uint AllocateMem(uint aLength)
+        public static uint kmalloc(uint aLength)
         {
-            //This is temp.
-            if (pointer == 0)
+            return AllocateMem(aLength);
+        }
+
+        public static uint AllocateMem(uint aLength, bool Align = false)
+        {
+            if (Align && ((PlacementAddress & 0xFFFFF000) != 0))//If we have to align and the placement address is not aligned
             {
-                pointer = Native.EndOfKernel() + 0x200;
-                _start = pointer;
+                PlacementAddress &= 0xFFFFF000;
+                PlacementAddress += 0x1000;
             }
 
-            if (pointer > _start + 0xA00000)
-            {
-                Console.WriteLine("Memory out of bound");
-                while (true) ;
-            }
-
-            uint xResult = pointer;
-            pointer += aLength;
+            uint xResult = PlacementAddress;
+            PlacementAddress += aLength;
             Memory.Clear(xResult, aLength);
 
             return xResult;
