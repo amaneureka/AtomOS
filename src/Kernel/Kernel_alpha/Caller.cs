@@ -49,6 +49,7 @@ namespace Kernel_alpha
             Multitasking.CreateTask(pFAT32test, true);
             Multitasking.CreateTask(pSerialTest, true);
             Multitasking.CreateTask(pIdleTask, true);
+            Console.WriteLine("Its working...;)" + x86.Heap.AllocateMem(0).ToString());
         }
 
         private static uint pIdleTask;
@@ -59,7 +60,7 @@ namespace Kernel_alpha
                 x86.Intrinsic.Native.Halt();
             }
         }
-
+        
         private static uint pSerialTest;
         private static void SerialTest()
         {
@@ -137,6 +138,7 @@ namespace Kernel_alpha
                             vga.SetPixel_640_480(i, j, 0);
                         }
                     }*/
+
                     for (uint i = 0; i < 10; i++)
                     {
                         for (uint j = 0; j < 400; j++)

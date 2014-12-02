@@ -34,14 +34,13 @@ namespace Kernel_alpha
             // Start ACPI
             // Initializes and enables itself
             Console.Write ("Setting up ACPI... ");
-            ACPI = new acpi(true, true);
+            //ACPI = new acpi(true, true);
             Console.WriteLine ("OK");
                         
             // Setup Mouse
-            Native.SetInterrupt();
+            //Native.SetInterrupt();
             Console.Write ("Setting up PS/2 Mouse... ");
             Mouse = new PS2Mouse();
-            Mouse.Initialize();
             Console.WriteLine ("OK");
 
             // Setup Keyboard
@@ -76,10 +75,16 @@ namespace Kernel_alpha
                 SecondayIDE = new IDE(true);
 
                 if (PrimaryIDE.DriveInfo.Device != Device.IDE_None)
+                {
                     Devices.Add(PrimaryIDE);
+                    xINT.RegisterHandler(delegate() { PrimaryIDE.IRQInvoked = true; }, 0x2E);
+                }
 
                 if (SecondayIDE.DriveInfo.Device != Device.IDE_None)
+                {
                     Devices.Add(SecondayIDE);
+                    xINT.RegisterHandler(delegate() { SecondayIDE.IRQInvoked = true; }, 0x2F);
+                }
             }
             /*
             xDevice = PCI.GetDeviceClass(0x1, 0x6);//Media Storage - SATA

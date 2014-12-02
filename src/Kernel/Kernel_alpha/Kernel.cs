@@ -87,8 +87,9 @@ namespace Kernel_alpha
             /* Call Compiler Flush : should be before any virtual class called */
             Native.CompilerFlush();
 
-            x86.Paging.Setup(0x1000000);
-
+            /* Setup Paging */
+            Paging.Setup(Multiboot.RAM);
+            
             /* Setup Multitasking */
             Multitasking.CreateTask(0, true); //This is System Update thread            
             Multitasking.Init();//Start Multitasking
@@ -96,7 +97,7 @@ namespace Kernel_alpha
             /* Call our kernel instance now */
             try
             {
-                Caller.Start();                
+                Caller.Start();
                 while(true)
                 {
                     Caller.Update();
@@ -108,7 +109,7 @@ namespace Kernel_alpha
                 Console.WriteLine(e.Message);
             }
 
-            while (true)  //Set CPU in Infinite loop DON'T REMOVE THIS ELSE I'll KILL YOU ^^
+            while (true)  //Set CPU in Infinite loop DON'T REMOVE THIS ELSE I'll KILL YOU (^ . ^)
             {
                 Native.ClearInterrupt();
                 Native.Halt();

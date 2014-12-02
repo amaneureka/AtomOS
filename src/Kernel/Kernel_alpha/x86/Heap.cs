@@ -13,6 +13,9 @@ namespace Kernel_alpha.x86
 {
     public static class Heap
     {
+        public const uint kHeap_Start = 0x50000000;
+        public const uint kHeap_Initial_Size = 0x500000;
+
         public static uint PlacementAddress = 0;
         
         [Label("Heap")]
@@ -36,6 +39,9 @@ namespace Kernel_alpha.x86
             return xResult;
         }
 
-
+        public static void CreateHeap()
+        {
+            PlacementAddress = kHeap_Start;
+        }
     }
 }

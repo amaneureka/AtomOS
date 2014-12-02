@@ -88,6 +88,7 @@ namespace Kernel_alpha.Drivers.Input
             
             /* Set LEDs */
             //UpdateLEDs();
+            xINT.RegisterHandler(HandleIRQ, 0x21);
         }
         
         private bool IsExtended = false;

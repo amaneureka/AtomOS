@@ -138,13 +138,16 @@ namespace Kernel_alpha
         [Assembly, Plug("__ISR_Handler_20")]
         private static void SetupIRQ0()
         {
-            //We setup IRQ0 here =)
+            //Restore Registers
             Core.AssemblerCode.Add(new Pushad());
+
+            //Restore Data Selectors
             Core.AssemblerCode.Add(new Push { DestinationReg = Registers.DS, Size = 16 });
             Core.AssemblerCode.Add(new Push { DestinationReg = Registers.ES, Size = 16 });
             Core.AssemblerCode.Add(new Push { DestinationReg = Registers.FS, Size = 16 });
             Core.AssemblerCode.Add(new Push { DestinationReg = Registers.GS, Size = 16 });
 
+            //Reset DataSelectors
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.AX, SourceRef = "0x10", Size = 16 });
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.DS, SourceReg = Registers.AX, Size = 16 });
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ES, SourceReg = Registers.AX, Size = 16 });
@@ -152,20 +155,24 @@ namespace Kernel_alpha
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.GS, SourceReg = Registers.AX, Size = 16 });
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.SS, SourceReg = Registers.AX, Size = 16 });
 
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.ESP });
-            Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
-
+            //Push ESP
+            Core.AssemblerCode.Add(new Push { DestinationReg = Registers.ESP });
             Core.AssemblerCode.Add(new Call("__Task_Switcher__"));
-            Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });//This is just to add ESP, because EAX already have return value
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ESP, SourceReg = Registers.EAX });
 
+            //Get New task ESP
+            Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.ESP });
+
+            //Tell CPU that we have recieved IRQ
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.AL, SourceRef = "0x20", Size = 8 });
             Core.AssemblerCode.Add(new Out { DestinationRef = "0x20", SourceReg = Registers.AL });
 
+            //Load New task's data selector
             Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.GS, Size = 16 });
             Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.FS, Size = 16 });
             Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.ES, Size = 16 });
             Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.DS, Size = 16 });
+
+            //Load Registers
             Core.AssemblerCode.Add(new Popad());
             Core.AssemblerCode.Add(new Iret());
         }

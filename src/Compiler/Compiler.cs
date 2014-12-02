@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Reflection;
+using Atomix;
 using Atomix.IL;
 using Atomix.Assembler;
 using Atomix.ILOpCodes;
@@ -763,6 +764,7 @@ namespace Atomix
 
             if (lbl.Contains("ctor"))
             {
+                
                 //((Ldarg)MSIL[ILCode.Ldarg]).Execute2(0, xMethod);
                 //var xArray_ctor = typeof(Array).GetConstructors(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance)[0];
                 //Core.AssemblerCode.Add(new Call(xArray_ctor.FullName()));
@@ -772,11 +774,17 @@ namespace Atomix
                 
                 ((Ldarg)MSIL[ILCode.Ldarg]).Execute2(2, xMethod);//The pointer
                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.ESP, SourceDisplacement = 0x4, SourceIndirect = true });
-                Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EBX, SourceRef = "0x8" });
+                Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EBX, SourceRef = "0xC" });
                 Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, DestinationIndirect = true, SourceReg = Registers.EAX });
+
+                ((Ldarg)MSIL[ILCode.Ldarg]).Execute2(1, xMethod);//The Object
+                Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
+                Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EBX, SourceRef = "0x4" });
+                Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, DestinationIndirect = true, SourceReg = Registers.EAX });
+
                 Core.AssemblerCode.Add(new Add { DestinationReg = Registers.ESP, SourceRef = "0x4" });
-                
+
                 //calli footer
                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "0x0" });
                 Core.AssemblerCode.Add(new Leave());
@@ -784,22 +792,63 @@ namespace Atomix
             }
             else if (lbl.Contains("Invoke"))
             {
-                //Load Argument
+                //Load Reference
                 ((Ldarg)MSIL[ILCode.Ldarg]).Execute2(0, xMethod);
                 
-                Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
-                Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EAX, SourceRef = "0x8" });
+                Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });                
+                Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EAX, SourceRef = "0xC" });
 
+                //If it is a non static field than get its parent Type memory location
+                if (!xMethod.IsStatic)
+                    Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX, DestinationDisplacement = 0x4, DestinationIndirect = true });
+                
                 var xParms = xMethod.GetParameters();
                 int xSize = (from item in xMethod.GetParameters()
                              select (int)item.ParameterType.SizeOf().Align()).Sum();
 
+                if (!xMethod.IsStatic)
+                {
+                    if (xMethod.DeclaringType.IsValueType)
+                        xSize += 4;
+                    else
+                        xSize += xMethod.DeclaringType.SizeOf().Align();
+                }
+
+                //Load arguments to throw
+                int xArgSize;
                 for (ushort i = 1; i <= xParms.Length; i++)
                 {
-                    ((Ldarg)MSIL[ILCode.Ldarg]).Execute2(i, xMethod);
+                    #warning Important
+                    /*
+                    Well the old code, have been comented because it causes issue with argument size less than 4, 
+                    don't know the exact reason so till we get to know exact reason, i do make a patch on it
+                    */
+                    //((Ldarg)MSIL[ILCode.Ldarg]).Execute2(i, xMethod); // <--OLD Code
+
+                    //New Code
+                    int xDisplacement = Ldarg.GetArgumentDisplacement(xMethod, i);
+
+                    if (xMethod.IsStatic)
+                        xArgSize = xMethod.GetParameters()[i].ParameterType.SizeOf().Align();
+                    else
+                        xArgSize = xMethod.GetParameters()[i - 1].ParameterType.SizeOf().Align();
+
+                    for (int j = 0; j < (xArgSize / 4); j++)
+                    {
+                        Core.AssemblerCode.Add(
+                            new Push
+                            {
+                                DestinationReg = Registers.EBP,
+                                DestinationIndirect = true,
+                                DestinationDisplacement = xDisplacement - (j * 4)
+                            });
+                    }
                 }
-                
+
+                //Call the function
                 Core.AssemblerCode.Add(new Call("[EAX]"));
+
+                //Check for anytype of exception
                 Core.AssemblerCode.Add(new Test { DestinationReg = Registers.ECX, SourceRef = "0x2" });
                 Core.AssemblerCode.Add(new Jmp { Condition = ConditionalJumpEnum.JNE, DestinationRef = lbl_exception });
                 
@@ -808,8 +857,30 @@ namespace Atomix
                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "0x0" });
 
                 Core.AssemblerCode.Add(new Label(lbl_exception));
+                int xReturnSize = (xMethod is MethodInfo) ? ((MethodInfo)xMethod).ReturnType.SizeOf().Align() : 0;
+                if (xReturnSize > 0)
+                {
+                    //For return type Method
+                    var xOffset = ILHelper.GetResultCodeOffset((uint)xReturnSize, (uint)xSize);
+                    for (int i = 0; i < xReturnSize / 4; i++)
+                    {
+                        Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
+                        Core.AssemblerCode.Add(new Mov
+                        {
+                            DestinationReg = Registers.EBP,
+                            DestinationIndirect = true,
+                            DestinationDisplacement = (int)(xOffset + ((i + 0) * 4)),
+                            SourceReg = Registers.EAX
+                        });
+                    }
+                }
+
+                var xRetSize = ((int)xSize) - ((int)xReturnSize);
+                if (xRetSize < 0)
+                    xRetSize = 0;
+
                 Core.AssemblerCode.Add(new Leave());
-                Core.AssemblerCode.Add(new Ret { Address = (byte)(xSize + 0x4) });//Parameter + Memory
+                Core.AssemblerCode.Add(new Ret { Address = (byte)(xRetSize) });//Parameter + Memory
             }
             BuildDefinations.Add(xMethod);
         }

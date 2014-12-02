@@ -6,19 +6,19 @@ using System.Threading.Tasks;
 
 namespace Kernel_alpha.x86
 {
-    public delegate void IRQDelegate();
+    public delegate void INTDelegate();
     public static class xINT
     {
-        private static IRQDelegate[] mIRQ_Handlers = new IRQDelegate[256];
+        private static INTDelegate[] mINT_Handlers = new INTDelegate[0xFF];
 
-        public static void SetIRQHandler(int aIRQNo, IRQDelegate xCall)
+        public static void RegisterHandler(INTDelegate xCall, int aINTNo)
         {
-            mIRQ_Handlers[aIRQNo + 0x20] = xCall;
+            mINT_Handlers[aINTNo] = xCall;
         }
 
-        public static void CallIRQ(int aIRQNo)
+        public static void InvokeHandler(uint aINTNo)
         {
-            var xCaller = mIRQ_Handlers[aIRQNo + 0x20];            
+            var xCaller = mINT_Handlers[aINTNo];            
             if (xCaller != null)
             {
                 xCaller();

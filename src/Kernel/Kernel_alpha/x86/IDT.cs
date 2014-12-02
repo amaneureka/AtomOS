@@ -18,7 +18,7 @@ namespace Kernel_alpha.x86
     {
         private static uint _idtTable = 0x100020;
         private static uint _idtEntries = 0x100020 + 6;
-        
+
         public enum Offset
         {
             BaseLow = 0x00,
@@ -50,12 +50,6 @@ namespace Kernel_alpha.x86
             var INT = xContext.Interrupt;
             if (INT < 0x13 && INT >= 0) // [0, 19) --> Exceptions
             {
-                /*
-                if (INT == 0xE)//Page Fault TODO
-                {
-                    Console.WriteLine(xContext.EFlags.ToString());
-                    while (true) ;
-                }*/
                 #region Handle
                 const string xHex = "0123456789ABCDEF";
                 unsafe
@@ -116,40 +110,22 @@ namespace Kernel_alpha.x86
                     xAddress[52] = (byte)' ';
                     xAddress[53] = 0x0C;
 
-                    xAddress[54] = (byte)xHex[(int)((xContext.EFlags >> 4) & 0xF)];
+                    xAddress[54] = (byte)xHex[(int)((xContext.Param >> 4) & 0xF)];
                     xAddress[55] = 0x0C;
-                    xAddress[56] = (byte)xHex[(int)(xContext.EFlags & 0xF)];
+                    xAddress[56] = (byte)xHex[(int)(xContext.Param & 0xF)];
                     xAddress[57] = 0x0C;
                 }
-                #endregion
-                
+                #endregion                
                 while (true) ;
             }
             else if (INT >= 0x20 && INT < 0x30) //[32, 48) --> Hardware Interrupts
             {
-                var xIRQ = (INT - 0x20);
-                switch (xIRQ)
-                {
-                    case 1:
-                        Global.KBD.HandleIRQ ();
-                        break;
-                    case 12:
-                        Global.Mouse.HandleIRQ();
-                        break;
-                    case 7://Spurious IRQs
-                        return;
-                    case 14:
-                        Global.PrimaryIDE.IRQInvoked = true;
-                        break;
-                    case 15:
-                        Global.SecondayIDE.IRQInvoked = true;
-                        break;
-                }
+                xINT.InvokeHandler(INT);
                 PIC.SendEndOfInterrupt((byte)xContext.Interrupt);
             }
             Native.SetInterrupt();
         }
-
+        
         [Assembly(0x0)]
         private static void UpdateIDT()
         {

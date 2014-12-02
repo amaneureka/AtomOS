@@ -47,6 +47,12 @@ namespace Kernel_alpha.Drivers.Input
 
             // And polling port 0x64
             Poll = new IOPort (0x64);
+
+            //Init
+            Initialize();
+
+            //Register the Handler =D
+            xINT.RegisterHandler(HandleIRQ, 0x2C);
         }
 
         public void Initialize ()

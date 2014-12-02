@@ -26,13 +26,21 @@ namespace Kernel_alpha.x86
             Kernel_Directory = Heap.AllocateMem(0x1000, true);
             Current_Directory = Kernel_Directory;
 
-            uint i = 0;
+            uint i;
+            for (i = Heap.kHeap_Start; i < Heap.kHeap_Start + Heap.kHeap_Initial_Size; i += 0x1000)
+                GetPage(i, (UInt32*)Kernel_Directory, true);
+
+            i = 0;
             while(i < Heap.PlacementAddress + 0x1000)
             {
-                //Just roughly
                 AllocateFrame(GetPage(i, (UInt32*)Kernel_Directory, true), false, false);
                 i += 0x1000;
             }
+
+            for (i = Heap.kHeap_Start; i < Heap.kHeap_Start + Heap.kHeap_Initial_Size; i += 0x1000)
+                AllocateFrame(GetPage(i, (UInt32*)Kernel_Directory, true), false, false);
+
+            Heap.CreateHeap();
             SwitchDirectory(Kernel_Directory);
         }
 
