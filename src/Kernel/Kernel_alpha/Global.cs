@@ -36,18 +36,16 @@ namespace Kernel_alpha
             Console.Write ("Setting up ACPI... ");
             //ACPI = new acpi(true, true);
             Console.WriteLine ("OK");
-                        
-            // Setup Mouse
-            //Native.SetInterrupt();
-            Console.Write ("Setting up PS/2 Mouse... ");
-            Mouse = new PS2Mouse();
-            Console.WriteLine ("OK");
 
             // Setup Keyboard
-            Native.SetInterrupt();
             Console.Write("Setting up PS/2 Keyboard... ");
             KBD = new Keyboard();
             Console.WriteLine("OK");
+
+            // Setup Mouse
+            Console.Write ("Setting up PS/2 Mouse... ");
+            Mouse = new PS2Mouse();
+            Console.WriteLine ("OK");
             
             //Loading ATA
             Console.Write ("Loading ATA/SATA SubSystem... ");
