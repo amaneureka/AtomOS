@@ -5,7 +5,6 @@ VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ILCompiler", "Compiler\ILCompiler.csproj", "{5F140860-2A9A-44DD-831E-61C0D052CC6B}"
 	ProjectSection(ProjectDependencies) = postProject
-		{4C45ED0B-E904-43EC-9C68-F5D6446DBCE1} = {4C45ED0B-E904-43EC-9C68-F5D6446DBCE1}
 		{38E89611-ED10-4B9F-8E9D-1FAA4EF97E73} = {38E89611-ED10-4B9F-8E9D-1FAA4EF97E73}
 		{CACCFB22-A659-459F-9891-504224635A3F} = {CACCFB22-A659-459F-9891-504224635A3F}
 		{31896A26-F45D-46C2-AF40-D6D409DECBEA} = {31896A26-F45D-46C2-AF40-D6D409DECBEA}
@@ -34,8 +33,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileSystem", "Virtual Resources\File System v2.0\FileSystem.csproj", "{CACCFB22-A659-459F-9891-504224635A3F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atomix.mscorlib", "Kernel\Atomix.mscorlib\Atomix.mscorlib.csproj", "{31896A26-F45D-46C2-AF40-D6D409DECBEA}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atomix.mscorlibext", "Kernel\Atomix.mscorlibext\Atomix.mscorlibext.csproj", "{4C45ED0B-E904-43EC-9C68-F5D6446DBCE1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{C3B02D38-C841-4DF9-BD4F-63008728FF28}"
 	ProjectSection(SolutionItems) = preProject
@@ -67,7 +64,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Debug Window", "Virtual Res
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 13
+		SccNumberOfProjects = 12
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://atomos-il2asm.visualstudio.com/defaultcollection
 		SccLocalPath0 = .
@@ -91,34 +88,30 @@ Global
 		SccProjectTopLevelParentUniqueName5 = Atomix.sln
 		SccProjectName5 = Kernel/Atomix.mscorlib
 		SccLocalPath5 = Kernel\\Atomix.mscorlib
-		SccProjectUniqueName6 = Kernel\\Atomix.mscorlibext\\Atomix.mscorlibext.csproj
+		SccProjectUniqueName6 = Kernel\\Kernel_alpha\\Kernel_alpha.csproj
 		SccProjectTopLevelParentUniqueName6 = Atomix.sln
-		SccProjectName6 = Kernel/Atomix.mscorlibext
-		SccLocalPath6 = Kernel\\Atomix.mscorlibext
-		SccProjectUniqueName7 = Kernel\\Kernel_alpha\\Kernel_alpha.csproj
+		SccProjectName6 = Kernel/Kernel_alpha
+		SccLocalPath6 = Kernel\\Kernel_alpha
+		SccProjectUniqueName7 = Virtual\u0020Resources\\File\u0020System\u0020v2.0\\FileSystem.csproj
 		SccProjectTopLevelParentUniqueName7 = Atomix.sln
-		SccProjectName7 = Kernel/Kernel_alpha
-		SccLocalPath7 = Kernel\\Kernel_alpha
-		SccProjectUniqueName8 = Virtual\u0020Resources\\File\u0020System\u0020v2.0\\FileSystem.csproj
+		SccProjectName7 = Virtual\u0020Resources/File\u0020System\u0020v2.0
+		SccLocalPath7 = Virtual\u0020Resources\\File\u0020System\u0020v2.0
+		SccProjectUniqueName8 = Kernel_H\\Kernel_H\\Kernel_H.csproj
 		SccProjectTopLevelParentUniqueName8 = Atomix.sln
-		SccProjectName8 = Virtual\u0020Resources/File\u0020System\u0020v2.0
-		SccLocalPath8 = Virtual\u0020Resources\\File\u0020System\u0020v2.0
-		SccProjectUniqueName9 = Kernel_H\\Kernel_H\\Kernel_H.csproj
+		SccProjectName8 = Kernel_H/Kernel_H
+		SccLocalPath8 = Kernel_H\\Kernel_H
+		SccProjectUniqueName9 = Kernel_H\\libAtomixH\\libAtomixH.csproj
 		SccProjectTopLevelParentUniqueName9 = Atomix.sln
-		SccProjectName9 = Kernel_H/Kernel_H
-		SccLocalPath9 = Kernel_H\\Kernel_H
-		SccProjectUniqueName10 = Kernel_H\\libAtomixH\\libAtomixH.csproj
+		SccProjectName9 = Kernel_H/libAtomixH
+		SccLocalPath9 = Kernel_H\\libAtomixH
+		SccProjectUniqueName10 = Kernel_H\\libAtomixH.mscorlib\\libAtomixH.mscorlib.csproj
 		SccProjectTopLevelParentUniqueName10 = Atomix.sln
-		SccProjectName10 = Kernel_H/libAtomixH
-		SccLocalPath10 = Kernel_H\\libAtomixH
-		SccProjectUniqueName11 = Kernel_H\\libAtomixH.mscorlib\\libAtomixH.mscorlib.csproj
+		SccProjectName10 = Kernel_H/libAtomixH.mscorlib
+		SccLocalPath10 = Kernel_H\\libAtomixH.mscorlib
+		SccProjectUniqueName11 = Virtual\u0020Resources\\Debug\u0020Window\\Debug\u0020Window.csproj
 		SccProjectTopLevelParentUniqueName11 = Atomix.sln
-		SccProjectName11 = Kernel_H/libAtomixH.mscorlib
-		SccLocalPath11 = Kernel_H\\libAtomixH.mscorlib
-		SccProjectUniqueName12 = Virtual\u0020Resources\\Debug\u0020Window\\Debug\u0020Window.csproj
-		SccProjectTopLevelParentUniqueName12 = Atomix.sln
-		SccProjectName12 = Virtual\u0020Resources/Debug\u0020Window
-		SccLocalPath12 = Virtual\u0020Resources\\Debug\u0020Window
+		SccProjectName11 = Virtual\u0020Resources/Debug\u0020Window
+		SccLocalPath11 = Virtual\u0020Resources\\Debug\u0020Window
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -167,12 +160,6 @@ Global
 		{31896A26-F45D-46C2-AF40-D6D409DECBEA}.Release H|Any CPU.Build.0 = Release H|Any CPU
 		{31896A26-F45D-46C2-AF40-D6D409DECBEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{31896A26-F45D-46C2-AF40-D6D409DECBEA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4C45ED0B-E904-43EC-9C68-F5D6446DBCE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4C45ED0B-E904-43EC-9C68-F5D6446DBCE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4C45ED0B-E904-43EC-9C68-F5D6446DBCE1}.Release H|Any CPU.ActiveCfg = Release|Any CPU
-		{4C45ED0B-E904-43EC-9C68-F5D6446DBCE1}.Release H|Any CPU.Build.0 = Release|Any CPU
-		{4C45ED0B-E904-43EC-9C68-F5D6446DBCE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4C45ED0B-E904-43EC-9C68-F5D6446DBCE1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CEDFEDB7-CF1C-4BE7-AECB-5B0B34C19510}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CEDFEDB7-CF1C-4BE7-AECB-5B0B34C19510}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CEDFEDB7-CF1C-4BE7-AECB-5B0B34C19510}.Release H|Any CPU.ActiveCfg = Release|Any CPU
@@ -208,7 +195,6 @@ Global
 		{C39C02EF-559E-47A6-98D9-E5B79D683948} = {A5068223-D6F4-4C05-8F29-0FC5BDE75BE7}
 		{AEA97938-D7F4-484F-8CF2-3F62BC2A11EC} = {C53B4F01-2D9E-4AE6-A0FA-D849A9B61EF2}
 		{31896A26-F45D-46C2-AF40-D6D409DECBEA} = {C53B4F01-2D9E-4AE6-A0FA-D849A9B61EF2}
-		{4C45ED0B-E904-43EC-9C68-F5D6446DBCE1} = {C53B4F01-2D9E-4AE6-A0FA-D849A9B61EF2}
 		{08E83764-C281-48BB-9413-FD0D65CCA57D} = {FF33C910-44B2-4135-822D-38BE75CA45BF}
 		{38E89611-ED10-4B9F-8E9D-1FAA4EF97E73} = {FF33C910-44B2-4135-822D-38BE75CA45BF}
 		{CACCFB22-A659-459F-9891-504224635A3F} = {08E83764-C281-48BB-9413-FD0D65CCA57D}

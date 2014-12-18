@@ -10,6 +10,7 @@ namespace Atomix.Assembler
     {
         protected string mName;
         protected byte[] mValue = null;
+        protected string[] mValue2 = null;
         protected string aRAW = string.Empty;
 
         public AsmData(string aName, string aValue)
@@ -24,12 +25,10 @@ namespace Atomix.Assembler
             this.mValue = aValue;
         }
 
-        public AsmData(string aName, object[] aValue)
+        public AsmData(string aName, string[] aValue)
         {
-            byte[] result = new byte[aValue.Length * sizeof(int)];
-            Buffer.BlockCopy(aValue, 0, result, 0, result.Length);
             this.mName = aName;
-            this.mValue = result;            
+            this.mValue2 = aValue;
         }
         
 
@@ -37,6 +36,22 @@ namespace Atomix.Assembler
         {
             if (mValue != null)
                 sw.WriteLine(string.Format("{0} db {1}", mName, string.Join(", ", ((byte[])mValue).Select(b => string.Format("{0}", b)))));
+            else if (mValue2 != null)
+            {
+                sw.Write(mName);
+                sw.Write(" dd ");
+                foreach (var xobj in mValue2)
+                {
+                    if (xobj == null)
+                        sw.Write("0");
+                    else
+                    {
+                        sw.Write(xobj.ToString());
+                    }
+                    sw.Write(", ");
+                }
+                sw.WriteLine("0");
+            }
             else
                 sw.WriteLine(mName + " " + aRAW);
         }

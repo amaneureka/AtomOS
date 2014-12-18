@@ -81,7 +81,7 @@ namespace Atomix.IL
                     {
                         //Make Space for extra requirements of function
                         if (SizeToReserve > 0)
-                            Core.AssemblerCode.Add(new Sub { DestinationReg = Registers.ESP, SourceRef = SizeToReserve.ToString("X") });
+                            Core.AssemblerCode.Add(new Sub { DestinationReg = Registers.ESP, SourceRef = "0x" + SizeToReserve.ToString("X") });
 
                         Core.AssemblerCode.Add(new Call(xNormalAddress));
 

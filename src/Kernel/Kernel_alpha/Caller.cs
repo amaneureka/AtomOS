@@ -14,6 +14,7 @@ using Kernel_alpha.FileSystem.FAT.Lists;
 using Kernel_alpha.FileSystem.FAT;
 
 using Kernel_alpha.Lib.Encoding;
+using Screen = Kernel_alpha.Drivers.Video.VBE.VBE2_0;
 
 namespace Kernel_alpha
 {
@@ -33,7 +34,7 @@ namespace Kernel_alpha
             Console.WriteLine ("Reboot: Ctrl+R");
             
             // Just for mouse testing
-            Multitasking.CreateTask(pTask1, true);
+            //Multitasking.CreateTask(pTask1, true);
             Multitasking.CreateTask(pTask2, true);
             Console.WriteLine("Block Device Count::" + Global.Devices.Count.ToString());
             uint c = 0;
@@ -50,8 +51,10 @@ namespace Kernel_alpha
             Multitasking.CreateTask(pSerialTest, true);
             Multitasking.CreateTask(pIdleTask, true);
             Console.WriteLine("Its working...;)" + x86.Heap.AllocateMem(0).ToString());
+            Screen.Setup();
+            Screen.Clear(0xFFBB977E);
         }
-
+                
         private static uint pIdleTask;
         private static void IdleTask()
         {
@@ -60,13 +63,13 @@ namespace Kernel_alpha
                 x86.Intrinsic.Native.Halt();
             }
         }
-        
+        private static uint TestV = 0;
         private static uint pSerialTest;
         private static void SerialTest()
         {
             while (true)
             {
-                var xRAM = x86.Heap.AllocateMem(0);
+                var xRAM = TestV;//x86.Heap.AllocateMem(0);
                 x86.Serials.Write(0xFA);
                 x86.Serials.Write((byte)(xRAM >> 0));
                 x86.Serials.Write((byte)(xRAM >> 8));

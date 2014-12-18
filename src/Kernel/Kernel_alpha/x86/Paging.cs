@@ -12,8 +12,8 @@ namespace Kernel_alpha.x86
     public static unsafe class Paging
     {
         static uint[] Frames;
-        static UInt32 Kernel_Directory;
-        static UInt32 Current_Directory;
+        public static UInt32 Kernel_Directory;
+        public static UInt32 Current_Directory;
 
         /// <summary>
         /// Setup Paging
@@ -44,6 +44,11 @@ namespace Kernel_alpha.x86
             SwitchDirectory(Kernel_Directory);
         }
 
+        public static void ReloadDirectory()
+        {
+            SwitchDirectory(Current_Directory);
+        }
+
         public static void AllocateFrame(UInt32 Page, bool IsKernel, bool IsWriteable)
         {
             /*
@@ -64,6 +69,11 @@ namespace Kernel_alpha.x86
                 *((UInt32*)Page) = (UInt32)((Frame << 12) | 0x1);
                 SetFrame(Frame);
             }
+        }
+
+        public static void DMAFrame(UInt32 Page, bool IsKernel, bool IsWriteable, UInt32 Pos)
+        {
+            *((UInt32*)Page) = (UInt32)((Pos << 12) | 0x1);
         }
 
         public static void SetFrame(UInt32 page)

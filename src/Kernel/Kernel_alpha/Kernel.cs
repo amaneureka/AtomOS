@@ -22,37 +22,26 @@ namespace Kernel_alpha
              * So, first task is to set Multiboot header
              */
             Core.DataMember.Add(new AsmData("MultibootSignature", BitConverter.GetBytes(0x1BADB002))); //0x100000
-            Core.DataMember.Add(new AsmData("MultibootFlags", BitConverter.GetBytes(65539)));//0x100004
-            Core.DataMember.Add(new AsmData("MultibootChecksum", BitConverter.GetBytes(-464433157)));//0x100008
+            //Bit 2 -> Video Mode
+            Core.DataMember.Add(new AsmData("MultibootFlags", BitConverter.GetBytes(65543)));//0x100004
+            //Checksum + MultibootSignature + MultibootFlags == 0
+            Core.DataMember.Add(new AsmData("MultibootChecksum", BitConverter.GetBytes(-464433161)));//0x100008
             Core.DataMember.Add(new AsmData("MultibootHeaderAddr", "dd MultibootSignature"));//0x10000C
             Core.DataMember.Add(new AsmData("MultibootLoadAddr", "dd MultibootSignature"));//0x100010
             Core.DataMember.Add(new AsmData("MultibootLoadEndAddr", "dd Compiler_End"));//0x100014
             Core.DataMember.Add(new AsmData("MultibootBSSEndAddr", "dd Compiler_End"));//0x100018
-            Core.DataMember.Add(new AsmData("MultibootEntryAddr", "dd Kernel_Main")); //0x10001C            
-            Core.DataMember.Add(new AsmData("GDT_And_IDT_Content:", "TIMES 3000 db 0"));//0x100020 --> First IDT than GDT
+            Core.DataMember.Add(new AsmData("MultibootEntryAddr", "dd Kernel_Main")); //0x10001C
+            Core.DataMember.Add(new AsmData("MultibootVesaMode", BitConverter.GetBytes(1)));//0x100020
+            Core.DataMember.Add(new AsmData("MultibootVesaWidth", BitConverter.GetBytes(1024)));//0x100024
+            Core.DataMember.Add(new AsmData("MultibootVesaHeight", BitConverter.GetBytes(768)));//0x100028
+            Core.DataMember.Add(new AsmData("MultibootVesaDepth", BitConverter.GetBytes(32)));//0x10002C
+            Core.DataMember.Add(new AsmData("GDT_And_IDT_Content:", "TIMES 3000 db 0"));//0x100030 --> First IDT than GDT
             Core.DataMember.Add(new AsmData("Before_Kernel_Stack:", "TIMES 0x5000 db 0"));
             Core.DataMember.Add(new AsmData("Stack_Entrypoint:", string.Empty));
 
             /* Here is Entrypoint Method */
             Core.AssemblerCode.Add(new Cli()); //Clear interrupts first !!
-            /*
-            //SSE Init
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.CR4 });
-            Core.AssemblerCode.Add(new Or { DestinationReg = Registers.EAX, SourceRef = "0x100" });
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.CR4, SourceReg = Registers.EAX });
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.CR4 });
 
-            Core.AssemblerCode.Add(new Or { DestinationReg = Registers.EAX, SourceRef = "0x200" });
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.CR4, SourceReg = Registers.EAX });
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.CR0 });
-
-            Core.AssemblerCode.Add(new And { DestinationReg = Registers.EAX, SourceRef = "0xfffffffd" });
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.CR0, SourceReg = Registers.EAX });
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.CR0 });
-
-            Core.AssemblerCode.Add(new And { DestinationReg = Registers.EAX, SourceRef = "0x1" });
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.CR0, SourceReg = Registers.EAX });
-            */
             //Setup Stack pointer, We do rest things later (i.e. Another method) because they are managed :)
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ESP, SourceRef = "Stack_Entrypoint" });
             Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
@@ -63,12 +52,12 @@ namespace Kernel_alpha
         [Plug("Kernel_Start")]
         public static unsafe void Start (uint magic, uint address)
         {
+            /* Setup Multiboot */
+            Multiboot.Setup(magic, address);
+
             /* Placement Address */
             Heap.PlacementAddress = Native.EndOfKernel();
 
-            /* Setup Multiboot */
-            Multiboot.Setup(magic, address);
-            
             /* Clear Interrupts */
             Native.ClearInterrupt();
 
@@ -84,12 +73,9 @@ namespace Kernel_alpha
             /* Enable Interrupts */
             Native.SetInterrupt();
 
-            /* Call Compiler Flush : should be before any virtual class called */
-            Native.CompilerFlush();
-
             /* Setup Paging */
             Paging.Setup(Multiboot.RAM);
-            
+
             /* Setup Multitasking */
             Multitasking.CreateTask(0, true); //This is System Update thread            
             Multitasking.Init();//Start Multitasking

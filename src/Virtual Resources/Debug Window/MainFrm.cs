@@ -22,7 +22,7 @@ namespace Debug_Window
         }
 
         bool Connected = false;
-        int RAMValue = 0;
+        uint RAMValue = 0;
 
         private Thread aRefresh;
         bool Update = false;
@@ -52,18 +52,18 @@ namespace Debug_Window
                                     //RAM
                                     case 0xFA:
                                     {
-                                        RAMValue = 0;//BitConverter.ToInt32(Br.ReadBytes(4), 0);
+                                        RAMValue = BitConverter.ToUInt32(Br.ReadBytes(4), 0);
                                         Update = true;
                                     }
                                     break;
                                     //Ping
-                                    case 0xEF:
+                                    /*case 0xEF:
                                     {
                                         if (BitConverter.ToUInt32(Br.ReadBytes(4), 0) == 0xFFFFFFFF)
                                             Pings = 0;
                                         Update = true;
                                     }
-                                    break;
+                                    break;*/
                                 }
                                 
                             }
@@ -130,7 +130,7 @@ namespace Debug_Window
                 }
 
                 lbl_ram.Text = RAMValue + TotalRAM;
-                RAMMeter.Value = RAMValue;
+                //RAMMeter.Value = RAMValue;
             }
         }
     }

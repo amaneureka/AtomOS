@@ -98,7 +98,7 @@ namespace Atomix.IL
                         {
                             //Make Space for extra requirements of function
                             if (SizeToReserve > 0)
-                                Core.AssemblerCode.Add(new Sub { DestinationReg = Registers.ESP, SourceRef = SizeToReserve.ToString("X") });
+                                Core.AssemblerCode.Add(new Sub { DestinationReg = Registers.ESP, SourceRef = "0x" + SizeToReserve.ToString("X") });
 
                             Core.AssemblerCode.Add(new Call(xNormalAddress));
                         }
@@ -108,7 +108,7 @@ namespace Atomix.IL
                             {
                                 //Same as above
                                 if (SizeToReserve > 0)
-                                    Core.AssemblerCode.Add(new Sub { DestinationReg = Registers.ESP, SourceRef = SizeToReserve.ToString("X") });
+                                    Core.AssemblerCode.Add(new Sub { DestinationReg = Registers.ESP, SourceRef = "0x" + SizeToReserve.ToString("X") });
 
                                 Core.AssemblerCode.Add(new Call(xTarget.FullName()));
                             }
@@ -116,8 +116,15 @@ namespace Atomix.IL
                             {
                                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.ESP, SourceIndirect = true, SourceDisplacement = (int)xThisOffset });
                                 Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX, DestinationIndirect = true });
-                                Core.AssemblerCode.Add(new Push { DestinationRef = "0x" + xOp.MethodUID.ToString("X") });                                
-                                Core.AssemblerCode.Add(new Call("__VTable_Get_Method__"));
+
+                                //TypeID
+                                Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
+                                Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceRef = "200" });//50 * 4
+                                //Hmm, Look at VTableFlush();
+                                Core.AssemblerCode.Add(new Multiply { DestinationReg = Registers.EBX });
+                                Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EAX, SourceRef = "0x" + (4 * (xOp.MethodUID + 0)).ToString("X") });
+                                Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EAX, SourceRef = "__VTable_Flush__" });
+
                                 if (xTarget.DeclaringType == typeof(object))
                                 {
                                     throw new Exception("@Callvirt:: Not implemented");
@@ -125,14 +132,9 @@ namespace Atomix.IL
 
                                 if (SizeToReserve > 0)
                                 {
-                                    xThisOffset -= SizeToReserve;
+                                    Core.AssemblerCode.Add(new Sub { DestinationReg = Registers.ESP, SourceRef = "0x" + SizeToReserve.ToString("X") });
                                 }
-                                Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
-                                if (SizeToReserve > 0)
-                                {
-                                    Core.AssemblerCode.Add(new Sub { DestinationReg = Registers.ESP, SourceRef = SizeToReserve.ToString("X") });
-                                }
-                                Core.AssemblerCode.Add(new Call("EAX"));
+                                Core.AssemblerCode.Add(new Call("[EAX]"));
                             }
                         }
 

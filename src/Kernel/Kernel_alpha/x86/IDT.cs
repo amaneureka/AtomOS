@@ -16,8 +16,8 @@ namespace Kernel_alpha.x86
 {
     public static class IDT
     {
-        private static uint _idtTable = 0x100020;
-        private static uint _idtEntries = 0x100020 + 6;
+        private static uint _idtTable = 0x100030;
+        private static uint _idtEntries = 0x100030 + 6;
 
         public enum Offset
         {

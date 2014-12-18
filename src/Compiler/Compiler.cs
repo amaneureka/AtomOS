@@ -193,7 +193,7 @@ namespace Atomix
                                     }
                                     break;
                                 //Need it to implement for other platforms too
-                            }                            
+                            }
                             return xType;
                         }
                     }
@@ -717,39 +717,26 @@ namespace Atomix
             BuildDefinations.Add(aType);
         }
 
-        private void CompilerFlush()
+        private void VTableFlush()
         {
-            Core.AssemblerCode.Add(new Label("__Compiler_Flush__"));
-            /* Calli instructions */
-            Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EBP });
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBP, SourceReg = Registers.ESP });
-
-            #region _Virtual_Flush_
-            uint xUID = 0;
+            #warning Here is a constant of 50 types with 100 methods are takes (HACK!!), Same code in Callvirt.cs
+            var xList = new string[50 * 100];
+            uint xUID = 0, tmp = 0;
             foreach (var xV in Virtuals)
-            {
-                var xTypeID = ILHelper.GetTypeID(xV.DeclaringType);                
+            {   
                 ILOpCodes.OpMethod.MethodUIDs.TryGetValue(xV.GetBaseDefinition(), out xUID);
-
                 if (xUID == 0)
                     continue;
 
-                /* Push type ID first
-                 * Push UID
-                 * Push Address
-                 */
-                Core.AssemblerCode.Add(new Push { DestinationRef = "0x" + xTypeID.ToString("X") });
-                Core.AssemblerCode.Add(new Push { DestinationRef = "0x" + xUID.ToString("X") });
-                Core.AssemblerCode.Add(new Push { DestinationRef = xV.FullName() });
-                Core.AssemblerCode.Add(new Call("__VTable_Set_Method__"));
+                var xTypeID = ILHelper.GetTypeID(xV.DeclaringType);
+                tmp = (uint)((xTypeID * 50) + xUID);
+                xList[tmp] = xV.FullName();
             }
-            #endregion
-
-            /* End of Calli Instructions */
-            Core.AssemblerCode.Add(new Leave());
-            Core.AssemblerCode.Add(new Ret { Address = 0x0 });
+            var xFinalList = new string[tmp + 1];
+            Array.Copy(xList, xFinalList, tmp);
+            Core.DataMember.Add(new AsmData("__VTable_Flush__", xList));
         }
-
+        
         private void ProcessDelegate(MethodBase xMethod)
         {
             var lbl = xMethod.FullName();
@@ -887,8 +874,7 @@ namespace Atomix
 
         public void FlushAsmFile()
         {
-            //Flush some compiler code
-            CompilerFlush();
+            VTableFlush();
 
             //To Make output assembly looks good
             //But i comment this because the multiboot header comes to down

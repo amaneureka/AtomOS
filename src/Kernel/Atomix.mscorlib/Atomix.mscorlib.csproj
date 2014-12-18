@@ -68,7 +68,6 @@
     <Compile Include="Byte.cs" />
     <Compile Include="UInt64.cs" />
     <Compile Include="UInt32.cs" />
-    <Compile Include="VTable.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Compiler\CompilerExt\CompilerExt.csproj">

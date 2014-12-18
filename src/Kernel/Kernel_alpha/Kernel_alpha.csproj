@@ -53,6 +53,7 @@
     <Compile Include="Drivers\PartInfo\MBR.cs" />
     <Compile Include="Drivers\PartInfo\Partition.cs" />
     <Compile Include="Drivers\Video\VBE\Bochslfb.cs" />
+    <Compile Include="Drivers\Video\VBE\VBE2_0.cs" />
     <Compile Include="Drivers\Video\VGA\modes.cs" />
     <Compile Include="Drivers\Video\VGA\VGAScreen.cs" />
     <Compile Include="Drivers\Video\Vmware\misc.cs" />
@@ -101,6 +102,13 @@
     <Compile Include="x86\PCIDevice.cs" />
     <Compile Include="x86\PIC.cs" />
     <Compile Include="x86\Serials.cs" />
+    <Compile Include="x86\smbios.cs" />
+    <Compile Include="x86\smbios\BIOSInfo.cs" />
+    <Compile Include="x86\smbios\Entry.cs" />
+    <Compile Include="x86\smbios\ChasisInfo.cs" />
+    <Compile Include="x86\smbios\MainBoardInfo.cs" />
+    <Compile Include="x86\smbios\SystemInfo.cs" />
+    <Compile Include="x86\smbios\ProcessorInfo.cs" />
     <Compile Include="x86\xINT.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -111,10 +119,6 @@
     <ProjectReference Include="..\..\Compiler\ILCompiler.Assembler\ILCompiler.Assembler.csproj">
       <Project>{c39c02ef-559e-47a6-98d9-e5b79d683948}</Project>
       <Name>ILCompiler.Assembler</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Atomix.mscorlibext\Atomix.mscorlibext.csproj">
-      <Project>{4c45ed0b-e904-43ec-9c68-f5d6446dbce1}</Project>
-      <Name>Atomix.mscorlibext</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
