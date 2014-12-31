@@ -51,10 +51,10 @@ namespace Kernel_alpha
             Multitasking.CreateTask(pSerialTest, true);
             Multitasking.CreateTask(pIdleTask, true);
             Console.WriteLine("Its working...;)" + x86.Heap.AllocateMem(0).ToString());
-            Screen.Setup();
-            Screen.Clear(0xFFBB977E);
+            //Screen.Setup();
+            //Screen.Clear(0xFFBB977E);
         }
-                
+         
         private static uint pIdleTask;
         private static void IdleTask()
         {
