@@ -47,8 +47,17 @@
     <Compile Include="arch\x86\PIC.cs" />
     <Compile Include="arch\x86\PortIO.cs" />
     <Compile Include="core\Debug.cs" />
+    <Compile Include="core\Fault.cs" />
     <Compile Include="core\Heap.cs" />
+    <Compile Include="core\Process.cs" />
+    <Compile Include="core\Scheduler.cs" />
+    <Compile Include="core\Task.cs" />
+    <Compile Include="core\Thread.cs" />
+    <Compile Include="devices\Timer.cs" />
+    <Compile Include="drivers\video\VBE.cs" />
     <Compile Include="plugs\Array.cs" />
+    <Compile Include="plugs\Enum.cs" />
+    <Compile Include="plugs\NativeException.cs" />
     <Compile Include="plugs\Exception.cs" />
     <Compile Include="plugs\String.cs" />
     <Compile Include="Start-x86.cs" />

@@ -1,6 +1,6 @@
 @echo off
 Title Atomix Batch Builder
-REM MAKE IT SOMEHOW MANAGED AND LOOK BEAUTIFUL
+REM MAKE IT SOMEHOW MANAGED AND BEAUTIFUL
 chdir "Bin\"
 ::Atomixilc.exe -cpu x86 -i Kernel_alpha.dll;Atomix.mscorlib.dll -o "D:\Aman Priyadarshi Private\Atom OS IL2ASM\Build\Debug" -d
 Atomixilc.exe -cpu x86 -i Atomix.Kernel_H.dll -o "D:\Aman Priyadarshi Private\Atom OS IL2ASM\Build\Debug" -d
@@ -10,3 +10,4 @@ cd "D:\Aman Priyadarshi Private\Atom OS IL2ASM\Build\Debug"
 call Builder2.bat
 cd "D:\Atomix\src\Build"
 echo "Compilation process done"
+echo %time%

@@ -28,49 +28,74 @@ namespace Atomix.Kernel_H.arch.x86
 {
     public static unsafe class Paging
     {
-        private static UInt32* KernelDirectory;        
+        public static UInt32* KernelDirectory;
+        public static UInt32* CurrentDirectory;
         private static uint[] Frames;
-
+        
         public static void Setup(uint aKernelDirectory)
         {
             KernelDirectory = (UInt32*)aKernelDirectory;
             Frames = new uint[Multiboot.RAM / 0x20000];
-
+            
             //Tell Frame Allocator that we have already used first 4MB
             uint i = 0;
             while (i < 32)
-                Frames[i] = 0xFFFFFFFF;
-
+                Frames[i++] = 0xFFFFFFFF;
             /*
              * First 4MB of BIOS is mapped
              * [0x0 - 0x400000) -> [0xc0000000 - 0xc0400000)
              * So, we have to first map rest of kernel code + Heap
-             */            
+             */
             uint phy = 0x400000, virt = 0xc0400000, end = Native.EndOfKernel();            
             while (virt < end)
             {
-                AllocateFrame(GetPage(KernelDirectory, virt, true), phy);
+                AllocateFrame(GetPage(KernelDirectory, virt, true), phy, false);
                 virt += 0x1000;
                 phy += 0x1000;
             }
-                        
+            
             //Lets Map the new Heap; Just to the end of kernel
-            uint HeapSize = 0x100000, HeapStart = virt;//1MB
+            uint HeapSize = 0x400000, HeapStart = virt;//4MB
             end = virt + HeapSize;
+            
             while (virt < end)
             {
-                AllocateFrame(GetPage(KernelDirectory, virt, true), phy);
+                AllocateFrame(GetPage(KernelDirectory, virt, true), 0, true);
                 virt += 0x1000;
-                phy += 0x1000;
             }
-
+            
             //Setup our New Heap
-            Heap.Setup(HeapStart, HeapSize);
-
-            RefreshTLB();
+            Heap.Setup(HeapStart, end);
+            CurrentDirectory = KernelDirectory;
         }
         
-        private static void AllocateFrame(UInt32 Page, UInt32 PhyPage, uint flags = 0x3)//Present, ReadWrite, Supervisor
+        public static uint HeapAllocateFrames(uint Size)
+        {
+            uint start = Heap.HeapEnd;
+            uint end = Heap.HeapEnd + Size;
+            while(start < end)
+            {
+                AllocateFrame(GetPage(KernelDirectory, start, true), 0, true);
+                start += 0x1000;
+            }
+            return end;
+        }
+
+        public static uint AllocateVBE(uint phybase)
+        {
+            //4MB * 1 => 4MB
+            uint VirtLocation = 0xE0000000, VirtEnd = VirtLocation + 0x400000;
+            while(VirtLocation < VirtEnd)
+            {
+                AllocateFrame(GetPage(KernelDirectory, VirtLocation, true), phybase, false);
+                phybase += 0x1000;
+                VirtLocation += 0x1000;
+            }
+
+            return 0xE0000000;
+        }
+
+        private static void AllocateFrame(UInt32 Page, UInt32 PhyPage, bool Allocate, uint flags = 0x3)//Present, ReadWrite, Supervisor
         {
             Page += 0xC0000000;
             var Add = *((UInt32*)Page);
@@ -78,8 +103,12 @@ namespace Atomix.Kernel_H.arch.x86
                 return;//We don't want to overwrite anything
             else
             {                
+                if (Allocate)
+                {
+                    PhyPage = FirstFreeFrame() * 0x1000;
+                }
                 *((UInt32*)Page) = PhyPage | flags;
-                SetFrame(PhyPage);
+                SetFrame(PhyPage / 0x1000);
             }
         }
 
@@ -110,12 +139,31 @@ namespace Atomix.Kernel_H.arch.x86
             }
             else if (Make)
             {
-                var tmp = Heap.kmalloc(0x1000, true);//Allocate space for a new page
+                var tmp = Heap.kmalloc(0x1000, true);
                 tmp -= 0xC0000000;
                 Directory[index] = tmp | flags;
                 return tmp + ((VirtAddress % 1024) * 4);
             }
             return 0;
+        }
+
+        public static UInt32* CloneKernelDirectory()
+        {
+            UInt32* NewDirectory = (UInt32*)(Heap.kmalloc(0x1000, true));
+            for (uint Table = 768; Table < 1024; Table++)
+            {
+                NewDirectory[Table] = KernelDirectory[Table];
+            }
+            return NewDirectory;
+        }
+
+        public static void FreeDirectory(UInt32* Directory)
+        {
+            for (uint Table = 0; Table < 768; Table++)
+            {
+                ClearFrame(Directory[Table] / 0x1000);
+            }
+            ClearFrame((uint)Directory / 0x1000);
         }
         
         private static void SetFrame(UInt32 page)
@@ -129,14 +177,14 @@ namespace Atomix.Kernel_H.arch.x86
         }
 
         [Assembly(0x0)]
-        private static void RefreshTLB()
+        public static void RefreshTLB()
         {
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.CR3 });
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.CR3, SourceReg = Registers.EAX });
         }
 
         [Assembly(0x4)]
-        private static void SwitchDirectory(uint Directory)
+        public static void SwitchDirectory(uint Directory)
         {
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.CR3, SourceReg = Registers.EAX });

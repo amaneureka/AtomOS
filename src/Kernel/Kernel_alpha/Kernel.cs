@@ -25,6 +25,7 @@ namespace Kernel_alpha
             //Bit 2 -> Video Mode
             Core.DataMember.Add(new AsmData("MultibootFlags", BitConverter.GetBytes(65543)));//0x100004
             //Checksum + MultibootSignature + MultibootFlags == 0
+            //-_- I don't know who the hell made this rule =/
             Core.DataMember.Add(new AsmData("MultibootChecksum", BitConverter.GetBytes(-464433161)));//0x100008
             Core.DataMember.Add(new AsmData("MultibootHeaderAddr", "dd MultibootSignature"));//0x10000C
             Core.DataMember.Add(new AsmData("MultibootLoadAddr", "dd MultibootSignature"));//0x100010

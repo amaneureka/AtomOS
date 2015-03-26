@@ -20,8 +20,10 @@ using Atomix.Assembler;
 using Atomix.Assembler.x86;
 using Core = Atomix.Assembler.AssemblyHelper;
 
-using Atomix.Kernel_H.arch.x86;
 using Atomix.Kernel_H.core;
+using Atomix.Kernel_H.devices;
+using Atomix.Kernel_H.arch.x86;
+using Atomix.Kernel_H.drivers.video;
 
 namespace Atomix.Kernel_H
 {
@@ -46,9 +48,9 @@ namespace Atomix.Kernel_H
             Core.DataMember.Add(new AsmData("MultibootLoadEndAddr", "dd (Compiler_End - 0xC0000000)"));
             Core.DataMember.Add(new AsmData("MultibootBSSEndAddr", "dd (Compiler_End - 0xC0000000)"));
             Core.DataMember.Add(new AsmData("MultibootEntryAddr", "dd (Kernel_Main - 0xC0000000)"));
-            Core.DataMember.Add(new AsmData("MultibootVesaMode", BitConverter.GetBytes(1)));
-            Core.DataMember.Add(new AsmData("MultibootVesaWidth", BitConverter.GetBytes(1024)));
-            Core.DataMember.Add(new AsmData("MultibootVesaHeight", BitConverter.GetBytes(768)));
+            Core.DataMember.Add(new AsmData("MultibootVesaMode", BitConverter.GetBytes(0)));
+            Core.DataMember.Add(new AsmData("MultibootVesaWidth", BitConverter.GetBytes(0)));
+            Core.DataMember.Add(new AsmData("MultibootVesaHeight", BitConverter.GetBytes(0)));
             Core.DataMember.Add(new AsmData("MultibootVesaDepth", BitConverter.GetBytes(32)));
             Core.DataMember.Add(new AsmData("BeforeInitialStack:", "TIMES 327680 db 0"));
             Core.DataMember.Add(new AsmData("InitialStack:", string.Empty));
@@ -75,8 +77,7 @@ namespace Atomix.Kernel_H
             //Prepare for our quantum jump to Higher address
             Core.AssemblerCode.Add(new Literal("lea ecx, [Higher_Half_Kernel]"));
             Core.AssemblerCode.Add(new Jmp { DestinationRef = "ECX" });
-
-
+            
             Core.AssemblerCode.Add(new Label("Higher_Half_Kernel"));
             Core.AssemblerCode.Add(new Mov { DestinationRef = "KernelPageDirectory", DestinationIndirect = true, SourceRef = "0x0" });
             Core.AssemblerCode.Add(new Literal("invlpg [0]"));
@@ -140,12 +141,58 @@ namespace Atomix.Kernel_H
 
             /* Enable Interrupt */ 
             Native.Sti();
-            
+
+            /* Setup Scheduler */
+            Scheduler.Init();
+
+            /* Setup System Timer */
+            Timer.Setup();
+
+            /* Initialise VBE 2.0 Driver */
+            VBE.Init();
+
+            /*
+             * Scheduler must be called before Timer because, 
+             * just after calling timer, it will enable IRQ0 resulting in refrence call for switch task
+             * Hence results in pagefault.
+             */
+                        
+            var System = new Process("System", KernelDirectory - 0xC0000000);
+            new Thread(System, 0, true, 0, 10000).Start();
+            var NewStack2 = Heap.kmalloc(1000);
+            new Thread(System, pIdleTask, true, NewStack2 + 1000, 1000).Start();
+            var NewStack3 = Heap.kmalloc(1000);
+            new Thread(System, pIdleTask2, true, NewStack3 + 1000, 1000).Start();
+
+            while (true)//Do some heavy task
+            {
+            }
+
+            //Current Task: Advanced Heap; Advanced Scheduler; Binary Loading
             while (true)
             {
                 Native.Cli();
                 Native.Hlt();
-            }    
+            }
+        }
+
+        public static uint pIdleTask;
+        public static void IdleTask()
+        {
+            uint c = 0;
+            while (true)//Do some heavy task
+            {
+                Debug.Write("CountB:%d\n", c++);
+            }
+        }
+        public static uint pIdleTask2;
+        public static void IdleTask2()
+        {
+            uint c = 0;
+            while (true)//Do some heavy task
+            {
+                Debug.Write("CountC:%d\n", c++);
+            }
         }
     }
 }

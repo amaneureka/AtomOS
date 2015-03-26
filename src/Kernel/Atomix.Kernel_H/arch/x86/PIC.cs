@@ -40,7 +40,7 @@ namespace Atomix.Kernel_H.arch.x86
 
         public static void Setup()
         {
-            Remap(0x20, 0xF9, 0x28, 0xFF);
+            Remap(0x20, 0xFF, 0x28, 0xFF);
         }
 
         private static void Remap(byte masterStart, byte masterMask, byte slaveStart, byte slaveMask)
@@ -68,8 +68,16 @@ namespace Atomix.Kernel_H.arch.x86
             // set masks:
             PortIO.Out8(PIC1_Data, masterMask);
             PortIO.Wait();
-            PortIO.Out8(PIC2_Data, slaveMask);
-            PortIO.Wait();
+            //PortIO.Out8(PIC2_Data, slaveMask);
+            //PortIO.Wait();
+        }
+
+        public static void EndOfInterrupt(uint irq)
+        {
+            if (irq >= 40) // or untranslated IRQ >= 8
+                PortIO.Out8(PIC2_Command, EOI);
+
+            PortIO.Out8(PIC1_Command, EOI);
         }
     }
 }

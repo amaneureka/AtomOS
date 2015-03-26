@@ -721,7 +721,7 @@ namespace Atomix
         {
             #warning Here is a constant of 50 types with 100 methods are takes (HACK!!), Same code in Callvirt.cs
             var xList = new string[50 * 100];
-            uint xUID = 0, tmp = 0;
+            uint xUID = 0, tmp = 0, max = 0;
             foreach (var xV in Virtuals)
             {   
                 ILOpCodes.OpMethod.MethodUIDs.TryGetValue(xV.GetBaseDefinition(), out xUID);
@@ -731,10 +731,12 @@ namespace Atomix
                 var xTypeID = ILHelper.GetTypeID(xV.DeclaringType);
                 tmp = (uint)((xTypeID * 50) + xUID);
                 xList[tmp] = xV.FullName();
+                if (tmp > max)
+                    max = tmp;
             }
-            var xFinalList = new string[tmp + 1];
-            Array.Copy(xList, xFinalList, tmp);
-            Core.DataMember.Add(new AsmData("__VTable_Flush__", xList));
+            var xFinalList = new string[max + 1];
+            Array.Copy(xList, xFinalList, max + 1);
+            Core.DataMember.Add(new AsmData("__VTable_Flush__", xFinalList));
         }
         
         private void ProcessDelegate(MethodBase xMethod)

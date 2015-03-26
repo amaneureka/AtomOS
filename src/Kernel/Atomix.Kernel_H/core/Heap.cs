@@ -51,10 +51,13 @@ namespace Atomix.Kernel_H.core
         [Label("Heap")]
         public static uint kmalloc(uint aLength)
         {
-            /*if (HeapCurrent + aLength > HeapEnd)
+            if (HeapCurrent + aLength > HeapEnd)
             {
                 //Allocate more memory
-            }*/
+                Debug.Write("Memory out of run\n");
+                HeapEnd = Paging.HeapAllocateFrames(0x400000);
+                Debug.Write("       Heap Remap Address::%d\n", HeapEnd);
+            }
             uint tmp = HeapCurrent;
             HeapCurrent += aLength;
             Clear(tmp, aLength);

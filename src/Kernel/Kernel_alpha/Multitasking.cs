@@ -110,7 +110,7 @@ namespace Kernel_alpha
             *--stack = 0;           // EDI
             *--stack = 0;           // ESI
             *--stack = 0;           // EBP
-            *--stack = 0;           // NULL
+            *--stack = 0;           // ESP
             *--stack = 0;           // EBX
             *--stack = 0;           // EDX
             *--stack = 0;           // ECX
@@ -125,7 +125,7 @@ namespace Kernel_alpha
             task->Stack = (uint)stack;
             task->Address = (uint*)xLoc;
             task->state = (byte)(isRunning ? State.Alive : State.None);
-    
+            
             mTasks[Counter++] = *task;
 
             if (isRunning)

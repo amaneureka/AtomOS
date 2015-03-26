@@ -19,7 +19,7 @@ namespace Atomix.ILOpCodes
 
         public override string ToString()
         {
-            return string.Format("ILOpCode=>String   [0x{1}-0x{2}] {0}:     {3}", Code, Position.ToString("X").PadLeft(3, '0'), NextPosition.ToString("X").PadLeft(3, '0'), Value);
+            return string.Format("ILOpCode=>String   [0x{1}-0x{2}] {0}:     {3}", Code, Position.ToString("X").PadLeft(3, '0'), NextPosition.ToString("X").PadLeft(3, '0'), Value.Replace('\n', ' '));
         }
     }
 }
