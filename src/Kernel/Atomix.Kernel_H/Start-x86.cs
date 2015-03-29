@@ -156,14 +156,15 @@ namespace Atomix.Kernel_H
              * just after calling timer, it will enable IRQ0 resulting in refrence call for switch task
              * Hence results in pagefault.
              */
-                        
+            
             var System = new Process("System", KernelDirectory - 0xC0000000);
             new Thread(System, 0, true, 0, 10000).Start();
             var NewStack2 = Heap.kmalloc(1000);
             new Thread(System, pIdleTask, true, NewStack2 + 1000, 1000).Start();
             var NewStack3 = Heap.kmalloc(1000);
             new Thread(System, pIdleTask2, true, NewStack3 + 1000, 1000).Start();
-
+            DrawBackground();//GUI Here
+            
             while (true)//Do some heavy task
             {
             }
@@ -173,6 +174,25 @@ namespace Atomix.Kernel_H
             {
                 Native.Cli();
                 Native.Hlt();
+            }
+        }
+
+        public static void DrawBackground()
+        {
+            uint curr = 66, fac, fact2;
+            fac = VBE.Yres / (102 - curr);
+            fact2 = fac;
+            for (uint j = 0; j < VBE.Yres; j++)
+            {
+                if (j == fac)
+                {
+                    curr++;
+                    fac += fact2;
+                }
+                for (uint i = 0; i < VBE.Xres; i++)
+                {
+                    VBE.SetPixel(i, j, (uint)(curr << 16 | curr << 8 | curr));
+                }
             }
         }
 

@@ -12,31 +12,51 @@ namespace Atomix.Kernel_H.drivers.video
     {
         private static VBE_Mode_Info* ModeInfoBlock;
         private static uint PhysicalFrameBuffer;
-        private static uint VirtualFrameBuffer;
+        private static UInt32* VirtualFrameBuffer;
+        public static uint Xres;
+        public static uint Yres;
 
         public static void Init()
         {
             Debug.Write("VBE Init()\n");
             ModeInfoBlock = (VBE_Mode_Info*)(Multiboot.VBE_Mode_Info + 0xC0000000);
             PhysicalFrameBuffer = ModeInfoBlock->physbase;
+            Xres = ModeInfoBlock->Xres;
+            Yres = ModeInfoBlock->Yres;
             Debug.Write("Physical Frame Buffer: %d\n", PhysicalFrameBuffer);
-            VirtualFrameBuffer = Paging.AllocateVBE(PhysicalFrameBuffer);
-            Debug.Write("Virtual Frame Buffer: %d\n", VirtualFrameBuffer);
+            VirtualFrameBuffer = (UInt32*)Paging.AllocateVBE(PhysicalFrameBuffer);
+            Debug.Write("Virtual Frame Buffer: %d\n", (uint)VirtualFrameBuffer);
             Clear(0xFFFFFFFF);
             Debug.Write("Done()");
+            
         }
 
         public static void Clear(uint c)
         {
-            var LinearFrameBuffer = (UInt32*)VirtualFrameBuffer;
             uint p = 0;
             for (int x = 0; x < ModeInfoBlock->Xres; x++)
             {
                 for (int y = 0; y < ModeInfoBlock->Yres; y++)
                 {
-                    LinearFrameBuffer[p++] = c;
+                    VirtualFrameBuffer[p++] = c;
                 }
             }
+        }
+
+        public static void SetPixel(uint x, uint y, uint c)
+        {
+            if (x >= Xres || y >= Yres)
+                return;
+
+            VirtualFrameBuffer[(uint)(x + (y * Xres))] = c;
+        }
+
+        public static uint GetPixel(uint x, uint y)
+        {
+            if (x >= Xres || y >= Yres)
+                return 0;
+
+            return VirtualFrameBuffer[(uint)(x + (y * Xres))];
         }
 
         #region Struct

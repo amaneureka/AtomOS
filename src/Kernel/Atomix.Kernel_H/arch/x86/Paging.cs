@@ -46,7 +46,10 @@ namespace Atomix.Kernel_H.arch.x86
              * [0x0 - 0x400000) -> [0xc0000000 - 0xc0400000)
              * So, we have to first map rest of kernel code + Heap
              */
-            uint phy = 0x400000, virt = 0xc0400000, end = Native.EndOfKernel();            
+            uint phy = 0x400000, virt = 0xc0400000, end = Multiboot.RamDiskEnd;
+            if (end == 0)
+                end = Native.EndOfKernel();
+
             while (virt < end)
             {
                 AllocateFrame(GetPage(KernelDirectory, virt, true), phy, false);

@@ -45,6 +45,11 @@ namespace Atomix.Kernel_H.arch.x86
         {
             get { return (Mb_Info->mem_upper + Mb_Info->mem_lower) * 1024; }
         }
+
+        public static uint RamDiskEnd
+        {
+            get { return Initrd + InitrdSize; }
+        }
         
         public static unsafe void Setup(uint xSig, uint Address)
         {
@@ -65,12 +70,16 @@ namespace Atomix.Kernel_H.arch.x86
             Initrd = 0;
             InitrdSize = 0;
             var modules = (UInt32*)(Mb_Info->mods_addr + 0xC0000000);
+            Debug.Write("       Modules Count:%d\n", Mb_Info->mods_count);
             if (Mb_Info->mods_count > 0)
             {
                 Initrd = modules[0];
                 InitrdSize = modules[1] - Initrd;
+                Initrd += 0xC0000000;
+                Debug.Write("       RamDisk:%d\n", Initrd);
+                Debug.Write("       RamDisk-Size:%d\n", InitrdSize);
             }
-            if (Initrd == 0)
+            if (Mb_Info->mods_count == 0)
                 Debug.Write("       No Initial RAM Disk Found!!\n");
         }
 
