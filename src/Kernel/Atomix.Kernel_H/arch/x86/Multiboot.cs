@@ -46,6 +46,16 @@ namespace Atomix.Kernel_H.arch.x86
             get { return (Mb_Info->mem_upper + Mb_Info->mem_lower) * 1024; }
         }
 
+        public static uint RamDisk
+        {
+            get { return Initrd; }
+        }
+
+        public static uint RamDiskSize
+        {
+            get { return InitrdSize; }
+        }
+
         public static uint RamDiskEnd
         {
             get { return Initrd + InitrdSize; }

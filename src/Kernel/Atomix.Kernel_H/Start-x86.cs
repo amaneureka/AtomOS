@@ -24,6 +24,7 @@ using Atomix.Kernel_H.core;
 using Atomix.Kernel_H.devices;
 using Atomix.Kernel_H.arch.x86;
 using Atomix.Kernel_H.drivers.video;
+using Atomix.Kernel_H.drivers.FileSystem;
 
 namespace Atomix.Kernel_H
 {
@@ -151,6 +152,12 @@ namespace Atomix.Kernel_H
             /* Initialise VBE 2.0 Driver */
             VBE.Init();
 
+            /* Initialise Virtual File system */
+            VFS.Setup();
+
+            /* Mount Initial Ram FS -- NOT IMPLEMENTED COMPLETELY */
+            VFS.Mount("RamFS", new InitRamFS(Multiboot.RamDisk, Multiboot.RamDiskSize, 0xE8AD6799, 0x53409167, 0xFFFFFFF1, 0x0000001C));
+
             /*
              * Scheduler must be called before Timer because, 
              * just after calling timer, it will enable IRQ0 resulting in refrence call for switch task
@@ -163,6 +170,7 @@ namespace Atomix.Kernel_H
             new Thread(System, pIdleTask, true, NewStack2 + 1000, 1000).Start();
             var NewStack3 = Heap.kmalloc(1000);
             new Thread(System, pIdleTask2, true, NewStack3 + 1000, 1000).Start();
+
             DrawBackground();//GUI Here
             
             while (true)//Do some heavy task

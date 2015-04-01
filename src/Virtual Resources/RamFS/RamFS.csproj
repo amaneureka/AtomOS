@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{58A7E7A9-1DAB-403B-A5FA-882987254EF0}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{2C16BB5C-E9DB-46BF-9AB7-A04872455BCF}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Atomix.Kernel_H</RootNamespace>
-    <AssemblyName>Atomix.Kernel_H</AssemblyName>
+    <RootNamespace>RamFS</RootNamespace>
+    <AssemblyName>RamFS</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
@@ -17,6 +17,7 @@
     <SccProvider>SAK</SccProvider>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -26,58 +27,21 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\..\Build\Bin\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="arch\x86\GDT.cs" />
-    <Compile Include="arch\x86\IDT.cs" />
-    <Compile Include="arch\x86\Memory.cs" />
-    <Compile Include="arch\x86\Multiboot.cs" />
-    <Compile Include="arch\x86\Native.cs" />
-    <Compile Include="arch\x86\Paging.cs" />
-    <Compile Include="arch\x86\PIC.cs" />
-    <Compile Include="arch\x86\PortIO.cs" />
-    <Compile Include="core\Debug.cs" />
-    <Compile Include="core\Fault.cs" />
-    <Compile Include="core\Heap.cs" />
-    <Compile Include="core\Process.cs" />
-    <Compile Include="core\Scheduler.cs" />
-    <Compile Include="core\Task.cs" />
-    <Compile Include="core\Thread.cs" />
-    <Compile Include="devices\Timer.cs" />
-    <Compile Include="drivers\FileSystem\GenericFileSystem.cs" />
-    <Compile Include="drivers\FileSystem\InitRamFS.cs" />
-    <Compile Include="drivers\FileSystem\VFS.cs" />
-    <Compile Include="drivers\video\VBE.cs" />
-    <Compile Include="plugs\Array.cs" />
-    <Compile Include="plugs\Enum.cs" />
-    <Compile Include="plugs\NativeException.cs" />
-    <Compile Include="plugs\Exception.cs" />
-    <Compile Include="plugs\String.cs" />
-    <Compile Include="Start-x86.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Compiler\CompilerExt\CompilerExt.csproj">
-      <Project>{8974125b-52ca-48bd-92f5-c8b28f1c1dee}</Project>
-      <Name>CompilerExt</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Compiler\ILCompiler.Assembler\ILCompiler.Assembler.csproj">
-      <Project>{c39c02ef-559e-47a6-98d9-e5b79d683948}</Project>
-      <Name>ILCompiler.Assembler</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="drivers\FileSystem\VFS\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
