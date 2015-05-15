@@ -24,6 +24,7 @@ namespace Atomix.Kernel_H.drivers.FileSystem
 
             if (DiskSize != 0)
                 mValid = IsValid();
+            Debug.Write("RamDiskSize::%d\n", DiskSize);
         }
 
         private bool IsValid()
@@ -76,11 +77,42 @@ namespace Atomix.Kernel_H.drivers.FileSystem
             return null;
         }
 
+        public override unsafe byte* ReadFile(int EntryNo)
+        {
+            if (!mValid)
+            {
+                return null;
+            }
+
+            int p = 0, entry_count = -1;
+            uint xLocation = 0;
+            while (true)
+            {
+                int len = *((byte*)(DiskStart + p));
+                if (len == 0)
+                    return null;
+                p += 1 + len;
+                entry_count++;
+                if (EntryNo == entry_count)
+                {
+                    xLocation = *((UInt32*)(DiskStart + p)) + (uint)DiskStart;
+                    break;
+                }
+                p += 8;
+            }
+            return (byte*)xLocation;
+        }
+
         public override byte* ReadFile(string FileName, out uint xSize)
         {
+            if (!mValid)
+            {
+                xSize = 0;
+                return null;
+            }
+
             //It have no directory like structure;
             //It is based on current assumption and can result in some changes in near future
-
             int p = 0;
             uint xLocation = 0;
             xSize = 0;

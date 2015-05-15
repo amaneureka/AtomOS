@@ -16,15 +16,26 @@ namespace Atomix.Kernel_H.devices
             SetFrequency(100);
         }
 
-        private static uint ElapsedSeconds = 0;
-        private static uint ElapsedMiliSeconds = 0;
+        private static uint aElapsedSeconds = 0;
+        private static uint aElapsedMiliSeconds = 0;
+
+        public static uint ElapsedSeconds
+        {
+            get { return aElapsedSeconds; }
+        }
+
+        public static uint ElapsedMiliSeconds
+        {
+            get { return (aElapsedSeconds*1000) + aElapsedMiliSeconds; }
+        }
 
         public static void Tick()
         {
-            if (++ElapsedMiliSeconds == 100)
+            aElapsedMiliSeconds += 20;
+            if (aElapsedMiliSeconds == 1000)
             {
-                ElapsedMiliSeconds = 0;
-                ElapsedSeconds++;
+                aElapsedMiliSeconds = 0;
+                aElapsedSeconds++;
             }
         }
 

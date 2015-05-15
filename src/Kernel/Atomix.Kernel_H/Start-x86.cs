@@ -50,8 +50,8 @@ namespace Atomix.Kernel_H
             Core.DataMember.Add(new AsmData("MultibootBSSEndAddr", "dd (Compiler_End - 0xC0000000)"));
             Core.DataMember.Add(new AsmData("MultibootEntryAddr", "dd (Kernel_Main - 0xC0000000)"));
             Core.DataMember.Add(new AsmData("MultibootVesaMode", BitConverter.GetBytes(0)));
-            Core.DataMember.Add(new AsmData("MultibootVesaWidth", BitConverter.GetBytes(0)));
-            Core.DataMember.Add(new AsmData("MultibootVesaHeight", BitConverter.GetBytes(0)));
+            Core.DataMember.Add(new AsmData("MultibootVesaWidth", BitConverter.GetBytes(1024)));
+            Core.DataMember.Add(new AsmData("MultibootVesaHeight", BitConverter.GetBytes(768)));
             Core.DataMember.Add(new AsmData("MultibootVesaDepth", BitConverter.GetBytes(32)));
             Core.DataMember.Add(new AsmData("BeforeInitialStack:", "TIMES 327680 db 0"));
             Core.DataMember.Add(new AsmData("InitialStack:", string.Empty));
@@ -153,10 +153,10 @@ namespace Atomix.Kernel_H
             VBE.Init();
 
             /* Initialise Virtual File system */
-            VFS.Setup();
+            VirtualFileSystem.Setup();
 
             /* Mount Initial Ram FS -- NOT IMPLEMENTED COMPLETELY */
-            VFS.Mount("RamFS", new InitRamFS(Multiboot.RamDisk, Multiboot.RamDiskSize, 0xE8AD6799, 0x53409167, 0xFFFFFFF1, 0x0000001C));
+            VirtualFileSystem.Mount("RamFS", new InitRamFS(Multiboot.RamDisk, Multiboot.RamDiskSize, 0x372956C7, 0x15730A45, 0xFFFFFFF0, 0x00A09D31));
 
             /*
              * Scheduler must be called before Timer because, 
@@ -165,16 +165,29 @@ namespace Atomix.Kernel_H
              */
             
             var System = new Process("System", KernelDirectory - 0xC0000000);
+
+            //System Thread
             new Thread(System, 0, true, 0, 10000).Start();
+
+            //Boot Animation --> Maybe more managed in near future :D
+            var NewStack2 = Heap.kmalloc(1000);
+            new Thread(System, DoBoot.pAnimation, true, NewStack2 + 1000, 1000).Start();
+
+            /*
+             * Just for testing purpose
             var NewStack2 = Heap.kmalloc(1000);
             new Thread(System, pIdleTask, true, NewStack2 + 1000, 1000).Start();
             var NewStack3 = Heap.kmalloc(1000);
             new Thread(System, pIdleTask2, true, NewStack3 + 1000, 1000).Start();
-
-            DrawBackground();//GUI Here
-            
+            */
+            uint oldtime = Timer.ElapsedSeconds;
             while (true)//Do some heavy task
             {
+                if (oldtime + 1 == Timer.ElapsedSeconds)
+                {
+                    oldtime += 1;
+                    DoBoot.DoProgress();
+                }
             }
 
             //Current Task: Advanced Heap; Advanced Scheduler; Binary Loading
@@ -182,44 +195,6 @@ namespace Atomix.Kernel_H
             {
                 Native.Cli();
                 Native.Hlt();
-            }
-        }
-
-        public static void DrawBackground()
-        {
-            uint curr = 66, fac, fact2;
-            fac = VBE.Yres / (102 - curr);
-            fact2 = fac;
-            for (uint j = 0; j < VBE.Yres; j++)
-            {
-                if (j == fac)
-                {
-                    curr++;
-                    fac += fact2;
-                }
-                for (uint i = 0; i < VBE.Xres; i++)
-                {
-                    VBE.SetPixel(i, j, (uint)(curr << 16 | curr << 8 | curr));
-                }
-            }
-        }
-
-        public static uint pIdleTask;
-        public static void IdleTask()
-        {
-            uint c = 0;
-            while (true)//Do some heavy task
-            {
-                Debug.Write("CountB:%d\n", c++);
-            }
-        }
-        public static uint pIdleTask2;
-        public static void IdleTask2()
-        {
-            uint c = 0;
-            while (true)//Do some heavy task
-            {
-                Debug.Write("CountC:%d\n", c++);
             }
         }
     }

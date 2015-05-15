@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-
+using System.Drawing;
 
 namespace RamFS
 {
@@ -25,19 +25,40 @@ namespace RamFS
                     args[2] = Path.Combine(Environment.CurrentDirectory, args[2]);
 
                 using (var BW = new BinaryWriter(File.Create(args[2])))
-                {
-                    BW.BaseStream.Position = 1024;
+                {                    
                     var InputFiles = Directory.GetFiles(args[0]);
-
+                    BW.BaseStream.Position = 2048;
                     var Entries = new List<Tuple<string, int, int>>();
                     foreach (var xFile in InputFiles)
                     {
                         using (var SR = new StreamReader(File.Open(xFile, FileMode.Open)))
                         {
-                            var xData = Encoding.ASCII.GetBytes(SR.ReadToEnd());
                             var Pos = BW.BaseStream.Position;
-                            BW.Write(xData);
-                            Entries.Add(new Tuple<string, int, int>(Path.GetFileName(xFile), (int)Pos, xData.Length));
+                            int length = 0;
+                            if (xFile.EndsWith(".png"))
+                            {
+                                SR.Close();
+                                using (var bit = new Bitmap(xFile))
+                                {
+                                    BW.Write(BitConverter.GetBytes(bit.Width));
+                                    BW.Write(BitConverter.GetBytes(bit.Height));
+                                    for (int j = 0; j < bit.Height; j++)
+                                    {
+                                        for (int i = 0; i < bit.Width; i++)
+                                        {
+                                            BW.Write(bit.GetPixel(i, j).ToArgb());
+                                        }
+                                    }
+                                    length = (bit.Width * bit.Height * 4) + 8;
+                                }
+                            }
+                            else
+                            {
+                                var xData = Encoding.ASCII.GetBytes(SR.ReadToEnd());                                
+                                BW.Write(xData);
+                                length = xData.Length;
+                            }
+                            Entries.Add(new Tuple<string, int, int>(Path.GetFileName(xFile), (int)Pos, length));
                         }
                     }
 
@@ -49,13 +70,12 @@ namespace RamFS
                         BW.Write(entry.Item2);
                         BW.Write(entry.Item3);
                         Console.WriteLine(string.Format("Name:\"{0}\"  Size={1}    Position={2}", entry.Item1, entry.Item3, entry.Item2));
-                    }                   
+                    }
                 }
                 //Lets Generate The hash; this will be hard coded in kernel
                 uint Hash1 = 0, Hash2 = 0, Hash3 = 0xDEAD, Hash4 = 0;
-                using (var SR = new StreamReader(File.Open(args[2], FileMode.Open)))
                 {
-                    var xData = SR.ReadToEnd();
+                    var xData = File.ReadAllBytes(args[2]);
                     for (int i = 0; i < xData.Length; i++)
                     {
                         var key = xData[i];
@@ -81,7 +101,7 @@ namespace RamFS
             catch (Exception e)
             {
                 Console.WriteLine("Something went wrong!");
-                Console.WriteLine(e.Message);
+                Console.WriteLine(e.ToString());
             }
         }
     }

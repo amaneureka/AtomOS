@@ -12,7 +12,7 @@ namespace Atomix.Kernel_H.drivers.video
     {
         private static VBE_Mode_Info* ModeInfoBlock;
         private static uint PhysicalFrameBuffer;
-        private static UInt32* VirtualFrameBuffer;
+        private static byte* VirtualFrameBuffer;
         public static uint Xres;
         public static uint Yres;
 
@@ -24,39 +24,28 @@ namespace Atomix.Kernel_H.drivers.video
             Xres = ModeInfoBlock->Xres;
             Yres = ModeInfoBlock->Yres;
             Debug.Write("Physical Frame Buffer: %d\n", PhysicalFrameBuffer);
-            VirtualFrameBuffer = (UInt32*)Paging.AllocateVBE(PhysicalFrameBuffer);
+            VirtualFrameBuffer = (byte*)Paging.AllocateVBE(PhysicalFrameBuffer);
             Debug.Write("Virtual Frame Buffer: %d\n", (uint)VirtualFrameBuffer);
-            Clear(0xFFFFFFFF);
-            Debug.Write("Done()");
-            
         }
-
-        public static void Clear(uint c)
-        {
-            uint p = 0;
-            for (int x = 0; x < ModeInfoBlock->Xres; x++)
-            {
-                for (int y = 0; y < ModeInfoBlock->Yres; y++)
-                {
-                    VirtualFrameBuffer[p++] = c;
-                }
-            }
-        }
-
+        
         public static void SetPixel(uint x, uint y, uint c)
         {
             if (x >= Xres || y >= Yres)
                 return;
 
-            VirtualFrameBuffer[(uint)(x + (y * Xres))] = c;
+            uint p = (uint)((x + (y * Xres)) * (ModeInfoBlock->bpp / 8));
+            VirtualFrameBuffer[p++] = (byte)(c & 0xFF);
+            VirtualFrameBuffer[p++] = (byte)((c >> 8) & 0xFF);
+            VirtualFrameBuffer[p++] = (byte)((c >> 16) & 0xFF);
         }
-
+        
         public static uint GetPixel(uint x, uint y)
         {
             if (x >= Xres || y >= Yres)
                 return 0;
 
-            return VirtualFrameBuffer[(uint)(x + (y * Xres))];
+            uint p = (uint)((x + (y * Xres)) * (ModeInfoBlock->bpp / 8));
+            return (uint)(VirtualFrameBuffer[p + 2] << 16 | VirtualFrameBuffer[p + 1] << 8 | VirtualFrameBuffer[p]);
         }
 
         #region Struct
