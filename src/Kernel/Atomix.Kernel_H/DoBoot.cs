@@ -26,13 +26,14 @@ namespace Atomix.Kernel_H
             
             uint oldtime = Timer.ElapsedMiliSeconds;
             int curr = 1;
-            PrintSprite(Sx, Sy, (UInt32*)VirtualFileSystem.GetFS().ReadFile(curr));
+            var xFS = VirtualFileSystem.GetFS("sys\\RamFS");
+            PrintSprite(Sx, Sy, (UInt32*)xFS.ReadFile(curr));
             while(true)
             {
                 if (oldtime + 10 <= Timer.ElapsedMiliSeconds)
                 {
                     oldtime = Timer.ElapsedMiliSeconds;
-                    PrintSprite(Sx, Sy, (UInt32*)VirtualFileSystem.GetFS().ReadFile(curr));
+                    PrintSprite(Sx, Sy, (UInt32*)xFS.ReadFile(curr));
                     curr = (curr + 1) % 97;
                 }
 

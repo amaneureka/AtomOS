@@ -155,15 +155,14 @@ namespace Atomix.Kernel_H
             /* Initialise Virtual File system */
             VirtualFileSystem.Setup();
 
-            /* Mount Initial Ram FS -- NOT IMPLEMENTED COMPLETELY */
-            VirtualFileSystem.Mount("RamFS", new InitRamFS(Multiboot.RamDisk, Multiboot.RamDiskSize, 0x372956C7, 0x15730A45, 0xFFFFFFF0, 0x00A09D31));
+            /* Mount Initial Ram FS */
+            VirtualFileSystem.Mount("sys\\RamFS", new InitRamFS(Multiboot.RamDisk, Multiboot.RamDiskSize, 0x372956C7, 0x15730A45, 0xFFFFFFF0, 0x00A09D31));
 
             /*
              * Scheduler must be called before Timer because, 
              * just after calling timer, it will enable IRQ0 resulting in refrence call for switch task
              * Hence results in pagefault.
              */
-            
             var System = new Process("System", KernelDirectory - 0xC0000000);
 
             //System Thread

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using Atomix.Kernel_H.core;
+
 namespace Atomix.Kernel_H.drivers.FileSystem.VFS
 {
     public class Directory : Node
@@ -33,6 +35,21 @@ namespace Atomix.Kernel_H.drivers.FileSystem.VFS
                 }
             }
             return false;
+        }
+
+        public Node GetEntry(string name)
+        {
+            Node curr;
+            for (int i = 0; i < Childrens.Count; i++)
+            {
+                curr = Childrens[i];
+                if (curr.Name == name)
+                {
+                    return curr;
+                }
+            }
+#warning add error feature here
+            return null;
         }
     }
 }

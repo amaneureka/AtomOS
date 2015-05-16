@@ -5,7 +5,7 @@ namespace Atomix.Kernel_H.drivers.FileSystem.VFS
 {
     public class File : Node
     {
-        protected Stream Data;
+        public readonly Stream Data;
 
         public File(string aName, Stream MountPoint)
             :base(aName)

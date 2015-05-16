@@ -1,4 +1,16 @@
-﻿using System;
+﻿/* Copyright (C) Atomix Development, Inc - All Rights Reserved
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Proprietary and confidential
+ * Written by Aman Priyadarshi <aman.eureka@gmail.com>, December 2014
+ * 
+ * VirtualFileSystem.cs
+ *      An abstract layer between different file systems and streams
+ *      
+ *      History:
+ *          16-05-15    VFS Support    Aman Priyadarshi
+ */
+
+using System;
 using System.Collections.Generic;
 
 using Atomix.Kernel_H.core;
@@ -8,17 +20,35 @@ namespace Atomix.Kernel_H.drivers.FileSystem
 {
     public static class VirtualFileSystem
     {
-        private static Node ROOT;
+        /// <summary>
+        /// Root of Virtual File System
+        /// </summary>
+        private static Directory ROOT;
+
         public static void Setup()
         {
-            ROOT = new Node("/");
+            ROOT = new Directory("\\");
+            /*
+             * Initial Virtual File system tree
+             * //.
+             * ├───sys
+             * │   ├───RamFS
+             * │   └───*
+             * └───*
+             */
+            ROOT.Add(new Directory("sys"));
         }
-
-
-        private static GenericFileSystem FSs;
-        public static GenericFileSystem GetFS()
+        
+        public static GenericFileSystem GetFS(string root)
         {
-            return FSs;
+            var paths = root.Split('\\');
+            Directory Curr = ROOT;
+            int c = 0;
+            while (c < paths.Length - 1)
+            {
+                Curr = (Directory)Curr.GetEntry(paths[c++]);
+            }
+            return (GenericFileSystem)(((File)((Directory)Curr).GetEntry(paths[c])).Data);
         }
 
         public static bool Mount(string root, GenericFileSystem FS)
@@ -30,14 +60,15 @@ namespace Atomix.Kernel_H.drivers.FileSystem
                 Debug.Write('\n');
                 return false;
             }
-#warning It is working but needs some more code right now
-            FSs = FS;
-            /*unsafe
+            
+            var paths = root.Split('\\');
+            Directory Curr = ROOT;
+            int c = 0;
+            while(c < paths.Length - 1)
             {
-                uint size;
-                var xPointer = FS.ReadFile("Hello world.txt", out size);
-                Debug.Write("xData of hello world.txt::%d\n", *((UInt32*)xPointer));
-            }*/
+                Curr = (Directory)Curr.GetEntry(paths[c++]);
+            }
+            Curr.Add(new File(paths[c], FS));
             return true;
         }
     }
