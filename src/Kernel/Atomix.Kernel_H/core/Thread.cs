@@ -15,7 +15,7 @@ namespace Atomix.Kernel_H.core
         private uint StackTop;
         private uint StackLimit;
         
-        public Thread(Process Parent, uint xAddress, bool CurrentStack, uint StackStart, uint StackLimit)
+        public Thread(Process Parent, uint xAddress, uint StackStart, uint StackLimit)
         {
             this.Process = Parent;
             this.Address = xAddress;

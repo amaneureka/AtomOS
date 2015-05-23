@@ -9,7 +9,8 @@ namespace Atomix.Kernel_H
 {
     public static unsafe class DoBoot
     {
-        public static uint pAnimation;        
+        public static uint pAnimation;
+        
         public static void Animation()
         {
             DrawBackground();
@@ -28,6 +29,7 @@ namespace Atomix.Kernel_H
             int curr = 1;
             var xFS = VirtualFileSystem.GetFS("sys\\RamFS");
             PrintSprite(Sx, Sy, (UInt32*)xFS.ReadFile(curr));
+            bool sc = true;
             while(true)
             {
                 if (oldtime + 10 <= Timer.ElapsedMiliSeconds)
@@ -35,12 +37,20 @@ namespace Atomix.Kernel_H
                     oldtime = Timer.ElapsedMiliSeconds;
                     PrintSprite(Sx, Sy, (UInt32*)xFS.ReadFile(curr));
                     curr = (curr + 1) % 97;
+                    sc = true;
                 }
 
                 if (updated)
                 {
                     RoundedRectangle(x + 3, y + 3, ((width - 6) * progress) / 100, height - 6, 0xC3C3C3);
                     updated = false;
+                    sc = true;
+                }
+
+                if (sc)
+                {
+                    sc = false;
+                    VBE.Update();
                 }
             }
         }

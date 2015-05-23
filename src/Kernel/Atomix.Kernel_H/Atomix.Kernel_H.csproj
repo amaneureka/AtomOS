@@ -57,7 +57,9 @@
     <Compile Include="DoBoot.cs" />
     <Compile Include="drivers\FileSystem\GenericFileSystem.cs" />
     <Compile Include="drivers\FileSystem\InitRamFS.cs" />
+    <Compile Include="drivers\FileSystem\MemoryStream.cs" />
     <Compile Include="drivers\FileSystem\Stream.cs" />
+    <Compile Include="drivers\FileSystem\VFS\SuperNode.cs" />
     <Compile Include="drivers\FileSystem\VirtualFileSystem.cs" />
     <Compile Include="drivers\FileSystem\VFS\Directory.cs" />
     <Compile Include="drivers\FileSystem\VFS\File.cs" />

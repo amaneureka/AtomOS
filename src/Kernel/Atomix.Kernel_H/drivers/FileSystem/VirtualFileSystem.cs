@@ -24,7 +24,7 @@ namespace Atomix.Kernel_H.drivers.FileSystem
         /// Root of Virtual File System
         /// </summary>
         private static Directory ROOT;
-
+        
         public static void Setup()
         {
             ROOT = new Directory("\\");
@@ -46,9 +46,10 @@ namespace Atomix.Kernel_H.drivers.FileSystem
             int c = 0;
             while (c < paths.Length - 1)
             {
+#warning No Checking of real base class
                 Curr = (Directory)Curr.GetEntry(paths[c++]);
             }
-            return (GenericFileSystem)(((File)((Directory)Curr).GetEntry(paths[c])).Data);
+            return (GenericFileSystem)(((SuperNode)((Directory)Curr).GetEntry(paths[c])).Open());
         }
 
         public static bool Mount(string root, GenericFileSystem FS)
@@ -66,10 +67,16 @@ namespace Atomix.Kernel_H.drivers.FileSystem
             int c = 0;
             while(c < paths.Length - 1)
             {
+#warning No Checking of real base class
                 Curr = (Directory)Curr.GetEntry(paths[c++]);
             }
-            Curr.Add(new File(paths[c], FS));
+            Curr.Add(new SuperNode(paths[c], FS));
             return true;
+        }
+
+        public static bool Mount(string root, Stream stream)
+        {
+            return Mount(root, GenericFileSystem.Detect(stream));
         }
     }
 }

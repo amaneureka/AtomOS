@@ -84,7 +84,7 @@ namespace Atomix.Kernel_H.arch.x86
             return end;
         }
 
-        public static uint AllocateVBE(uint phybase)
+        public static uint AllocateMainBuffer(uint phybase)
         {
             //4MB * 1 => 4MB
             uint VirtLocation = 0xE0000000, VirtEnd = VirtLocation + 0x400000;
@@ -96,6 +96,19 @@ namespace Atomix.Kernel_H.arch.x86
             }
 
             return 0xE0000000;
+        }
+
+        public static uint AllocateSecondayBuffer()
+        {
+            //4MB * 1 => 4MB
+            uint VirtLocation = 0xE0400000, VirtEnd = VirtLocation + 0x400000;
+            while (VirtLocation < VirtEnd)
+            {
+                AllocateFrame(GetPage(KernelDirectory, VirtLocation, true), 0, true);
+                VirtLocation += 0x1000;
+            }
+
+            return 0xE0400000;
         }
 
         private static void AllocateFrame(UInt32 Page, UInt32 PhyPage, bool Allocate, uint flags = 0x3)//Present, ReadWrite, Supervisor

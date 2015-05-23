@@ -7,39 +7,34 @@ namespace Atomix.Kernel_H.drivers.FileSystem
 {
     public unsafe class InitRamFS : GenericFileSystem
     {
-        protected byte* DiskStart;
-        protected UInt32 DiskSize;
-
         protected UInt32 DiskHash1, DiskHash2, DiskHash3, DiskHash4;
 
-        public InitRamFS(UInt32 Position, UInt32 Size, UInt32 Hash1, UInt32 Hash2, UInt32 Hash3, UInt32 Hash4)
+        public InitRamFS(MemoryStream Stream, UInt32 Hash1, UInt32 Hash2, UInt32 Hash3, UInt32 Hash4)
+            :base(Stream)
         {
-            this.DiskStart = (byte*)Position;
-            this.DiskSize = Size;
-
             this.DiskHash1 = Hash1;
             this.DiskHash2 = Hash2;
             this.DiskHash3 = Hash3;
             this.DiskHash4 = Hash4;
 
-            if (DiskSize != 0)
-                mValid = IsValid();
-            Debug.Write("RamDiskSize::%d\n", DiskSize);
+            Debug.Write("RamDiskSize::%d\n", Stream.Size);
+            if (Stream.Size != 0)
+                mValid = true;//IsValid();
         }
 
         private bool IsValid()
         {
             UInt32 ComHash1 = 0, ComHash2 = 0, ComHash3 = 0xDEAD, ComHash4 = 0;
-            for (int i = 0; i < DiskSize; i++)
+            for (int i = 0; i < Stream.Size; i++)
             {
-                var key = DiskStart[i];
+                var key = ((MemoryStream)Stream).Address8[i];
                 if (key == 0x0)
                 {
                     ComHash4++;
                     continue;
                 }
                 ComHash1 = key + (ComHash1 << 6) + (ComHash1 << 16) - ComHash1;
-                ComHash2 = DiskStart[DiskSize - 1 - i] + (ComHash2 << 6) + (ComHash2 << 16) - ComHash2;
+                ComHash2 = ((MemoryStream)Stream).Address8[Stream.Size - 1 - i] + (ComHash2 << 6) + (ComHash2 << 16) - ComHash2;
                 var AND = ComHash3 & key;
                 var XOR = ComHash3 ^ key;
                 var OR = ComHash3 | key;
@@ -50,7 +45,7 @@ namespace Atomix.Kernel_H.drivers.FileSystem
                 MAXIMUM -= MINIMUM;
                 ComHash3 += ~(MAXIMUM & (MAXIMUM - 1));
             }
-            ComHash4 = DiskSize - ComHash4;
+            ComHash4 = Stream.Size - ComHash4;
 
             Debug.Write("RamFS Computed Hash::%d ", ComHash1);
             Debug.Write("%d ", ComHash2);
@@ -88,14 +83,14 @@ namespace Atomix.Kernel_H.drivers.FileSystem
             uint xLocation = 0;
             while (true)
             {
-                int len = *((byte*)(DiskStart + p));
+                int len = *((byte*)(((MemoryStream)Stream).Address8 + p));
                 if (len == 0)
                     return null;
                 p += 1 + len;
                 entry_count++;
                 if (EntryNo == entry_count)
                 {
-                    xLocation = *((UInt32*)(DiskStart + p)) + (uint)DiskStart;
+                    xLocation = *((UInt32*)(((MemoryStream)Stream).Address8 + p)) + (uint)((MemoryStream)Stream).Address8;
                     break;
                 }
                 p += 8;
@@ -118,14 +113,14 @@ namespace Atomix.Kernel_H.drivers.FileSystem
             xSize = 0;
             while(xLocation == 0)
             {
-                int len = *((byte*)(DiskStart + p));
+                int len = *((byte*)(((MemoryStream)Stream).Address8 + p));
                 if (len == 0)
                     break;
                 p += 1;
                 int i;
                 for (i = 0; i < len; i++)
                 {
-                    if (*((byte*)(DiskStart + p + i)) != (byte)FileName[i])
+                    if (*((byte*)(((MemoryStream)Stream).Address8 + p + i)) != (byte)FileName[i])
                     {
                         i = -1;
                         break;
@@ -139,8 +134,8 @@ namespace Atomix.Kernel_H.drivers.FileSystem
                 }
                 else
                 {
-                    xLocation = *((UInt32*)(DiskStart + p)) + (uint)DiskStart;
-                    xSize = *((UInt32*)(DiskStart + p + 4));
+                    xLocation = *((UInt32*)(((MemoryStream)Stream).Address8 + p)) + (uint)((MemoryStream)Stream).Address8;
+                    xSize = *((UInt32*)(((MemoryStream)Stream).Address8 + p + 4));
                 }
             }
             return (byte*)xLocation;

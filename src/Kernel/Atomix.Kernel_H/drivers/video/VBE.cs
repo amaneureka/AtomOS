@@ -6,13 +6,21 @@ using Atomix.Kernel_H;
 using Atomix.Kernel_H.core;
 using Atomix.Kernel_H.arch.x86;
 
+using Atomix.CompilerExt;
+using Atomix.CompilerExt.Attributes;
+
+using Atomix.Assembler;
+using Atomix.Assembler.x86;
+using Core = Atomix.Assembler.AssemblyHelper;
+
 namespace Atomix.Kernel_H.drivers.video
 {
     public static unsafe class VBE
     {
-        private static VBE_Mode_Info* ModeInfoBlock;
+        private static VBE_Mode_Info* ModeInfoBlock;        
         private static uint PhysicalFrameBuffer;
         private static byte* VirtualFrameBuffer;
+        private static byte* SecondaryBuffer;
         public static uint Xres;
         public static uint Yres;
 
@@ -24,8 +32,10 @@ namespace Atomix.Kernel_H.drivers.video
             Xres = ModeInfoBlock->Xres;
             Yres = ModeInfoBlock->Yres;
             Debug.Write("Physical Frame Buffer: %d\n", PhysicalFrameBuffer);
-            VirtualFrameBuffer = (byte*)Paging.AllocateVBE(PhysicalFrameBuffer);
+            VirtualFrameBuffer = (byte*)Paging.AllocateMainBuffer(PhysicalFrameBuffer);
             Debug.Write("Virtual Frame Buffer: %d\n", (uint)VirtualFrameBuffer);
+            SecondaryBuffer = (byte*)Paging.AllocateSecondayBuffer();
+            Debug.Write("Secondary Frame Buffer: %d\n", (uint)SecondaryBuffer);
         }
         
         public static void SetPixel(uint x, uint y, uint c)
@@ -34,9 +44,9 @@ namespace Atomix.Kernel_H.drivers.video
                 return;
 
             uint p = (uint)((x + (y * Xres)) * (ModeInfoBlock->bpp / 8));
-            VirtualFrameBuffer[p++] = (byte)(c & 0xFF);
-            VirtualFrameBuffer[p++] = (byte)((c >> 8) & 0xFF);
-            VirtualFrameBuffer[p++] = (byte)((c >> 16) & 0xFF);
+            SecondaryBuffer[p++] = (byte)(c & 0xFF);
+            SecondaryBuffer[p++] = (byte)((c >> 8) & 0xFF);
+            SecondaryBuffer[p++] = (byte)((c >> 16) & 0xFF);
         }
         
         public static uint GetPixel(uint x, uint y)
@@ -45,7 +55,17 @@ namespace Atomix.Kernel_H.drivers.video
                 return 0;
 
             uint p = (uint)((x + (y * Xres)) * (ModeInfoBlock->bpp / 8));
-            return (uint)(VirtualFrameBuffer[p + 2] << 16 | VirtualFrameBuffer[p + 1] << 8 | VirtualFrameBuffer[p]);
+            return (uint)(SecondaryBuffer[p + 2] << 16 | SecondaryBuffer[p + 1] << 8 | SecondaryBuffer[p]);
+        }
+
+        [Assembly(0x0)]
+        public static void Update()
+        {
+            //Copy 4MB of data from Secondary Buffer to Virtual Frame Buffer
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ESI, SourceRef = "static_Field__System_Byte__Atomix_Kernel_H_drivers_video_VBE_SecondaryBuffer", SourceIndirect = true });
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDI, SourceRef = "static_Field__System_Byte__Atomix_Kernel_H_drivers_video_VBE_VirtualFrameBuffer", SourceIndirect = true });
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "0x100000" });
+            Core.AssemblerCode.Add(new Literal("rep movsd"));
         }
 
         #region Struct

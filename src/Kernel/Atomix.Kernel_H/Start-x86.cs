@@ -148,16 +148,19 @@ namespace Atomix.Kernel_H
 
             /* Setup System Timer */
             Timer.Setup();
-
-            /* Initialise VBE 2.0 Driver */
-            VBE.Init();
-
+            
             /* Initialise Virtual File system */
             VirtualFileSystem.Setup();
-
+            
             /* Mount Initial Ram FS */
-            VirtualFileSystem.Mount("sys\\RamFS", new InitRamFS(Multiboot.RamDisk, Multiboot.RamDiskSize, 0x372956C7, 0x15730A45, 0xFFFFFFF0, 0x00A09D31));
-
+            VirtualFileSystem.Mount("sys\\RamFS", 
+                new InitRamFS(
+                    new MemoryStream(Multiboot.RamDisk, Multiboot.RamDiskSize), 
+                    0x372956C7, //Hash-1
+                    0x15730A45, //Hash-2
+                    0xFFFFFFF0, //Hash-3
+                    0x00A09D31)); //Hash-4
+            
             /*
              * Scheduler must be called before Timer because, 
              * just after calling timer, it will enable IRQ0 resulting in refrence call for switch task
@@ -165,19 +168,22 @@ namespace Atomix.Kernel_H
              */
             var System = new Process("System", KernelDirectory - 0xC0000000);
 
-            //System Thread
-            new Thread(System, 0, true, 0, 10000).Start();
+            /* System Thread */
+            new Thread(System, 0, 0, 10000).Start();
+
+            /* Initialise VBE 2.0 Driver */
+            VBE.Init();
 
             //Boot Animation --> Maybe more managed in near future :D
             var NewStack2 = Heap.kmalloc(1000);
-            new Thread(System, DoBoot.pAnimation, true, NewStack2 + 1000, 1000).Start();
+            new Thread(System, DoBoot.pAnimation, NewStack2 + 1000, 1000).Start();
 
             /*
              * Just for testing purpose
-            var NewStack2 = Heap.kmalloc(1000);
-            new Thread(System, pIdleTask, true, NewStack2 + 1000, 1000).Start();
-            var NewStack3 = Heap.kmalloc(1000);
-            new Thread(System, pIdleTask2, true, NewStack3 + 1000, 1000).Start();
+             * var NewStack2 = Heap.kmalloc(1000);
+             * new Thread(System, pIdleTask, true, NewStack2 + 1000, 1000).Start();
+             * var NewStack3 = Heap.kmalloc(1000);
+             * new Thread(System, pIdleTask2, true, NewStack3 + 1000, 1000).Start();
             */
             uint oldtime = Timer.ElapsedSeconds;
             while (true)//Do some heavy task
@@ -185,7 +191,7 @@ namespace Atomix.Kernel_H
                 if (oldtime + 1 == Timer.ElapsedSeconds)
                 {
                     oldtime += 1;
-                    DoBoot.DoProgress();
+                    DoBoot.DoProgress();                    
                 }
             }
 
