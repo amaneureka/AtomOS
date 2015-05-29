@@ -720,7 +720,8 @@ namespace Atomix
             //Add it to Data Members
             if (!TypeIDLabel.ContainsKey(xResult2))
             {
-                Core.DataMember.Add(new AsmData(xResult2, "dd " + xCounter));
+                //we don't add those labels in output assembly which we don't call literal -- optimization
+                //Core.DataMember.Add(new AsmData(xResult2, "dd " + xCounter));
                 TypeIDLabel.Add(xResult2, xCounter);
                 xCounter++;
             }

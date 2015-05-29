@@ -72,10 +72,10 @@ namespace Atomix.Kernel_H.arch.x86
             CurrentDirectory = KernelDirectory;
         }
         
-        public static uint HeapAllocateFrames(uint Size)
+        public static uint HeapAllocateFrames(uint phyAdd, uint Size)
         {
-            uint start = Heap.HeapEnd;
-            uint end = Heap.HeapEnd + Size;
+            uint start = phyAdd;
+            uint end = phyAdd + Size;
             while(start < end)
             {
                 AllocateFrame(GetPage(KernelDirectory, start, true), 0, true);

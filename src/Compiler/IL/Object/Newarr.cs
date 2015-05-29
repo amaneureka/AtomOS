@@ -26,7 +26,7 @@ namespace Atomix.IL
             var xSize = xTargetType.SizeOf();
             var xHeap = (Core.StaticLabels["Heap"] as MethodBase).FullName();
             
-            var xTypeID = ILHelper.GetTypeIDLabel(typeof(Array));
+            var xTypeID = ILHelper.GetTypeID(typeof(Array));
 
             //HACK: this is a kind of hack :D
             var xArray_ctor = typeof(Array).GetConstructors(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance)[0];
@@ -84,14 +84,11 @@ namespace Atomix.IL
                         Core.AssemblerCode.Add(new Push { DestinationReg = Registers.ESP, DestinationIndirect = true });
 
                         Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
-                        Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX,  SourceRef = xTypeID, SourceIndirect = true});
+                        Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceRef = "0x" + xTypeID.ToString("X") });
                         Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, SourceReg = Registers.EBX });
-                        Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EAX, SourceRef = "0x4" });
-                        Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, SourceRef = "0x2" });//Array Signature here 0x2
-                        Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EAX, SourceRef = "0x4" });
-                        Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, SourceReg = Registers.ESI });
-                        Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EAX, SourceRef = "0x4" });
-                        Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, SourceRef = "0x" + xSize.ToString("X") });
+                        Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = 4, SourceRef = "0x2" });//Array Signature here 0x2
+                        Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = 8, SourceReg = Registers.ESI });
+                        Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = 12, SourceRef = "0x" + xSize.ToString("X") });
 
                         Core.AssemblerCode.Add(new Call(xArray_ctor_label));
                     }

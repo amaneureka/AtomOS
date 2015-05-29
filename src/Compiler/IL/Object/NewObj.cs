@@ -144,13 +144,12 @@ namespace Atomix.IL
 
                             int xGCFieldCount = xTargetType.GetFields().Count(x => x.FieldType.IsValueType);
 
-                            string strTypeId = ILHelper.GetTypeIDLabel(xTargetType);
+                            var xTypeID = ILHelper.GetTypeID(xTargetType);
 
                             Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
-                            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceRef = strTypeId, SourceIndirect = true });
-                            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, SourceReg = Registers.EBX });
-                            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = 4, SourceRef = "0x1", Size = 32 });
-                            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = 8, SourceRef = "0x" + xGCFieldCount.ToString("X"), Size = 32 });
+                            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, SourceRef = "0x" + xTypeID.ToString("X") });
+                            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = 4, SourceRef = "0x1" });
+                            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = 8, SourceRef = "0x" + xMemSize.ToString("X") });
                             uint xSize = (uint)(((from item in xParams
                                                   let xQSize = item.ParameterType.SizeOf().Align()
                                                   select (int)xQSize).Take(xParams.Length).Sum()));

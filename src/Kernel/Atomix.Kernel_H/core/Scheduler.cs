@@ -23,6 +23,9 @@ namespace Atomix.Kernel_H.core
 
         public static uint SwitchTask(uint aStack)
         {
+            if (IsLocked)
+                return aStack;
+
             var NextTask = InvokeNext();
 
             if (CurrentTask == null)
@@ -41,6 +44,12 @@ namespace Atomix.Kernel_H.core
                 NextTask.Process.SetEnvironment();
             CurrentTask = NextTask;
             return NextTask.LoadStack();
+        }
+
+        static bool IsLocked = false;
+        public static void SpinLock(bool status)
+        {
+            IsLocked = status;
         }
 
         private static Thread InvokeNext()

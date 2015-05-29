@@ -17,7 +17,7 @@ namespace Atomix.Kernel_H.drivers.video
 {
     public static unsafe class VBE
     {
-        private static VBE_Mode_Info* ModeInfoBlock;        
+        private static VBE_Mode_Info* ModeInfoBlock;
         private static uint PhysicalFrameBuffer;
         private static byte* VirtualFrameBuffer;
         private static byte* SecondaryBuffer;
