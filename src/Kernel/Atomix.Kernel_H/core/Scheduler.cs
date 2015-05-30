@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 
+using Atomix.Kernel_H.lib;
 using Atomix.Kernel_H.core;
 using Atomix.Kernel_H.arch.x86;
 
@@ -8,12 +8,12 @@ namespace Atomix.Kernel_H.core
 {
     public static class Scheduler
     {
-        private static Queue<Thread> ThreadQueue;
+        private static IQueue<Thread> ThreadQueue;
         private static Thread CurrentTask;
         
         public static void Init()
         {
-            ThreadQueue = new Queue<Thread>();
+            ThreadQueue = new IQueue<Thread>();
         }
         
         public static void AddThread(Thread th)

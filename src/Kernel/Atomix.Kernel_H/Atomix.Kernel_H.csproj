@@ -65,6 +65,8 @@
     <Compile Include="drivers\FileSystem\VFS\File.cs" />
     <Compile Include="drivers\FileSystem\VFS\Node.cs" />
     <Compile Include="drivers\video\VBE.cs" />
+    <Compile Include="lib\ds\IList.cs" />
+    <Compile Include="lib\ds\IQueue.cs" />
     <Compile Include="plugs\Array.cs" />
     <Compile Include="plugs\Enum.cs" />
     <Compile Include="plugs\NativeException.cs" />

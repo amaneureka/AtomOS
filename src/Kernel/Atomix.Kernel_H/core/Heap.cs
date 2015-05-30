@@ -12,7 +12,6 @@
  */
 
 using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 using Atomix.Kernel_H.core;
@@ -109,7 +108,7 @@ namespace Atomix.Kernel_H.core
             }
             //Because access of same array from different threads can cause unexpected result -- So lock this thread
             Scheduler.SpinLock(true);
-
+            
             //Find a suitable hole
             int iterator;
             for (iterator = 0; iterator < HeapManagerPosition; iterator++)
@@ -244,7 +243,7 @@ namespace Atomix.Kernel_H.core
                     HeapManagerPosition++;
                 }
             }
-            Scheduler.SpinLock(false);
+            Scheduler.SpinLock(false);            
             Clear(pos, len);
             return pos;
         }
@@ -262,9 +261,9 @@ namespace Atomix.Kernel_H.core
             //EAX = object address
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.ECX, SourceDisplacement = 0x4, SourceIndirect = true });
-            Core.AssemblerCode.Add(new Cmp { DestinationReg = Registers.EBX, SourceRef = "0x2" });
-            Core.AssemblerCode.Add(new Jmp { Condition = ConditionalJumpEnum.JNE, DestinationRef = xLabel_Object });
             Core.AssemblerCode.Add(new Cmp { DestinationReg = Registers.EBX, SourceRef = "0x1" });
+            Core.AssemblerCode.Add(new Jmp { Condition = ConditionalJumpEnum.JE, DestinationRef = xLabel_Object });
+            Core.AssemblerCode.Add(new Cmp { DestinationReg = Registers.EBX, SourceRef = "0x2" });
             Core.AssemblerCode.Add(new Jmp { Condition = ConditionalJumpEnum.JNE, DestinationRef = xEndlbl });
             /* Array :-
              * According to compiler layout is:
@@ -282,7 +281,7 @@ namespace Atomix.Kernel_H.core
             /* Object :-
              * According to compiler layout is:
              * 1) Type Signature
-             * 2) Magic 0x2 -- 0x4
+             * 2) Magic 0x1 -- 0x4
              * 3) Total Size -- 0x8
              */
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.ECX, SourceDisplacement = 0x8, SourceIndirect = true });
@@ -367,7 +366,7 @@ namespace Atomix.Kernel_H.core
                 BlockSize[HeapManagerPosition] = NewSize;
                 BlockAddress[HeapManagerPosition] = NewAddress;
                 HeapManagerPosition++;
-            }
+            }            
             Scheduler.SpinLock(false);
         }
         

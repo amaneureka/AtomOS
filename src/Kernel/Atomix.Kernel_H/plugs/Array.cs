@@ -11,7 +11,6 @@
  */
 
 using System;
-using System.Collections.Generic;
 
 using Atomix.CompilerExt;
 using Atomix.CompilerExt.Attributes;
@@ -52,6 +51,12 @@ namespace Atomix.Kernel_H.plugs
             Core.AssemblerCode.Add(new Jmp { DestinationRef = xLabel + ".StartLoop" });
 
             Core.AssemblerCode.Add(new Label(xLabel + ".EndLoop"));
+        }
+
+        [Plug("System_Void_System_Array_Copy_System_Array__System_Array__System_Int32_")]
+        public static void Copy(Array SourceArray, Array DestinationArray, int len)
+        {
+            Copy(SourceArray, 0, DestinationArray, 0, len, false);
         }
 
         [Assembly(0x18), Plug("System_Void_System_Array_Copy_System_Array__System_Int32__System_Array__System_Int32__System_Int32__System_Boolean_")]

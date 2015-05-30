@@ -1,18 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 
+using Atomix.Kernel_H.lib;
 using Atomix.Kernel_H.core;
 
 namespace Atomix.Kernel_H.drivers.FileSystem.VFS
 {
     public class Directory : Node
     {
-        private List<Node> Childrens;
+        private IList<Node> Childrens;
 
         public Directory(string aName)
             :base(aName)
         {
-            this.Childrens = new List<Node>();
+            this.Childrens = new IList<Node>();
         }
 
         public bool Add(Node child)
@@ -30,8 +30,9 @@ namespace Atomix.Kernel_H.drivers.FileSystem.VFS
             {
                 if (Childrens[i].Name == name)
                 {
-                    Childrens.RemoveAt(i);
-                    return true;
+#warning IMPLEMENT RemoveAt in IList
+                    //Childrens.RemoveAt(i);
+                    return false;
                 }
             }
             return false;

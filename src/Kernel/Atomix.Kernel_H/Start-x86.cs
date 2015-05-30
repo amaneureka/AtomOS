@@ -11,7 +11,6 @@
  */
 
 using System;
-using System.Collections.Generic;
 
 using Atomix.CompilerExt;
 using Atomix.CompilerExt.Attributes;
@@ -25,6 +24,8 @@ using Atomix.Kernel_H.devices;
 using Atomix.Kernel_H.arch.x86;
 using Atomix.Kernel_H.drivers.video;
 using Atomix.Kernel_H.drivers.FileSystem;
+
+using Atomix.Kernel_H.lib;
 
 namespace Atomix.Kernel_H
 {

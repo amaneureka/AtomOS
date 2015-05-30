@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 using Atomix.Kernel_H.devices;
 using Atomix.Kernel_H.drivers.video;
