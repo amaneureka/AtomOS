@@ -79,6 +79,7 @@
     <Compile Include="Kernel.cs" />
     <Compile Include="Lib\BinaryFormat.cs" />
     <Compile Include="Lib\Console.cs" />
+    <Compile Include="Lib\Elf.cs" />
     <Compile Include="Lib\Encoding\ASCII.cs" />
     <Compile Include="Lib\MemoryBlock.cs" />
     <Compile Include="Lib\MemoryBlock08.cs" />
