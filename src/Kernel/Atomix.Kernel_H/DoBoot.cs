@@ -2,7 +2,6 @@
 
 using Atomix.Kernel_H.devices;
 using Atomix.Kernel_H.drivers.video;
-using Atomix.Kernel_H.drivers.FileSystem;
 
 namespace Atomix.Kernel_H
 {
@@ -13,7 +12,7 @@ namespace Atomix.Kernel_H
         public static void Animation()
         {
             DrawBackground();
-
+            /*
             //Real dimensions 420x26 in 1920x1080 screenshot
             uint width = ((42000 / 1920) * VBE.Xres) / 100;
             uint height = ((2600 / 1080) * VBE.Yres) / 100;
@@ -51,7 +50,7 @@ namespace Atomix.Kernel_H
                     sc = false;
                     VBE.Update();
                 }
-            }
+            }*/
         }
 
         private static bool updated = false;

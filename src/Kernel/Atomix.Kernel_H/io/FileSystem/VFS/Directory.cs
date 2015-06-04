@@ -3,7 +3,7 @@
 using Atomix.Kernel_H.lib;
 using Atomix.Kernel_H.core;
 
-namespace Atomix.Kernel_H.drivers.FileSystem.VFS
+namespace Atomix.Kernel_H.io.FileSystem.VFS
 {
     public class Directory : Node
     {

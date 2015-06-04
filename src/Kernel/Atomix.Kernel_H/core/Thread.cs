@@ -67,6 +67,11 @@ namespace Atomix.Kernel_H.core
         {
             this.StackTop = Stack;
         }
+
+        public ThreadState Status
+        {
+            get { return State; }
+        }
     }
     public enum ThreadState : int
     {

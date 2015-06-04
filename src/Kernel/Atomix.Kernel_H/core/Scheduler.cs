@@ -46,6 +46,7 @@ namespace Atomix.Kernel_H.core
             return NextTask.LoadStack();
         }
 
+#warning develop this spin lock
         static bool IsLocked = false;
         public static void SpinLock(bool status)
         {

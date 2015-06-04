@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Atomix.Kernel_H.drivers.FileSystem.VFS
+namespace Atomix.Kernel_H.io.FileSystem.VFS
 {
     public class Node
     {

@@ -19,13 +19,12 @@ using Atomix.Assembler;
 using Atomix.Assembler.x86;
 using Core = Atomix.Assembler.AssemblyHelper;
 
+using Atomix.Kernel_H.gui;
 using Atomix.Kernel_H.core;
 using Atomix.Kernel_H.devices;
 using Atomix.Kernel_H.arch.x86;
 using Atomix.Kernel_H.drivers.video;
-using Atomix.Kernel_H.drivers.FileSystem;
-
-using Atomix.Kernel_H.lib;
+using Atomix.Kernel_H.io.FileSystem;
 
 namespace Atomix.Kernel_H
 {
@@ -149,19 +148,13 @@ namespace Atomix.Kernel_H
             
             /* Setup System Timer */
             Timer.Setup();
-            
+
+            /* Initialise VBE 2.0 Driver */
+            VBE.Init();
+
             /* Initialise Virtual File system */
             VirtualFileSystem.Setup();
             
-            /* Mount Initial Ram FS */
-            VirtualFileSystem.Mount("sys\\RamFS", 
-                new InitRamFS(
-                    new MemoryStream(Multiboot.RamDisk, Multiboot.RamDiskSize), 
-                    0x372956C7, //Hash-1
-                    0x15730A45, //Hash-2
-                    0xFFFFFFF0, //Hash-3
-                    0x00A09D31)); //Hash-4
-
             /*
              * Scheduler must be called before Timer because, 
              * just after calling timer, it will enable IRQ0 resulting in refrence call for switch task
@@ -172,22 +165,78 @@ namespace Atomix.Kernel_H
             /* System Thread */
             new Thread(System, 0, 0, 10000).Start();
 
-            /* Initialise VBE 2.0 Driver */
-            VBE.Init();
-            
-            //Boot Animation --> Maybe more managed in near future :D
-            var NewStack2 = Heap.kmalloc(1000);
-            new Thread(System, DoBoot.pAnimation, NewStack2 + 1000, 1000).Start();
-            
-            uint oldtime = Timer.ElapsedSeconds;
-            while (true)//Do some heavy task
-            {
-                if (oldtime + 1 == Timer.ElapsedSeconds)
-                {
-                    oldtime += 1;
-                    DoBoot.DoProgress();
-                }
-            }
+            Compositor.Setup(System);
+            var c0 = Compositor.Server.CreateConnection("usr\\ap.txt");
+            var c1 = Compositor.Server.CreateConnection("usr\\si.txt");
+            bool code;
+
+            byte[] packet = { 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47 };
+            code = c0.SendtoServer(packet);
+            if (!code)
+                Debug.Write("c0 Message failed!\n");
+            packet[6] = 0x48;
+            code = c1.SendtoServer(packet);
+            if (!code)
+                Debug.Write("c1 Message failed!\n");
+
+            /*
+            SERVER CODE
+            byte[] rec = new byte[32];
+            code = Compositor.Server.Receive(rec);
+            if (!code)
+                Debug.Write("Server Message recieve failed!\n");
+            Debug.Write(rec[8]);
+            Debug.Write(rec[9]);
+            Debug.Write(rec[10]);
+            Debug.Write(rec[11]);
+            Debug.Write(rec[12]);
+            Debug.Write(rec[13]);
+            Debug.Write(rec[14]);
+            Debug.Write('\n');
+
+            Compositor.Server.Receive(rec);
+            Debug.Write(rec[8]);
+            Debug.Write(rec[9]);
+            Debug.Write(rec[10]);
+            Debug.Write(rec[11]);
+            Debug.Write(rec[12]);
+            Debug.Write(rec[13]);
+            Debug.Write(rec[14]);
+            Debug.Write('\n');
+
+            Heap.Free(rec);
+            rec = new byte[] { 0x41, 0x62, 0x43, 0x64, 0x30 };
+
+            code = Compositor.Server.BroadCast(c0.UniqueID, rec);
+            if (!code)
+                Debug.Write("Reply to c0 client failed!\n");
+
+            rec[4] = 0x31;
+            code = Compositor.Server.BroadCast(c1.UniqueID, rec);
+            if (!code)
+                Debug.Write("Reply to c1 client failed!\n");
+
+            code = c0.RecieveReply(rec);
+            if (!code)
+                Debug.Write("Read to c0 client failed!\n");
+            Debug.Write(rec[0]);
+            Debug.Write(rec[1]);
+            Debug.Write(rec[2]);
+            Debug.Write(rec[3]);
+            Debug.Write(rec[4]);
+            Debug.Write('\n');
+
+            code = c1.RecieveReply(rec);
+            if (!code)
+                Debug.Write("Read to c1 client failed!\n");
+            Debug.Write(rec[0]);
+            Debug.Write(rec[1]);
+            Debug.Write(rec[2]);
+            Debug.Write(rec[3]);
+            Debug.Write(rec[4]);
+            Debug.Write('\n');
+            */
+            while (true) ;
 
             while (true)
             {
