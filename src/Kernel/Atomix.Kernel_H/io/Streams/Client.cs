@@ -80,7 +80,9 @@ namespace Atomix.Kernel_H.io.Streams
                 return false;
 
             if (WritePointer + Connection.ChunkSize >= 0x1000)
-                return false;
+            {
+                WritePointer = 0;
+            }
 
             if (Stream.Write(Data, WritePointer))
             {
@@ -104,7 +106,9 @@ namespace Atomix.Kernel_H.io.Streams
                 return false;
 
             if (ReadPointer + Connection.ChunkSize >= 0x1000)
-                return false;
+            {
+                ReadPointer = 0;
+            }
 
             if (Stream.Read(Data, ReadPointer))
             {

@@ -9,11 +9,17 @@ namespace Atomix.Kernel_H.core
     public static class Scheduler
     {
         private static IQueue<Thread> ThreadQueue;
+        private static IList<Thread> SleepingThreadsQueue;
         private static Thread CurrentTask;
-        
+        private static byte[] ResourceArray = new byte[100];
+
+        public static Thread CurrentThread
+        { get { return CurrentTask; } }
+
         public static void Init()
         {
-            ThreadQueue = new IQueue<Thread>();
+            ThreadQueue = new IQueue<Thread>(100);//Allocate memory for atleast 100 threads, later on increase it
+            SleepingThreadsQueue = new IList<Thread>(100);
         }
         
         public static void AddThread(Thread th)
@@ -23,9 +29,6 @@ namespace Atomix.Kernel_H.core
 
         public static uint SwitchTask(uint aStack)
         {
-            if (IsLocked)
-                return aStack;
-
             var NextTask = InvokeNext();
 
             if (CurrentTask == null)
@@ -45,12 +48,34 @@ namespace Atomix.Kernel_H.core
             CurrentTask = NextTask;
             return NextTask.LoadStack();
         }
-
-#warning develop this spin lock
-        static bool IsLocked = false;
-        public static void SpinLock(bool status)
+        
+        /// <summary>
+        /// Lock up this resource till it won't freed up
+        /// </summary>
+        /// <param name="ID"></param>
+        public static void SpinLock(int ID)
         {
-            IsLocked = status;
+            while (ResourceArray[ID] != 0) ;//Hookup that thread till other thread free up that resource
+            ResourceArray[ID] = 1;
+        }
+
+        /// <summary>
+        /// Free up the resource
+        /// </summary>
+        /// <param name="ID"></param>
+        public static void SpinUnlock(int ID)
+        {
+            ResourceArray[ID] = 0;
+        }
+
+        static int ResID = 0;
+        /// <summary>
+        /// Get Resource ID for spinlock
+        /// </summary>
+        /// <returns></returns>
+        public static int GetResourceID()
+        {
+            return ResID++;
         }
 
         private static Thread InvokeNext()
@@ -59,7 +84,36 @@ namespace Atomix.Kernel_H.core
                 return null;
 
             if (CurrentTask != null)
-                ThreadQueue.Enqueue(CurrentTask);
+            {
+                var state = CurrentTask.Status;
+                switch (state)
+                {
+                    case ThreadState.Running:
+                        ThreadQueue.Enqueue(CurrentTask);
+                        break;
+                    case ThreadState.Sleep:
+                        SleepingThreadsQueue.Add(CurrentTask);
+                        break;
+                    case ThreadState.Dead:
+                        CurrentTask.FreeStack();//Free Stack Memory
+                        Heap.Free(CurrentTask);//Free Thread Object
+                        break;
+                    default://Do nothing for not active
+                        break;
+                }                
+            }
+            //Update Sleeping threads
+            for (int i = 0; i < SleepingThreadsQueue.Count; i++)
+            {
+                var th = SleepingThreadsQueue[i];
+                if (--th.SleepTicks == 0)
+                {
+                    ThreadQueue.Enqueue(th);
+                    th.WakeUp();
+                    SleepingThreadsQueue[i] = null;
+                }
+            }
+            SleepingThreadsQueue.Refresh();
             return ThreadQueue.Dequeue();
         }
     }

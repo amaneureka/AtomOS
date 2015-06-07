@@ -39,7 +39,7 @@ namespace Atomix.Kernel_H.arch.x86
 
         public static void Setup()
         {
-            Remap(0x20, 0xFF, 0x28, 0xFF);
+            Remap(0x20, 0xF9, 0x28, 0xFF);
         }
 
         private static void Remap(byte masterStart, byte masterMask, byte slaveStart, byte slaveMask)

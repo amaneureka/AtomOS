@@ -44,6 +44,8 @@ namespace Atomix.Kernel_H.core
         private static int HeapManagerPosition = 0;
         private static bool HeapManagerSetup = false;
 
+        private static int HEAP_RESOURCE_ID;
+
         public static void Init(uint InitHeap)
         {
             HeapStart = InitHeap;
@@ -56,6 +58,8 @@ namespace Atomix.Kernel_H.core
             //Allocate memory for future heap manager
             BlockAddress = new uint[HeapManagerSize];//64KB
             BlockSize = new uint[HeapManagerSize];//64KB
+
+            HEAP_RESOURCE_ID = Scheduler.GetResourceID();
         }
 
         public static void Setup(uint Start, uint End)
@@ -107,7 +111,7 @@ namespace Atomix.Kernel_H.core
                 return kmalloc(len);
             }
             //Because access of same array from different threads can cause unexpected result -- So lock this thread
-            Scheduler.SpinLock(true);
+            Scheduler.SpinLock(HEAP_RESOURCE_ID);
             
             //Find a suitable hole
             int iterator;
@@ -179,7 +183,7 @@ namespace Atomix.Kernel_H.core
                     }
                     HeapManagerPosition--;//Reduce size of array, no need to clear last empty because we never read it                    
                 }
-                Scheduler.SpinLock(false);
+                Scheduler.SpinUnlock(HEAP_RESOURCE_ID);
                 Clear(Address, len);//Clear the memory and reture
                 return Address;
             }
@@ -243,7 +247,7 @@ namespace Atomix.Kernel_H.core
                     HeapManagerPosition++;
                 }
             }
-            Scheduler.SpinLock(false);            
+            Scheduler.SpinUnlock(HEAP_RESOURCE_ID);       
             Clear(pos, len);
             return pos;
         }
@@ -296,7 +300,7 @@ namespace Atomix.Kernel_H.core
         public static void Free(uint Address, uint len)
         {
             //Because access of same array from different threads can cause unexpected result -- So spin lock this thread
-            Scheduler.SpinLock(true);
+            Scheduler.SpinLock(HEAP_RESOURCE_ID);
 
             //Check if any block can fit to left/Right of this
             int iterator, left = -1, right = -1;
@@ -366,8 +370,8 @@ namespace Atomix.Kernel_H.core
                 BlockSize[HeapManagerPosition] = NewSize;
                 BlockAddress[HeapManagerPosition] = NewAddress;
                 HeapManagerPosition++;
-            }            
-            Scheduler.SpinLock(false);
+            }
+            Scheduler.SpinUnlock(HEAP_RESOURCE_ID);
         }
         
         private static unsafe void Clear(uint Address, uint ByteCount)

@@ -19,7 +19,7 @@ namespace Atomix.Kernel_H.io.Streams
         
         public Server(string path, uint packetSize, int MaximumClient, uint MagicNo)
         {
-            this.ServerStream = VirtualFileSystem.Open(path, FileAttribute.READ_WRITE);
+            this.ServerStream = VirtualFileSystem.Open(path, FileAttribute.READ_WRITE_CREATE);
             this.ChunkSize = packetSize;
             this.Connections = new IList<Client>(MaximumClient);
             this.PacketMagic = MagicNo;
@@ -41,12 +41,14 @@ namespace Atomix.Kernel_H.io.Streams
                 return false;
 
             if (WritePointer + ChunkSize >= 0x1000)
-                return false;
+                WritePointer = 0;
 
-            bool code = ServerStream.Write(data, WritePointer);
-            if (code)//If written successfully
+            if (ServerStream.Write(data, WritePointer))
+            {
                 WritePointer += ChunkSize;
-            return code;
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -59,16 +61,15 @@ namespace Atomix.Kernel_H.io.Streams
                 return false;
 
             if (ReadPointer + ChunkSize >= 0x1000)
-                return false;
+                ReadPointer = 0;
 
-            while (ReadPointer >= WritePointer) ;//Hang up server if no message to read
+            while (ReadPointer == WritePointer) ;//Hang up server if no message to read
 
             if (ServerStream.Read(packet, ReadPointer))
             {
                 ReadPointer += ChunkSize;
                 return true;
             }
-
             return false;
         }
 
@@ -96,7 +97,7 @@ namespace Atomix.Kernel_H.io.Streams
         public Client CreateConnection(string path)
         {
 #warning check permissions for server on stream also check for ACK
-            var Stream = VirtualFileSystem.Open(path, FileAttribute.READ_WRITE);
+            var Stream = VirtualFileSystem.Open(path, FileAttribute.READ_WRITE_CREATE);
             if (Stream == null)
                 return null;
             var client = new Client(Stream, this, ++ClientsCount, PacketMagic);

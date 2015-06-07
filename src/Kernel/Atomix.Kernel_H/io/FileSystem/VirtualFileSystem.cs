@@ -33,6 +33,7 @@ namespace Atomix.Kernel_H.io.FileSystem
              * //.
              * ├───sys
              * │   ├───dwm
+             * │   ├───mouse
              * │   └───disk
              * └───usr
              */
@@ -61,22 +62,25 @@ namespace Atomix.Kernel_H.io.FileSystem
             
             dir = paths[c];
             File entry = (File)last.GetEntry(dir);
-            
+
             if (entry == null)
             {
-                if (fa == FileAttribute.READ_WRITE
-                    || fa == FileAttribute.WRITE_APPEND
-                    || fa == FileAttribute.WRITE_ONLY)
+                if (((int)fa & (int)FileAttribute.CREATE) != 0)
                 {
                     //Create the file
                     var Alloc = Heap.kmalloc(0x1000);//4KB
-                    var stream = new MemoryStream(Alloc, 0x1000);
+                    var stream = new MemoryStream(Alloc, 0x1000, fa);
                     entry = new File(dir, stream);
                     last.Add(entry);
                 }
+                else
+                    return null;
             }
-            
-            Heap.Free(dir);
+            else
+            {
+                Heap.Free(dir);
+            }
+
             Heap.Free(paths);
             return entry.Open(fa);
         }
@@ -101,9 +105,7 @@ namespace Atomix.Kernel_H.io.FileSystem
             }
             dir = paths[c];
             last.Add(new File(dir, stream));
-            Heap.Free(dir);
             Heap.Free(paths);
-
             return true;
         }
     }

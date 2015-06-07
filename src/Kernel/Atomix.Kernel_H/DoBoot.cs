@@ -82,16 +82,16 @@ namespace Atomix.Kernel_H
                 {
                     VBE.SetPixel(i, j, (uint)(0xFF << 24 | curr << 16 | curr << 8 | curr));
                 }
-            }*/
+            }
             for (uint j = 0; j < VBE.Yres; j++)
             {
                 for (uint i = 0; i < VBE.Xres; i++)
                 {
                     VBE.SetPixel(i, j, 0x3D3D3D);
                 }
-            }
+            }*/
         }
-
+        /*
         private static void PrintSprite(uint x, uint y, UInt32* Image)
         {
             uint width = Image[0];
@@ -148,6 +148,6 @@ namespace Atomix.Kernel_H
                     }
                 }
             }
-        }
+        }*/
     }
 }

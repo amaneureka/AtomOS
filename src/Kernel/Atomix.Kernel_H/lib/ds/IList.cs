@@ -30,6 +30,19 @@ namespace Atomix.Kernel_H.lib
             _items[_size++] = item;
         }
 
+        public void Refresh()
+        {
+            int _l = 0;
+            for (int i = 0; i < _size; i++)
+            {
+                if (_items[i] != null)
+                {
+                    _items[_l++] = _items[i];
+                }
+            }
+            _size = _l;
+        }
+
         public T this[int index]
         {
             get

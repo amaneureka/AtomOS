@@ -9,21 +9,29 @@ namespace Atomix.Kernel_H.io.Streams
         protected uint Address;
         protected uint Length;
         
-        public MemoryStream(UInt32 Start, UInt32 Size)
+        public MemoryStream(UInt32 Start, UInt32 Size, FileAttribute fa)
         {
+            this.Attribute = fa;
             this.Address = Start;
             this.Length = Size;
         }
         
         public override byte ReadByte(uint pos)
         {
+            if (((int)Attribute & (int)FileAttribute.READ_ONLY) == 0)
+                return 0;
+
             if (pos >= Length)
                 return 0;
+
             return *((byte*)(Address + pos));
         }
 
         public override bool Read(byte[] data, uint pos)
         {
+            if (((int)Attribute & (int)FileAttribute.READ_ONLY) == 0)
+                return false;
+
             if (pos + data.Length > Length)
                 return false;
 
@@ -35,6 +43,9 @@ namespace Atomix.Kernel_H.io.Streams
 
         public override bool Write(byte data, uint pos)
         {
+            if (((int)Attribute & (int)FileAttribute.WRITE_ONLY) == 0)
+                return false;
+
             if (pos >= Length)
                 return false;
             *((byte*)(Address + pos)) = data;
@@ -43,6 +54,9 @@ namespace Atomix.Kernel_H.io.Streams
 
         public override bool Write(byte[] data, uint pos)
         {
+            if (((int)Attribute & (int)FileAttribute.WRITE_ONLY) == 0)
+                return false;
+
             if (pos + data.Length > Length)
                 return false;
 
@@ -51,5 +65,10 @@ namespace Atomix.Kernel_H.io.Streams
                 *((byte*)(NewAdd + i)) = data[i];
             return true;
         }
+
+        public override Stream CreateInstance(FileAttribute fa)
+        {
+            return new MemoryStream(Address, Length, fa);
+        } 
     }
 }

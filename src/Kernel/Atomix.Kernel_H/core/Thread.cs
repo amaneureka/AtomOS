@@ -11,9 +11,11 @@ namespace Atomix.Kernel_H.core
         public readonly Process Process;
         private uint Address;
         private ThreadState State;
+        private uint StackBottom;
         private uint StackTop;
         private uint StackLimit;
-        
+        public uint SleepTicks;
+
         public Thread(Process Parent, uint xAddress, uint StackStart, uint StackLimit)
         {
             this.Process = Parent;
@@ -21,6 +23,7 @@ namespace Atomix.Kernel_H.core
             this.Process.Threads.Add(this);
             this.State = ThreadState.NotActive;
             this.StackTop = StackStart;
+            this.StackBottom = StackTop - StackLimit;
             this.StackLimit = StackLimit;
 
             if (StackStart != 0)
@@ -68,6 +71,35 @@ namespace Atomix.Kernel_H.core
             this.StackTop = Stack;
         }
 
+        public void FreeStack()
+        {
+            Heap.Free(StackBottom, StackLimit);
+        }
+
+        public void WakeUp()
+        {
+            this.State = ThreadState.Running;
+        }
+
+        public static void Sleep(uint ticks)
+        {
+            var curr = Scheduler.CurrentThread;
+            if (curr == null)
+                return;
+            curr.State = ThreadState.Sleep;
+            curr.SleepTicks = ticks;//Managed by scheduler.cs
+            while (curr.State == ThreadState.Sleep) ;//Hookup this while thread is sleeping
+        }
+
+        public static void Die()
+        {
+            var curr = Scheduler.CurrentThread;
+            if (curr == null)
+                return;
+            curr.State = ThreadState.Dead;
+            while (true) ;//Hook up till the next time slice
+        }
+                
         public ThreadState Status
         {
             get { return State; }

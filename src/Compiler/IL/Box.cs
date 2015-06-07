@@ -37,6 +37,9 @@ namespace Atomix.IL
                 case CPUArch.x86:
                     {
                         #warning Have to check memory allocation here, so don't use it now
+                        //Why i did this? well box is nothing but it converts object type so, lets assume it is already what we want :P
+                        Console.WriteLine("Box Operation is being called by " + aMethod.FullName());
+                        return;
                         throw new Exception("Not yet implemented");
                         //***What we are going to do is***
                         //1) Push the size of object + 0xC --> The 0xC is the offset of object data before this object metadata is stored

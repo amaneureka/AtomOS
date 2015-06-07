@@ -46,6 +46,8 @@
     <Compile Include="arch\x86\Paging.cs" />
     <Compile Include="arch\x86\PIC.cs" />
     <Compile Include="arch\x86\PortIO.cs" />
+    <Compile Include="drivers\input\Keyboard.cs" />
+    <Compile Include="drivers\input\Mouse.cs" />
     <Compile Include="gui\Compositor.cs" />
     <Compile Include="core\Debug.cs" />
     <Compile Include="core\Fault.cs" />
@@ -57,8 +59,10 @@
     <Compile Include="devices\Timer.cs" />
     <Compile Include="DoBoot.cs" />
     <Compile Include="gui\gui.cs" />
+    <Compile Include="gui\Print.cs" />
     <Compile Include="io\Streams\Client.cs" />
     <Compile Include="io\Streams\MemoryStream.cs" />
+    <Compile Include="io\Streams\Pipe.cs" />
     <Compile Include="io\Streams\Server.cs" />
     <Compile Include="io\Streams\Stream.cs" />
     <Compile Include="io\FileSystem\VirtualFileSystem.cs" />

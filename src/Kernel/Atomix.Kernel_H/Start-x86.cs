@@ -23,6 +23,7 @@ using Atomix.Kernel_H.gui;
 using Atomix.Kernel_H.core;
 using Atomix.Kernel_H.devices;
 using Atomix.Kernel_H.arch.x86;
+using Atomix.Kernel_H.drivers.input;
 using Atomix.Kernel_H.drivers.video;
 using Atomix.Kernel_H.io.FileSystem;
 
@@ -130,7 +131,7 @@ namespace Atomix.Kernel_H
             
             /* Setup Paging */
             Paging.Setup(KernelDirectory);
-                        
+            
             /* Setup GDT Again */
             GDT.Setup();
             
@@ -154,7 +155,13 @@ namespace Atomix.Kernel_H
 
             /* Initialise Virtual File system */
             VirtualFileSystem.Setup();
-            
+
+            /* Setup PS/2 Keyboard */
+            Keyboard.Setup();
+
+            /* Setup PS/2 Mouse */
+            Mouse.Setup();
+
             /*
              * Scheduler must be called before Timer because, 
              * just after calling timer, it will enable IRQ0 resulting in refrence call for switch task
@@ -166,6 +173,7 @@ namespace Atomix.Kernel_H
             new Thread(System, 0, 0, 10000).Start();
 
             Compositor.Setup(System);
+            /*
             var c0 = Compositor.Server.CreateConnection("usr\\ap.txt");
             var c1 = Compositor.Server.CreateConnection("usr\\si.txt");
             bool code;
@@ -179,7 +187,7 @@ namespace Atomix.Kernel_H
             if (!code)
                 Debug.Write("c1 Message failed!\n");
 
-            /*
+            
             SERVER CODE
             byte[] rec = new byte[32];
             code = Compositor.Server.Receive(rec);

@@ -25,13 +25,13 @@ using System.Runtime.InteropServices;
 
 namespace Atomix.Kernel_H.arch.x86
 {
+    public delegate void InterruptHandler(ref IRQContext state);
+
     public static class IDT
     {
         private static uint idt;
         private static uint idt_entries;
         private static InterruptHandler[] xINT;
-
-        public delegate void InterruptHandler(ref IRQContext state);
 
         public static void Setup()
         {
@@ -56,12 +56,14 @@ namespace Atomix.Kernel_H.arch.x86
         {
             var interrupt = xContext.Interrupt;
             var Handler = xINT[interrupt];
-
+            
             if (Handler != null)
                 Handler(ref xContext);
-            else
+            else if (interrupt < 0x20)
                 Fault.Handle(ref xContext);
-
+            else
+                Debug.Write("Unhandled Interrupt %d\n", interrupt);
+            
             //Send End of Interrupt for IRQs
             if (interrupt >= 0x20)
                 PIC.EndOfInterrupt(interrupt);
