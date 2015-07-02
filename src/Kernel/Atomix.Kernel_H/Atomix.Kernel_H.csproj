@@ -46,6 +46,8 @@
     <Compile Include="arch\x86\Paging.cs" />
     <Compile Include="arch\x86\PIC.cs" />
     <Compile Include="arch\x86\PortIO.cs" />
+    <Compile Include="devices\MBR.cs" />
+    <Compile Include="devices\Partition.cs" />
     <Compile Include="devices\Storage.cs" />
     <Compile Include="drivers\buses\ATA\IDE.cs" />
     <Compile Include="drivers\buses\ATA\misc.cs" />

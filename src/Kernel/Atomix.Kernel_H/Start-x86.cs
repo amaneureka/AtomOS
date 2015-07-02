@@ -171,11 +171,11 @@ namespace Atomix.Kernel_H
 
             /* System Thread */
             new Thread(System, 0, 0, 10000).Start();
-                                    
+            
             Compositor.Setup(System);
             
             while (true) ;
-
+            
             while (true)
             {
                 Native.Cli();
