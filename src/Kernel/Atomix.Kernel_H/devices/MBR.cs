@@ -5,7 +5,7 @@ using Atomix.Kernel_H.core;
 
 namespace Atomix.Kernel_H.devices
 {
-    public static class MBR
+    public class MBR
     {
         protected Storage aDisk;
         protected IList<Partition> aPartitions;

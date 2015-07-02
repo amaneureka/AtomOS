@@ -28,5 +28,10 @@ namespace Atomix.Kernel_H.devices
                 return false;
             return aParent.Write(aStartSector + SectorNo, SectorCount, xData);
         }
+
+        public override bool Eject()
+        {
+            return false;
+        }
     }
 }
