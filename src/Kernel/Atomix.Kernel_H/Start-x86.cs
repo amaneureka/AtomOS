@@ -171,79 +171,9 @@ namespace Atomix.Kernel_H
 
             /* System Thread */
             new Thread(System, 0, 0, 10000).Start();
-
+                                    
             Compositor.Setup(System);
-            /*
-            var c0 = Compositor.Server.CreateConnection("usr\\ap.txt");
-            var c1 = Compositor.Server.CreateConnection("usr\\si.txt");
-            bool code;
-
-            byte[] packet = { 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47 };
-            code = c0.SendtoServer(packet);
-            if (!code)
-                Debug.Write("c0 Message failed!\n");
-            packet[6] = 0x48;
-            code = c1.SendtoServer(packet);
-            if (!code)
-                Debug.Write("c1 Message failed!\n");
-
             
-            SERVER CODE
-            byte[] rec = new byte[32];
-            code = Compositor.Server.Receive(rec);
-            if (!code)
-                Debug.Write("Server Message recieve failed!\n");
-            Debug.Write(rec[8]);
-            Debug.Write(rec[9]);
-            Debug.Write(rec[10]);
-            Debug.Write(rec[11]);
-            Debug.Write(rec[12]);
-            Debug.Write(rec[13]);
-            Debug.Write(rec[14]);
-            Debug.Write('\n');
-
-            Compositor.Server.Receive(rec);
-            Debug.Write(rec[8]);
-            Debug.Write(rec[9]);
-            Debug.Write(rec[10]);
-            Debug.Write(rec[11]);
-            Debug.Write(rec[12]);
-            Debug.Write(rec[13]);
-            Debug.Write(rec[14]);
-            Debug.Write('\n');
-
-            Heap.Free(rec);
-            rec = new byte[] { 0x41, 0x62, 0x43, 0x64, 0x30 };
-
-            code = Compositor.Server.BroadCast(c0.UniqueID, rec);
-            if (!code)
-                Debug.Write("Reply to c0 client failed!\n");
-
-            rec[4] = 0x31;
-            code = Compositor.Server.BroadCast(c1.UniqueID, rec);
-            if (!code)
-                Debug.Write("Reply to c1 client failed!\n");
-
-            code = c0.RecieveReply(rec);
-            if (!code)
-                Debug.Write("Read to c0 client failed!\n");
-            Debug.Write(rec[0]);
-            Debug.Write(rec[1]);
-            Debug.Write(rec[2]);
-            Debug.Write(rec[3]);
-            Debug.Write(rec[4]);
-            Debug.Write('\n');
-
-            code = c1.RecieveReply(rec);
-            if (!code)
-                Debug.Write("Read to c1 client failed!\n");
-            Debug.Write(rec[0]);
-            Debug.Write(rec[1]);
-            Debug.Write(rec[2]);
-            Debug.Write(rec[3]);
-            Debug.Write(rec[4]);
-            Debug.Write('\n');
-            */
             while (true) ;
 
             while (true)

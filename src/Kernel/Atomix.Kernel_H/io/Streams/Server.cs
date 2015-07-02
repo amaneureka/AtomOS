@@ -8,26 +8,25 @@ namespace Atomix.Kernel_H.io.Streams
 {
     public class Server
     {
-        public readonly Stream ServerStream;
+        public readonly Pipe ServerStream;
         public readonly uint ChunkSize;
         public readonly uint PacketMagic;
-        private uint ReadPointer;
-        private uint WritePointer;
 
         public readonly IList<Client> Connections;
         private int ClientsCount;
         
         public Server(string path, uint packetSize, int MaximumClient, uint MagicNo)
         {
-            this.ServerStream = VirtualFileSystem.Open(path, FileAttribute.READ_WRITE_CREATE);
+            this.ServerStream = new Pipe(packetSize, 0x10000, FileAttribute.READ_WRITE_CREATE);//VirtualFileSystem.Open(path, FileAttribute.READ_WRITE_CREATE);
+            if (!VirtualFileSystem.Mount(path, ServerStream))
+                Debug.Write("Server Stream Mount Failed!\n");
+            else
+                VirtualFileSystem.Open(path, FileAttribute.READ_WRITE_CREATE);
+
             this.ChunkSize = packetSize;
             this.Connections = new IList<Client>(MaximumClient);
             this.PacketMagic = MagicNo;
             this.Connections.Add(null);
-
-            ReadPointer = 0;
-            WritePointer = 0;
-            ClientsCount = 0;
         }
 
         /// <summary>
@@ -37,18 +36,7 @@ namespace Atomix.Kernel_H.io.Streams
         /// <returns></returns>
         public bool Send(byte[] data)
         {
-            if (data.Length != ChunkSize)
-                return false;
-
-            if (WritePointer + ChunkSize >= 0x1000)
-                WritePointer = 0;
-
-            if (ServerStream.Write(data, WritePointer))
-            {
-                WritePointer += ChunkSize;
-                return true;
-            }
-            return false;
+            return ServerStream.Write(data, 0);
         }
 
         /// <summary>
@@ -57,20 +45,8 @@ namespace Atomix.Kernel_H.io.Streams
         /// <returns></returns>
         public bool Receive(byte[] packet)
         {
-            if (packet.Length != ChunkSize)
-                return false;
-
-            if (ReadPointer + ChunkSize >= 0x1000)
-                ReadPointer = 0;
-
-            while (ReadPointer == WritePointer) ;//Hang up server if no message to read
-
-            if (ServerStream.Read(packet, ReadPointer))
-            {
-                ReadPointer += ChunkSize;
-                return true;
-            }
-            return false;
+            while (!ServerStream.Read(packet, 0)) ;
+            return true;
         }
 
         /// <summary>
@@ -97,9 +73,11 @@ namespace Atomix.Kernel_H.io.Streams
         public Client CreateConnection(string path)
         {
 #warning check permissions for server on stream also check for ACK
-            var Stream = VirtualFileSystem.Open(path, FileAttribute.READ_WRITE_CREATE);
-            if (Stream == null)
-                return null;
+            var Stream = new Pipe(8, 0x10000, FileAttribute.READ_WRITE_CREATE);
+            if (!VirtualFileSystem.Mount(path, Stream))
+                Debug.Write("Client Stream Mount Failed!\n");
+            else
+                VirtualFileSystem.Open(path, FileAttribute.READ_WRITE_CREATE);//Mark it in use
             var client = new Client(Stream, this, ++ClientsCount, PacketMagic);
             Connections.Add(client);
             return client;

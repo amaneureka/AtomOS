@@ -32,7 +32,7 @@ namespace Atomix.Kernel_H.drivers.input
             MouseCycle = 0;
             MouseData = new byte[4];
             MouseData[0] = MOUSE_MAGIC;
-            MousePipe = new Pipe(4, 0x1000, FileAttribute.WRITE_CREATE);
+            MousePipe = new Pipe(4, 0x100000, FileAttribute.WRITE_CREATE);
             IDT.RegisterInterrupt(HandleIRQ, 0x2C);
 
             if (!VirtualFileSystem.Mount("sys\\mouse", MousePipe))

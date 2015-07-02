@@ -8,20 +8,17 @@ namespace Atomix.Kernel_H.io.Streams
     public class Client
     {
         public readonly int UniqueID;
-        private readonly Stream Stream;
+        private readonly Pipe Stream;
         private readonly Server Connection;
         public readonly uint MagicNumber;
-
-        private uint ReadPointer;
-        private uint WritePointer;
-
+        
         bool Connected;
         byte[] Packet;
 
         public bool IsConnected
         { get { return Connected; } }
 
-        public Client(Stream ss, Server Parent, int uid, uint Magic)
+        public Client(Pipe ss, Server Parent, int uid, uint Magic)
         {
             this.UniqueID = uid;
             this.Stream = ss;
@@ -41,9 +38,6 @@ namespace Atomix.Kernel_H.io.Streams
             Packet[5] = (byte)(Magic >> 8);
             Packet[6] = (byte)(Magic >> 16);
             Packet[7] = (byte)(Magic >> 24);
-
-            ReadPointer = 0;
-            WritePointer = 0;
         }
 
         public void DisConnect()
@@ -76,20 +70,10 @@ namespace Atomix.Kernel_H.io.Streams
         /// <returns></returns>
         public bool SendReply(byte[] Data)
         {
-            if (Data.Length != Connection.ChunkSize)
+            if (!Connected)
                 return false;
 
-            if (WritePointer + Connection.ChunkSize >= 0x1000)
-            {
-                WritePointer = 0;
-            }
-
-            if (Stream.Write(Data, WritePointer))
-            {
-                WritePointer += (uint)Data.Length;
-                return true;
-            }
-            return false;
+            return Stream.Write(Data, 0);
         }
 
         /// <summary>
@@ -102,20 +86,8 @@ namespace Atomix.Kernel_H.io.Streams
             if (!Connected)
                 return false;
 
-            if (Data.Length != Connection.ChunkSize)
-                return false;
-
-            if (ReadPointer + Connection.ChunkSize >= 0x1000)
-            {
-                ReadPointer = 0;
-            }
-
-            if (Stream.Read(Data, ReadPointer))
-            {
-                ReadPointer += (uint)Data.Length;
-                return true;
-            }
-            return false;
+            while(!Stream.Read(Data, 0));
+            return true;
         }
     }
 }

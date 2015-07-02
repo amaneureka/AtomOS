@@ -33,9 +33,11 @@ namespace Atomix.Kernel_H.gui
             Debug.Write("\tCompositor stack: %d\n", STACK_SERVER);
             
             //setup mouse Buffer
-            MouseBackBuffer = new UInt32[32 * 32];
-            Sprite = new UInt32[32 * 32];
-            Print.GetBuffer(MouseBackBuffer, Mouse_X, Mouse_Y, 32, 32);
+            MouseBackBuffer = new UInt32[16 * 16];
+            Sprite = new UInt32[16 * 16];
+            for (int i = 0; i < Sprite.Length; i++ )
+                Sprite[i] = (uint)((0xFF << 16) | (2*i << 8) | i);
+            Print.GetBuffer(MouseBackBuffer, Mouse_X, Mouse_Y, 16, 16);
             
             //Start Refresh Screen Thread
             new Thread(parent, pHandleRequest, STACK_SERVER + 0x1000, 0x1000).Start();
@@ -64,8 +66,8 @@ namespace Atomix.Kernel_H.gui
                     ushort currX = Mouse_X;
                     ushort currY = Mouse_Y;
                     MouseUpdate = false;
-                    Print.Sprite(MouseBackBuffer, Mouse_Old_X, Mouse_Old_Y, 32, 32);
-                    Print.Sprite(MouseBackBuffer, Sprite, currX, currY, 32, 32);                    
+                    Print.Sprite(MouseBackBuffer, Mouse_Old_X, Mouse_Old_Y, 16, 16);
+                    Print.Sprite(MouseBackBuffer, Sprite, currX, currY, 16, 16);                    
 
                     VBE.Update();
                     Mouse_Old_X = currX;
@@ -93,9 +95,6 @@ namespace Atomix.Kernel_H.gui
             Compositor_Packet[7] = (byte)(MAGIC >> 24);
 
             Compositor_Packet[8] = (byte)Signature;
-            Compositor_Packet[9] = (byte)(Signature >> 8);
-            Compositor_Packet[10] = (byte)(Signature >> 16);
-            Compositor_Packet[11] = (byte)(Signature >> 24);
             while(true)
             {
                 while (!pipe.Read(packet, 0)) ;
@@ -104,9 +103,9 @@ namespace Atomix.Kernel_H.gui
                     Debug.Write("Invalid Mouse Packet\n");
                     continue;
                 }
-                Compositor_Packet[12] = packet[1];
-                Compositor_Packet[13] = packet[2];
-                Compositor_Packet[14] = packet[3];
+                Compositor_Packet[9] = packet[1];
+                Compositor_Packet[10] = packet[2];
+                Compositor_Packet[11] = packet[3];
                 Server.Send(Compositor_Packet);
             }
         }
@@ -126,8 +125,7 @@ namespace Atomix.Kernel_H.gui
                 if (magic != MAGIC)
                     Debug.Write("[compositor]: Invalid magic, uid:= %d\n", (uint)uid);
 
-                var header = (RequestHeader)BitConverter.ToUInt32(packet, 8);
-                switch(header)
+                switch ((RequestHeader)packet[8])
                 {
                     case RequestHeader.CREATE_NEW_WINDOW:
                         {
@@ -137,10 +135,10 @@ namespace Atomix.Kernel_H.gui
                     case RequestHeader.INPUT_MOUSE_EVENT:
                         {
                             //Debug.Write("[compositor]: INPUT_MOUSE_EVENT, uid:=%d\n", (uint)uid);
-                            //packet[12][13][14] -- mouse data [0][1][2]
-                            byte a = packet[12];
-                            byte b = packet[13];
-                            byte c = packet[14];
+                            //packet[9][10][11] -- mouse data [0][1][2]
+                            byte a = packet[9];
+                            byte b = packet[10];
+                            byte c = packet[11];
                             if ((a & 0x10) != 0)
                                 Mouse_X -= (byte)(b ^ 0xFF);
                             else

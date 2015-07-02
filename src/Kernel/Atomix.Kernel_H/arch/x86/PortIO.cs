@@ -131,6 +131,48 @@ namespace Atomix.Kernel_H.arch.x86
             Core.AssemblerCode.Add(new Out { DestinationReg = Registers.DX, SourceReg = Registers.EAX });
         }
 
+        public static void Read16(UInt16 aAddress, UInt16[] xData)
+        {
+            for (int i = 0; i < xData.Length; i++)
+            {
+                xData[i] = In16(aAddress);
+            }
+        }
+
+        public static void Read16(UInt16 aAddress, byte[] xData)
+        {
+            for (int i = 0; i < xData.Length; i += 2)
+            {
+                var aData = In16(aAddress);
+                xData[i] = (byte)(aData & 0xFF);
+                xData[i + 1] = (byte)(aData >> 8);
+            }
+        }
+
+        public static void Read16(UInt16 aAddress, byte[] xData, uint size)
+        {
+            Read16(aAddress, xData);
+
+            for (int i = xData.Length - 1; i < size; i += 2)
+                In16(aAddress);
+        }
+
+        public static void Write16(UInt16 aAddress, UInt16[] xData)
+        {
+            for (int i = 0; i < xData.Length; i++)
+            {
+                Out16(aAddress, xData[i]);
+            }
+        }
+
+        public static void Write16(UInt16 aAddress, byte[] xData)
+        {
+            for (int i = 0; i < xData.Length; i += 2)
+            {
+                Out16(aAddress, (ushort)(xData[i + 1] << 8 | xData[i]));
+            }
+        }
+
         public static void Wait()
         {
             Out8(0x80, 0x22);
