@@ -45,44 +45,59 @@ namespace Atomix.Kernel_H.io.FileSystem
         {
             var paths = path.Split('\\');
 
-            Directory last = ROOT;
+            Node last = ROOT;
             int c = 0;
 
             string dir;
+
+            bool SuperNode = false;
             while (c < paths.Length - 1)
             {
                 dir = paths[c++];
-                Node curr = last.GetEntry(dir);
-                if (curr is Directory)
-                    last = (Directory)curr;
-                else
-                    return null;
-                Heap.Free(dir);
-            }
-            
-            dir = paths[c];
-            File entry = (File)last.GetEntry(dir);
-
-            if (entry == null)
-            {
-                if (((int)fa & (int)FileAttribute.CREATE) != 0)
-                {
-                    //Create the file
-                    var Alloc = Heap.kmalloc(0x1000);//4KB
-                    var stream = new MemoryStream(Alloc, 0x1000, fa);
-                    entry = new File(dir, stream);
-                    last.Add(entry);
+                last = ((Directory)last).GetEntry(dir);
+                if (last is Directory)
+                    continue;
+                else if (last is SuperNode)
+                {                    
+                    SuperNode = true;
+                    break;
                 }
                 else
+                {
+                    Heap.Free(paths);
                     return null;
+                }
+            }
+
+            if (SuperNode)
+            {
+                var data = ((SuperNode)last).GetFS.ReadFile(paths, c);
+                Heap.Free(paths);
+                return new MemoryStream(data, fa);
             }
             else
             {
-                Heap.Free(dir);
+                dir = paths[c];
+                File entry = (File)((Directory)last).GetEntry(dir);
+                if (entry == null)
+                {
+                    if (((int)fa & (int)FileAttribute.CREATE) != 0)
+                    {
+                        //Create the file
+                        var Alloc = Heap.kmalloc(0x1000);//4KB
+                        var stream = new MemoryStream(Alloc, 0x1000, fa);
+                        entry = new File(dir, stream);
+                        ((Directory)last).Add(entry);
+                    }
+                    else
+                    {
+                        Heap.Free(paths);
+                        return null;
+                    }
+                }
+                Heap.Free(paths);
+                return entry.Open(fa);
             }
-
-            Heap.Free(paths);
-            return entry.Open(fa);
         }
         
         public static bool Mount(string path, Stream stream)
@@ -100,11 +115,39 @@ namespace Atomix.Kernel_H.io.FileSystem
                 if (curr is Directory)
                     last = (Directory)curr;
                 else
+                {
+                    Heap.Free(paths);
                     return false;
-                Heap.Free(dir);
+                }
             }
             dir = paths[c];
             last.Add(new File(dir, stream));
+            Heap.Free(paths);
+            return true;
+        }
+
+        public static bool Mount(string path, GenericFileSystem FS)
+        {
+            var paths = path.Split('\\');
+
+            Directory last = ROOT;
+            int c = 0;
+
+            string dir;
+            while (c < paths.Length - 1)
+            {
+                dir = paths[c++];
+                Node curr = last.GetEntry(dir);
+                if (curr is Directory)
+                    last = (Directory)curr;
+                else
+                {
+                    Heap.Free(paths);
+                    return false;
+                }
+            }
+            dir = paths[c];
+            last.Add(new SuperNode(dir, FS));
             Heap.Free(paths);
             return true;
         }

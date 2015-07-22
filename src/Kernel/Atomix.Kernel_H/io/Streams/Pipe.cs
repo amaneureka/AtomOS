@@ -20,9 +20,9 @@ namespace Atomix.Kernel_H.io.Streams
             this.MaximumLimit = aMaximumLimit;
             this.Attribute = fa;
 
-            Address = (byte*)Heap.kmalloc(aMaximumLimit);
-            WritePosition = (uint*)Heap.kmalloc(4);
-            ReadPointer = (uint*)Heap.kmalloc(4);
+            Address = (byte*)Heap.kmalloc(aMaximumLimit + 8);
+            WritePosition = (uint*)(Address + aMaximumLimit);
+            ReadPointer = (uint*)(Address + aMaximumLimit + 4);
 
             *WritePosition = 0;
             *ReadPointer = 0;

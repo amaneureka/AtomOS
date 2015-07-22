@@ -252,6 +252,13 @@ namespace Atomix.Kernel_H.core
             return pos;
         }
 
+        public static void Free(object[] objs)
+        {
+            for (int i = 0; i < objs.Length; i++)
+                Free(objs[i]);
+            Free((object)objs);
+        }
+
         /// <summary>
         /// Clear Object class and Array type objects
         /// </summary>

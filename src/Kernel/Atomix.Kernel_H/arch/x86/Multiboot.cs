@@ -155,13 +155,13 @@ namespace Atomix.Kernel_H.arch.x86
             public UInt32 vbeModeInfo;
             /* all vbe_* set if bit 12 in flags are set */
             [FieldOffset(80)]
-            public UInt32 vbeMode;
+            public UInt16 vbeMode;
             [FieldOffset(82)]
-            public UInt32 vbeInterfaceSeg;
+            public UInt16 vbeInterfaceSeg;
             [FieldOffset(84)]
-            public UInt32 vbeInterfaceOff;
+            public UInt16 vbeInterfaceOff;
             [FieldOffset(86)]
-            public UInt32 vbeInterfaceLength;
+            public UInt16 vbeInterfaceLength;
         }
         #endregion
     }

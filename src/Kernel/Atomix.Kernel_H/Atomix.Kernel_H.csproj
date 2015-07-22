@@ -65,6 +65,12 @@
     <Compile Include="DoBoot.cs" />
     <Compile Include="gui\gui.cs" />
     <Compile Include="gui\Print.cs" />
+    <Compile Include="io\FileSystem\FatFileSystem.cs" />
+    <Compile Include="io\FileSystem\FAT\FileLocation.cs" />
+    <Compile Include="io\FileSystem\FAT\Find.cs" />
+    <Compile Include="io\FileSystem\FAT\misc.cs" />
+    <Compile Include="io\FileSystem\GenericFileSystem.cs" />
+    <Compile Include="io\FileSystem\VFS\SuperNode.cs" />
     <Compile Include="io\Streams\Client.cs" />
     <Compile Include="io\Streams\MemoryStream.cs" />
     <Compile Include="io\Streams\Pipe.cs" />
@@ -77,6 +83,7 @@
     <Compile Include="drivers\video\VBE.cs" />
     <Compile Include="lib\ds\IList.cs" />
     <Compile Include="lib\ds\IQueue.cs" />
+    <Compile Include="lib\encoding\ASCII.cs" />
     <Compile Include="plugs\Array.cs" />
     <Compile Include="plugs\BitConverter.cs" />
     <Compile Include="plugs\Enum.cs" />

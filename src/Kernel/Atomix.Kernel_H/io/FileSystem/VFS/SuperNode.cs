@@ -1,20 +1,18 @@
 ﻿using System;
 
-namespace Atomix.Kernel_H.drivers.FileSystem.VFS
+namespace Atomix.Kernel_H.io.FileSystem.VFS
 {
     public class SuperNode : Node
     {
-        private readonly GenericFileSystem aData;
+        protected GenericFileSystem ParentDevice;
 
-        public SuperNode(string aName, GenericFileSystem MountPoint)
-            : base(aName)
+        public SuperNode(string aName, GenericFileSystem FileSys)
+            :base(aName)
         {
-            this.aData = MountPoint;
+            this.ParentDevice = FileSys;
         }
 
-        public GenericFileSystem Open()
-        {
-            return aData;
-        }
+        public GenericFileSystem GetFS
+        { get { return ParentDevice; } }
     }
 }

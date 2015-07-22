@@ -51,6 +51,17 @@ namespace Atomix.Kernel_H.arch.x86
         }
 
         /// <summary>
+        /// Get Virtual Address of the object
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        [Assembly(0x0)]
+        public static unsafe uint GetAddress(object obj)
+        {
+            return 0;//Only me and my compiler knows how it is working :P
+        }
+
+        /// <summary>
         /// End of kernel offset
         /// </summary>
         /// <returns></returns>

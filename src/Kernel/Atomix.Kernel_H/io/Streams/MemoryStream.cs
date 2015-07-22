@@ -1,6 +1,8 @@
 ﻿using System;
 
+using Atomix.Kernel_H.core;
 using Atomix.Kernel_H.io;
+using Atomix.Kernel_H.arch.x86;
 
 namespace Atomix.Kernel_H.io.Streams
 {
@@ -9,6 +11,13 @@ namespace Atomix.Kernel_H.io.Streams
         protected uint Address;
         protected uint Length;
         
+        public MemoryStream(byte[] objs, FileAttribute fa)
+        {
+            this.Attribute = fa;
+            this.Address = Native.GetAddress(objs) + 0x10;
+            this.Length = (uint)objs.Length;
+        }
+
         public MemoryStream(UInt32 Start, UInt32 Size, FileAttribute fa)
         {
             this.Attribute = fa;
@@ -69,6 +78,12 @@ namespace Atomix.Kernel_H.io.Streams
         public override Stream CreateInstance(FileAttribute fa)
         {
             return new MemoryStream(Address, Length, fa);
-        } 
+        }
+
+        public bool Close()
+        {
+            Heap.Free(Address, Length);
+            return true;
+        }
     }
 }

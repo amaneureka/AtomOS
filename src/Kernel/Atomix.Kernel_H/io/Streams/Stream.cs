@@ -17,12 +17,7 @@ namespace Atomix.Kernel_H.io
 
         public abstract bool Write(byte[] data, uint pos);
 
-        public abstract bool Write(byte data, uint pos);  
-      
-        public bool Close()
-        {
-            return ((File)Entry).Close(this);
-        }
+        public abstract bool Write(byte data, uint pos);
     }
 
     public enum FileAttribute : int
