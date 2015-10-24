@@ -17,14 +17,14 @@ namespace Atomix.Kernel_H.devices
 
         public override bool Read(uint SectorNo, uint SectorCount, byte[] xData)
         {
-            if (SectorNo > SectorCount)
+            if (SectorNo + SectorCount > aSectorCount)
                 return false;
             return aParent.Read(aStartSector + SectorNo, SectorCount, xData);
         }
 
         public override bool Write(uint SectorNo, uint SectorCount, byte[] xData)
         {
-            if (SectorNo > SectorCount)
+            if (SectorNo + SectorCount > aSectorCount)
                 return false;
             return aParent.Write(aStartSector + SectorNo, SectorCount, xData);
         }

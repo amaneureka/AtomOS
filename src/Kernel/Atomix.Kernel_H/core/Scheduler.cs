@@ -8,10 +8,12 @@ namespace Atomix.Kernel_H.core
 {
     public static class Scheduler
     {
-        private static IQueue<Thread> ThreadQueue;
-        private static IList<Thread> SleepingThreadsQueue;
-        private static Thread CurrentTask;
-        private static byte[] ResourceArray = new byte[100];
+        static IQueue<Thread> ThreadQueue;
+        static IList<Thread> SleepingThreadsQueue;
+        static Thread CurrentTask;
+#warning SIZE 100 is constant and may lead to PF if it exceeded limit
+        static byte[] ResourceArray = new byte[500];
+        static bool IsHooked;
 
         public static Thread CurrentThread
         { get { return CurrentTask; } }
@@ -20,6 +22,7 @@ namespace Atomix.Kernel_H.core
         {
             ThreadQueue = new IQueue<Thread>(100);//Allocate memory for atleast 100 threads, later on increase it
             SleepingThreadsQueue = new IList<Thread>(100);
+            IsHooked = false;
         }
         
         public static void AddThread(Thread th)
@@ -29,6 +32,9 @@ namespace Atomix.Kernel_H.core
 
         public static uint SwitchTask(uint aStack)
         {
+            if (IsHooked)
+                return aStack;
+
             var NextTask = InvokeNext();
 
             if (CurrentTask == null)
@@ -48,7 +54,23 @@ namespace Atomix.Kernel_H.core
             CurrentTask = NextTask;
             return NextTask.LoadStack();
         }
-        
+
+        /// <summary>
+        /// Don't Switch the task
+        /// </summary>
+        public static void HookUp()
+        {
+            IsHooked = true;
+        }
+
+        /// <summary>
+        /// Begin Switching the task
+        /// </summary>
+        public static void UnHook()
+        {
+            IsHooked = false;
+        }
+
         /// <summary>
         /// Lock up this resource till it won't freed up
         /// </summary>

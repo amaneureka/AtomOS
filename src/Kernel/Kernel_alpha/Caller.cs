@@ -34,7 +34,7 @@ namespace Kernel_alpha
             Console.WriteLine ("Reboot: Ctrl+R");
             
             // Just for mouse testing
-            //Multitasking.CreateTask(pTask1, true);
+            Multitasking.CreateTask(pTask1, true);
             Multitasking.CreateTask(pTask2, true);
             Console.WriteLine("Block Device Count::" + Global.Devices.Count.ToString());
             uint c = 0;
@@ -51,6 +51,7 @@ namespace Kernel_alpha
             Multitasking.CreateTask(pSerialTest, true);
             Multitasking.CreateTask(pIdleTask, true);
             Console.WriteLine("Its working...;)" + x86.Heap.AllocateMem(0).ToString());
+            Console.WriteLine("Aayush Mittal");
             //Screen.Setup();
             //Screen.Clear(0xFFBB977E);
         }
@@ -259,9 +260,9 @@ namespace Kernel_alpha
         private static uint pFAT32test;
         public static void FAT32test()
         {
-            if (Global.Devices.Count >= 3)
+            if (Global.Devices.Count >= 1)
             {
-                var xFAT = new FileSystem.FatFileSystem(Global.Devices[2]);
+                var xFAT = new FileSystem.FatFileSystem(Global.Devices[1]);
                 if (xFAT.IsValid)
                 {
                     for (; ; )

@@ -3,7 +3,6 @@
 using Atomix.Kernel_H.io;
 using Atomix.Kernel_H.core;
 using Atomix.Kernel_H.arch.x86;
-using Atomix.Kernel_H.io.Streams;
 using Atomix.Kernel_H.io.FileSystem;
 
 namespace Atomix.Kernel_H.drivers.input
@@ -24,22 +23,17 @@ namespace Atomix.Kernel_H.drivers.input
 
         public const byte MOUSE_MAGIC = 0xAC;
 
-        private static Pipe MousePipe;
-        
+        public static Pipe MousePipe;
+
         public static void Setup()
         {
             Debug.Write("PS/2 Mouse Controller Setup\n");
             MouseCycle = 0;
             MouseData = new byte[4];
             MouseData[0] = MOUSE_MAGIC;
-            MousePipe = new Pipe(4, 0x100000, FileAttribute.WRITE_CREATE);
+            MousePipe = new Pipe(4, 1024);
             IDT.RegisterInterrupt(HandleIRQ, 0x2C);
-
-            if (!VirtualFileSystem.Mount("sys\\mouse", MousePipe))
-                Debug.Write("Mouse Stream Mount Failed!\n");
-            else
-                VirtualFileSystem.Open("sys\\mouse", FileAttribute.WRITE_CREATE);//Mark it in use
-
+            
             Native.Cli();
             Wait(true);
             PortIO.Out8(MOUSE_STATUS, 0xA8);
@@ -57,7 +51,7 @@ namespace Atomix.Kernel_H.drivers.input
             Write(0xF4);
             Read();
             Native.Sti();
-            
+
             Debug.Write("Mouse Done\n");
         }
 
@@ -73,21 +67,30 @@ namespace Atomix.Kernel_H.drivers.input
                     {
                         MouseData[1] = input;
                         if ((input & MOUSE_V_BIT) != 0)
-                            MouseCycle++;
+                            MouseCycle = 1;
                     }
                     break;
                 case 1:
                     {
                         MouseData[2] = input;
-                        MouseCycle++;
+                        MouseCycle = 2;
                     }
                     break;
                 case 2:
                     {
                         MouseData[3] = input;
                         MouseCycle = 0;
+                        /*
+                         * http://wiki.osdev.org/Mouse_Input
+                         * The top two bits of the first byte (values 0x80 and 0x40) supposedly show Y and X overflows, 
+                         * respectively. They are not useful. If they are set, you should probably just discard the entire packet.
+                         */
+                        //if ((MouseData[1] & 0x40) != 0)//X Overflow
+                        //    break;
+                        //if ((MouseData[1] & 0x80) != 0)//Y Overflow
+                        //    break;
                         //Send packet to kernel:= { MAGIC, btn, X-Pos, Y-Pos }
-                        MousePipe.Write(MouseData, 1);//Send package and seek the read pointer if necessary
+                        MousePipe.Write(MouseData, false);//Send package and seek the read pointer if necessary
                     }
                     break;
             }
@@ -100,7 +103,7 @@ namespace Atomix.Kernel_H.drivers.input
             Wait(true);
             PortIO.Out8(MOUSE_PORT, data);
         }
-        
+
         private static byte Read()
         {
             Wait(false);
@@ -112,10 +115,10 @@ namespace Atomix.Kernel_H.drivers.input
             UInt32 timeout = 100000;
             if (!type)
             {
-                while(--timeout > 0)
+                while (--timeout > 0)
                 {
                     if ((PortIO.In8(MOUSE_STATUS) & MOUSE_BBIT) != 0)
-                        return;                    
+                        return;
                 }
                 Debug.Write("[mouse]: TIMEOUT\n");
                 return;
@@ -125,7 +128,7 @@ namespace Atomix.Kernel_H.drivers.input
                 while (--timeout > 0)
                 {
                     if ((PortIO.In8(MOUSE_STATUS) & MOUSE_ABIT) == 0)
-                        return;                    
+                        return;
                 }
                 Debug.Write("[mouse]: TIMEOUT\n");
                 return;

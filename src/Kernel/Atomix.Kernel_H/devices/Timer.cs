@@ -30,7 +30,7 @@ namespace Atomix.Kernel_H.devices
 
         public static void Tick()
         {
-            aElapsedMiliSeconds += 20;
+            aElapsedMiliSeconds += 10;
             if (aElapsedMiliSeconds == 1000)
             {
                 aElapsedMiliSeconds = 0;

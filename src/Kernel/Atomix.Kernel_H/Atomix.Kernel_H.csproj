@@ -29,7 +29,8 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\..\Build\Bin\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -66,23 +67,24 @@
     <Compile Include="gui\gui.cs" />
     <Compile Include="gui\Print.cs" />
     <Compile Include="io\FileSystem\FatFileSystem.cs" />
+    <Compile Include="io\FileSystem\FAT\FatStream.cs" />
     <Compile Include="io\FileSystem\FAT\FileLocation.cs" />
-    <Compile Include="io\FileSystem\FAT\Find.cs" />
+    <Compile Include="io\FileSystem\FAT\Find\Any.cs" />
+    <Compile Include="io\FileSystem\FAT\Find\ByCluster.cs" />
+    <Compile Include="io\FileSystem\FAT\Find\Empty.cs" />
+    <Compile Include="io\FileSystem\FAT\Find\WithName.cs" />
     <Compile Include="io\FileSystem\FAT\misc.cs" />
     <Compile Include="io\FileSystem\GenericFileSystem.cs" />
-    <Compile Include="io\FileSystem\VFS\SuperNode.cs" />
-    <Compile Include="io\Streams\Client.cs" />
-    <Compile Include="io\Streams\MemoryStream.cs" />
-    <Compile Include="io\Streams\Pipe.cs" />
-    <Compile Include="io\Streams\Server.cs" />
-    <Compile Include="io\Streams\Stream.cs" />
+    <Compile Include="io\FileSystem\RamFileSystem.cs" />
+    <Compile Include="io\FileSystem\RFS\FileStream.cs" />
+    <Compile Include="io\FileSystem\RFS\RamFile.cs" />
     <Compile Include="io\FileSystem\VirtualFileSystem.cs" />
-    <Compile Include="io\FileSystem\VFS\Directory.cs" />
-    <Compile Include="io\FileSystem\VFS\File.cs" />
-    <Compile Include="io\FileSystem\VFS\Node.cs" />
     <Compile Include="drivers\video\VBE.cs" />
+    <Compile Include="io\Pipe.cs" />
+    <Compile Include="io\Stream.cs" />
     <Compile Include="lib\ds\IList.cs" />
     <Compile Include="lib\ds\IQueue.cs" />
+    <Compile Include="lib\ds\Pair.cs" />
     <Compile Include="lib\encoding\ASCII.cs" />
     <Compile Include="plugs\Array.cs" />
     <Compile Include="plugs\BitConverter.cs" />

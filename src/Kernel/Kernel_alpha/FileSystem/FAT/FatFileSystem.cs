@@ -493,6 +493,7 @@ namespace Kernel_alpha.FileSystem
             BinaryFormat directory = new BinaryFormat(aData);
             for (uint index = 0; index < EntriesPerSector * SectorsPerCluster; index++)
             {
+                Console.WriteLine("Lawl: %d\n" + ((uint)(index * 32)).ToString());
                 if (compare.Compare(directory.Data, index * 32, FatType))
                 {
                     FatFileAttributes attribute = (FatFileAttributes)directory.GetByte((index * Entry.EntrySize) + Entry.FileAttributes);

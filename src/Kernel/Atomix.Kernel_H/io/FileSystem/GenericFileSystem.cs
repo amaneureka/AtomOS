@@ -16,13 +16,14 @@ namespace Atomix.Kernel_H.io.FileSystem
         public FileSystemType FileSystem
         { get { return mFSType; } }
 
-        public abstract bool ReadFile(string[] paths, int c, byte[] xReturnData, int index);
-        public abstract byte[] ReadFile(string[] paths, int c);
+        public abstract Stream GetFile(string[] path, int pointer);
+
+        public abstract bool CreateFile(string[] path, int pointer);
     }
 
     public enum FileSystemType : byte
     {
-        None    = 0x0,
-        FAT     = 0x1
+        None = 0x0,
+        FAT = 0x1
     }
 }

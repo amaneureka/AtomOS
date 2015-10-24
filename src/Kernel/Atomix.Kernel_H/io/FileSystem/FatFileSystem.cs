@@ -4,6 +4,7 @@ using Atomix.Kernel_H.core;
 using Atomix.Kernel_H.devices;
 using Atomix.Kernel_H.lib.encoding;
 using Atomix.Kernel_H.io.FileSystem.FAT;
+using Atomix.Kernel_H.io.FileSystem.FAT.Find;
 
 namespace Atomix.Kernel_H.io.FileSystem
 {
@@ -25,10 +26,11 @@ namespace Atomix.Kernel_H.io.FileSystem
         protected UInt32 DataSector;
         protected UInt32 EntriesPerSector;
         protected UInt32 fatEntries;
-        
+
         protected FatType FatType;
 
         protected string VolumeLabel;
+
 
         public FatFileSystem(Storage Device)
         {
@@ -39,6 +41,7 @@ namespace Atomix.Kernel_H.io.FileSystem
         private bool IsFAT()
         {
             var BootSector = new byte[512];
+            
             if (!IDevice.Read(0U, 1U, BootSector))
             {
                 Heap.Free(BootSector);
@@ -132,110 +135,82 @@ namespace Atomix.Kernel_H.io.FileSystem
             this.mFSType = FileSystemType.FAT;
 
             Heap.Free(BootSector);
-            return true;        
-        }
-
-        public override bool ReadFile(string[] paths, int c, byte[] xReturnData, int index)
-        {
-            string dir;
-            UInt32 CurrentDirectory = RootCluster;
-            while (c < paths.Length - 1)
-            {
-                dir = paths[c++];
-                var loc = FindEntry(CurrentDirectory, FAT.FindEntry.WithName, dir);
-                if (loc == null)
-                    return false;
-                CurrentDirectory = loc.FirstCluster;
-                Heap.Free(loc);
-            }
-            dir = paths[c];
-            var file = FindEntry(CurrentDirectory, FAT.FindEntry.WithName, dir);
-            
-            byte[] xFileData = new byte[(UInt32)SectorsPerCluster * 512];
-            UInt32 xSector = DataSector + ((file.FirstCluster - RootCluster) * SectorsPerCluster);
-            this.IDevice.Read(xSector, SectorsPerCluster, xFileData);
-
-            int filesize = Math.Min((int)(file.Size - index), xReturnData.Length);
-            Array.Copy(xFileData, 0, xReturnData, 0, filesize);
-            Heap.Free(xFileData);
-            Heap.Free(file);
             return true;
         }
 
-        public override byte[] ReadFile(string[] paths, int c)
+        public override bool CreateFile(string[] path, int pointer)
         {
-            string dir;
-            UInt32 CurrentDirectory = RootCluster;
-            while (c < paths.Length - 1)
-            {
-                dir = paths[c++];
-                var loc = FindEntry(CurrentDirectory, FAT.FindEntry.WithName, dir);
-                if (loc == null)
-                    return null;
-                CurrentDirectory = loc.FirstCluster;
-                Heap.Free(loc);
-            }
-            dir = paths[c];
-            var file = FindEntry(CurrentDirectory, FAT.FindEntry.WithName, dir);
-
-            byte[] xFileData = new byte[(UInt32)SectorsPerCluster * 512];
-            UInt32 xSector = DataSector + ((file.FirstCluster - RootCluster) * SectorsPerCluster);
-            this.IDevice.Read(xSector, SectorsPerCluster, xFileData);
-
-            byte[] xReturnData = new byte[file.Size];
-            
-            Array.Copy(xFileData, 0, xReturnData, 0, (int)file.Size);
-            Heap.Free(xFileData);
-            Heap.Free(file);
-            return xReturnData;
+            return false;
         }
 
-        public FatFileLocation FindEntry(uint startCluster, FindEntry entryType, object arg0)
+        public override Stream GetFile(string[] path, int pointer)
+        {
+            if (!mIsValid)
+                return null;
+
+            FatFileLocation FileLocation = ChangeDirectory(path, pointer);
+            if (FileLocation == null)
+                return null;
+
+            var xStream = new FatStream(this, path[path.Length - 1], FileLocation.FirstCluster, FileLocation.Size);
+            Heap.Free(FileLocation);
+            return xStream;
+        }
+
+        private FatFileLocation ChangeDirectory(string[] path, int pointer)
+        {
+            uint CurrentCluster = RootCluster;
+            var Compare = new WithName("");
+            FatFileLocation location = null;
+            while (pointer < path.Length)
+            {
+                Compare.Name = path[pointer];                
+                location = FindEntry(Compare, CurrentCluster);
+                if (location == null)
+                {
+                    Heap.Free(Compare);
+                    return null;
+                }
+                CurrentCluster = location.FirstCluster;
+                pointer++;
+                Heap.Free(location);
+            }
+
+            Heap.Free(Compare);
+            return location;
+        }
+
+        private FatFileLocation FindEntry(Comparison compare, uint startCluster)
         {
             uint activeSector = ((startCluster - RootCluster) * SectorsPerCluster) + DataSector;
 
             if (startCluster == 0)
                 activeSector = (FatType == FatType.FAT32) ? GetSectorByCluster(RootCluster) : RootSector;
 
-            byte[] aData = new byte[512 * SectorsPerCluster];
+            byte[] aData = new byte[BytePerSector * SectorsPerCluster];
             this.IDevice.Read(activeSector, SectorsPerCluster, aData);
 
-            FatFileLocation ResultEntry = null;
             for (uint index = 0; index < EntriesPerSector * SectorsPerCluster; index++)
             {
-                bool result;
-                switch(entryType)
+                int offset = (int)(index * (int)Entry.EntrySize);
+                if (compare.Compare(aData, offset, FatType))
                 {
-                    case FAT.FindEntry.Any:
-                        result = Find.Any(aData, index * 32, FatType);
-                        break;
-                    case FAT.FindEntry.ByCluster:
-                        result = Find.ByCluster(aData, index * 32, FatType, (uint)arg0);
-                        break;
-                    case FAT.FindEntry.Empty:
-                        result = Find.Empty(aData, index * 32, FatType);
-                        break;
-                    case FAT.FindEntry.WithName:
-                        result = Find.WithName(aData, index * 32, FatType, (string)arg0);
-                        break;
-                    default:
-                        result = false;
-                        break;
-                }
-                if (result)
-                {
-                    var attrib = (FatFileAttributes)aData[((index * (uint)Entry.EntrySize) + (uint)Entry.FileAttributes)];
-                    ResultEntry = new FatFileLocation(
-                        GetClusterEntry(aData, index, FatType), 
+                    FatFileAttributes attribute = (FatFileAttributes)aData[offset + (int)Entry.FileAttributes];
+                    Heap.Free(aData);
+                    return new FatFileLocation(
+                        GetClusterEntry(aData, index, FatType),
                         activeSector,
                         index,
-                        (attrib & FatFileAttributes.SubDirectory) != 0, 
-                        BitConverter.ToUInt32(aData, (int)((index * (uint)Entry.EntrySize) + (uint)Entry.FileSize)));
-                    break;
+                        (attribute & FatFileAttributes.SubDirectory) != 0,
+                        BitConverter.ToUInt32(aData, offset + (int)Entry.FileSize));
                 }
+
+                if (aData[(int)Entry.DOSName + offset] == (int)FileNameAttribute.LastEntry)
+                    break;
             }
+
             Heap.Free(aData);
-            return ResultEntry;
+            return null;
         }
 
         private uint GetSectorByCluster(uint cluster)
@@ -248,12 +223,15 @@ namespace Atomix.Kernel_H.io.FileSystem
             uint cluster = BitConverter.ToUInt16(data, (int)((uint)Entry.FirstCluster + (index * (uint)Entry.EntrySize)));
 
             if (type == FatType.FAT32)
-                cluster |=  (uint)BitConverter.ToUInt16(data, (int)((uint)Entry.EAIndex + (index * (uint)Entry.EntrySize))) << 16;
+                cluster |= (uint)BitConverter.ToUInt16(data, (int)((uint)Entry.EAIndex + (index * (uint)Entry.EntrySize))) << 16;
 
             if (cluster == 0)
                 cluster = 2;
 
             return cluster;
         }
+
+        public byte[] NewBlockArray
+        { get { return new byte[SectorsPerCluster * BytePerSector]; } }
     }
 }

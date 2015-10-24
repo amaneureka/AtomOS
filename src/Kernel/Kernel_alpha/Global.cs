@@ -44,7 +44,7 @@ namespace Kernel_alpha
 
             // Setup Mouse
             //Console.Write ("Setting up PS/2 Mouse... ");
-            //Mouse = new PS2Mouse();
+            Mouse = new PS2Mouse();
             //Console.WriteLine ("OK");
             
             //Loading ATA
