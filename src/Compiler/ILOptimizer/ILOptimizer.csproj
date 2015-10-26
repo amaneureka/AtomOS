@@ -7,7 +7,7 @@
     <ProjectGuid>{ECA9C753-5F48-427C-B432-E7D61324AB41}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ILOptimizer</RootNamespace>
+    <RootNamespace>Atomix.ILOptimizer</RootNamespace>
     <AssemblyName>ILOptimizer</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -38,8 +38,18 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="optimization.cs" />
+    <Compile Include="optimizations\pushpop.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Worker.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ILCompiler.Assembler\ILCompiler.Assembler.csproj">
+      <Project>{c39c02ef-559e-47a6-98d9-e5b79d683948}</Project>
+      <Name>ILCompiler.Assembler</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

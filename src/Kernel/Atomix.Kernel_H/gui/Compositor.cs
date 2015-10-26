@@ -18,11 +18,12 @@ namespace Atomix.Kernel_H.gui
         static uint COMPOSITOR_STACK;
         static uint RENDER_STACK;
 
-        static int Mouse_X, Mouse_Y;
+        static int Mouse_X, Mouse_Y;        
         #endregion
 
         const uint PACKET_SIZE = 32;
         const uint MAGIC = 0xDEADCAFE;
+        const int MouseFactor = 2;
 
         public static void Setup(Process parent)
         {
@@ -39,6 +40,8 @@ namespace Atomix.Kernel_H.gui
             new Thread(parent, pRender, RENDER_STACK + 0x1000, 0x1000).Start();
         }
 
+        public static uint FRAMES;
+
         private static uint pRender;
         private static void Render()
         {
@@ -53,17 +56,17 @@ namespace Atomix.Kernel_H.gui
                 int curr_mouse_X = Mouse_X;
                 int curr_mouse_Y = Mouse_Y;
                 Scheduler.UnHook();
-                
-                for (uint i = 0; i < 10; i++)
-                    for (uint j = 0; j < 10; j++)
+
+                for (uint i = 0; i < 300; i++)
+                    for (uint j = 0; j < 300; j++)
                         VBE.SetPixel(i, j, color);
-                
+
                 color ^= 0xFFFF00;
                 if (curr_mouse_X != tmp_mouse_X || curr_mouse_Y != tmp_mouse_Y)
                 {
-                    for (uint i = 0; i < 10; i++)
+                    /*for (uint i = 0; i < 10; i++)
                         for (uint j = 0; j < 10; j++)
-                            VBE.SetPixel(i+50, j+50, color);
+                            VBE.SetPixel(i+50, j+50, color);*/
                     
                     VBE.SetPixel((uint)(tmp_mouse_X), (uint)(tmp_mouse_Y), 0x0);
                     VBE.SetPixel((uint)(tmp_mouse_X + 1), (uint)(tmp_mouse_Y), 0x0);
@@ -84,8 +87,12 @@ namespace Atomix.Kernel_H.gui
                     tmp_mouse_X = curr_mouse_X;
                     tmp_mouse_Y = curr_mouse_Y;
                 }
-                
+                Scheduler.HookUp();
                 VBE.Update();
+                FRAMES++;
+                Scheduler.UnHook();
+
+                Thread.Sleep(1);
             }
             Thread.Die();
         }
@@ -120,14 +127,14 @@ namespace Atomix.Kernel_H.gui
                             byte p3 = compositor_packet[7];
 
                             if ((p1 & 0x10) == 0)
-                                Mouse_X += p2;
+                                Mouse_X += p2 * MouseFactor;
                             else
-                                Mouse_X -= p2 ^ 0xFF;
+                                Mouse_X -= (p2 ^ 0xFF) * MouseFactor;
 
                             if ((p1 & 0x20) == 0)
-                                Mouse_Y -= p3;
+                                Mouse_Y -= p3 * MouseFactor;
                             else
-                                Mouse_Y += p3 ^ 0xFF;
+                                Mouse_Y += (p3 ^ 0xFF) * MouseFactor;
 
                             if (Mouse_X < 0 || Mouse_X > VBE.Xres)
                                 Mouse_X = 0;

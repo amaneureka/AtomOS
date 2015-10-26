@@ -33,6 +33,8 @@ namespace Atomix.Kernel_H.devices
             aElapsedMiliSeconds += 10;
             if (aElapsedMiliSeconds == 1000)
             {
+                Debug.Write("FPS:=%d\n", gui.Compositor.FRAMES);
+                gui.Compositor.FRAMES = 0;
                 aElapsedMiliSeconds = 0;
                 aElapsedSeconds++;
             }

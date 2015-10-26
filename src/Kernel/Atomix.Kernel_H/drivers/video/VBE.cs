@@ -22,6 +22,7 @@ namespace Atomix.Kernel_H.drivers.video
         private static byte* SecondaryBuffer;
         public static uint Xres;
         public static uint Yres;
+        public static uint BytesPerPixel;
 
         public static void Init()
         {
@@ -35,25 +36,21 @@ namespace Atomix.Kernel_H.drivers.video
             Debug.Write("Virtual Frame Buffer: %d\n", (uint)VirtualFrameBuffer);
             SecondaryBuffer = (byte*)Paging.AllocateSecondayBuffer();
             Debug.Write("Secondary Frame Buffer: %d\n", (uint)SecondaryBuffer);
+
+            BytesPerPixel = (uint)(ModeInfoBlock->bpp / 8);
         }
         
         public static void SetPixel(uint x, uint y, uint c)
         {
-            if (x >= Xres || y >= Yres)
-                return;
-
-            uint p = (uint)((x + (y * Xres)) * (ModeInfoBlock->bpp / 8));
-            SecondaryBuffer[p++] = (byte)(c & 0xFF);
-            SecondaryBuffer[p++] = (byte)((c >> 8) & 0xFF);
-            SecondaryBuffer[p++] = (byte)((c >> 16) & 0xFF);
+            uint p = (x + (y * Xres)) * BytesPerPixel;
+            SecondaryBuffer[p + 0] = (byte)(c >> 0);
+            SecondaryBuffer[p + 1] = (byte)(c >> 8);
+            SecondaryBuffer[p + 2] = (byte)(c >> 16);
         }
         
         public static uint GetPixel(uint x, uint y)
         {
-            if (x >= Xres || y >= Yres)
-                return 0;
-
-            uint p = (uint)((x + (y * Xres)) * (ModeInfoBlock->bpp / 8));
+            uint p = (x + (y * Xres)) * BytesPerPixel;
             return (uint)(SecondaryBuffer[p + 2] << 16 | SecondaryBuffer[p + 1] << 8 | SecondaryBuffer[p]);
         }
 

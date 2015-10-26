@@ -67,17 +67,17 @@ namespace Atomix.IL
             {
                 case 1:
                     if (isSigned)
-                        Core.AssemblerCode.Add(new Movsx { DestinationReg = Registers.EBX, Size = 8, SourceReg = Registers.EDX, SourceIndirect = true });
+                        Core.AssemblerCode.Add(new Movsx { DestinationReg = Registers.EAX, Size = 8, SourceReg = Registers.EDX, SourceIndirect = true });
                     else
-                        Core.AssemblerCode.Add(new Movzx { DestinationReg = Registers.EBX, Size = 8, SourceReg = Registers.EDX, SourceIndirect = true });
-                    Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EBX });
+                        Core.AssemblerCode.Add(new Movzx { DestinationReg = Registers.EAX, Size = 8, SourceReg = Registers.EDX, SourceIndirect = true });
+                    Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
                     break;
                 case 2:
                     if (isSigned)
-                        Core.AssemblerCode.Add(new Movsx { DestinationReg = Registers.EBX, Size = 16, SourceReg = Registers.EDX, SourceIndirect = true });
+                        Core.AssemblerCode.Add(new Movsx { DestinationReg = Registers.EAX, Size = 16, SourceReg = Registers.EDX, SourceIndirect = true });
                     else
-                        Core.AssemblerCode.Add(new Movzx { DestinationReg = Registers.EBX, Size = 16, SourceReg = Registers.EDX, SourceIndirect = true });
-                    Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EBX });
+                        Core.AssemblerCode.Add(new Movzx { DestinationReg = Registers.EAX, Size = 16, SourceReg = Registers.EDX, SourceIndirect = true });
+                    Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
                     break;
                 case 4:
                     Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EDX, DestinationIndirect = true });

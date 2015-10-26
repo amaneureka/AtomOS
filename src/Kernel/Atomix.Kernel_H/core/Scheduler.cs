@@ -122,7 +122,7 @@ namespace Atomix.Kernel_H.core
                         break;
                     default://Do nothing for not active
                         break;
-                }                
+                }
             }
             //Update Sleeping threads
             for (int i = 0; i < SleepingThreadsQueue.Count; i++)

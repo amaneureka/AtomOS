@@ -38,6 +38,7 @@ namespace Atomix
         {
             InputFiles = new List<string>();
             bool DoLogging = false;
+            bool DoOptimization = false;
             try
             {
                 #region Parsing
@@ -94,6 +95,10 @@ namespace Atomix
                             }
                             i++;
                         }
+                        else if (args[i] == "-optimize")
+                        {
+                            DoOptimization = true;
+                        }
                     }
                 
                 }
@@ -133,7 +138,7 @@ namespace Atomix
                 }
 
                 Logger.Dump();
-                xCompiler.FlushAsmFile();
+                xCompiler.FlushAsmFile(DoOptimization);
             }
             catch (Exception e)
             {

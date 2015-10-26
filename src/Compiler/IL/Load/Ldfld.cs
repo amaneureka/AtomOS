@@ -70,7 +70,6 @@ namespace Atomix.IL
 
                             case 3: //For Release
                                 {
-                                    Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceRef = "0x0" });
                                     Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBX, SourceIndirect = true });
                                     Core.AssemblerCode.Add(new Shr { DestinationReg = Registers.EAX, SourceRef = "0x8" });
                                     Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });

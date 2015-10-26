@@ -260,6 +260,10 @@
       <Project>{c39c02ef-559e-47a6-98d9-e5b79d683948}</Project>
       <Name>ILCompiler.Assembler</Name>
     </ProjectReference>
+    <ProjectReference Include="ILOptimizer\ILOptimizer.csproj">
+      <Project>{eca9c753-5f48-427c-b432-e7d61324ab41}</Project>
+      <Name>ILOptimizer</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

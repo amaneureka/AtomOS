@@ -8,6 +8,7 @@ using Atomix;
 using Atomix.IL;
 using Atomix.Assembler;
 using Atomix.ILOpCodes;
+using Atomix.ILOptimizer;
 using Atomix.CompilerExt;
 using Atomix.Assembler.x86;
 using Atomix.CompilerExt.Attributes;
@@ -525,7 +526,7 @@ namespace Atomix
             /* Method begin */            
             Core.AssemblerCode.Add(new Label(xMethodLabel));
             #warning Optimization
-            //Core.AssemblerCode.Add(new Comment("Do_optimization"));
+            Core.AssemblerCode.Add(new Comment(Worker.OPTIMIZATION_START_FLAG));
             if (aMethod.IsStatic && aMethod is ConstructorInfo)
             {
                 string aData = "cctor_" + xMethodLabel;
@@ -580,7 +581,7 @@ namespace Atomix
                     Core.vStack.Push(4, typeof(Exception));
                 }
                 //Well this is just to comment whole output Assembly
-                Core.AssemblerCode.Add(new Comment(Op.ToString() + "; " + Core.vStack.Count));
+                //Core.AssemblerCode.Add(new Comment(Op.ToString() + "; " + Core.vStack.Count));
 
                 //Check if this IL is in out implementation
                 if (MSIL.ContainsKey(Op.Code))
@@ -665,7 +666,7 @@ namespace Atomix
                 }
             }
             #warning Optimization
-            //Core.AssemblerCode.Add(new Comment("End_optimization"));
+            Core.AssemblerCode.Add(new Comment(Worker.OPTIMIAZTION_END_FLAG));
             var xRetSize = ((int)ArgSize) - ((int)xReturnSize);
             if (xRetSize < 0)
             {
@@ -874,7 +875,7 @@ namespace Atomix
             BuildDefinations.Add(xMethod);
         }
 
-        public void FlushAsmFile()
+        public void FlushAsmFile(bool DoOptimization)
         {
             VTableFlush();
 
@@ -893,6 +894,14 @@ namespace Atomix
 
                 //Leave a line because we want make it beautiful =P
                 xWriter.WriteLine("");
+
+                if (DoOptimization)
+                {
+                    Console.WriteLine("Optimizating Output Assembly");
+                    Console.WriteLine("Before Optimization: " + Core.AssemblerCode.Count);
+                    Core.AssemblerCode = new Worker(Core.AssemblerCode).Start();
+                    Console.WriteLine("After Optimization: " + Core.AssemblerCode.Count);
+                }
 
                 foreach (var ac in Core.AssemblerCode)
                 {
