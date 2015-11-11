@@ -46,6 +46,7 @@
     <Compile Include="Literal.cs" />
     <Compile Include="Registers.cs" />
     <Compile Include="VirtualStack.cs" />
+    <Compile Include="x86\Cvttss2si.cs" />
     <Compile Include="x86\Fidiv.cs" />
     <Compile Include="x86\Iretd.cs" />
     <Compile Include="x86\Popad.cs" />

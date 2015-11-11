@@ -172,25 +172,9 @@ namespace Atomix.Kernel_H
 
             /* System Thread */
             new Thread(System, 0, 0, 10000).Start();
-
+            
             Compositor.Setup(System);
-            /*
-            var ATA = new drivers.buses.ATA.IDE(true);
-            var parts = new MBR(ATA);
-            if (!VirtualFileSystem.Mount("dev0", new FatFileSystem(parts.PartInfo[0])))
-                Debug.Write("Mound Failed!\n");
-
-            var data = VirtualFileSystem.GetFile("dev0\\AP");
-            if (data == null)
-                Debug.Write("File Not Found\n");
-            else
-            {
-                var xData = new byte[10];
-                data.Read(xData, 10);
-                for (uint i = 0; i < 10; i++)
-                    Debug.Write(xData[i]);
-                Debug.Write('\n');
-            }*/
+            TestOptimization();
             while (true) ;
 
             while (true)
@@ -198,6 +182,15 @@ namespace Atomix.Kernel_H
                 Native.Cli();
                 Native.Hlt();
             }
+        }
+
+        private static int TestOptimization()
+        {
+            int i;
+            int c = 10;
+            for (i = 0; i < 10; i++)
+                c = i + 1;
+            return c;
         }
     }
 }

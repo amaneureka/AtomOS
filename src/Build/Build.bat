@@ -1,6 +1,6 @@
 @echo off
 Title Atomix Batch Builder
-".\Bin\Atomixilc.exe" -cpu x86 -i ".\Bin\Atomix.Kernel_H.dll" -o ".\Output" -d -optimize
+".\Bin\Atomixilc.exe" -cpu x86 -i ".\Bin\Atomix.Kernel_H.dll" -o ".\Output" -d
 ::".\Bin\Atomixilc.exe" -cpu x86 -i ".\Bin\Kernel_alpha.dll;.\Bin\Atomix.mscorlib.dll" -o ".\Output" -d -optimize
 ::".\Bin\RamFS.exe" ".\ramdisk" -o ".\ISO\Initrd.bin"
 chdir ".\Output"

@@ -25,7 +25,7 @@ namespace Atomix.IL
             //Size of one entry of array i.e. Size_of_one_entry.
             var xSize = xTargetType.SizeOf();
             var xHeap = (Core.StaticLabels["Heap"] as MethodBase).FullName();
-            
+
             var xTypeID = ILHelper.GetTypeID(typeof(Array));
 
             //HACK: this is a kind of hack :D
@@ -46,37 +46,12 @@ namespace Atomix.IL
             {
                 #region _x86_
                 case CPUArch.x86:
-                    {     
-                        /*
-                         * OLD Code
-                        //***What we are going to do is***
-                        //1) We calculate total size of array that is 0xC + 0x4 + (Size_of_one_entry * Total_entries)
-                        //      a) Pop number of elements into ESI
-                        //      b) Mov ESI to EAX so we have two copies of value "Total_entries"
-                        //      c) Set EBX = Size_of_one_entry
-                        //      d) EAX *= EBX
-                        //      e) EAX += 0x10, Hence we have Total Size in register EAX so push it and call memory allocator
-                        //2) Call our memory manager and take the address
-                        //3) Pop the address in EAX
-                        //4) Write Signature, length and size of type to that address and call Array
+                    {
                         Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.ESI });
-                        Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.ESI });
-                        Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceRef = "0x" + xSize.ToString("X") });
-                        Core.AssemblerCode.Add(new Multiply { DestinationReg = Registers.EBX });
+                        Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceRef = "0x" + xSize.ToString("X") });
+                        Core.AssemblerCode.Add(new Multiply { DestinationReg = Registers.ESI });
                         Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EAX, SourceRef = "0x10" });
-                        Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });//<-- only this is the stack
-                        */
-                        Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.ESI });
-                        Core.AssemblerCode.Add(new Push { DestinationReg = Registers.ESI });
-                        Core.AssemblerCode.Add(new Push { DestinationRef = "0x" + xSize.ToString("X") });
-                        Core.vStack.Push(4, typeof(UInt32));
-
-                        Compiler.MSIL[ILCode.Mul].Execute(instr, aMethod);
-
-                        Core.AssemblerCode.Add(new Push { DestinationRef = "0x10" });
-                        Core.vStack.Push(4, typeof(UInt32));
-
-                        Compiler.MSIL[ILCode.Add].Execute(instr, aMethod);
+                        Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
 
                         //Call our Heap
                         Core.AssemblerCode.Add(new Call(xHeap));

@@ -51,16 +51,6 @@ namespace Atomix.ILOptimizer.optimizations
                     }
                 }
             }
-
-            for (int i = 0; i < Instructions.Count;)
-            {
-                if (Instructions[i] == null)
-                {
-                    Instructions.RemoveAt(i);
-                    continue;
-                }
-                i++;
-            }
         }
     }
 }

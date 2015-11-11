@@ -40,8 +40,7 @@ namespace Atomix.IL
 
                         Core.DataMember.Add(new AsmData(Content, xObjectData));
 
-                        Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceRef = Content });
-                        Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
+                        Core.AssemblerCode.Add(new Push { DestinationRef = Content });
                     }
                     break;
                 #endregion

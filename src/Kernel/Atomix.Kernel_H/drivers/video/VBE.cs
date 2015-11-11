@@ -42,16 +42,16 @@ namespace Atomix.Kernel_H.drivers.video
         
         public static void SetPixel(uint x, uint y, uint c)
         {
-            uint p = (x + (y * Xres)) * BytesPerPixel;
-            SecondaryBuffer[p + 0] = (byte)(c >> 0);
-            SecondaryBuffer[p + 1] = (byte)(c >> 8);
-            SecondaryBuffer[p + 2] = (byte)(c >> 16);
+            byte *buffer = (byte*)(((x + (y * Xres)) * BytesPerPixel) + (uint)SecondaryBuffer);
+            buffer[0] = (byte)(c >> 0);
+            buffer[1] = (byte)(c >> 8);
+            buffer[2] = (byte)(c >> 16);
         }
         
         public static uint GetPixel(uint x, uint y)
         {
-            uint p = (x + (y * Xres)) * BytesPerPixel;
-            return (uint)(SecondaryBuffer[p + 2] << 16 | SecondaryBuffer[p + 1] << 8 | SecondaryBuffer[p]);
+            byte* buffer = (byte*)(((x + (y * Xres)) * BytesPerPixel) + (uint)SecondaryBuffer);
+            return (uint)(buffer[2] << 16 | buffer[1] << 8 | buffer[0]);
         }
 
         [Assembly(0x0)]

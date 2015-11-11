@@ -37,7 +37,8 @@ namespace Atomix.IL
                                 {
                                     if (xSource.IsFloat)
                                     {
-                                        throw new Exception("Conv_U4 -> Size 4 : Float");
+                                        Core.AssemblerCode.Add(new Cvttss2si { DestinationReg = Registers.EAX, SourceReg = Registers.ESP, SourceIndirect = true });
+                                        Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ESP, DestinationIndirect = true, SourceReg = Registers.EAX });
                                     }
                                     else
                                     {
