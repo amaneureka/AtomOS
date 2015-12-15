@@ -87,9 +87,12 @@
     <Compile Include="lib\ds\IQueue.cs" />
     <Compile Include="lib\ds\Pair.cs" />
     <Compile Include="lib\encoding\ASCII.cs" />
+    <Compile Include="lib\graphic\misc.cs" />
+    <Compile Include="lib\graphic\Surface.cs" />
     <Compile Include="plugs\Array.cs" />
     <Compile Include="plugs\BitConverter.cs" />
     <Compile Include="plugs\Enum.cs" />
+    <Compile Include="plugs\Math.cs" />
     <Compile Include="plugs\NativeException.cs" />
     <Compile Include="plugs\Exception.cs" />
     <Compile Include="plugs\String.cs" />

@@ -44,11 +44,10 @@ namespace Atomix.IL
                 case CPUArch.x86:
                     {
                         Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EBX });
-                        Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EBX, SourceRef = "0x" + xOffset.ToString("X") });
 
                         for (int i = 1; i <= (xSize / 4); i++)
                         {
-                            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBX, SourceIndirect = true, SourceDisplacement = (int)(xSize - (i * 4)) });
+                            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBX, SourceIndirect = true, SourceDisplacement = (int)(xSize - (i * 4) + xOffset) });
                             Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
                         }
                         switch (xSize % 4)
@@ -56,21 +55,21 @@ namespace Atomix.IL
                             case 1:
                                 {
                                     Core.AssemblerCode.Add(new Xor { DestinationReg = Registers.EAX, SourceReg = Registers.EAX });
-                                    Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.AL, SourceReg = Registers.EBX, SourceIndirect = true, Size = 8 });
+                                    Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.AL, SourceReg = Registers.EBX, SourceIndirect = true, SourceDisplacement = xOffset, Size = 8 });
                                     Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
                                     break;
                                 }
                             case 2:
                                 {
                                     Core.AssemblerCode.Add(new Xor { DestinationReg = Registers.EAX, SourceReg = Registers.EAX });
-                                    Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.AX, SourceReg = Registers.EBX, SourceIndirect = true, Size = 16 });
+                                    Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.AX, SourceReg = Registers.EBX, SourceIndirect = true, SourceDisplacement = xOffset, Size = 16 });
                                     Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
                                     break;
                                 }
 
                             case 3: //For Release
                                 {
-                                    Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBX, SourceIndirect = true });
+                                    Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBX, SourceDisplacement = xOffset, SourceIndirect = true });
                                     Core.AssemblerCode.Add(new Shr { DestinationReg = Registers.EAX, SourceRef = "0x8" });
                                     Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
                                     break;

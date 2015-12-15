@@ -24,7 +24,7 @@ namespace Atomix.ILOptimizer.optimizations
                             Optimized.DestinationReg = Next.DestinationReg;
                         else
                         {
-                            Console.WriteLine("Impossible Pair!");
+                            Console.WriteLine("@push-pop: Impossible Pair!");
                             Optimized.DestinationRef = Next.DestinationRef;
                         }
 
@@ -38,15 +38,15 @@ namespace Atomix.ILOptimizer.optimizations
                         Optimized.SourceDisplacement = Prev.DestinationDisplacement;
 
                         if (Prev.Size != Next.Size && Next.Size != 32)
-                            Console.WriteLine("Warning @push-pop");
-
+                            Console.WriteLine("@push-pop: Warning");
+                        
                         Instructions[i - 1] = Optimized;
                         Instructions[i] = null;
 
                         //Case "Mov REG, REG" --> Remove this instruction then
                         if (Optimized.DestinationReg == Optimized.SourceReg
-                            && Optimized.SourceIndirect == false
-                            && Optimized.SourceDisplacement == 0)
+                            && Optimized.SourceIndirect == Optimized.DestinationIndirect
+                            && Optimized.SourceDisplacement == Optimized.DestinationDisplacement)
                             Instructions[i - 1] = null;
                     }
                 }

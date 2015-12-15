@@ -28,6 +28,8 @@ namespace Atomix.ILOptimizer
         private void LoadAlgorithms()
         {
             Algorithms.Add(new pushpop());
+            Algorithms.Add(new espadd());
+            Algorithms.Add(new ebppush());
             //Algorithms.Add(new movmov());
         }
 

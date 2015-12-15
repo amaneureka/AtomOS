@@ -17,40 +17,37 @@ namespace Atomix.Kernel_H.drivers.video
     public static unsafe class VBE
     {
         private static VBE_Mode_Info* ModeInfoBlock;
-        private static uint PhysicalFrameBuffer;
-        private static byte* VirtualFrameBuffer;
-        private static byte* SecondaryBuffer;
-        public static uint Xres;
-        public static uint Yres;
-        public static uint BytesPerPixel;
+        public static byte* VirtualFrameBuffer;
+        public static byte* SecondaryBuffer;
+        public static int Xres;
+        public static int Yres;
+        public static int BytesPerPixel;
 
         public static void Init()
         {
             Debug.Write("VBE Init()\n");
             ModeInfoBlock = (VBE_Mode_Info*)(Multiboot.VBE_Mode_Info + 0xC0000000);
-            PhysicalFrameBuffer = ModeInfoBlock->physbase;
             Xres = ModeInfoBlock->Xres;
             Yres = ModeInfoBlock->Yres;
-            Debug.Write("Physical Frame Buffer: %d\n", PhysicalFrameBuffer);
-            VirtualFrameBuffer = (byte*)Paging.AllocateMainBuffer(PhysicalFrameBuffer);
+            VirtualFrameBuffer = (byte*)Paging.AllocateMainBuffer(ModeInfoBlock->physbase);
             Debug.Write("Virtual Frame Buffer: %d\n", (uint)VirtualFrameBuffer);
             SecondaryBuffer = (byte*)Paging.AllocateSecondayBuffer();
             Debug.Write("Secondary Frame Buffer: %d\n", (uint)SecondaryBuffer);
 
-            BytesPerPixel = (uint)(ModeInfoBlock->bpp / 8);
+            BytesPerPixel = (int)(ModeInfoBlock->bpp / 8);
         }
         
-        public static void SetPixel(uint x, uint y, uint c)
+        public static void SetPixel(int x, int y, uint c)
         {
-            byte *buffer = (byte*)(((x + (y * Xres)) * BytesPerPixel) + (uint)SecondaryBuffer);
+            byte *buffer = (byte*)(((x + (y * Xres)) * BytesPerPixel) + SecondaryBuffer);
             buffer[0] = (byte)(c >> 0);
             buffer[1] = (byte)(c >> 8);
             buffer[2] = (byte)(c >> 16);
         }
         
-        public static uint GetPixel(uint x, uint y)
+        public static uint GetPixel(int x, int y)
         {
-            byte* buffer = (byte*)(((x + (y * Xres)) * BytesPerPixel) + (uint)SecondaryBuffer);
+            byte* buffer = (byte*)(((x + (y * Xres)) * BytesPerPixel) + SecondaryBuffer);
             return (uint)(buffer[2] << 16 | buffer[1] << 8 | buffer[0]);
         }
 
@@ -87,9 +84,9 @@ namespace Atomix.Kernel_H.drivers.video
             [FieldOffset(16)]
             public UInt16 pitch;
             [FieldOffset(18)]
-            public UInt16 Xres;
+            public Int16 Xres;
             [FieldOffset(20)]
-            public UInt16 Yres;
+            public Int16 Yres;
             [FieldOffset(22)]
             public byte Wchar;
             [FieldOffset(23)]

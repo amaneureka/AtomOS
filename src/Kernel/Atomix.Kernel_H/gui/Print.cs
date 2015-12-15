@@ -6,6 +6,7 @@ namespace Atomix.Kernel_H.gui
 {
     public static class Print
     {
+        /*
         public static void Sprite(UInt32[] BackBuffer, UInt32[] Image, uint x, uint y, uint width, uint height)
         {
             uint p = 0;            
@@ -41,6 +42,6 @@ namespace Atomix.Kernel_H.gui
                     BackBuffer[p++] = VBE.GetPixel(i+x, j+y);
                 }
             }
-        }
+        }*/
     }
 }

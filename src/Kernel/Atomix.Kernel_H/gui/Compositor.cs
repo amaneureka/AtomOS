@@ -3,6 +3,7 @@
 using Atomix.Kernel_H.io;
 using Atomix.Kernel_H.core;
 using Atomix.Kernel_H.arch.x86;
+using Atomix.Kernel_H.lib.graphic;
 using Atomix.Kernel_H.drivers.video;
 using Atomix.Kernel_H.drivers.input;
 using Atomix.Kernel_H.io.FileSystem;
@@ -43,50 +44,36 @@ namespace Atomix.Kernel_H.gui
         public static uint FRAMES;
 
         private static uint pRender;
-        private static void Render()
+        private static unsafe void Render()
         {
-            int tmp_mouse_X = 0, tmp_mouse_Y = 0;
+            var surface = new Surface(VBE.SecondaryBuffer, VBE.Xres, VBE.Yres);
+
+            int tmp_mouse_X = 0, tmp_mouse_Y = 0, old_mouse_X = 0, old_mouse_Y = 0;
+
+            bool update;
+
             uint color = 0xFF0000;
             while(true)
             {
-                /*
-                 * We should hookup this session so that glitch won't happen while we are rendering the current frame                 * 
-                 */                
-                for (uint i = 0; i < 1366; i++)
-                    for (uint j = 0; j < 768; j++)
-                        VBE.SetPixel(i, j, color);
+                tmp_mouse_X = Mouse_X;
+                tmp_mouse_Y = Mouse_Y;
+                update = false;
+
+                if (tmp_mouse_X != old_mouse_X || tmp_mouse_Y != old_mouse_Y)
+                {
+                    //surface.Rectangle(old_mouse_X, old_mouse_Y, 32, 32);
+                    //surface.Rectangle(tmp_mouse_X, tmp_mouse_Y, 32, 32);
+                    old_mouse_X = tmp_mouse_X;
+                    old_mouse_Y = tmp_mouse_Y;
+                    update = true;
+                }
 
                 color ^= 0xFFFF00;
-                /*
-                Scheduler.HookUp();
-                int curr_mouse_X = Mouse_X;
-                int curr_mouse_Y = Mouse_Y;
-                Scheduler.UnHook();
-                if (curr_mouse_X != tmp_mouse_X || curr_mouse_Y != tmp_mouse_Y)
-                {                    
-                    VBE.SetPixel((uint)(tmp_mouse_X), (uint)(tmp_mouse_Y), 0x0);
-                    VBE.SetPixel((uint)(tmp_mouse_X + 1), (uint)(tmp_mouse_Y), 0x0);
-                    VBE.SetPixel((uint)(tmp_mouse_X), (uint)(tmp_mouse_Y + 1), 0x0);
-                    VBE.SetPixel((uint)(tmp_mouse_X + 1), (uint)(tmp_mouse_Y + 1), 0x0);
-                    VBE.SetPixel((uint)(tmp_mouse_X + 2), (uint)(tmp_mouse_Y), 0x0);
-                    VBE.SetPixel((uint)(tmp_mouse_X), (uint)(tmp_mouse_Y + 2), 0x0);
-                    VBE.SetPixel((uint)(tmp_mouse_X + 2), (uint)(tmp_mouse_Y + 2), 0x0);
-
-                    VBE.SetPixel((uint)(curr_mouse_X), (uint)(curr_mouse_Y), 0xFFFFFFFF);
-                    VBE.SetPixel((uint)(curr_mouse_X + 1), (uint)(curr_mouse_Y), 0xFFFFFFFF);
-                    VBE.SetPixel((uint)(curr_mouse_X), (uint)(curr_mouse_Y + 1), 0xFFFFFFFF);
-                    VBE.SetPixel((uint)(curr_mouse_X + 1), (uint)(curr_mouse_Y + 1), 0xFFFFFFFF);
-                    VBE.SetPixel((uint)(curr_mouse_X + 2), (uint)(curr_mouse_Y), 0xFFFFFFFF);
-                    VBE.SetPixel((uint)(curr_mouse_X), (uint)(curr_mouse_Y + 2), 0xFFFFFFFF);
-                    VBE.SetPixel((uint)(curr_mouse_X + 2), (uint)(curr_mouse_Y + 2), 0xFFFFFFFF);
-                    
-                    tmp_mouse_X = curr_mouse_X;
-                    tmp_mouse_Y = curr_mouse_Y;
-                }*/
-                Native.Cli();
+                for (int i = 0; i < 1366; i++)
+                    for (int j = 0; j < 768; j++)
+                        VBE.SetPixel(i, j, color);                
                 VBE.Update();
                 FRAMES++;
-                Native.Sti();
             }
             Thread.Die();
         }
@@ -155,7 +142,7 @@ namespace Atomix.Kernel_H.gui
             compositor_packet[1] = (byte)((MAGIC >> 8) & 0xFF);
             compositor_packet[2] = (byte)((MAGIC >> 16) & 0xFF);
             compositor_packet[3] = (byte)((MAGIC >> 24) & 0xFF);
-                        
+            
             while(true)
             {
                 Mouse.MousePipe.Read(packet);

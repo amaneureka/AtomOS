@@ -39,6 +39,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="optimization.cs" />
+    <Compile Include="optimizations\ebppush.cs" />
+    <Compile Include="optimizations\espadd.cs" />
     <Compile Include="optimizations\pushpop.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Worker.cs" />

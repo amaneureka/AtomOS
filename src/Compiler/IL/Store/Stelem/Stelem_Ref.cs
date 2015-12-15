@@ -54,7 +54,7 @@ namespace Atomix.IL
             Core.vStack.Pop();
             Core.vStack.Pop();
 
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.ESP, SourceIndirect = true, SourceDisplacement = (int)xStackSize }); // the index
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.ESP, SourceIndirect = true, SourceDisplacement = (int)xStackSize }); // the index
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.ESP, SourceIndirect = true, SourceDisplacement = (int)xStackSize + 4 }); // the index
 
             Core.AssemblerCode.Add(new Add { DestinationReg = Registers.ECX, SourceRef = "0x10" });
@@ -62,7 +62,7 @@ namespace Atomix.IL
             Core.AssemblerCode.Add(new Push { DestinationRef = "0x" + aElementSize.ToString("X") });
             Core.vStack.Push(4, typeof(int));
 
-            Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EBX });
+            Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
             Core.vStack.Push(4, typeof(int));
 
             cmp.MSIL[ILCode.Mul].Execute(instr, aMethod);
@@ -72,26 +72,26 @@ namespace Atomix.IL
 
             cmp.MSIL[ILCode.Add].Execute(instr, aMethod);
 
-            Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.ECX });
+            Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
             Core.vStack.Pop();
             for (int i = (int)(aElementSize / 4) - 1; i >= 0; i -= 1)
             {
                 Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EBX });
-                Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, DestinationIndirect = true, SourceReg = Registers.EBX });
-                Core.AssemblerCode.Add(new Add { DestinationReg = Registers.ECX, SourceRef = "0x4" });
+                Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, SourceReg = Registers.EBX });
+                Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EAX, SourceRef = "0x4" });
             }
             switch (aElementSize % 4)
             {
                 case 1:
                     {
                         Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EBX });
-                        Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, DestinationIndirect = true, SourceReg = Registers.BL, Size = 8 });
+                        Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, SourceReg = Registers.BL, Size = 8 });
                         break;
                     }
                 case 2:
                     {
                         Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EBX });
-                        Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, DestinationIndirect = true, SourceReg = Registers.BX, Size = 16 });
+                        Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, SourceReg = Registers.BX, Size = 16 });
                         break;
                     }
                 case 0:

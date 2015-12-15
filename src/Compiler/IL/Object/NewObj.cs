@@ -214,12 +214,10 @@ namespace Atomix.IL
         {
             System.Reflection.ParameterInfo[] xParams = aMethod.GetParameters();
 
-            int xSize;
+            int xSize = 0;
             for (int i = 0; i < xParams.Length; i++)
-            {
-                xSize = xParams[i].ParameterType.SizeOf();
-                Core.AssemblerCode.Add(new Add { DestinationReg = Registers.ESP, SourceRef = "0x" + xSize.Align().ToString("X") });
-            }
+                xSize += xParams[i].ParameterType.SizeOf().Align();
+            Core.AssemblerCode.Add(new Add { DestinationReg = Registers.ESP, SourceRef = "0x" + xSize.ToString("X") });
         }
     }
 }
