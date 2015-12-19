@@ -55,8 +55,9 @@ namespace Atomix
 
         private List<string> BuildMethods;
         private List<MethodInfo> Virtuals;
+        private bool DoOptimization;
 
-        public Compiler()
+        public Compiler(bool aDoOptimization)
         {
             ILCompiler.Logger.Write("@Compiler", "Main Compilation Process", "Loading Non-Static Parameters and starting up Compilation Process...");
             QueuedMember = new Queue<_MemberInfo>();            
@@ -71,8 +72,9 @@ namespace Atomix
             Pointers = new Dictionary<FieldInfo, string>();
             BuildMethods = new List<string>();
             Virtuals = new List<MethodInfo>();
+            DoOptimization = aDoOptimization;
             Core.StaticLabels = new Dictionary<string, _MemberInfo>();
-
+                        
             ILHelper.Compiler = this;
             ILCompiler.Logger.Write("Parameters Initialized");
         }
@@ -581,7 +583,8 @@ namespace Atomix
                     Core.vStack.Push(4, typeof(Exception));
                 }
                 //Well this is just to comment whole output Assembly
-                //Core.AssemblerCode.Add(new Comment(Op.ToString() + "; " + Core.vStack.Count));
+                if (!DoOptimization)
+                    Core.AssemblerCode.Add(new Comment(Op.ToString() + "; " + Core.vStack.Count));
 
                 //Check if this IL is in out implementation
                 if (MSIL.ContainsKey(Op.Code))
@@ -875,7 +878,7 @@ namespace Atomix
             BuildDefinations.Add(xMethod);
         }
 
-        public void FlushAsmFile(bool DoOptimization)
+        public void FlushAsmFile()
         {
             VTableFlush();
 
@@ -899,7 +902,11 @@ namespace Atomix
                 {
                     Console.WriteLine("Optimizating Output Assembly");
                     Console.WriteLine("Before Optimization: " + Core.AssemblerCode.Count);
-                    Core.AssemblerCode = new Worker(Core.AssemblerCode).Start();
+
+                    //Try to execute optimizer
+                    try { Core.AssemblerCode = new Worker(Core.AssemblerCode).Start(); }
+                    catch (Exception e) { Console.WriteLine("Optimization-Exception:" + e.ToString()); }
+
                     Console.WriteLine("After Optimization: " + Core.AssemblerCode.Count);
                 }
 
@@ -913,6 +920,15 @@ namespace Atomix
                     else
                     {
                         xWriter.Write("     ");
+                        if (ac is Call)
+                        {
+                            var InstCall = ac as Call;
+                            if (InstCall.FunctionLabel)
+                            {
+                                Call.FlushText(xWriter, (Core.StaticLabels[InstCall.Address] as MethodBase).FullName());
+                                continue;
+                            }
+                        }
                         ac.FlushText(xWriter);
                     }
                 }

@@ -14,7 +14,7 @@ namespace Atomix.Kernel_H.core
 {
     public static class Task
     {
-        [Plug("__Switch_Task__")]
+        [Label("__Switch_Task__")]
         public static uint SwitchTask(uint oldStack)
         {
             //Increment System Timer
@@ -34,7 +34,7 @@ namespace Atomix.Kernel_H.core
             
             //Push ESP
             Core.AssemblerCode.Add(new Push { DestinationReg = Registers.ESP });
-            Core.AssemblerCode.Add(new Call("__Switch_Task__"));
+            Core.AssemblerCode.Add(new Call("__Switch_Task__", true));
 
             //Get New task ESP
             Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.ESP });

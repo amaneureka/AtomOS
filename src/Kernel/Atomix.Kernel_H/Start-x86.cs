@@ -78,7 +78,7 @@ namespace Atomix.Kernel_H
             #endregion
 
             //Prepare for our quantum jump to Higher address
-            Core.AssemblerCode.Add(new Literal("lea ecx, [Higher_Half_Kernel]"));
+            Core.AssemblerCode.Add(new Literal("lea ECX, [Higher_Half_Kernel]"));
             Core.AssemblerCode.Add(new Jmp { DestinationRef = "ECX" });
 
             Core.AssemblerCode.Add(new Label("Higher_Half_Kernel"));
@@ -110,7 +110,7 @@ namespace Atomix.Kernel_H
 
             /* Call Kernel Start */
             Core.AssemblerCode.Add(new Cli());
-            Core.AssemblerCode.Add(new Call("Kernel_Start"));
+            Core.AssemblerCode.Add(new Call("Kernel_Start", true));
         }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace Atomix.Kernel_H
         /// </summary>
         /// <param name="magic">Magic Number of Multiboot</param>
         /// <param name="address">Multiboot Address</param>
-        [Plug("Kernel_Start")]
+        [Label("Kernel_Start")]
         public static void Start(uint magic, uint address, uint KernelDirectory, uint InitialHeap)
         {
             /* Kernel Logger init */
@@ -174,6 +174,10 @@ namespace Atomix.Kernel_H
             new Thread(System, 0, 0, 10000).Start();
             
             Compositor.Setup(System);
+            //string a = "Aman";
+            //uint b =  (uint)a.GetHashCode();
+            //Debug.Write("Message:%d\n", b);
+            
             while (true) ;
 
             while (true)

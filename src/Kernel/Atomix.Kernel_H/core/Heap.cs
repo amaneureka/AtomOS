@@ -269,8 +269,8 @@ namespace Atomix.Kernel_H.core
             var xEndlbl = Label.PrimaryLabel + ".End";
             var xLabel_Object = Label.PrimaryLabel + ".object";
 
-            //EAX = object address
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
+            Core.AssemblerCode.Add(new Xor { DestinationReg = Registers.EAX, SourceReg = Registers.EAX });
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.ECX, SourceDisplacement = 0x4, SourceIndirect = true });
             Core.AssemblerCode.Add(new Cmp { DestinationReg = Registers.EBX, SourceRef = "0x1" });
             Core.AssemblerCode.Add(new Jmp { Condition = ConditionalJumpEnum.JE, DestinationRef = xLabel_Object });
@@ -293,19 +293,22 @@ namespace Atomix.Kernel_H.core
              * According to compiler layout is:
              * 1) Type Signature
              * 2) Magic 0x1 -- 0x4
-             * 3) Total Size -- 0x8
+             * 3) Total Size -- 0x8 (It includes header)
              */
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.ECX, SourceDisplacement = 0x8, SourceIndirect = true });
 
             Core.AssemblerCode.Add(new Label(xEndlbl));
             Core.AssemblerCode.Add(new Push { DestinationReg = Registers.ECX });//Address
             Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });//Length
-            Core.AssemblerCode.Add(new Call("System_Void_Atomix_Kernel_H_core_Heap_Free_System_UInt32__System_UInt32_"));
+            Core.AssemblerCode.Add(new Call("__Heap_Free__", true));
         }
 
-        [Plug("System_Void_Atomix_Kernel_H_core_Heap_Free_System_UInt32__System_UInt32_")]
+        [Label("__Heap_Free__")]
         public static void Free(uint Address, uint len)
         {
+            if (len == 0)
+                return;
+
             //Because access of same array from different threads can cause unexpected result -- So spin lock this thread
             Scheduler.SpinLock(HEAP_RESOURCE_ID);
 

@@ -30,6 +30,7 @@ namespace Atomix.ILOptimizer
             Algorithms.Add(new pushpop());
             Algorithms.Add(new espadd());
             Algorithms.Add(new ebppush());
+            Algorithms.Add(new movzero());
             //Algorithms.Add(new movmov());
         }
 

@@ -61,8 +61,8 @@ namespace Atomix.Kernel_H.gui
 
                 if (tmp_mouse_X != old_mouse_X || tmp_mouse_Y != old_mouse_Y)
                 {
-                    //surface.Rectangle(old_mouse_X, old_mouse_Y, 32, 32);
-                    //surface.Rectangle(tmp_mouse_X, tmp_mouse_Y, 32, 32);
+                    surface.Rectangle(old_mouse_X, old_mouse_Y, 32, 32);
+                    surface.Rectangle(tmp_mouse_X, tmp_mouse_Y, 32, 32);
                     old_mouse_X = tmp_mouse_X;
                     old_mouse_Y = tmp_mouse_Y;
                     update = true;
@@ -71,8 +71,12 @@ namespace Atomix.Kernel_H.gui
                 color ^= 0xFFFF00;
                 for (int i = 0; i < 1366; i++)
                     for (int j = 0; j < 768; j++)
-                        VBE.SetPixel(i, j, color);                
-                VBE.Update();
+                        VBE.SetPixel(i, j, color);
+
+                //if (update)
+                {
+                    VBE.Update();
+                }
                 FRAMES++;
             }
             Thread.Die();
@@ -82,7 +86,7 @@ namespace Atomix.Kernel_H.gui
         private static void HandleRequest()
         {
             var compositor_packet = new byte[PACKET_SIZE];
-                        
+            
             while(true)
             {
                 SERVER.Read(compositor_packet);

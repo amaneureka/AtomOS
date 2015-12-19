@@ -51,7 +51,7 @@ namespace Atomix.Kernel_H.arch.x86
             xINT = new InterruptHandler[256];
         }
 
-        [Plug("__Interrupt_Handler__")]
+        [Label("__Interrupt_Handler__")]
         private static unsafe void ProcessInterrupt(ref IRQContext xContext)
         {
             var interrupt = xContext.Interrupt;
@@ -124,7 +124,7 @@ namespace Atomix.Kernel_H.arch.x86
                 Core.AssemblerCode.Add(new Literal("jmp 8:__ISR_Handler_" + xHex + ".SetCS"));
                 
                 Core.AssemblerCode.Add(new Label("__ISR_Handler_" + xHex + ".SetCS"));
-                Core.AssemblerCode.Add(new Call("__Interrupt_Handler__"));
+                Core.AssemblerCode.Add(new Call("__Interrupt_Handler__", true));
                 Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
                 Core.AssemblerCode.Add(new Literal("fxrstor [ESP]"));
                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ESP, SourceReg = Registers.EAX });

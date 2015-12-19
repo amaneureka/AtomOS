@@ -18,7 +18,12 @@ namespace Atomix.ILOptimizer.optimizations
                 if (Instructions[index] is Add)
                 {
                     var xCurrentInstruction = (Add)Instructions[index];
-                    int StackFlushCount = Convert.ToInt32(xCurrentInstruction.SourceRef, 16);
+                    int StackFlushCount = 0;
+
+                    try { StackFlushCount = Convert.ToInt32(xCurrentInstruction.SourceRef, 16); }
+                    //Not a number, So move on
+                    catch {  continue; }
+                    
                     if (ValidEntry(xCurrentInstruction))
                     {
                         for (int index2 = index + 1; index2 < Instructions.Count; index2++)

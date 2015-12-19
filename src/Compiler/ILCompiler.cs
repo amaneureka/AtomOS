@@ -127,7 +127,7 @@ namespace Atomix
                 Logger.Write("Architecture     : " + CPUArchitecture);
                 Logger.Write("Output Directory : " + OutputDir);
                 Logger.Write("Input Assembly   : " + InputDll);
-                Compiler xCompiler = new Compiler(); 
+                Compiler xCompiler = new Compiler(DoOptimization); 
                 try
                 {                  
                     xCompiler.Start();
@@ -138,7 +138,7 @@ namespace Atomix
                 }
 
                 Logger.Dump();
-                xCompiler.FlushAsmFile(DoOptimization);
+                xCompiler.FlushAsmFile();
             }
             catch (Exception e)
             {
