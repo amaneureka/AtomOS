@@ -5,7 +5,7 @@ using Atomix.Kernel_H.lib.ds;
 
 namespace Atomix.Kernel_H.arch.x86
 {
-    public struct shm_chunk
+    public class shm_chunk
     {
         public uint RefCount;
         public uint[] Frames;
@@ -40,7 +40,7 @@ namespace Atomix.Kernel_H.arch.x86
             var shm_mapping = ParentProcess.shm_mapping;
 
             int FramesRequired = Current.Frames.Length;
-
+            
             int CurrentFrameCount = 0;
             for (int i = 0; i < LIMIT_TO_PROCESS; i++)
             {
@@ -53,12 +53,12 @@ namespace Atomix.Kernel_H.arch.x86
                         {
                             int xOffset = (i << 5) + j - FramesRequired + 1;
                             uint xVirtualAddress = START + (uint)(xOffset * 0x1000);
-
+                            uint xReturnAddress = xVirtualAddress;
                             UInt32* CurrentDirectory = Paging.CurrentDirectory;
                             var Frames = Current.Frames;
-
+                            
                             int Index = 0;
-                            while (Index < CurrentFrameCount)
+                            while (Index++ < CurrentFrameCount)
                             {
                                 Paging.AllocateFrame(Paging.GetPage(CurrentDirectory, xVirtualAddress, true), Frames[Index] * 0x1000, false);
                                 Paging.InvalidatePageAt(xVirtualAddress);
@@ -69,8 +69,8 @@ namespace Atomix.Kernel_H.arch.x86
                                 xVirtualAddress += 0x1000;
                                 xOffset++;
                             }
-
-                            return xVirtualAddress;
+                            Scheduler.SpinUnlock(ResourceKey);
+                            return xReturnAddress;
                         }
                     }
                     else
