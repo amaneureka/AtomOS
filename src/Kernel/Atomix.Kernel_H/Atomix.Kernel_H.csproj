@@ -84,7 +84,8 @@
     <Compile Include="drivers\video\VBE.cs" />
     <Compile Include="io\Pipe.cs" />
     <Compile Include="io\Stream.cs" />
-    <Compile Include="lib\crypto\Hash.cs" />
+    <Compile Include="lib\crypto\sdbm.cs" />
+    <Compile Include="lib\ds\IDictionary.cs" />
     <Compile Include="lib\ds\IList.cs" />
     <Compile Include="lib\ds\IQueue.cs" />
     <Compile Include="lib\ds\Pair.cs" />

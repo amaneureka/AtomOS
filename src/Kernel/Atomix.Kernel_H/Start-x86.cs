@@ -19,6 +19,8 @@ using Atomix.Assembler;
 using Atomix.Assembler.x86;
 using Core = Atomix.Assembler.AssemblyHelper;
 
+using Atomix.Kernel_H.lib.ds;
+
 using Atomix.Kernel_H.gui;
 using Atomix.Kernel_H.core;
 using Atomix.Kernel_H.devices;
@@ -151,6 +153,9 @@ namespace Atomix.Kernel_H
             /* Setup System Timer */
             Timer.Setup();
 
+            /* Install SHM */
+            SHM.Install();
+
             /* Initialise VBE 2.0 Driver */
             VBE.Init();
 
@@ -174,9 +179,6 @@ namespace Atomix.Kernel_H
             new Thread(System, 0, 0, 10000).Start();
             
             Compositor.Setup(System);
-            //string a = "Aman";
-            //uint b =  (uint)a.GetHashCode();
-            //Debug.Write("Message:%d\n", b);
             
             while (true) ;
 

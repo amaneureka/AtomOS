@@ -11,6 +11,7 @@ namespace Atomix.Kernel_H.core
         public readonly string Name;
         public readonly UInt32* AddressSpace;
         public IList<Thread> Threads;
+        public uint[] shm_mapping;//Using Bitmask keeps a track of which shm region is occupied
         
         public Process(string aName, UInt32 Directory)
         {
@@ -18,11 +19,12 @@ namespace Atomix.Kernel_H.core
             this.AddressSpace = (UInt32*)Directory;
             this.Name = aName;
             this.Threads = new IList<Thread>();
+#warning Maximum Number of Frames to shm mapping is a random constant
+            this.shm_mapping = new uint[SHM.LIMIT_TO_PROCESS];
         }
 
         public void SetEnvironment()
         {
-            Paging.CurrentDirectory = AddressSpace;
             Paging.SwitchDirectory((uint)AddressSpace);
         }
 

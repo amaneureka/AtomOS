@@ -75,6 +75,24 @@ namespace Atomix.Kernel_H.core
             }
         }
 
+        public static void Write(string str, string arg0)
+        {
+            char a;
+            for (int i = 0; i < str.Length; i++)
+            {
+                a = str[i];
+                if (a == '%' && str[i + 1] == 's')
+                {
+                    Write(arg0);
+                    i++;
+                }
+                else
+                {
+                    Write(a);
+                }
+            }
+        }
+
         public static void Write(string str)
         {
             for (int i = 0; i < str.Length; i++)

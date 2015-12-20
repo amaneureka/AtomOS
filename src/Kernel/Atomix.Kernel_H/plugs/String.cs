@@ -121,5 +121,20 @@ namespace Atomix.Kernel_H.plugs
             }
             return true;
         }
+
+        [Plug("System_Boolean_System_String_op_Inequality_System_String__System_String_")]
+        public static bool InEquality(string str1, string str2)
+        {
+            var len = str1.Length;
+            if (len != str2.Length)
+                return true;
+
+            for (int i = 0; i < len; i++)
+            {
+                if (str1[i] != str2[i])
+                    return true;
+            }
+            return false;
+        }
     }
 }

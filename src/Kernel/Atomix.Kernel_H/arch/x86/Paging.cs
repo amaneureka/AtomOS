@@ -30,7 +30,7 @@ namespace Atomix.Kernel_H.arch.x86
         public static UInt32* KernelDirectory;
         public static UInt32* CurrentDirectory;
         private static uint[] Frames;
-        
+                
         public static void Setup(uint aKernelDirectory)
         {
             KernelDirectory = (UInt32*)aKernelDirectory;
@@ -110,7 +110,7 @@ namespace Atomix.Kernel_H.arch.x86
             return 0xE0400000;
         }
 
-        private static void AllocateFrame(UInt32 Page, UInt32 PhyPage, bool Allocate, uint flags = 0x3)//Present, ReadWrite, Supervisor
+        public static void AllocateFrame(UInt32 Page, UInt32 PhyPage, bool Allocate, uint flags = 0x3)//Present, ReadWrite, Supervisor
         {
             Page += 0xC0000000;
             var Add = *((UInt32*)Page);
@@ -129,21 +129,23 @@ namespace Atomix.Kernel_H.arch.x86
 
         public static UInt32 FirstFreeFrame()
         {
-            for (int i = 0; i < Frames.Length; i++)
+            int Length = Frames.Length;
+            var MemoryFrames = Frames;
+            for (int i = 0; i < Length; i++)
             {
-                if (Frames[i] != 0xFFFFFFFF)
+                if (MemoryFrames[i] != 0xFFFFFFFF)
                 {
                     for (int j = 0; j < 32; j++)
                     {
-                        if ((Frames[i] & (0x1 << j)) == 0)
-                            return (uint)((uint)(32 * i) + j);
+                        if ((MemoryFrames[i] & (0x1 << j)) == 0)
+                            return (uint)((i << 5) + j);
                     }
                 }
             }
             return 0;//No Free Frame =(
         }
 
-        private static UInt32 GetPage(UInt32* Directory, UInt32 VirtAddress, bool Make, uint flags = 0x3)//Present, ReadWrite, Supervisor
+        public static UInt32 GetPage(UInt32* Directory, UInt32 VirtAddress, bool Make, uint flags = 0x3)//Present, ReadWrite, Supervisor
         {
             VirtAddress /= 0x1000;//Align it to page
             uint index = VirtAddress / 1024;
@@ -181,14 +183,14 @@ namespace Atomix.Kernel_H.arch.x86
             ClearFrame((uint)Directory / 0x1000);
         }
         
-        private static void SetFrame(UInt32 page)
+        public static void SetFrame(UInt32 page)
         {
-            Frames[(page / 32)] |= (uint)(0x1 << ((int)page % 32));
+            Frames[(page >> 5)] |= (uint)(0x1 << ((int)page & 31));
         }
 
         public static void ClearFrame(UInt32 page)
         {
-            Frames[(page / 32)] &= ~(uint)(0x1 << ((int)page % 32));
+            Frames[(page >> 5)] &= ~(uint)(0x1 << ((int)page & 31));
         }
 
         [Assembly(0x0)]
@@ -196,6 +198,13 @@ namespace Atomix.Kernel_H.arch.x86
         {
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.CR3 });
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.CR3, SourceReg = Registers.EAX });
+        }
+
+        [Assembly(0x4)]
+        public static void InvalidatePageAt(uint xAddress)
+        {
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
+            Core.AssemblerCode.Add(new Literal("invlpg [EAX]"));
         }
 
         [Assembly(0x4)]
