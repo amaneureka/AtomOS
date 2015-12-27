@@ -527,7 +527,7 @@ namespace Atomix
                         
             /* Method begin */            
             Core.AssemblerCode.Add(new Label(xMethodLabel));
-            #warning Optimization
+            
             Core.AssemblerCode.Add(new Comment(Worker.OPTIMIZATION_START_FLAG));
             if (aMethod.IsStatic && aMethod is ConstructorInfo)
             {

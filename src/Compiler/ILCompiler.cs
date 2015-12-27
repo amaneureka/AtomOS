@@ -123,13 +123,13 @@ namespace Atomix
                 
                 /* Building Starts Here */
                 Logger = new Logger(OutputDir, DoLogging);
-                Logger.Write("@ILCompiler", "Initialized parameters", "Building Started...");                
+                Logger.Write("@ILCompiler", "Initialized parameters", "Building Started...");
                 Logger.Write("Architecture     : " + CPUArchitecture);
                 Logger.Write("Output Directory : " + OutputDir);
                 Logger.Write("Input Assembly   : " + InputDll);
                 Compiler xCompiler = new Compiler(DoOptimization); 
                 try
-                {                  
+                {
                     xCompiler.Start();
                 }
                 catch (Exception e)
@@ -142,7 +142,7 @@ namespace Atomix
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(e.ToString());
             }            
         }
     }

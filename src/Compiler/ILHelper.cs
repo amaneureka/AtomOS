@@ -675,7 +675,8 @@ namespace Atomix
          * where we have to set its metadata etc, and also Type ID
          * By assigning each type a unique number
          */
-        private static int xCounter = 0;
+#warning read comment below
+        private static int xCounter = 0;//start with some random number except zero :) but before changing xCounter change method for obtaining virtual methods
         public static Dictionary<string, int> TypeIDLabel = new Dictionary<string, int>();
         public static string GetTypeIDLabel(Type aType)
         {

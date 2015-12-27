@@ -107,8 +107,7 @@ namespace Atomix.IL
                                     xHasCalcSize = true;
                                     Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.ESP, SourceIndirect = true });
                                     Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EAX, SourceIndirect = true, SourceDisplacement = 8 });
-                                    Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDX, SourceRef = "0x2" });
-                                    Core.AssemblerCode.Add(new Multiply { DestinationReg = Registers.EDX });
+                                    Core.AssemblerCode.Add(new ShiftLeft { DestinationReg = Registers.EAX, SourceRef = "0x1" });
                                     Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
                                 }
                                 else if (xParams.Length == 3 && xParams[0].ParameterType.ToString() == "System.Char[]" && xParams[1].ParameterType.ToString() == "System.Int32" && xParams[2].ParameterType.ToString() == "System.Int32")

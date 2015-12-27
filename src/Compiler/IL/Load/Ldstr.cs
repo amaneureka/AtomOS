@@ -30,11 +30,11 @@ namespace Atomix.IL
                     {                        
                         Encoding xEncoding = Encoding.Unicode;
                         var xBytecount = xEncoding.GetByteCount(xStr);
-                        var xObjectData = new byte[4 + (xBytecount) + 0xC]; //0xC is object data offset
+                        var xObjectData = new byte[(xBytecount) + 0x10]; //0xC is object data offset
 
-                        Array.Copy(BitConverter.GetBytes((int)-1), 0, xObjectData, 0, 4);
-                        Array.Copy(BitConverter.GetBytes(0x80000001), 0, xObjectData, 4, 4);
-                        Array.Copy(BitConverter.GetBytes((int)1), 0, xObjectData, 8, 4);
+                        Array.Copy(BitConverter.GetBytes(ILHelper.GetTypeID(typeof(string))), 0, xObjectData, 0, 4);
+                        Array.Copy(BitConverter.GetBytes(0x1), 0, xObjectData, 4, 4);
+                        Array.Copy(BitConverter.GetBytes(xObjectData.Length), 0, xObjectData, 8, 4);
                         Array.Copy(BitConverter.GetBytes(xStr.Length), 0, xObjectData, 12, 4);
                         Array.Copy(xEncoding.GetBytes(xStr), 0, xObjectData, 16, xBytecount);
 

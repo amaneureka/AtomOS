@@ -35,16 +35,19 @@ namespace Atomix
 
         public void Write(string mscript, string message, string aDetail)
         {
-            if (DoLog)
-            {
-                Script.Add(mscript);
-                Message.Add(message);
-                Details.Add(aDetail);
-            }
+            if (!DoLog)
+                return;
+
+            Script.Add(mscript);
+            Message.Add(message);
+            Details.Add(aDetail);
         }
 
         public void Write(string append, bool Sub = true)
         {
+            if (!DoLog)
+                return;
+            
             if (Sub)
                 Details[Details.Count - 1] = string.Format("{0}<li>{1}</li>", Details[Details.Count - 1], append);
             else
@@ -53,13 +56,12 @@ namespace Atomix
 
         public void Dump()
         {
-            if (DoLog)
-            {
-                timer.Stop();
-                log2html page = new log2html(Script, Message, Details, timer.ElapsedMilliseconds.ToString());
-                String pageContent = page.TransformText();
-                System.IO.File.WriteAllText(path, pageContent);
-            }
+            if (!DoLog)
+                return;
+
+            timer.Stop();
+            log2html page = new log2html(Script, Message, Details, timer.ElapsedMilliseconds.ToString());
+            File.WriteAllText(path, page.TransformText());
         }
     }
 }

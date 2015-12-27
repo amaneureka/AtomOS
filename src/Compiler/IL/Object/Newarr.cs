@@ -47,7 +47,7 @@ namespace Atomix.IL
                 #region _x86_
                 case CPUArch.x86:
                     {
-                        Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.ESI });
+                        Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ESI, SourceReg = Registers.ESP, SourceIndirect = true });
                         Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceRef = "0x" + xSize.ToString("X") });
                         Core.AssemblerCode.Add(new Multiply { DestinationReg = Registers.ESI });
                         Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EAX, SourceRef = "0x10" });
@@ -55,15 +55,17 @@ namespace Atomix.IL
 
                         //Call our Heap
                         Core.AssemblerCode.Add(new Call(xHeap));
-                        Core.AssemblerCode.Add(new Push { DestinationReg = Registers.ESP, DestinationIndirect = true });
-                        Core.AssemblerCode.Add(new Push { DestinationReg = Registers.ESP, DestinationIndirect = true });
 
-                        Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
+                        Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });//Address
+                        Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.ESI });//Number of Elements
+
                         Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, SourceRef = "0x" + xTypeID.ToString("X") });
                         Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = 4, SourceRef = "0x2" });//Array Signature here 0x2
                         Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = 8, SourceReg = Registers.ESI });
                         Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = 12, SourceRef = "0x" + xSize.ToString("X") });
 
+                        Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });//For final array refernce
+                        Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });//For ctor
                         Core.AssemblerCode.Add(new Call(xArray_ctor_label));
                     }
                     break;
