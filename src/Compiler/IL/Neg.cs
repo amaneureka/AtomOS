@@ -11,30 +11,31 @@ using Core = Atomix.Assembler.AssemblyHelper;
 
 namespace Atomix.IL
 {
-    [ILOp(ILCode.Shl)]
-    public class ILShl : MSIL
+    [ILOp(ILCode.Neg)]
+    public class ILNeg : MSIL
     {
-        public ILShl(Compiler Cmp)
-            : base("shl", Cmp) { }
+        public ILNeg(Compiler Cmp)
+            : base("neg", Cmp) { }
 
         public override void Execute(ILOpCode instr, MethodBase aMethod)
         {
-            var xStackItem_ShiftAmount = Core.vStack.Pop();
-            var xStackItem_Value = Core.vStack.Peek();
+            var xItem = Core.vStack.Peek();
             
             switch (ILCompiler.CPUArchitecture)
             {
                 #region _x86_
                 case CPUArch.x86:
                     {
-                        if (xStackItem_Value.Size > 4)
+                        if (xItem.Size > 4)
                         {
-                            throw new Exception("@Shl: xStackItem_Value > 4 not implemented!");
+                            throw new Exception("@Neg: xItem size > 4 not implemented!");
                         }
                         else
                         {
-                            Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.ECX }); //Shift Amount
-                            Core.AssemblerCode.Add(new Shl { DestinationReg = Registers.ESP, DestinationIndirect = true, SourceReg = Registers.CL });
+                            Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
+                            Core.AssemblerCode.Add(new Sub { DestinationReg = Registers.EAX, SourceRef = "0x1" });
+                            Core.AssemblerCode.Add(new Xor { DestinationReg = Registers.EAX, SourceRef = "0xFFFFFFFF" });
+                            Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
                         }
                     }
                     break;

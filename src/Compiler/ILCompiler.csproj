@@ -140,6 +140,7 @@
     <Compile Include="IL\Object\Newarr.cs" />
     <Compile Include="IL\Object\Initobj.cs" />
     <Compile Include="IL\Rem_Un.cs" />
+    <Compile Include="IL\Neg.cs" />
     <Compile Include="IL\Shl.cs" />
     <Compile Include="IL\Shr.cs" />
     <Compile Include="IL\Shr_Un.cs" />
