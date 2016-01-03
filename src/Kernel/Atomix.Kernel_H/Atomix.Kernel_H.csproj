@@ -67,7 +67,9 @@
     <Compile Include="devices\Timer.cs" />
     <Compile Include="DoBoot.cs" />
     <Compile Include="gui\gui.cs" />
+    <Compile Include="gui\Helper.cs" />
     <Compile Include="gui\Print.cs" />
+    <Compile Include="gui\Window.cs" />
     <Compile Include="io\FileSystem\FatFileSystem.cs" />
     <Compile Include="io\FileSystem\FAT\FatStream.cs" />
     <Compile Include="io\FileSystem\FAT\FileLocation.cs" />
@@ -84,6 +86,7 @@
     <Compile Include="drivers\video\VBE.cs" />
     <Compile Include="io\Pipe.cs" />
     <Compile Include="io\Stream.cs" />
+    <Compile Include="lib\BinaryFormat.cs" />
     <Compile Include="lib\crypto\sdbm.cs" />
     <Compile Include="lib\ds\IDictionary.cs" />
     <Compile Include="lib\ds\IList.cs" />
@@ -98,6 +101,7 @@
     <Compile Include="plugs\Math.cs" />
     <Compile Include="plugs\NativeException.cs" />
     <Compile Include="plugs\Exception.cs" />
+    <Compile Include="plugs\Numerics.cs" />
     <Compile Include="plugs\String.cs" />
     <Compile Include="Start-x86.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

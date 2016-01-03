@@ -78,10 +78,6 @@
       <Project>{c39c02ef-559e-47a6-98d9-e5b79d683948}</Project>
       <Name>ILCompiler.Assembler</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Kernel_H\libAtomixH\libAtomixH.csproj">
-      <Project>{3ce87b66-c4dd-4510-b461-8c78ad9d0381}</Project>
-      <Name>libAtomixH</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Kernel_alpha\Kernel_alpha.csproj">
       <Project>{aea97938-d7f4-484f-8cf2-3f62bc2a11ec}</Project>
       <Name>Kernel_alpha</Name>

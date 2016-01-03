@@ -19,8 +19,6 @@ using Atomix.Assembler;
 using Atomix.Assembler.x86;
 using Core = Atomix.Assembler.AssemblyHelper;
 
-using Atomix.Kernel_H.lib.ds;
-
 using Atomix.Kernel_H.gui;
 using Atomix.Kernel_H.core;
 using Atomix.Kernel_H.devices;
@@ -179,7 +177,7 @@ namespace Atomix.Kernel_H
             new Thread(System, 0, 0, 10000).Start();
             
             Compositor.Setup(System);
-            
+
             while (true) ;
 
             while (true)

@@ -45,6 +45,7 @@ namespace Atomix.Kernel_H.core
             
             if ((CurrentTask == NextTask) || (NextTask == null))
             {
+                CurrentTask = NextTask;
                 return aStack;
             }
             
@@ -77,6 +78,7 @@ namespace Atomix.Kernel_H.core
         /// <param name="ID"></param>
         public static void SpinLock(int ID)
         {
+#warning we should switch task here because we are running on single core
             while (ResourceArray[ID] != 0) ;//Hookup that thread till other thread free up that resource
             ResourceArray[ID] = 1;
         }

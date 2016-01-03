@@ -384,15 +384,19 @@ namespace Atomix.Kernel_H.core
             Scheduler.SpinUnlock(HEAP_RESOURCE_ID);
         }
         
-        private static unsafe void Clear(uint Address, uint ByteCount)
+        [Assembly(0x8)]
+        private static unsafe void Clear(uint Address, uint Length)
         {
-#warning add a fast method to clear up memory by using literal assembly codes :P
-            var xAddress = (uint*)Address;
-            for (int i = 0; i < ByteCount/4; i++)
-                xAddress[i] = 0x0;
-            var xadd2 = (byte*)(Address + (ByteCount/4));
-            for (int i = 0; i < ByteCount % 4; i++)
-                xadd2[i] = 0x0;
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDI, SourceReg = Registers.EBP, SourceDisplacement = 0xC, SourceIndirect = true });
+
+            Core.AssemblerCode.Add(new Xor { DestinationReg = Registers.EAX, SourceReg = Registers.EAX });
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.EBX });
+            Core.AssemblerCode.Add(new Shr { DestinationReg = Registers.ECX, SourceRef = "0x2" });
+            Core.AssemblerCode.Add(new Literal("rep stosd"));//Copy EAX to EDI
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.EBX });
+            Core.AssemblerCode.Add(new And { DestinationReg = Registers.ECX, SourceRef = "0x3" });//Modulo by 4
+            Core.AssemblerCode.Add(new Literal("rep stosb"));
         }
     }
 }

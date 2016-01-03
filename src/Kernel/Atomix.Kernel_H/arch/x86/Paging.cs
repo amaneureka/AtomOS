@@ -57,7 +57,7 @@ namespace Atomix.Kernel_H.arch.x86
             }
             
             //Lets Map the new Heap; Just to the end of kernel
-            uint HeapSize = 0x400000, HeapStart = virt;//4MB
+            uint HeapSize = 0xF00000, HeapStart = virt;//16MB
             end = virt + HeapSize;
             
             while (virt < end)

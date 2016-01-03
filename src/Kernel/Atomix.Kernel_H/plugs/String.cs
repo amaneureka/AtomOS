@@ -32,17 +32,9 @@ namespace Atomix.Kernel_H.plugs
             int i;
             char* chars = (char*)(aFirstChar + 0x10);
             for (i = 0; i < Length; i++)
-            {
-                var temp = aChar[i + Start];
-                chars[i] = temp;
-            }
-
-            byte* length = (byte*)(aFirstChar + 0xC);
-
-            length[0] = (byte)(i & 0xFF);
-            length[1] = (byte)(i & 0xFF00);
-            length[2] = (byte)(i & 0xFF0000);
-            length[3] = (byte)(i & 0xFF000000);
+                chars[i] = aChar[i + Start];
+            
+            *((int*)(aFirstChar + 0xC)) = i;
         }
 
         [Plug("System_Char_System_String_get_Chars_System_Int32_")]
@@ -51,60 +43,46 @@ namespace Atomix.Kernel_H.plugs
             if (aIndex < 0 || aIndex >= Get_Length(aThis))
                 return '\0';
             
-            var xCharIdx = (char*)(aThis + 16);
+            var xCharIdx = (char*)(aThis + 0x10);
             return xCharIdx[aIndex];
         }
 
         [Plug("System_Int32_System_String_get_Length__")]
         public unsafe static int Get_Length(byte* aThis)
         {
-            var xCharIdx = (byte*)(aThis + 12);
-            return (int)(xCharIdx[3] << 24 | xCharIdx[2] << 16 | xCharIdx[1] << 8 | xCharIdx[0]);
+            return *((int*)(aThis + 0xC));
         }
-
-        [Plug("System_String___System_String_Split_System_Char___")]
+        
+        /*[Plug("System_String___System_String_Split_System_Char___")]
         public static string[] Split(string str, char[] c)
         {
-            int counter = 0;
-            for (int i = 0; i < str.Length; i++)
-            {
-                if (str[i] == c[0])
-                {
-                    counter++;
-                }
-            }
-            string[] xResult = new string[counter + 1];
-            char[] xTemp = new char[255];
+            
+        }*/
 
-            int mcounter = 0;
-            int zcounter = 0;
-            for (int i = 0; i < str.Length; i++)
+        [Plug("System_String_System_String_Concat_System_String___")]
+        public static string Concat(params string[] strs)
+        {
+            int TotalLength = 0;
+            int strs_length = strs.Length;
+            for (int i = 0; i < strs_length; i++)
+                TotalLength += strs[i].Length;
+
+            var char_result = new char[TotalLength];
+
+            int p = 0;
+            for (int i = 0; i < strs_length; i++)
             {
-                if (str[i] == c[0])
-                {
-                    char[] xTemp2 = new char[mcounter];
-                    for (int j = 0; j < mcounter; j++)
-                    {
-                        xTemp2[j] = xTemp[j];
-                    }
-                    mcounter = 0;
-                    xResult[zcounter++] = new string(xTemp2);
-                }
-                else
-                {
-                    xTemp[mcounter++] = str[i];
-                    if (i == str.Length - 1)
-                    {
-                        char[] xTemp2 = new char[mcounter];
-                        for (int j = 0; j < mcounter; j++)
-                        {
-                            xTemp2[j] = xTemp[j];
-                        }
-                        xResult[zcounter] = new string(xTemp2);
-                    }
-                }
+                var current = strs[i];
+                TotalLength = current.Length;
+                for (int j = 0; j < TotalLength; j++)
+                    char_result[p++] = current[j];
             }
-            return xResult;
+
+            var result = new string(char_result);
+            Heap.Free(char_result);
+            Heap.Free(strs);
+
+            return result;
         }
 
         [Plug("System_Boolean_System_String_op_Equality_System_String__System_String_")]
@@ -135,6 +113,24 @@ namespace Atomix.Kernel_H.plugs
                     return true;
             }
             return false;
+        }
+
+        [Plug("System_String_System_String_Concat_System_String__System_String__System_String__System_String_")]
+        public static string Concat(string s0, string s1, string s2, string s3)
+        {
+            return Concat(s0, s1, s2, s3);
+        }
+
+        [Plug("System_String_System_String_Concat_System_String__System_String__System_String_")]
+        public static string Concat(string s0, string s1, string s2)
+        {
+            return Concat(s0, s1, s2);
+        }
+
+        [Plug("System_String_System_String_Concat_System_String__System_String_")]
+        public static string Concat(string s0, string s1)
+        {
+            return Concat(s0, s1);
         }
     }
 }

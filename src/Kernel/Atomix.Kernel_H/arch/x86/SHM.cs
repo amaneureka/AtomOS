@@ -1,7 +1,7 @@
 ﻿using System;
 
 using Atomix.Kernel_H.core;
-using Atomix.Kernel_H.lib.ds;
+using Atomix.Kernel_H.lib;
 
 namespace Atomix.Kernel_H.arch.x86
 {
@@ -18,29 +18,35 @@ namespace Atomix.Kernel_H.arch.x86
 
         static int ResourceKey;
         static IDictionary<shm_chunk> Nodes;
-    
+        
         public static void Install()
         {
             Nodes = new IDictionary<shm_chunk>();
             ResourceKey = Scheduler.GetResourceID();
         }
 
-        public static unsafe uint Obtain(string aID, int Size)
+        public static unsafe uint Obtain(string aID, int Size, bool CreateIfNotExist)
         {
             Scheduler.SpinLock(ResourceKey);
+                        
+            var ParentProcess = Scheduler.CurrentThread.Process;
+            if (!Nodes.Contains(aID))
+            {
+                if (!CreateIfNotExist)
+                {
+                    Scheduler.SpinUnlock(ResourceKey);
+                    return 0;
+                }
+                CreateNew(aID, Size);
+            }
 
             shm_chunk Current;
-            if (!Nodes.Contains(aID))
-                CreateNew(aID, Size);
-
             Current = Nodes[aID];
             Current.RefCount++;
-
-            var ParentProcess = Scheduler.CurrentThread.Process;
+                        
             var shm_mapping = ParentProcess.shm_mapping;
 
-            int FramesRequired = Current.Frames.Length;
-            
+            int FramesRequired = Current.Frames.Length;            
             int CurrentFrameCount = 0;
             for (int i = 0; i < LIMIT_TO_PROCESS; i++)
             {
@@ -83,7 +89,6 @@ namespace Atomix.Kernel_H.arch.x86
             Debug.Write("shm_mapping failed, Process id:=%d ", ParentProcess.pid);
             Debug.Write("shm_id := %s\n", aID);
             Scheduler.SpinUnlock(ResourceKey);
-
             return 0;
         }
 

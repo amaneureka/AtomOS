@@ -5,9 +5,9 @@ namespace Atomix.Kernel_H.lib.crypto
     //Source: http://www.cse.yorku.ca/~oz/hash.html
     public static class sdbm
     {
-        public static uint GetsdbmHash(this string str)
+        public static uint GetsdbmHash(this string str, uint Seed = 0)
         {
-            uint Hash = 0;
+            uint Hash = Seed;
 
             int index = 0, length = str.Length;
             while (index < length)

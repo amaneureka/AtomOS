@@ -2,7 +2,7 @@
 
 using Atomix.Kernel_H.lib.crypto;
 
-namespace Atomix.Kernel_H.lib.ds
+namespace Atomix.Kernel_H.lib
 {
 #warning Supported for strings only
     public class IDictionary<T_Value>

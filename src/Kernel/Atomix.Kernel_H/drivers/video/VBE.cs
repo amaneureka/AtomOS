@@ -33,8 +33,10 @@ namespace Atomix.Kernel_H.drivers.video
             Debug.Write("Virtual Frame Buffer: %d\n", (uint)VirtualFrameBuffer);
             SecondaryBuffer = (byte*)Paging.AllocateSecondayBuffer();
             Debug.Write("Secondary Frame Buffer: %d\n", (uint)SecondaryBuffer);
-
+            Debug.Write("Resolution: %dx", (uint)Xres);
+            Debug.Write("%d\n", (uint)Yres);
             BytesPerPixel = (int)(ModeInfoBlock->bpp / 8);
+            Debug.Write("BytesPerPixel: %d\n", (uint)BytesPerPixel);
         }
         
         public static void SetPixel(int x, int y, uint c)
@@ -54,11 +56,13 @@ namespace Atomix.Kernel_H.drivers.video
         [Assembly(0x0)]
         public static void Update()
         {
-            //Copy 4MB of data from Secondary Buffer to Virtual Frame Buffer
+            //Copy 4MB of data from Secondary Buffer to Virtual Frame Buffer            
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ESI, SourceRef = "static_Field__System_Byte__Atomix_Kernel_H_drivers_video_VBE_SecondaryBuffer", SourceIndirect = true });
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDI, SourceRef = "static_Field__System_Byte__Atomix_Kernel_H_drivers_video_VBE_VirtualFrameBuffer", SourceIndirect = true });
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "0x100000" });
+            Core.AssemblerCode.Add(new Cli());
             Core.AssemblerCode.Add(new Literal("rep movsd"));
+            Core.AssemblerCode.Add(new Sti());
         }
 
         #region Struct

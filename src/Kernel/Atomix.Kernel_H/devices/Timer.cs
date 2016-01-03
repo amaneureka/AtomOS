@@ -15,28 +15,19 @@ namespace Atomix.Kernel_H.devices
             SetFrequency(100);
         }
 
-        private static uint aElapsedSeconds = 0;
-        private static uint aElapsedMiliSeconds = 0;
-
-        public static uint ElapsedSeconds
+        public static uint TicksFromStart
         {
-            get { return aElapsedSeconds; }
-        }
-
-        public static uint ElapsedMiliSeconds
-        {
-            get { return (aElapsedSeconds*1000) + aElapsedMiliSeconds; }
+            get;
+            private set;
         }
 
         public static void Tick()
         {
-            aElapsedMiliSeconds += 10;
-            if (aElapsedMiliSeconds == 1000)
+            TicksFromStart++;
+            if (TicksFromStart % 100 == 0)
             {
                 Debug.Write("FPS:=%d\n", gui.Compositor.FRAMES);
                 gui.Compositor.FRAMES = 0;
-                aElapsedMiliSeconds = 0;
-                aElapsedSeconds++;
             }
         }
 

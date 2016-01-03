@@ -13,6 +13,7 @@ using Core = Atomix.Assembler.AssemblyHelper;
 namespace Atomix.IL
 {
     [ILOp(ILCode.Conv_I)]
+    [ILOp(ILCode.Conv_Ovf_I)]
     public class Conv_I : MSIL
     {
         public Conv_I(Compiler Cmp)
