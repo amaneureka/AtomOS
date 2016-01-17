@@ -73,5 +73,13 @@ namespace Atomix.Kernel_H.arch.x86
 
             return 0; //just for c# error
         }
+
+        [Assembly(0x0)]
+        public static uint CR2Register()
+        {
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.CR2 });
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBP, DestinationDisplacement = 0x8, DestinationIndirect = true, SourceReg = Registers.EAX });
+            return 0;
+        }
     }
 }

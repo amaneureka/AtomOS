@@ -23,6 +23,7 @@ namespace Atomix.Kernel_H.core
             Debug.Write("EDX: %d\n", aDump.EDX);
             Debug.Write("EDI: %d\n", aDump.EDI);
             Debug.Write("ESI: %d\n", aDump.ESI);
+            Debug.Write("CR2: %d\n", Native.CR2Register());
             Native.Hlt();
         }
     }

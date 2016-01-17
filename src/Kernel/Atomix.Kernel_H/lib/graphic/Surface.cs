@@ -85,7 +85,7 @@ namespace Atomix.Kernel_H.lib.graphic
         [Assembly(0x2C)]
         public static void CopyToBuffer(byte* des, byte* src, int des_x, int des_y, int des_width, int des_height, int src_x, int src_y, int src_width, int data_width, int data_height)
         {
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "static_Field__System_Int32_Atomix_Kernel_H_drivers_video_VBE_BytesPerPixel" });
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "static_Field__System_Int32_Atomix_Kernel_H_drivers_video_VBE_BytesPerPixel", SourceIndirect = true });
             //EBX = width
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 12 });
 
