@@ -27,6 +27,8 @@ using Atomix.Kernel_H.drivers.input;
 using Atomix.Kernel_H.drivers.video;
 using Atomix.Kernel_H.io.FileSystem;
 
+using Atomix.Kernel_H.lib;
+
 namespace Atomix.Kernel_H
 {
     /// <summary>
@@ -177,6 +179,16 @@ namespace Atomix.Kernel_H
             new Thread(System, 0, 0, 10000).Start();
             
             Compositor.Setup(System);
+
+            var packet = new byte[32];
+
+            packet.SetUInt(0, 0xDEADCAFE);
+            packet.SetByte(4, 0xCC);
+            packet.SetInt(9, 512);
+            packet.SetInt(13, 512);
+            int cccc = 1;
+            while(cccc-- > 0)
+            Compositor.SERVER.Write(packet);
 
             while (true) ;
 

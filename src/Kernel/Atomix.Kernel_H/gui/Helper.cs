@@ -17,13 +17,31 @@ namespace Atomix.Kernel_H.gui
                 {
                     //if (32 - j < i && i != j)
                     //    break;
-                    int add = ((j*32) + i) * 4;
+                    int add = ((j*32) + i) * 4;                    
                     aBuffer[add + 0] = 0xFF;
-                    aBuffer[add + 1] = 0xFF;
-                    aBuffer[add + 2] = 0xFF;
+                    aBuffer[add + 1] = 0x00;
+                    aBuffer[add + 2] = 0x00;
+                    aBuffer[add + 3] = 0x00;
                 }
             }
             return aBuffer;
+        }
+
+        public static unsafe byte* GetEmptyScreen()
+        {
+            var emptyscreen = (byte*)Heap.kmalloc(0x3C000A);
+            int xres = drivers.video.VBE.Xres;
+            int yres = drivers.video.VBE.Yres;
+            for (int i = 0; i < xres; i++)
+            {
+                for (int j = 0; j < yres; j++)
+                {
+                    int offset = (i + j*xres)*4;
+                    emptyscreen[offset + 0] = 0xAA;
+                    emptyscreen[offset + 1] = 0xBB;
+                }
+            }
+            return emptyscreen;
         }
 
         public static void CreateNewWindowMessage(byte[] Buffer, int Width, int Height, string WindowHash)

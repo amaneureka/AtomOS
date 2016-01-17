@@ -65,24 +65,36 @@ namespace Atomix.Kernel_H.lib.graphic
                 o = Math.Min(s, d);
 
                 //Draw on buffer @{(l, m), (n, o)} from bitamp {(l-x, m-y), (n-x, o-y)}
-                Copy(aBuffer, bitamp, l, m, Width, l - x, m - y, w, n - l + 1, o - m + 1);
+                CopyToBuffer(aBuffer, bitamp, l, m, Width, Height, l - x, m - y, w, n - l + 1, o - m + 1);
             }
         }
 
-        [Assembly(0x28)]
-        public static void Copy(byte* des, byte* src, int des_x, int des_y, int des_width, int src_x, int src_y, int src_width, int data_width, int data_height)
+        /*
+         * "des"                [EBP + 48]
+         * "src"                [EBP + 44]
+         * "des_x"              [EBP + 40]
+         * "des_y"              [EBP + 36]
+         * "des_width"          [EBP + 32]
+         * "des_height"         [EBP + 28]
+         * "src_x"              [EBP + 24]
+         * "src_y"              [EBP + 20]
+         * "src_width"          [EBP + 16]
+         * "data_width"         [EBP + 12]
+         * "data_height"        [EBP + 08]
+         */
+        [Assembly(0x2C)]
+        public static void CopyToBuffer(byte* des, byte* src, int des_x, int des_y, int des_width, int des_height, int src_x, int src_y, int src_width, int data_width, int data_height)
         {
-            Core.AssemblerCode.Add(new Push { DestinationRef = "static_Field__System_Int32_Atomix_Kernel_H_drivers_video_VBE_BytesPerPixel", DestinationIndirect = true });
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.ESP, SourceIndirect = true });
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "static_Field__System_Int32_Atomix_Kernel_H_drivers_video_VBE_BytesPerPixel" });
             //EBX = width
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 12 });
 
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 32 });
-            Core.AssemblerCode.Add(new Multiply { DestinationReg = Registers.EBP, DestinationIndirect = true, DestinationDisplacement = 28 });
-            Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 36 });            
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 36 });
+            Core.AssemblerCode.Add(new Multiply { DestinationReg = Registers.EBP, DestinationIndirect = true, DestinationDisplacement = 32 });
+            Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 40 });            
             Core.AssemblerCode.Add(new Multiply { DestinationReg = Registers.ECX });
             //des + (x1 + y1 * width) * BytesPerPixel
-            Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 44 });
+            Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 48 });
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDI, SourceReg = Registers.EAX });
 
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 20 });
@@ -90,16 +102,16 @@ namespace Atomix.Kernel_H.lib.graphic
             Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 24 });
             Core.AssemblerCode.Add(new Multiply { DestinationReg = Registers.ECX });
             //src + (x1 + y1 * width) * BytesPerPixel
-            Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 40 });
+            Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 44 });
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ESI, SourceReg = Registers.EAX });
 
             //factor1 = (des_width - width) * BytesPerPixel
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 28 });
-            Core.AssemblerCode.Add(new Sub { DestinationReg = Registers.EAX, SourceReg = Registers.EBX });            
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 32 });
+            Core.AssemblerCode.Add(new Sub { DestinationReg = Registers.EAX, SourceReg = Registers.EBX });
             Core.AssemblerCode.Add(new Multiply { DestinationReg = Registers.ECX });
             Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
 
-            //factor2 = (src_width - wdith) * BytesPerPixel
+            //factor2 = (src_width - width) * BytesPerPixel
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 16 });
             Core.AssemblerCode.Add(new Sub { DestinationReg = Registers.EAX, SourceReg = Registers.EBX });
             Core.AssemblerCode.Add(new Multiply { DestinationReg = Registers.ECX });
@@ -108,27 +120,41 @@ namespace Atomix.Kernel_H.lib.graphic
              * STACK:
              * [ESP + 0x0] = factor2
              * [ESP + 0x4] = factor1
-             * [ESP + 0x8] = BytesPerPixel
              */
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 8 });
-
-            Core.AssemblerCode.Add(new Label(".draw_loop"));
-
-            //Number of bytes to write in EAX
+                        
+            //Number of bytes to write
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 12 });
-            Core.AssemblerCode.Add(new Multiply { DestinationReg = Registers.ESP, DestinationIndirect = true, DestinationDisplacement = 0x8 });
+            Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 40 });
+            Core.AssemblerCode.Add(new Cmp { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 32 });
+            Core.AssemblerCode.Add(new Jmp { Condition = ConditionalJumpEnum.JNG, DestinationRef = Label.PrimaryLabel + ".trunc_width" });
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 32 });
 
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "4" });
-            Core.AssemblerCode.Add(new Div { DestinationReg = Registers.ECX });
+            Core.AssemblerCode.Add(new Label(".trunc_width"));
+            Core.AssemblerCode.Add(new Sub { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 40 });
+            Core.AssemblerCode.Add(new Multiply { DestinationReg = Registers.ECX });
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDX, SourceReg = Registers.EAX });
+            Core.AssemblerCode.Add(new Shr { DestinationReg = Registers.EAX, SourceRef = "0x2" });//Divide by 4
+            Core.AssemblerCode.Add(new And { DestinationReg = Registers.EDX, SourceRef = "0x3" });//Modulo by 4
+
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 8 });
+            Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EBX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 36 });
+            Core.AssemblerCode.Add(new Cmp { DestinationReg = Registers.EBX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 28 });
+            Core.AssemblerCode.Add(new Jmp { Condition = ConditionalJumpEnum.JNG, DestinationRef = Label.PrimaryLabel + ".trunc_height" });
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 28 });
+
+            Core.AssemblerCode.Add(new Label(".trunc_height"));
+            Core.AssemblerCode.Add(new Sub { DestinationReg = Registers.EBX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 36 });
+            
+            Core.AssemblerCode.Add(new Label(".draw_loop"));
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.EAX });
             Core.AssemblerCode.Add(new Literal("rep movsd"));
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.EDX });
             Core.AssemblerCode.Add(new Literal("rep movsb"));
             Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EDI, SourceReg = Registers.ESP, SourceDisplacement = 0x4, SourceIndirect = true });
             Core.AssemblerCode.Add(new Add { DestinationReg = Registers.ESI, SourceReg = Registers.ESP, SourceIndirect = true });
-            Core.AssemblerCode.Add(new Sub { DestinationReg = Registers.EBX, SourceRef = "0x1" });            
+            Core.AssemblerCode.Add(new Sub { DestinationReg = Registers.EBX, SourceRef = "0x1" });
             Core.AssemblerCode.Add(new Jmp { Condition = ConditionalJumpEnum.JNZ, DestinationRef = Label.PrimaryLabel + ".draw_loop" });
-            Core.AssemblerCode.Add(new Add { DestinationReg = Registers.ESP, SourceRef = "0xC" });//3 items on stack
+            Core.AssemblerCode.Add(new Add { DestinationReg = Registers.ESP, SourceRef = "0x8" });//2 items on stack
         }
 
         public void Rectangle(int x, int y, int w, int h)

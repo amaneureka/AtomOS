@@ -14,13 +14,12 @@ namespace Atomix.Kernel_H.gui
     public static unsafe class Compositor
     {
         #region DEFINATIONS
-        static Pipe SERVER;
+        public static Pipe SERVER;
 
         static uint MOUSE_INPUT_STACK;
         static uint COMPOSITOR_STACK;
         static uint RENDER_STACK;
 
-        static byte* MouseBuffer;
         static int Mouse_X, Mouse_Y;
         static int WindowList_Lock;
         static int Surface_Lock;
@@ -38,7 +37,7 @@ namespace Atomix.Kernel_H.gui
         public static void Setup(Process parent)
         {
             Debug.Write("Compositor Setup\n");
-            SERVER = new Pipe(PACKET_SIZE, 10000);
+            SERVER = new Pipe(PACKET_SIZE, 1000);
             Clients = new IList<Pipe>(100);
             WindowList = new IList<Window>(100);
             WindowMap = new IDictionary<Window>();
@@ -46,8 +45,7 @@ namespace Atomix.Kernel_H.gui
 
             WindowList_Lock = Scheduler.GetResourceID();
             Surface_Lock = Scheduler.GetResourceID();
-            MouseBuffer = Helper.GetMouseBitamp();
-
+            
             //Threads stack memory allocation
             MOUSE_INPUT_STACK = Heap.kmalloc(0x1000);
             COMPOSITOR_STACK = Heap.kmalloc(0x1000);
@@ -63,43 +61,50 @@ namespace Atomix.Kernel_H.gui
         private static uint pRender;
         private static void Render()
         {
-            int old_mouse_X = 0, old_mouse_Y = 0;
-            var emptyscreen = (byte*)Heap.kmalloc(0x3C000A);
-            bool Update;
+            int old_mouse_X = 0, old_mouse_Y = 0, screen_width = VBE.Xres, screen_height = VBE.Yres;
+            var emptyscreen = Helper.GetEmptyScreen();
+            var MouseBuffer = Helper.GetMouseBitamp();
+
+            bool MouseUpdate = true, ScreenUpdate = true;
             while(true)
             {
                 int tmp_mouse_X = Mouse_X;
                 int tmp_mouse_Y = Mouse_Y;
-                Update = false;
 
                 if (tmp_mouse_X != old_mouse_X || tmp_mouse_Y != old_mouse_Y)
-                {
-                    MarkRectangle(old_mouse_X, old_mouse_Y, 32, 32);
-                    MarkRectangle(tmp_mouse_X, tmp_mouse_X, 32, 32);
-                    old_mouse_X = tmp_mouse_X;
-                    old_mouse_Y = tmp_mouse_Y;
-                    Update = true;
-                }
+                    MouseUpdate = true;
 
-                if (Update)
+                if (MouseUpdate)
                 {
+                    Surface.CopyToBuffer(VBE.SecondaryBuffer, emptyscreen, 0, 0, screen_width, screen_height, 0, 0, screen_width, screen_width, screen_height);
+
                     Scheduler.SpinLock(WindowList_Lock);
                     for (int i = 0; i < WindowList.Count; i++)
                     {
                         var win = WindowList[i];
-                        Canvas.Fill((byte*)win.Buffer, win.PositionX, win.PositionY, win.Width, win.Height);
+                        //Canvas.Fill((byte*)win.Buffer, win.PositionX, win.PositionY, win.Width, win.Height);
+                        Surface.CopyToBuffer(VBE.SecondaryBuffer, (byte*)win.Buffer, tmp_mouse_X, tmp_mouse_Y, screen_width, screen_height, 0, 0, win.Width, win.Width, win.Height);
                     }
                     Scheduler.SpinUnlock(WindowList_Lock);
 
-                    Surface.Copy(VBE.SecondaryBuffer, emptyscreen, 0, 0, VBE.Xres, 0, 0, VBE.Xres, VBE.Xres, VBE.Yres);
-                    //Canvas.Fill(MouseBuffer, tmp_mouse_X, tmp_mouse_Y, 32, 32);
-                    Surface.Copy(VBE.SecondaryBuffer, MouseBuffer, tmp_mouse_X, tmp_mouse_Y, VBE.Xres, 0, 0, 32, 32, 32);
-                    
                     //Flip only if we have updates on screen
                     //TODO: Flip only that much of region
                     VBE.Update();
+
+                    Canvas.Reset();
+                    ScreenUpdate = false;
+                    MouseUpdate = true;
                 }
-                Canvas.Reset();
+
+                if (MouseUpdate)
+                {
+                    Surface.CopyToBuffer(VBE.VirtualFrameBuffer, VBE.SecondaryBuffer, old_mouse_X, old_mouse_Y, screen_width, screen_height, old_mouse_X, old_mouse_Y, screen_width, 32, 32);
+                    Surface.CopyToBuffer(VBE.VirtualFrameBuffer, MouseBuffer, tmp_mouse_X, tmp_mouse_Y, screen_width, screen_height, 0, 0, 32, 32, 32);
+
+                    old_mouse_X = tmp_mouse_X;
+                    old_mouse_Y = tmp_mouse_Y;
+                    MouseUpdate = false;
+                }
                 FRAMES++;
             }
             Thread.Die();
@@ -142,7 +147,7 @@ namespace Atomix.Kernel_H.gui
                             var xNewWindow = new Window(ClientID) { Width = WindowWidth, Height = WindowHeight };
 
                             string HashString = xNewWindow.HashString;
-                            xNewWindow.Buffer = SHM.Obtain(HashString, (int)(WindowHeight * WindowWidth * 3), true);
+                            xNewWindow.Buffer = SHM.Obtain(HashString, (int)(WindowHeight * WindowWidth * VBE.BytesPerPixel), true);
                             
                             //Yes! we overwrite this buffer because we have no further refernce to this
                             Helper.CreateNewWindowMessage(compositor_packet, WindowWidth, WindowHeight, HashString);
@@ -154,7 +159,7 @@ namespace Atomix.Kernel_H.gui
                             WindowList.Add(xNewWindow);
                             Scheduler.SpinUnlock(WindowList_Lock);
 
-                            Clients[ClientID].Write(compositor_packet, false);
+                            //Clients[ClientID].Write(compositor_packet, false);
                         }
                         break;
                     case RequestHeader.WINDOW_REDRAW:
