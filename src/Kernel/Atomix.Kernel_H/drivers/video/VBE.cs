@@ -15,13 +15,13 @@ using Core = Atomix.Assembler.AssemblyHelper;
 namespace Atomix.Kernel_H.drivers.video
 {
     public static unsafe class VBE
-    {
-        private static VBE_Mode_Info* ModeInfoBlock;
-        public static byte* VirtualFrameBuffer;
-        public static byte* SecondaryBuffer;
+    {   
         public static int Xres;
         public static int Yres;
         public static int BytesPerPixel;
+        public static byte* SecondaryBuffer;
+        public static byte* VirtualFrameBuffer;
+        private static VBE_Mode_Info* ModeInfoBlock;
 
         public static void Init()
         {
@@ -29,14 +29,16 @@ namespace Atomix.Kernel_H.drivers.video
             ModeInfoBlock = (VBE_Mode_Info*)(Multiboot.VBE_Mode_Info + 0xC0000000);
             Xres = ModeInfoBlock->Xres;
             Yres = ModeInfoBlock->Yres;
+            BytesPerPixel = (int)(ModeInfoBlock->bpp / 8);
             VirtualFrameBuffer = (byte*)Paging.AllocateMainBuffer(ModeInfoBlock->physbase);
-            Debug.Write("Virtual Frame Buffer: %d\n", (uint)VirtualFrameBuffer);
             SecondaryBuffer = (byte*)Paging.AllocateSecondayBuffer();
+            
+            /* Print Debug Info */
+            Debug.Write("Virtual Frame Buffer: %d\n", (uint)VirtualFrameBuffer);
             Debug.Write("Secondary Frame Buffer: %d\n", (uint)SecondaryBuffer);
             Debug.Write("Resolution: %dx", (uint)Xres);
-            Debug.Write("%d\n", (uint)Yres);
-            BytesPerPixel = (int)(ModeInfoBlock->bpp / 8);
-            Debug.Write("BytesPerPixel: %d\n", (uint)BytesPerPixel);
+            Debug.Write("%dx", (uint)Yres);
+            Debug.Write("%d\n", (uint)BytesPerPixel);            
         }
         
         public static void SetPixel(int x, int y, uint c)

@@ -86,9 +86,9 @@ namespace Atomix.Kernel_H.arch.x86
                 }
             }
 
-            Debug.Write("shm_mapping failed, Process id:=%d ", ParentProcess.pid);
-            Debug.Write("shm_id := %s\n", aID);
             Scheduler.SpinUnlock(ResourceKey);
+            Debug.Write("shm_mapping failed, Process id:=%d ", ParentProcess.pid);
+            Debug.Write("shm_id := %s\n", aID);            
             return 0;
         }
 

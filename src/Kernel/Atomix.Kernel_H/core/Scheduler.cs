@@ -127,7 +127,7 @@ namespace Atomix.Kernel_H.core
                 }
             }
             //Update Sleeping threads
-            for (int i = 0; i < SleepingThreadsQueue.Count; i++)
+            /*for (int i = 0; i < SleepingThreadsQueue.Count; i++)
             {
                 var th = SleepingThreadsQueue[i];
                 if (--th.SleepTicks == 0)
@@ -137,7 +137,7 @@ namespace Atomix.Kernel_H.core
                     SleepingThreadsQueue[i] = null;
                 }
             }
-            SleepingThreadsQueue.Refresh();
+            SleepingThreadsQueue.Refresh();*/
             return ThreadQueue.Dequeue();
         }
     }

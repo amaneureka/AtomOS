@@ -118,19 +118,19 @@ namespace Atomix.Kernel_H.plugs
         [Plug("System_String_System_String_Concat_System_String__System_String__System_String__System_String_")]
         public static string Concat(string s0, string s1, string s2, string s3)
         {
-            return Concat(s0, s1, s2, s3);
+            return Concat(new string[] { s0, s1, s2, s3 });
         }
 
         [Plug("System_String_System_String_Concat_System_String__System_String__System_String_")]
         public static string Concat(string s0, string s1, string s2)
         {
-            return Concat(s0, s1, s2);
+            return Concat(new string[] { s0, s1, s2 });
         }
 
         [Plug("System_String_System_String_Concat_System_String__System_String_")]
         public static string Concat(string s0, string s1)
         {
-            return Concat(s0, s1);
+            return Concat(new string[] { s0, s1 });
         }
     }
 }
