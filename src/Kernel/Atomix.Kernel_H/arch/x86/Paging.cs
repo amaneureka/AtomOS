@@ -40,6 +40,10 @@ namespace Atomix.Kernel_H.arch.x86
             uint i = 0;
             while (i < 32)
                 Frames[i++] = 0xFFFFFFFF;
+
+            //Detect memory that can we use and mark rest as already used
+            Multiboot.DetectMemory();
+
             /*
              * First 4MB of BIOS is mapped
              * [0x0 - 0x400000) -> [0xc0000000 - 0xc0400000)
@@ -142,7 +146,8 @@ namespace Atomix.Kernel_H.arch.x86
                     }
                 }
             }
-            return 0;//No Free Frame =(
+            Debug.Write("No Free Frame! :(");
+            while (true) ;
         }
 
         public static UInt32 GetPage(UInt32* Directory, UInt32 VirtAddress, bool Make, uint flags = 0x3)//Present, ReadWrite, Supervisor

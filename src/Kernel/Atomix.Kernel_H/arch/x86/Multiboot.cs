@@ -90,6 +90,34 @@ namespace Atomix.Kernel_H.arch.x86
             }
             if (Mb_Info->mods_count == 0)
                 Debug.Write("       No Initial RAM Disk Found!!\n");
+            Debug.Write("       Flags:%d\n", Mb_Info->Flags);
+        }
+
+        public static void DetectMemory()
+        {
+            if ((Mb_Info->Flags & (0x1<<6)) != 0)
+            {
+                Debug.Write("Parsing Memory Map\n");
+                MemoryMap_Info* mmap = (MemoryMap_Info*)(Mb_Info->memMapAddress + 0xC0000000);
+
+                uint EndAddress = Mb_Info->memMapAddress + 0xC0000000 + Mb_Info->memMapLength;
+                while((uint)mmap < EndAddress)
+                {
+                    if (mmap->Type == 2)
+                    {
+                        /*
+                         * Let's assume High part is 0 always, because we are running on 32bit CPU
+                         */
+                        for (uint index = 0; index < mmap->Length_Low; index += 0x1000)//Page size
+                        {
+                            uint Address = mmap->BaseAddress_Low + index;
+                            Debug.Write("Marking Address: %d\n", Address);
+                            Paging.SetFrame(Address & 0xFFFFF000);
+                        }
+                    }
+                    mmap = (MemoryMap_Info*)((uint)mmap + sizeof(MemoryMap_Info) + mmap->Size);
+                }
+            }
         }
 
         #region Struct
@@ -162,6 +190,23 @@ namespace Atomix.Kernel_H.arch.x86
             public UInt16 vbeInterfaceOff;
             [FieldOffset(86)]
             public UInt16 vbeInterfaceLength;
+        }
+
+        [StructLayout(LayoutKind.Explicit, Size = 24)]
+        public unsafe struct MemoryMap_Info
+        {
+            [FieldOffset(0)]
+            public UInt32 Size;
+            [FieldOffset(4)]
+            public UInt32 BaseAddress_Low;
+            [FieldOffset(8)]
+            public UInt32 BaseAddress_High;
+            [FieldOffset(12)]
+            public UInt64 Length_Low;
+            [FieldOffset(16)]
+            public UInt64 Length_High;
+            [FieldOffset(20)]
+            public UInt32 Type;
         }
         #endregion
     }
