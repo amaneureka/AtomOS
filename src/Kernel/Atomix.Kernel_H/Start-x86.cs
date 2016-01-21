@@ -189,7 +189,7 @@ namespace Atomix.Kernel_H
             int cccc = 1;
             while(cccc-- > 0)
             Compositor.SERVER.Write(packet);
-
+            
             while (true) ;
 
             while (true)

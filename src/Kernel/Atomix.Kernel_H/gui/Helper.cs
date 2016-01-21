@@ -9,7 +9,7 @@ namespace Atomix.Kernel_H.gui
     {
         public static unsafe byte* GetMouseBitamp()
         {
-            var aBuffer = (byte*)Heap.kmalloc(32 * 32 * 3);
+            var aBuffer = (byte*)Heap.kmalloc(32 * 32 * 4);
             
             for (int i = 0; i < 32; i++)
             {

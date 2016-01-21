@@ -136,7 +136,7 @@ namespace Atomix.Kernel_H.core
                     break;//Yes :)
             }
             
-            if (iterator == HeapManagerPosition) //No block to allocate :(
+            if (iterator == HeapManagerPosition || HeapManagerPosition == HeapManagerSize) //No block to allocate :(
             {
                 Debug.Write("Memory out of run :(\n");
                 while (true) ;
@@ -184,7 +184,7 @@ namespace Atomix.Kernel_H.core
                     HeapManagerPosition--;//Reduce size of array, no need to clear last empty because we never read it                    
                 }
                 Scheduler.SpinUnlock(HEAP_RESOURCE_ID);
-                Clear(Address, len);//Clear the memory and reture
+                Clear(Address, len);//Clear the memory and return
                 return Address;
             }
         }

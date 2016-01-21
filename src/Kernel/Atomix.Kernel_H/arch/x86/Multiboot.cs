@@ -22,10 +22,13 @@ namespace Atomix.Kernel_H.arch.x86
 {
     public static unsafe class Multiboot
     {
-        private static Multiboot_Info* Mb_Info;
-        private static bool aIsValid;
-        private static uint Initrd;
-        private static uint InitrdSize;
+        const uint MULTIBOOT_MEMORY_AVAILABLE = 1;
+        const uint MULTIBOOT_MEMORY_RESERVED = 2;
+
+        static Multiboot_Info* Mb_Info;
+        static bool aIsValid;
+        static uint Initrd;
+        static uint InitrdSize;
 
         public static bool IsValid
         { get { return aIsValid; } }
@@ -103,7 +106,7 @@ namespace Atomix.Kernel_H.arch.x86
                 uint EndAddress = Mb_Info->memMapAddress + 0xC0000000 + Mb_Info->memMapLength;
                 while((uint)mmap < EndAddress)
                 {
-                    if (mmap->Type == 2)
+                    if (mmap->Type == MULTIBOOT_MEMORY_RESERVED)
                     {
                         /*
                          * Let's assume High part is 0 always, because we are running on 32bit CPU
@@ -112,7 +115,7 @@ namespace Atomix.Kernel_H.arch.x86
                         {
                             uint Address = mmap->BaseAddress_Low + index;
                             Debug.Write("Marking Address: %d\n", Address);
-                            Paging.SetFrame(Address & 0xFFFFF000);
+                            Paging.SetFrame((Address & 0xFFFFF000) / 0x1000);
                         }
                     }
                     mmap = (MemoryMap_Info*)((uint)mmap + sizeof(MemoryMap_Info) + mmap->Size);

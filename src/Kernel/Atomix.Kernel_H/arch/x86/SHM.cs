@@ -28,8 +28,7 @@ namespace Atomix.Kernel_H.arch.x86
         public static unsafe uint Obtain(string aID, int Size, bool CreateIfNotExist)
         {
             Scheduler.SpinLock(ResourceKey);
-                        
-            var ParentProcess = Scheduler.CurrentThread.Process;
+            
             if (!Nodes.Contains(aID))
             {
                 if (!CreateIfNotExist)
@@ -43,10 +42,11 @@ namespace Atomix.Kernel_H.arch.x86
             shm_chunk Current;
             Current = Nodes[aID];
             Current.RefCount++;
-                        
+
+            var ParentProcess = Scheduler.CurrentThread.Process;
             var shm_mapping = ParentProcess.shm_mapping;
 
-            int FramesRequired = Current.Frames.Length;            
+            int FramesRequired = Current.Frames.Length;
             int CurrentFrameCount = 0;
             for (int i = 0; i < LIMIT_TO_PROCESS; i++)
             {
@@ -58,15 +58,15 @@ namespace Atomix.Kernel_H.arch.x86
                         if (CurrentFrameCount == FramesRequired)
                         {
                             int xOffset = (i << 5) + j - FramesRequired + 1;
-                            uint xVirtualAddress = START + (uint)(xOffset * 0x1000);
+                            uint xVirtualAddress = START + (uint)(xOffset << 12);
                             uint xReturnAddress = xVirtualAddress;
-                            UInt32* CurrentDirectory = Paging.CurrentDirectory;
+                            var CurrentDirectory = Paging.CurrentDirectory;
                             var Frames = Current.Frames;
                             
                             int Index = 0;
-                            while (Index++ < CurrentFrameCount)
+                            while (Index < FramesRequired)
                             {
-                                Paging.AllocateFrame(Paging.GetPage(CurrentDirectory, xVirtualAddress, true), Frames[Index] * 0x1000, false);
+                                Paging.AllocateFrame(Paging.GetPage(CurrentDirectory, xVirtualAddress, true), (Frames[Index] << 12), false);
                                 Paging.InvalidatePageAt(xVirtualAddress);
                                 
                                 //Also Mark in shm_mapping
@@ -74,6 +74,7 @@ namespace Atomix.Kernel_H.arch.x86
 
                                 xVirtualAddress += 0x1000;
                                 xOffset++;
+                                Index++;
                             }
                             Scheduler.SpinUnlock(ResourceKey);
                             return xReturnAddress;
@@ -99,17 +100,16 @@ namespace Atomix.Kernel_H.arch.x86
             var NewChunk = new shm_chunk();
             NewChunk.RefCount = 0;
             NewChunk.Frames = new uint[NumberOfFrames];
-
-            for (int i = 0; i < NumberOfFrames; i++)
+            
+            for (int index = 0; index < NumberOfFrames; index++)
             {
                 //Allocate New Frame to this guy!
                 uint NewFrame = Paging.FirstFreeFrame();
                 Paging.SetFrame(NewFrame);
-
 #warning Check If we are not out of run of memory
-                NewChunk.Frames[i] = NewFrame;
+                NewChunk.Frames[index] = NewFrame;
+                //Debug.Write(0x0);
             }
-
             Nodes.Add(aID, NewChunk);
         }
     }

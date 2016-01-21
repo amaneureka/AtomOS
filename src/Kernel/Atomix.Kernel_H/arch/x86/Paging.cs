@@ -61,7 +61,7 @@ namespace Atomix.Kernel_H.arch.x86
             }
             
             //Lets Map the new Heap; Just to the end of kernel
-            uint HeapSize = 0xF00000, HeapStart = virt;//16MB
+            uint HeapSize = 0x2000000, HeapStart = virt;//32MB
             end = virt + HeapSize;
             
             while (virt < end)
@@ -73,20 +73,9 @@ namespace Atomix.Kernel_H.arch.x86
             //Setup our New Heap
             Heap.Setup(HeapStart, end);
             CurrentDirectory = KernelDirectory;
+            Debug.Write("@Paging:: Directory: %d\n", (uint)CurrentDirectory);
         }
         
-        public static uint HeapAllocateFrames(uint phyAdd, uint Size)
-        {
-            uint start = phyAdd;
-            uint end = phyAdd + Size;
-            while(start < end)
-            {
-                AllocateFrame(GetPage(KernelDirectory, start, true), 0, true);
-                start += 0x1000;
-            }
-            return end;
-        }
-
         public static uint AllocateMainBuffer(uint phybase)
         {
             //4MB * 1 => 4MB
@@ -123,9 +112,7 @@ namespace Atomix.Kernel_H.arch.x86
             else
             {                
                 if (Allocate)
-                {
                     PhyPage = FirstFreeFrame() * 0x1000;
-                }
                 *((UInt32*)Page) = PhyPage | flags;
                 SetFrame(PhyPage / 0x1000);
             }
