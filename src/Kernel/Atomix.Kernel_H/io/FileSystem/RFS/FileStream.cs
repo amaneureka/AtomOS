@@ -10,7 +10,7 @@ namespace Atomix.Kernel_H.io.FileSystem.RFS
         private RamFile mRamFile;
         private uint mSize;
         private uint mChunkSize;
-        private uint mPosition;
+        private int mPosition;
 
         private IList<uint> mChunks;
 
@@ -23,13 +23,13 @@ namespace Atomix.Kernel_H.io.FileSystem.RFS
             this.mPosition = 0;
         }
 
-        public override bool Read(byte[] aBuffer, uint count)
+        public override int Read(byte[] aBuffer, int count)
         {
             if (count > aBuffer.Length)
-                return false;
+                return 0;
 
             if (mPosition + count > mSize)
-                return false;
+                return 0;
 
             int CurrentChunk = (int)(mPosition / mChunkSize);
             int offset = (int)(mPosition % mChunkSize);
@@ -44,10 +44,10 @@ namespace Atomix.Kernel_H.io.FileSystem.RFS
                 CurrentChunk++;
                 offset = 0;
             }
-            return true;
+            return count;
         }
 
-        public override bool Write(byte[] aBuffer, uint count)
+        public override bool Write(byte[] aBuffer, int count)
         {
             if (count > aBuffer.Length)
                 return false;
@@ -74,7 +74,7 @@ namespace Atomix.Kernel_H.io.FileSystem.RFS
             return true;
         }
 
-        public override bool Seek(uint val, SEEK pos)
+        public override bool Seek(int val, SEEK pos)
         {
             switch (pos)
             {
@@ -96,14 +96,14 @@ namespace Atomix.Kernel_H.io.FileSystem.RFS
                     {
                         if (val > mSize)
                             return false;
-                        mPosition = mSize - val;
+                        mPosition = (int)(mSize - val);
                     }
                     break;
             }
             return true;
         }
 
-        public override uint Position()
+        public override int Position()
         { return mPosition; }
 
         public override bool CanSeek()
@@ -114,5 +114,8 @@ namespace Atomix.Kernel_H.io.FileSystem.RFS
 
         public override bool CanWrite()
         { return true; }
+
+        public override bool Close()
+        { return false; }
     }
 }

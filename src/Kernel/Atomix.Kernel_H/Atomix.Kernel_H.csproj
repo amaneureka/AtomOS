@@ -66,6 +66,9 @@
     <Compile Include="core\Thread.cs" />
     <Compile Include="devices\Timer.cs" />
     <Compile Include="DoBoot.cs" />
+    <Compile Include="gui\font\BDF\Glyph.cs" />
+    <Compile Include="gui\font\BitampFontFile.cs" />
+    <Compile Include="gui\font\GenericFont.cs" />
     <Compile Include="gui\gui.cs" />
     <Compile Include="gui\Helper.cs" />
     <Compile Include="gui\Print.cs" />
@@ -95,6 +98,7 @@
     <Compile Include="lib\encoding\ASCII.cs" />
     <Compile Include="lib\graphic\misc.cs" />
     <Compile Include="lib\graphic\Surface.cs" />
+    <Compile Include="lib\Numerics.cs" />
     <Compile Include="plugs\Array.cs" />
     <Compile Include="plugs\BitConverter.cs" />
     <Compile Include="plugs\Enum.cs" />

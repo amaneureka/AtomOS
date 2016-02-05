@@ -186,12 +186,35 @@ namespace Atomix.Kernel_H
             packet.SetByte(4, 0xCC);
             packet.SetInt(9, 512);
             packet.SetInt(13, 512);
-            int cccc = 1;
-            while(cccc-- > 0)
             Compositor.SERVER.Write(packet);
-            
-            while (true) ;
 
+            var xATA = new drivers.buses.ATA.IDE(true);
+            var xMBR = new MBR(xATA);
+            
+            var xFS = new io.FileSystem.FatFileSystem(xMBR.PartInfo[0]);
+            string[] paths = { "ANKIT" };
+
+            var xData = new byte[256];
+            if (xFS.IsValid)
+            {
+                Debug.Write("File System is valid!\n");
+                xFS.PrintDebugInfo();
+
+                var stream = xFS.GetFile(paths, 0);
+                if (stream != null)
+                {
+                    int c = 0;
+                    while ((c = stream.Read(xData, xData.Length)) != 0)
+                    {
+                        Debug.Write(lib.encoding.ASCII.GetString(xData, 0, c));
+                    }
+                }
+                else
+                    Debug.Write("File not found!\n");
+            }
+
+            while (true) ;
+            
             while (true)
             {
                 Native.Cli();

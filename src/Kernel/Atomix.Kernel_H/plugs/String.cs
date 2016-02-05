@@ -76,11 +76,12 @@ namespace Atomix.Kernel_H.plugs
                 TotalLength = current.Length;
                 for (int j = 0; j < TotalLength; j++)
                     char_result[p++] = current[j];
+                Heap.Free(current);
             }
 
             var result = new string(char_result);
             Heap.Free(char_result);
-            Heap.Free(strs);
+            Heap.Free((object)strs);
 
             return result;
         }
@@ -113,6 +114,21 @@ namespace Atomix.Kernel_H.plugs
                     return true;
             }
             return false;
+        }
+
+        public static bool StartWith(string str, string toFind)
+        {
+            int length = str.Length;
+            int length2 = toFind.Length;
+            if (length < length2)
+                return false;
+
+            for (int index = 0; index < length2; index++)
+            {
+                if (str[index] != toFind[index])
+                    return false;
+            }
+            return true;
         }
 
         [Plug("System_String_System_String_Concat_System_String__System_String__System_String__System_String_")]

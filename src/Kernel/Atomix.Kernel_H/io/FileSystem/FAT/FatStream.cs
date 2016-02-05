@@ -1,34 +1,98 @@
 ﻿using System;
 
+using Atomix.Kernel_H.core;
+
 namespace Atomix.Kernel_H.io.FileSystem.FAT
 {
     public class FatStream : Stream
     {
-        private FatFileSystem FS;
-        private string Name;
-        private uint FirstCluster;
-        private uint Size;
+        private FatFileSystem mFS;
+
+        private string mFileName;
+        private uint mFileSize;
+
+        private uint mFirstCluster;
+        private uint mCurrentCluster;
+        private int mPosition;
+        
+        private byte[] mBufferCluster;
 
         public FatStream(FatFileSystem aFS, string aName, uint aFirstCluster, uint aSize)
         {
-            this.FS = aFS;
-            this.Name = aName;
-            this.FirstCluster = aFirstCluster;
-            this.Size = aSize;
+            this.mFS = aFS;
+            this.mFileName = aName;
+            this.mFileSize = aSize;
+
+            this.mFirstCluster = aFirstCluster;
+            this.mCurrentCluster = aFirstCluster;
+            this.mPosition = 0;
+                        
+            this.mBufferCluster = new byte[aFS.SectorsPerCluster * 512];
+            LoadCluster(mFirstCluster);
         }
         
-        public override bool Write(byte[] aBuffer, uint offset)
+        public override int Read(byte[] aBuffer, int aCount)
         {
-            return false;
-        }
-        
-        public override bool Read(byte[] aBuffer, uint count)
-        {
-            return false;
+            int BufferPosition = 0, RelativePosition = mPosition % mBufferCluster.Length, EffectiveBytesCopied = 0;
+
+            if (mPosition + aCount > mFileSize)
+                aCount = (int)(mFileSize - mPosition);
+
+            do
+            {
+                int LengthToCopy = mBufferCluster.Length - RelativePosition;
+
+                if (LengthToCopy > aCount)
+                    LengthToCopy = aCount;
+
+                Array.Copy(mBufferCluster, RelativePosition, aBuffer, BufferPosition, LengthToCopy);
+
+                aCount -= LengthToCopy;
+                mPosition += LengthToCopy;
+                BufferPosition += LengthToCopy;
+                RelativePosition += LengthToCopy;
+                EffectiveBytesCopied += LengthToCopy;
+
+                if (RelativePosition >= mBufferCluster.Length)
+                {
+                    RelativePosition = 0;
+                    if (ReadNextCluster() == false)
+                        return EffectiveBytesCopied;
+                }
+            }
+            while (aCount > 0);
+            return EffectiveBytesCopied;
         }
 
-        public override uint Position()
-        { return 0; }
+        private bool ReadNextCluster()
+        {
+            uint xNextCluster = mFS.GetClusterEntryValue(mCurrentCluster);
+
+            if (FatFileSystem.IsClusterLast(xNextCluster))
+                return false;
+
+            if (FatFileSystem.IsClusterFree(xNextCluster) 
+                || FatFileSystem.IsClusterBad(xNextCluster) 
+                || FatFileSystem.IsClusterReserved(xNextCluster))
+                return false;
+
+            LoadCluster(xNextCluster);
+
+            mCurrentCluster = xNextCluster;
+            return true;
+        }
+
+        private bool LoadCluster(uint Cluster)
+        {
+            UInt32 xSector = mFS.DataSector + ((Cluster - mFS.RootCluster) * mFS.SectorsPerCluster);
+            return mFS.IDevice.Read(xSector, mFS.SectorsPerCluster, mBufferCluster);
+        }
+
+        public override bool Write(byte[] aBuffer, int aCount)
+        { return false; }
+
+        public override int Position()
+        { return mPosition; }
 
         public override bool CanSeek()
         { return true; }
@@ -39,9 +103,14 @@ namespace Atomix.Kernel_H.io.FileSystem.FAT
         public override bool CanWrite()
         { return false; }
 
-        public override bool Seek(uint val, SEEK pos)
+        public override bool Seek(int val, SEEK pos)
+        { return false; }
+
+        public override bool Close()
         {
-            return false;
+            Heap.Free(mBufferCluster);
+            Heap.Free(this);
+            return true;
         }
     }
 }

@@ -6,7 +6,7 @@ namespace Atomix.Kernel_H.io.FileSystem
 {
     public abstract class GenericFileSystem
     {
-        protected Storage IDevice;
+        public Storage IDevice;
         protected bool mIsValid;
         protected FileSystemType mFSType;
 

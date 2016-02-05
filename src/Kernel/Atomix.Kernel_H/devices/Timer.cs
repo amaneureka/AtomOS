@@ -26,7 +26,7 @@ namespace Atomix.Kernel_H.devices
             TicksFromStart++;
             if (TicksFromStart % 100 == 0)
             {
-                Debug.Write("FPS:=%d\n", gui.Compositor.FRAMES);
+                //Debug.Write("FPS:=%d\n", gui.Compositor.FRAMES);
                 gui.Compositor.FRAMES = 0;
             }
         }

@@ -10,27 +10,27 @@ namespace Atomix.Kernel_H.io.FileSystem
 {
     public class FatFileSystem : GenericFileSystem
     {
-        protected UInt32 BytePerSector;
-        protected UInt32 SectorsPerCluster;
-        protected UInt32 ReservedSector;
-        protected UInt32 TotalFAT;
-        protected UInt32 DirectoryEntry;
-        protected UInt32 TotalSectors;
-        protected UInt32 SectorsPerFAT;
-        protected UInt32 DataSectorCount;
-        protected UInt32 ClusterCount;
-        protected UInt32 SerialNo;
-        protected UInt32 RootCluster;
-        protected UInt32 RootSector;
-        protected UInt32 RootSectorCount;
-        protected UInt32 DataSector;
-        protected UInt32 EntriesPerSector;
-        protected UInt32 fatEntries;
+        //They should be private set only, so take care of this later
+        public UInt32 BytePerSector;
+        public UInt32 SectorsPerCluster;
+        public UInt32 ReservedSector;
+        public UInt32 TotalFAT;
+        public UInt32 DirectoryEntry;
+        public UInt32 TotalSectors;
+        public UInt32 SectorsPerFAT;
+        public UInt32 DataSectorCount;
+        public UInt32 ClusterCount;
+        public UInt32 SerialNo;
+        public UInt32 RootCluster;
+        public UInt32 RootSector;
+        public UInt32 RootSectorCount;
+        public UInt32 DataSector;
+        public UInt32 EntriesPerSector;
+        public UInt32 fatEntries;
 
         protected FatType FatType;
 
         protected string VolumeLabel;
-
 
         public FatFileSystem(Storage Device)
         {
@@ -160,7 +160,7 @@ namespace Atomix.Kernel_H.io.FileSystem
         private FatFileLocation ChangeDirectory(string[] path, int pointer)
         {
             uint CurrentCluster = RootCluster;
-            var Compare = new WithName("");
+            var Compare = new WithName(null);
             FatFileLocation location = null;
             while (pointer < path.Length)
             {
@@ -213,6 +213,20 @@ namespace Atomix.Kernel_H.io.FileSystem
             return null;
         }
 
+        public uint GetClusterEntryValue(uint cluster)
+        {
+            uint fatoffset = cluster<<2;
+            uint sector = ReservedSector + (fatoffset / BytePerSector);
+            int sectorOffset = (int)(fatoffset % BytePerSector);
+            
+            var aData = new byte[512];
+            this.IDevice.Read(sector, 1U, aData);
+            var xNextCluster = (BitConverter.ToUInt32(aData, sectorOffset) & 0x0FFFFFFF);
+            Heap.Free(aData);
+
+            return xNextCluster;
+        }
+
         private uint GetSectorByCluster(uint cluster)
         {
             return DataSector + ((cluster - RootCluster) * SectorsPerCluster);
@@ -231,7 +245,51 @@ namespace Atomix.Kernel_H.io.FileSystem
             return cluster;
         }
 
+        public static bool IsClusterBad(uint Cluster)
+        {
+            //Values are depend only on FAT 32 FS
+            return (Cluster == 0x0FFFFFF7);
+        }
+
+        public static bool IsClusterFree(uint Cluster)
+        {
+            //Values are depend only on FAT 32 FS
+            return (Cluster == 0x0);
+        }
+
+        public static bool IsClusterReserved(uint Cluster)
+        {
+            //Values are depend only on FAT 32 FS
+            return ((Cluster == 0x0) || (Cluster >= 0xFFF0) && (Cluster < 0x0FFFFFF7));
+        }
+
+        public static bool IsClusterLast(uint Cluster)
+        {
+            //Values are depend only on FAT 32 FS
+            return (Cluster == 0x0FFFFFF8);
+        }
+
         public byte[] NewBlockArray
         { get { return new byte[SectorsPerCluster * BytePerSector]; } }
+
+        public void PrintDebugInfo()
+        {
+            Debug.Write("BytesPerSector\t\t:%d\n", BytePerSector);
+            Debug.Write("SectorsPerCluster\t\t:%d\n", SectorsPerCluster);
+            Debug.Write("ReservedSector\t\t:%d\n", ReservedSector);
+            Debug.Write("TotalFAT\t\t:%d\n", TotalFAT);
+            Debug.Write("TotalSectors\t\t:%d\n", TotalSectors);
+            Debug.Write("SectorsPerFAT\t\t:%d\n", SectorsPerFAT);
+            Debug.Write("DataSectorCount\t\t:%d\n", DataSectorCount);
+            Debug.Write("ClusterCount\t\t:%d\n", ClusterCount);
+            Debug.Write("SerialNo\t\t:%d\n", SerialNo);
+            Debug.Write("RootCluster\t\t:%d\n", RootCluster);
+            Debug.Write("RootSector\t\t:%d\n", RootSector);
+            Debug.Write("RootSectorCount\t\t:%d\n", RootSectorCount);
+            Debug.Write("DataSector\t\t:%d\n", DataSector);
+            Debug.Write("EntriesPerSector\t\t:%d\n", EntriesPerSector);
+            Debug.Write("fatEntries\t\t:%d\n", fatEntries);
+            Debug.Write("VolumeLabel\t\t:%s\n", VolumeLabel);
+        }
     }
 }
