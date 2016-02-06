@@ -83,6 +83,13 @@ namespace Atomix.Kernel_H.drivers.buses.ATA
             }
         }
 
+        public Device Device { get { return mDevice; } }
+
+        public bool IsValid
+        {
+            get { return (mDevice != Device.IDE_None); }
+        }
+
         /// <summary>
         /// This method discover the current ATA device and try to read all its configurations
         /// </summary>

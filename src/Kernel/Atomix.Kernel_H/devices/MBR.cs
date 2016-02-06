@@ -45,5 +45,11 @@ namespace Atomix.Kernel_H.devices
                 aPartitions.Add(new Partition(this.aDisk, xStartSector, xSectorCount));
             }
         }
+
+        public void Clean()
+        {
+            Heap.Free(aPartitions);
+            Heap.Free(this);
+        }
     }
 }

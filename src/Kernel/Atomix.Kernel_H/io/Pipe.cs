@@ -65,11 +65,11 @@ namespace Atomix.Kernel_H.io
             return true;
         }
 
-        public bool Close()
+        public void Close()
         {
             Heap.Free(Buffer, BufferSize);
             Heap.Free(BufferStatus);
-            return true;
+            Heap.Free(this);
         }
     }
 }

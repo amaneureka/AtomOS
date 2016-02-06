@@ -11,6 +11,7 @@ namespace Atomix.Kernel_H.core
         static IQueue<Thread> ThreadQueue;
         static IList<Thread> SleepingThreadsQueue;
         static Thread CurrentTask;
+        
 #warning SIZE 100 is constant and may lead to PF if it exceeded limit
         static byte[] ResourceArray = new byte[500];
         static bool IsHooked;
@@ -18,6 +19,11 @@ namespace Atomix.Kernel_H.core
         public static Thread CurrentThread
         { get { return CurrentTask; } }
 
+        public static Process CurrentProcess
+        { get { return CurrentTask.Process; } }
+
+        public static Process SystemProcess;
+        
         public static void Init()
         {
             ThreadQueue = new IQueue<Thread>(100);//Allocate memory for atleast 100 threads, later on increase it
@@ -29,7 +35,7 @@ namespace Atomix.Kernel_H.core
         {
             ThreadQueue.Enqueue(th);
         }
-
+        
         public static uint SwitchTask(uint aStack)
         {
             if (IsHooked)
@@ -44,10 +50,7 @@ namespace Atomix.Kernel_H.core
             }
             
             if ((CurrentTask == NextTask) || (NextTask == null))
-            {
-                CurrentTask = NextTask;
                 return aStack;
-            }
             
             CurrentTask.SaveStack(aStack);            
             if (NextTask.Process != CurrentTask.Process)

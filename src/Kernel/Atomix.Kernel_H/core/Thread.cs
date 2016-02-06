@@ -35,6 +35,7 @@ namespace Atomix.Kernel_H.core
             if (this.State == ThreadState.NotActive)
             {
                 this.State = ThreadState.Running;
+                Debug.Write("[@Thread]: Start()\n");
                 Scheduler.AddThread(this);
             }
         }

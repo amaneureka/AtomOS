@@ -34,7 +34,6 @@ namespace Atomix.Kernel_H.drivers.input
             MousePipe = new Pipe(4, 1024);
             IDT.RegisterInterrupt(HandleIRQ, 0x2C);
             
-            Native.Cli();
             Wait(true);
             PortIO.Out8(MOUSE_STATUS, 0xA8);
             Wait(true);
@@ -50,7 +49,6 @@ namespace Atomix.Kernel_H.drivers.input
             Read();
             Write(0xF4);
             Read();
-            Native.Sti();
 
             Debug.Write("Mouse Done\n");
         }

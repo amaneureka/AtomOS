@@ -1,5 +1,7 @@
 ﻿using System;
 
+using Atomix.Kernel_H.core;
+
 using Atomix.CompilerExt;
 using Atomix.CompilerExt.Attributes;
 
@@ -27,8 +29,9 @@ namespace Atomix.Kernel_H.plugs
         public static string ToString32Bit(uint aNum, bool Signed)
         {
             var xResult = new char[11];
-
             int xPos = 11;
+            if (aNum == 0)
+                xResult[--xPos] = xDigits[0];
 
             while(aNum > 0)
             {
@@ -39,7 +42,9 @@ namespace Atomix.Kernel_H.plugs
             if (Signed)
                 xResult[--xPos] = '-';
 
-            return new string(xResult, xPos, 11 - xPos);
+            var xStr = new string(xResult, xPos, 11 - xPos);
+            Heap.Free(xResult);
+            return xStr;
         }
     }
 }

@@ -19,20 +19,16 @@ namespace Atomix.Kernel_H.io.FileSystem
 {
     public static class VirtualFileSystem
     {
-        static IList<Pair<string, GenericFileSystem>> MountedFS;
+        static IDictionary<GenericFileSystem> MountedFS;
 
         public static void Setup()
         {
-            MountedFS = new IList<Pair<string, GenericFileSystem>>();
-            MountedFS.Add(new Pair<string, GenericFileSystem>("ram", new RamFileSystem()));
+            MountedFS = new IDictionary<GenericFileSystem>();
         }
 
         public static GenericFileSystem GetFS(string aDevice)
         {
-            for (int i = 0; i < MountedFS.Count; i++)
-                if (MountedFS[i].First == aDevice)
-                    return MountedFS[i].Second;
-            return null;
+            return MountedFS[aDevice];
         }
 
         public static Stream GetFile(string aPath)
@@ -57,15 +53,30 @@ namespace Atomix.Kernel_H.io.FileSystem
             return xValue;
         }
 
-        public static bool Mount(string aDeviceName, GenericFileSystem aFS)
+        public static bool MountDevice(string aDeviceName, GenericFileSystem aFS)
         {
+            if (aDeviceName == null)
+                aDeviceName = GetDeviceLabel();
+
             if (!aFS.IsValid)
                 return false;
-            for (int i = 0; i < MountedFS.Count; i++)
-                if (MountedFS[i].First == aDeviceName)
-                    return false;
-            MountedFS.Add(new Pair<string, GenericFileSystem>(aDeviceName, aFS));
+
+            if (MountedFS.Contains(aDeviceName))
+                return false;
+
+            MountedFS.Add(aDeviceName, aFS);
+            Debug.Write("Directory Mounted: %s\n", aDeviceName);
             return true;
+        }
+
+        static uint mDeviceLabelCounter = 0;
+        private static string GetDeviceLabel()
+        {
+            const string prefix = "sda";
+            string suffix = (mDeviceLabelCounter++).ToString();
+            string Label = prefix + suffix;
+            Heap.Free(suffix);
+            return Label;
         }
     }
 }

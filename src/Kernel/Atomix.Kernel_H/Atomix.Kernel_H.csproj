@@ -65,7 +65,7 @@
     <Compile Include="core\Task.cs" />
     <Compile Include="core\Thread.cs" />
     <Compile Include="devices\Timer.cs" />
-    <Compile Include="DoBoot.cs" />
+    <Compile Include="Boot.cs" />
     <Compile Include="gui\font\BDF\Glyph.cs" />
     <Compile Include="gui\font\BitampFontFile.cs" />
     <Compile Include="gui\font\GenericFont.cs" />

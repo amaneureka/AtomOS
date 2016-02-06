@@ -50,7 +50,8 @@ namespace Atomix.Kernel_H.gui
             MOUSE_INPUT_STACK = Heap.kmalloc(0x1000);
             COMPOSITOR_STACK = Heap.kmalloc(0x1000);
             RENDER_STACK = Heap.kmalloc(0x1000);
-            
+
+            Debug.Write("Spawning Threads\n");
             new Thread(parent, pHandleMouse, MOUSE_INPUT_STACK + 0x1000, 0x1000).Start();
             new Thread(parent, pHandleRequest, COMPOSITOR_STACK + 0x1000, 0x1000).Start();
             new Thread(parent, pRender, RENDER_STACK + 0x1000, 0x1000).Start();
@@ -61,6 +62,8 @@ namespace Atomix.Kernel_H.gui
         private static uint pRender;
         private static void Render()
         {
+            Debug.Write("[@Compositor]: Render()\n");
+
             int old_mouse_X = 0, old_mouse_Y = 0, screen_width = VBE.Xres, screen_height = VBE.Yres;
             var emptyscreen = Helper.GetEmptyScreen();
             var MouseBuffer = Helper.GetMouseBitamp();
@@ -113,6 +116,7 @@ namespace Atomix.Kernel_H.gui
         private static uint pHandleRequest;
         private static void HandleRequest()
         {
+            Debug.Write("[@Compositor]: Handle Request()\n");
             var compositor_packet = new byte[PACKET_SIZE];
 
             while(true)
@@ -211,6 +215,8 @@ namespace Atomix.Kernel_H.gui
         private static uint pHandleMouse;
         private static void HandleMouse()
         {
+            Debug.Write("[@Compositor]: Handle Mouse()\n");
+
             var packet = new byte[4];
             var compositor_packet = new byte[PACKET_SIZE];
             compositor_packet.SetUInt(0, MAGIC);

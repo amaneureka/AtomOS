@@ -19,15 +19,12 @@ using Atomix.Assembler;
 using Atomix.Assembler.x86;
 using Core = Atomix.Assembler.AssemblyHelper;
 
-using Atomix.Kernel_H.gui;
 using Atomix.Kernel_H.core;
 using Atomix.Kernel_H.devices;
 using Atomix.Kernel_H.arch.x86;
-using Atomix.Kernel_H.drivers.input;
 using Atomix.Kernel_H.drivers.video;
 using Atomix.Kernel_H.io.FileSystem;
 
-using Atomix.Kernel_H.lib;
 
 namespace Atomix.Kernel_H
 {
@@ -162,23 +159,17 @@ namespace Atomix.Kernel_H
             /* Initialise Virtual File system */
             VirtualFileSystem.Setup();
 
-            /* Setup PS/2 Keyboard */
-            Keyboard.Setup();
-
-            /* Setup PS/2 Mouse */
-            Mouse.Setup();
-
             /*
              * Scheduler must be called before Timer because, 
              * just after calling timer, it will enable IRQ0 resulting in refrence call for switch task
              * Hence results in pagefault.
              */
-            var System = new Process("System", KernelDirectory - 0xC0000000);
+            Scheduler.SystemProcess = new Process("System", KernelDirectory - 0xC0000000);
 
             /* System Thread */
-            new Thread(System, 0, 0, 10000).Start();
-            
-            Compositor.Setup(System);
+            new Thread(Scheduler.SystemProcess, 0, 0, 10000).Start();
+
+            /*Compositor.Setup(Scheduler.SystemProcess);
 
             var packet = new byte[32];
 
@@ -205,13 +196,13 @@ namespace Atomix.Kernel_H
                 {
                     int c = 0;
                     while ((c = stream.Read(xData, xData.Length)) != 0)
-                    {
                         Debug.Write(lib.encoding.ASCII.GetString(xData, 0, c));
-                    }
                 }
                 else
                     Debug.Write("File not found!\n");
-            }
+            }*/
+
+            Boot.Init();
 
             while (true) ;
             
