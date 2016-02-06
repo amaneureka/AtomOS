@@ -55,11 +55,11 @@ namespace Atomix.Kernel_H.io.FileSystem
 
         public static bool MountDevice(string aDeviceName, GenericFileSystem aFS)
         {
-            if (aDeviceName == null)
-                aDeviceName = GetDeviceLabel();
-
             if (!aFS.IsValid)
                 return false;
+
+            if (aDeviceName == null)
+                aDeviceName = GetDeviceLabel();
 
             if (MountedFS.Contains(aDeviceName))
                 return false;
@@ -72,9 +72,8 @@ namespace Atomix.Kernel_H.io.FileSystem
         static uint mDeviceLabelCounter = 0;
         private static string GetDeviceLabel()
         {
-            const string prefix = "sda";
             string suffix = (mDeviceLabelCounter++).ToString();
-            string Label = prefix + suffix;
+            string Label = ("sda") + suffix;
             Heap.Free(suffix);
             return Label;
         }

@@ -29,6 +29,7 @@ namespace Atomix.Kernel_H.gui
             var HashCodeString = HashCode.ToString();
             HashString = "win." + HashCodeString;
             Heap.Free(HashCodeString);
+            Debug.Write("[Window]: Window Created `%s`\n", HashString);
         }
     }
 }

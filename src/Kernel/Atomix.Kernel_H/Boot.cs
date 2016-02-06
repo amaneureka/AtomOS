@@ -4,6 +4,7 @@ using Atomix.Kernel_H.lib;
 using Atomix.Kernel_H.gui;
 using Atomix.Kernel_H.core;
 using Atomix.Kernel_H.devices;
+using Atomix.Kernel_H.arch.x86;
 using Atomix.Kernel_H.io.FileSystem;
 
 using Atomix.Kernel_H.drivers.input;
@@ -16,6 +17,19 @@ namespace Atomix.Kernel_H
         public static void Init()
         {
             Debug.Write("Boot Init()\n");
+
+            #region InitRamDisk
+            if (Multiboot.RamDisk != 0)
+            {
+                var xFileSystem = new RamFileSystem(Multiboot.RamDisk, Multiboot.RamDiskSize);
+                if (xFileSystem.IsValid)
+                    VirtualFileSystem.MountDevice(null, xFileSystem);
+                else
+                    throw new Exception("RamDisk Corrupted!");
+            }
+            else
+                throw new Exception("RamDisk not found!");
+            #endregion
 
             #region PS2 Devices
             Keyboard.Setup();
@@ -37,7 +51,7 @@ namespace Atomix.Kernel_H
             packet.SetInt(13, 512);
             Compositor.SERVER.Write(packet);
             Debug.Write("Reading Test\n");
-            var stream = VirtualFileSystem.GetFile("sda0/ANKIT");
+            var stream = VirtualFileSystem.GetFile("sda0/readme.txt");
             if (stream != null)
             {
                 var xData = new byte[256];
@@ -78,6 +92,7 @@ namespace Atomix.Kernel_H
                                     var xFileSystem = new FatFileSystem(xMBR.PartInfo[i]);
                                     if (xFileSystem.IsValid)
                                     {
+                                        VirtualFileSystem.MountDevice(null, xFileSystem);
                                         VirtualFileSystem.MountDevice(null, xFileSystem);
                                         Clean = false;
                                     }

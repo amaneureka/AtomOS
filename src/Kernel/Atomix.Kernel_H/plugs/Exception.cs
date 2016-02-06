@@ -45,6 +45,7 @@ namespace Atomix.Kernel_H.plugs
             var Thread = Scheduler.CurrentThread;
             if (Thread != null)
                 Thread.Exception = aException;
+            Debug.Write("[SetException]: %s\n", aException.Message);
         }
 
         [Label("GetException")]

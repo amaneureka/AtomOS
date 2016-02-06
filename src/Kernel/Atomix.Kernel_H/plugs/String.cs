@@ -26,6 +26,21 @@ namespace Atomix.Kernel_H.plugs
             ctor(aFirstChar, aChar, 0, aChar.Length);
         }
 
+        [Plug("System_Void__System_String__ctor_System_Char__")]
+        public static unsafe void ctor(byte* aFirstChar, char* aChar)
+        {
+            int i = 0;
+            char* chars = (char*)(aFirstChar + 0x10);
+            while(*aChar != '\0')
+            {
+                *chars = *aChar;
+                ++chars;
+                ++aChar;
+                ++i;
+            }
+            *((int*)(aFirstChar + 0xC)) = i;
+        }
+
         [Plug("System_Void__System_String__ctor_System_Char____System_Int32__System_Int32_")]
         public static unsafe void ctor(byte* aFirstChar, char[] aChar, int Start, int Length)
         {
@@ -38,9 +53,9 @@ namespace Atomix.Kernel_H.plugs
         }
 
         [Plug("System_Char_System_String_get_Chars_System_Int32_")]
-        public static unsafe char Get_Chars(byte* aThis, int aIndex)
+        public static unsafe char getChars(byte* aThis, int aIndex)
         {
-            if (aIndex < 0 || aIndex >= Get_Length(aThis))
+            if (aIndex < 0 || aIndex >= getLength(aThis))
                 return '\0';
             
             var xCharIdx = (char*)(aThis + 0x10);
@@ -48,9 +63,21 @@ namespace Atomix.Kernel_H.plugs
         }
 
         [Plug("System_Int32_System_String_get_Length__")]
-        public unsafe static int Get_Length(byte* aThis)
+        public unsafe static int getLength(byte* aThis)
         {
             return *((int*)(aThis + 0xC));
+        }
+
+        [Label("getLength_System_Char__")]
+        public unsafe static int getLength(char* str)
+        {
+            int length = 0;
+            while (*str != '\0')
+            {
+                ++str;
+                ++length;
+            }
+            return length;
         }
         
         [Plug("System_String___System_String_Split_System_Char___")]
@@ -112,7 +139,6 @@ namespace Atomix.Kernel_H.plugs
                 TotalLength = current.Length;
                 for (int j = 0; j < TotalLength; j++)
                     char_result[p++] = current[j];
-                Heap.Free(current);
             }
 
             var result = new string(char_result);

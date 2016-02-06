@@ -1,32 +1,65 @@
 ﻿using System;
 
 using Atomix.Kernel_H.lib;
-
 using Atomix.Kernel_H.io.FileSystem.RFS;
+
+using System.Runtime.InteropServices;
 
 namespace Atomix.Kernel_H.io.FileSystem
 {
-    public class RamFileSystem : GenericFileSystem
+    public unsafe class RamFileSystem : GenericFileSystem
     {
-        IList<RamFile> Files;
+        uint DataAddress;
+        uint DataLength;
+        IDictionary<RamFile> Files;
 
-        public RamFileSystem()
+        public RamFileSystem(uint aAddress, uint aLength)
         {
-            Files = new IList<RamFile>();
+            this.DataAddress = aAddress;
+            this.DataLength = aLength;
+            this.Files = new IDictionary<RamFile>();
+            this.mIsValid = LoadFileSystem();
+        }
+
+        private bool LoadFileSystem()
+        {
+            var Entries = (FileEntry*)DataAddress;
+            Entries++;
+            while(Entries->StartAddress != 0)
+            {
+                var FileName = new string(Entries->Name);
+                Files.Add(FileName, new RamFile(FileName, Entries->StartAddress + DataAddress, Entries->Length));
+                Entries++;
+            }
+            return true;
         }
 
         public override Stream GetFile(string[] path, int pointer)
         {
-            for (int i = 0; i < Files.Count; i++)
-                if (Files[i].Name == path[pointer])
-                    return new FileStream(Files[i]);
+            var FileName = path[pointer];
+            if (Files.Contains(FileName))
+                return new FileStream(Files[FileName]);
             return null;
         }
 
         public override bool CreateFile(string[] path, int pointer)
         {
-            Files.Add(new RamFile(path[pointer]));
-            return true;
+            return false;
         }
+
+        #region Struct
+        [StructLayout(LayoutKind.Explicit, Size = 32)]
+        struct FileEntry
+        {
+            [FieldOffset(0)]
+            public fixed char Name[24];
+
+            [FieldOffset(24)]
+            public uint StartAddress;
+
+            [FieldOffset(28)]
+            public int Length;
+        }
+        #endregion
     }
 }

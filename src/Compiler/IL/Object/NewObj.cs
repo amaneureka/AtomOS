@@ -102,30 +102,38 @@ namespace Atomix.IL
 
                             if (xTargetType.ToString() == "System.String")
                             {
+                                xHasCalcSize = true;
+
                                 if (xParams.Length == 1 && xParams[0].ParameterType.ToString() == "System.Char[]")
                                 {
-                                    xHasCalcSize = true;
+                                    
                                     Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.ESP, SourceIndirect = true });
                                     Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EAX, SourceIndirect = true, SourceDisplacement = 8 });
                                     Core.AssemblerCode.Add(new ShiftLeft { DestinationReg = Registers.EAX, SourceRef = "0x1" });
                                     Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
                                 }
+                                else if (xParams.Length == 1 && xParams[0].ParameterType.ToString() == "System.Char*")
+                                {
+                                    Core.AssemblerCode.Add(new Push { DestinationReg = Registers.ESP, DestinationIndirect = true });
+                                    Core.AssemblerCode.Add(new Call(((MethodInfo)Core.StaticLabels["getLength_System_Char__"]).FullName()));
+                                    Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
+                                    Core.AssemblerCode.Add(new ShiftLeft { DestinationReg = Registers.EAX, SourceRef = "0x1" });
+                                    Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
+                                }
                                 else if (xParams.Length == 3 && xParams[0].ParameterType.ToString() == "System.Char[]" && xParams[1].ParameterType.ToString() == "System.Int32" && xParams[2].ParameterType.ToString() == "System.Int32")
                                 {
-                                    xHasCalcSize = true;
                                     Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.ESP, SourceIndirect = true });
                                     Core.AssemblerCode.Add(new ShiftLeft { DestinationReg = Registers.EAX, SourceRef = "0x1" });
                                     Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
                                 }
                                 else if (xParams.Length == 2 && xParams[0].ParameterType.ToString() == "System.Char" && xParams[1].ParameterType.ToString() == "System.Int32")
                                 {
-                                    xHasCalcSize = true;
                                     Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.ESP, SourceIndirect = true });
                                     Core.AssemblerCode.Add(new ShiftLeft { DestinationReg = Registers.EAX, SourceRef = "0x1" });
                                     Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
                                 }
                                 else
-                                    throw new NotImplementedException("In NewObj is a string ctor implementation missing!");
+                                    throw new NotImplementedException("In NewObj is a string ctor implementation missing!`" + xParams[0].ParameterType.ToString() + "`");
                             }
 
                             int xMemSize = ILHelper.StorageSize(xTargetType) + 12;

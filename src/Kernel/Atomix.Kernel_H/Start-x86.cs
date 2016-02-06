@@ -175,8 +175,7 @@ namespace Atomix.Kernel_H
             }
             catch (Exception e)
             {
-                Debug.Write("[@SystemThread]: %s\n", e.Message);
-                Heap.Free(e);
+                Debug.Write("[@SystemThread] => [EXIT]: %s\n", e.Message);
             }
 
             while(true);

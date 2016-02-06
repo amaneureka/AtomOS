@@ -40,6 +40,8 @@ namespace Atomix.Kernel_H.core
             COM_Scratch = 0x06
         };
 
+        static bool IsWriting;
+
         public static void Init()
         {
             var PORT = Port.Com1;
@@ -53,6 +55,7 @@ namespace Atomix.Kernel_H.core
             PortIO.Out8((ushort)(PORT + (ushort)Cmd.COM_Interrupt), 0x0F);
 
             Write("Debugger Initalized\n");
+            IsWriting = false;
         }
 
         private static void WaitForWriteReady()
@@ -62,6 +65,8 @@ namespace Atomix.Kernel_H.core
         
         public static void Write(string str, uint nums)
         {
+            Lock();
+
             char a;
             for (int i = 0; i < str.Length; i++)
             {
@@ -76,17 +81,20 @@ namespace Atomix.Kernel_H.core
                     Write(a);
                 }
             }
+            UnLock();
         }
 
         public static void Write(string str, string arg0)
         {
+            Lock();
+
             char a;
             for (int i = 0; i < str.Length; i++)
             {
                 a = str[i];
                 if (a == '%' && str[i + 1] == 's')
                 {
-                    Write(arg0);
+                    WriteAsync(arg0);
                     i++;
                 }
                 else
@@ -94,28 +102,34 @@ namespace Atomix.Kernel_H.core
                     Write(a);
                 }
             }
+            UnLock();
         }
 
         public static void Write(string str)
         {
-            for (int i = 0; i < str.Length; i++)
-            {
-                Write(str[i]);
-            }
+            Lock();
+            WriteAsync(str);
+            UnLock();
         }
 
-        public static void Write(char a)
+        private static void WriteAsync(string str)
+        {
+            for (int i = 0; i < str.Length; i++)
+                Write(str[i]);
+        }
+
+        private static void Write(char a)
         {
             Write((byte)a);
         }
 
-        public static void Write(byte a)
+        private static void Write(byte a)
         {
             WaitForWriteReady();
             PortIO.Out8((ushort)Port.Com1, a);
         }
 
-        public static void Write(uint a)
+        private static void Write(uint a)
         {
             uint tmp = a, c = 1;
 
@@ -132,6 +146,17 @@ namespace Atomix.Kernel_H.core
                 tmp %= c;
                 c /= 10;
             }
+        }
+
+        private static void Lock()
+        {
+            while (IsWriting) ;
+            IsWriting = true;
+        }
+
+        private static void UnLock()
+        {
+            IsWriting = false;
         }
     }
 }
