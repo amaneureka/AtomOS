@@ -91,6 +91,7 @@ namespace Atomix.Kernel_H.plugs
             xResult[xResPointer] = new string(xTemp, 0, xTempPointer);
             Heap.Free(xTemp);
             Heap.Free(IsDelimiter);
+            Heap.Free(delimiters);
             return xResult;
         }
 

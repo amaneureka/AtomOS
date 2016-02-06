@@ -83,24 +83,16 @@ namespace Atomix.Kernel_H.io.FileSystem
 
             /* Not Necessary, To Avoid Crashes during corrupted BPB Info */
             //Just to prevent ourself from hacking
-            if (TotalFAT == 0 || TotalFAT > 2 || BytePerSector == 0 || TotalSectors == 0)
+            if (TotalFAT == 0 || TotalFAT > 2 || BytePerSector == 0 || TotalSectors == 0 || SectorsPerCluster == 0)
             {
                 Heap.Free(BootSector);
                 return false;
             }
 
             /* Some basic calculations to check basic error :P */
-            try
-            {
-                uint RootDirSectors = 0;
-                DataSectorCount = TotalSectors - (ReservedSector + (TotalFAT * SectorsPerFAT) + RootDirSectors);
-                ClusterCount = DataSectorCount / SectorsPerCluster;
-            }
-            catch
-            {
-                Heap.Free(BootSector);
-                return false;
-            }
+            uint RootDirSectors = 0;
+            DataSectorCount = TotalSectors - (ReservedSector + (TotalFAT * SectorsPerFAT) + RootDirSectors);
+            ClusterCount = DataSectorCount / SectorsPerCluster;
 
             /* Finally we got key xD */
             if (ClusterCount < 4085)

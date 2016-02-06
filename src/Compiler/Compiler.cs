@@ -572,16 +572,15 @@ namespace Atomix
                     if (!Core.AssemblerCode.Contains(xLbl))
                         Core.AssemblerCode.Add(xLbl);
                 }
+
                 //If catch IL here than push current error so, that catch IL pop and do what it want
                 if (xNeedsExceptionPush)
                 {
-                    Core.AssemblerCode.Add(
-                        new Push { 
-                            DestinationRef = ((FieldInfo)Core.StaticLabels["Exception"]).FullName(), 
-                            DestinationIndirect = true });
-
+                    Core.AssemblerCode.Add(new Push { DestinationRef = "0x0" });
+                    Core.AssemblerCode.Add(new Call(((MethodInfo)Core.StaticLabels["GetException"]).FullName()));
                     Core.vStack.Push(4, typeof(Exception));
                 }
+
                 //Well this is just to comment whole output Assembly
                 if (!DoOptimization)
                     Core.AssemblerCode.Add(new Comment(Op.ToString() + "; " + Core.vStack.Count));

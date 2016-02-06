@@ -9,13 +9,14 @@ namespace Atomix.Kernel_H.core
     public class Thread
     {
         public readonly Process Process;
-        private uint Address;
-        private ThreadState State;
-        private uint StackBottom;
-        private uint StackTop;
-        private uint StackLimit;
-        public uint SleepTicks;
+        public Exception Exception;
 
+        ThreadState State;
+        uint Address;
+        uint StackBottom;
+        uint StackTop;
+        uint StackLimit;
+        
         public Thread(Process Parent, uint xAddress, uint StackStart, uint StackLimit)
         {
             this.Process = Parent;
@@ -77,21 +78,6 @@ namespace Atomix.Kernel_H.core
             Heap.Free(StackBottom, StackLimit);
         }
 
-        public void WakeUp()
-        {
-            this.State = ThreadState.Running;
-        }
-
-        public static void Sleep(uint ticks)
-        {
-            var curr = Scheduler.CurrentThread;
-            if (curr == null)
-                return;
-            curr.State = ThreadState.Sleep;
-            curr.SleepTicks = ticks;//Managed by scheduler.cs
-            while (curr.State == ThreadState.Sleep) ;//Hookup this while thread is sleeping
-        }
-
         public static void Die()
         {
             var curr = Scheduler.CurrentThread;
@@ -109,8 +95,8 @@ namespace Atomix.Kernel_H.core
     public enum ThreadState : int
     {
         NotActive = 0,
-        Running = 1,//Thread is currently running
-        Dead = 2,//Thread is terminated
-        Sleep = 3,//Thread is sleeping
+        Running = 1,    //Thread is currently running
+        Dead = 2,       //Thread is terminated
+        Sleep = 3,      //Thread is sleeping
     };
 }

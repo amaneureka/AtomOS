@@ -168,14 +168,18 @@ namespace Atomix.Kernel_H
 
             /* System Thread */
             new Thread(Scheduler.SystemProcess, 0, 0, 10000).Start();
-            
-            Boot.Init();
-            
-            while (true)
+
+            try
             {
-                Native.Cli();
-                Native.Hlt();
+                Boot.Init();
             }
+            catch (Exception e)
+            {
+                Debug.Write("[@SystemThread]: %s\n", e.Message);
+                Heap.Free(e);
+            }
+
+            while(true);
         }
     }
 }

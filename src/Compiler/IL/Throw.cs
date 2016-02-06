@@ -30,8 +30,7 @@ namespace Atomix.IL
                 #region _x86_
                 case CPUArch.x86:
                     {
-                        Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
-                        Core.AssemblerCode.Add(new Mov { DestinationRef = ((FieldInfo)Core.StaticLabels["Exception"]).FullName(), DestinationIndirect = true, SourceReg = Registers.EAX });
+                        Core.AssemblerCode.Add(new Call(((MethodInfo)Core.StaticLabels["SetException"]).FullName()));
                         Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "0x2" });
                         Core.AssemblerCode.Add(new Jmp { DestinationRef = xEndException });
                     }

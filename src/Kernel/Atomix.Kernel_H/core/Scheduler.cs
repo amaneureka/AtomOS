@@ -8,13 +8,10 @@ namespace Atomix.Kernel_H.core
 {
     public static class Scheduler
     {
-        static IQueue<Thread> ThreadQueue;
-        static IList<Thread> SleepingThreadsQueue;
         static Thread CurrentTask;
-        
-#warning SIZE 100 is constant and may lead to PF if it exceeded limit
+        static IQueue<Thread> ThreadQueue;
+
         static byte[] ResourceArray = new byte[500];
-        static bool IsHooked;
 
         public static Thread CurrentThread
         { get { return CurrentTask; } }
@@ -23,12 +20,10 @@ namespace Atomix.Kernel_H.core
         { get { return CurrentTask.Process; } }
 
         public static Process SystemProcess;
-        
+
         public static void Init()
         {
-            ThreadQueue = new IQueue<Thread>(100);//Allocate memory for atleast 100 threads, later on increase it
-            SleepingThreadsQueue = new IList<Thread>(100);
-            IsHooked = false;
+            ThreadQueue = new IQueue<Thread>(100);
         }
         
         public static void AddThread(Thread th)
@@ -38,9 +33,6 @@ namespace Atomix.Kernel_H.core
         
         public static uint SwitchTask(uint aStack)
         {
-            if (IsHooked)
-                return aStack;
-
             var NextTask = InvokeNext();
 
             if (CurrentTask == null)
@@ -60,46 +52,22 @@ namespace Atomix.Kernel_H.core
         }
 
         /// <summary>
-        /// Don't Switch the task
-        /// </summary>
-        public static void HookUp()
-        {
-            IsHooked = true;
-        }
-
-        /// <summary>
-        /// Begin Switching the task
-        /// </summary>
-        public static void UnHook()
-        {
-            IsHooked = false;
-        }
-
-        /// <summary>
         /// Lock up this resource till it won't freed up
         /// </summary>
         /// <param name="ID"></param>
         public static void SpinLock(int ID)
         {
-#warning we should switch task here because we are running on single core
+            //we should switch task here because we are running on single core
             while (ResourceArray[ID] != 0) ;//Hookup that thread till other thread free up that resource
             ResourceArray[ID] = 1;
         }
 
-        /// <summary>
-        /// Free up the resource
-        /// </summary>
-        /// <param name="ID"></param>
         public static void SpinUnlock(int ID)
         {
             ResourceArray[ID] = 0;
         }
 
         static int ResID = 0;
-        /// <summary>
-        /// Get Resource ID for spinlock
-        /// </summary>
-        /// <returns></returns>
         public static int GetResourceID()
         {
             return ResID++;
@@ -118,29 +86,14 @@ namespace Atomix.Kernel_H.core
                     case ThreadState.Running:
                         ThreadQueue.Enqueue(CurrentTask);
                         break;
-                    case ThreadState.Sleep:
-                        SleepingThreadsQueue.Add(CurrentTask);
-                        break;
                     case ThreadState.Dead:
-                        CurrentTask.FreeStack();//Free Stack Memory
                         Heap.Free(CurrentTask);//Free Thread Object
+                        CurrentTask.FreeStack();//Free Stack Memory
                         break;
                     default://Do nothing for not active
                         break;
                 }
             }
-            //Update Sleeping threads
-            /*for (int i = 0; i < SleepingThreadsQueue.Count; i++)
-            {
-                var th = SleepingThreadsQueue[i];
-                if (--th.SleepTicks == 0)
-                {
-                    ThreadQueue.Enqueue(th);
-                    th.WakeUp();
-                    SleepingThreadsQueue[i] = null;
-                }
-            }
-            SleepingThreadsQueue.Refresh();*/
             return ThreadQueue.Dequeue();
         }
     }
