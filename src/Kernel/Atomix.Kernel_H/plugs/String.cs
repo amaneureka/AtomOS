@@ -53,11 +53,46 @@ namespace Atomix.Kernel_H.plugs
             return *((int*)(aThis + 0xC));
         }
         
-        /*[Plug("System_String___System_String_Split_System_Char___")]
-        public static string[] Split(string str, char[] c)
+        [Plug("System_String___System_String_Split_System_Char___")]
+        public static string[] Split(string str, params char[] delimiters)
         {
-            
-        }*/
+            bool[] IsDelimiter = new bool[255];//assuming that we will split string with only first 255 chars
+            for (int index = 0; index < delimiters.Length; index++)
+                IsDelimiter[delimiters[index]] = true;
+
+            int Last = 0, parts = 0, MaximumLength = 0;
+            for (int index = 0; index < str.Length; index++)
+            {
+                if (IsDelimiter[str[index]])
+                {
+                    parts++;
+                    Last = index - Last;
+                    if (Last > MaximumLength)
+                        MaximumLength = Last;
+                    Last = index + 1;
+                }
+            }
+
+            var xResult = new string[parts + 1];
+            var xTemp = new char[MaximumLength + 1];
+
+            int xTempPointer = 0, xResPointer = 0;
+            for (int index = 0; index < str.Length; index++)
+            {
+                if (IsDelimiter[str[index]])
+                {
+                    xResult[xResPointer++] = new string(xTemp, 0, xTempPointer);
+                    xTempPointer = 0;
+                }
+                else
+                    xTemp[xTempPointer++] = str[index];
+            }
+
+            xResult[xResPointer] = new string(xTemp, 0, xTempPointer);
+            Heap.Free(xTemp);
+            Heap.Free(IsDelimiter);
+            return xResult;
+        }
 
         [Plug("System_String_System_String_Concat_System_String___")]
         public static string Concat(params string[] strs)

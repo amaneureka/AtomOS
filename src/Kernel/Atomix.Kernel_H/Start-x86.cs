@@ -168,43 +168,8 @@ namespace Atomix.Kernel_H
 
             /* System Thread */
             new Thread(Scheduler.SystemProcess, 0, 0, 10000).Start();
-
-            /*Compositor.Setup(Scheduler.SystemProcess);
-
-            var packet = new byte[32];
-
-            packet.SetUInt(0, 0xDEADCAFE);
-            packet.SetByte(4, 0xCC);
-            packet.SetInt(9, 512);
-            packet.SetInt(13, 512);
-            Compositor.SERVER.Write(packet);
-
-            var xATA = new drivers.buses.ATA.IDE(true);
-            var xMBR = new MBR(xATA);
             
-            var xFS = new io.FileSystem.FatFileSystem(xMBR.PartInfo[0]);
-            string[] paths = { "ANKIT" };
-
-            var xData = new byte[256];
-            if (xFS.IsValid)
-            {
-                Debug.Write("File System is valid!\n");
-                xFS.PrintDebugInfo();
-
-                var stream = xFS.GetFile(paths, 0);
-                if (stream != null)
-                {
-                    int c = 0;
-                    while ((c = stream.Read(xData, xData.Length)) != 0)
-                        Debug.Write(lib.encoding.ASCII.GetString(xData, 0, c));
-                }
-                else
-                    Debug.Write("File not found!\n");
-            }*/
-
             Boot.Init();
-
-            while (true) ;
             
             while (true)
             {

@@ -17,9 +17,10 @@ namespace Atomix.Kernel_H
         {
             Debug.Write("Boot Init()\n");
 
+            #region PS2 Devices
             Keyboard.Setup();
             Mouse.Setup();
-
+            #endregion
             #region IDE Devices
             /* Poll through all possible IDE Devices and mount them If they exist */
             LoadIDE(true, true);
@@ -35,6 +36,19 @@ namespace Atomix.Kernel_H
             packet.SetInt(9, 512);
             packet.SetInt(13, 512);
             Compositor.SERVER.Write(packet);
+            Debug.Write("Reading Test\n");
+            var stream = VirtualFileSystem.GetFile("sda0/ANKIT");
+            if (stream != null)
+            {
+                var xData = new byte[256];
+                int c = 0;
+                while ((c = stream.Read(xData, xData.Length)) != 0)
+                    Debug.Write(lib.encoding.ASCII.GetString(xData, 0, c));
+            }
+            else
+                Debug.Write("File not found!\n");
+
+            while (true) ;
         }
 
         public static void LoadIDE(bool IsPrimary, bool IsMaster)

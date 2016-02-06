@@ -33,7 +33,7 @@ namespace Atomix.Kernel_H.io.FileSystem
 
         public static Stream GetFile(string aPath)
         {
-            var paths = aPath.Split('\\');
+            var paths = aPath.Split('/');
             var FileSystem = GetFS(paths[0]);
             if (FileSystem == null)
                 return null;
@@ -44,7 +44,7 @@ namespace Atomix.Kernel_H.io.FileSystem
 
         public static bool CreateFile(string aPath)
         {
-            var paths = aPath.Split('\\');
+            var paths = aPath.Split('/');
             var FileSystem = GetFS(paths[0]);
             if (FileSystem == null)
                 return false;
