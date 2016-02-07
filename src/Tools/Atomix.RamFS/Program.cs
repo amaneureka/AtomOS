@@ -2,9 +2,6 @@
 using System.IO;
 using System.Collections.Generic;
 
-using DiscUtils;
-using DiscUtils.Fat;
-
 namespace Atomix.RamFS
 {
     public class Program

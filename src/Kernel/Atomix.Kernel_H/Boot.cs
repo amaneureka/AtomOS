@@ -51,7 +51,7 @@ namespace Atomix.Kernel_H
             packet.SetInt(13, 512);
             Compositor.SERVER.Write(packet);
             Debug.Write("Reading Test\n");
-            var stream = VirtualFileSystem.GetFile("sda0/readme.txt");
+            var stream = VirtualFileSystem.GetFile("sda1/ANKIT.P");
             if (stream != null)
             {
                 var xData = new byte[256];

@@ -178,6 +178,16 @@ namespace Atomix.Kernel_H.plugs
             return false;
         }
 
+        [Plug("System_Int32_System_String_IndexOf_System_Char__System_Int32__System_Int32_")]
+        public static int IndexOf(string str, char toFind, int start, int length)
+        {
+            int end = start + length;
+            for (int index = start; index < end; index++)
+                if (str[index] == toFind)
+                    return index;
+            return -1;
+        }
+
         public static bool StartWith(string str, string toFind)
         {
             int length = str.Length;
