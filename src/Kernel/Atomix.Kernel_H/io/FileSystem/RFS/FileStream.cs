@@ -7,21 +7,21 @@ namespace Atomix.Kernel_H.io.FileSystem.RFS
 {
     public unsafe class FileStream : Stream
     {
-        private RamFile mRamFile;
+        public readonly RamFile RamFile;
         private int mPosition;
-
+        
         public FileStream(RamFile aRamFile)
         {
-            this.mRamFile = aRamFile;
+            this.RamFile = aRamFile;
             this.mPosition = 0;
         }
 
         public override int Read(byte[] aBuffer, int aCount)
         {
-            if (aCount + mPosition > mRamFile.Length)
-                aCount = mRamFile.Length - mPosition;
+            if (aCount + mPosition > RamFile.Length)
+                aCount = RamFile.Length - mPosition;
 
-            var xAddress = (byte*)(mRamFile.StartAddress + mPosition);
+            var xAddress = (byte*)(RamFile.StartAddress + mPosition);
             for (int index = 0; index < aCount; index++)
                 aBuffer[index] = xAddress[index];
 

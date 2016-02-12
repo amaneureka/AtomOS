@@ -30,17 +30,17 @@ namespace Atomix.Kernel_H
             else
                 throw new Exception("RamDisk not found!");
             #endregion
-
             #region PS2 Devices
             Keyboard.Setup();
             Mouse.Setup();
             #endregion
+
+            /*
             #region IDE Devices
-            /* Poll through all possible IDE Devices and mount them If they exist */
             LoadIDE(true, true);
             LoadIDE(false, true);
             #endregion
-
+            */
             Compositor.Setup(Scheduler.SystemProcess);
 
             var packet = new byte[32];
@@ -50,8 +50,10 @@ namespace Atomix.Kernel_H
             packet.SetInt(9, 512);
             packet.SetInt(13, 512);
             Compositor.SERVER.Write(packet);
+
+
             Debug.Write("Reading Test\n");
-            var stream = VirtualFileSystem.GetFile("sda1/ANKIT.P");
+            var stream = VirtualFileSystem.GetFile("disk1/README.TXT");
             if (stream != null)
             {
                 var xData = new byte[256];
@@ -64,7 +66,7 @@ namespace Atomix.Kernel_H
 
             while (true) ;
         }
-
+        
         public static void LoadIDE(bool IsPrimary, bool IsMaster)
         {
             var xIDE = new IDE(IsPrimary, IsMaster);
@@ -92,7 +94,6 @@ namespace Atomix.Kernel_H
                                     var xFileSystem = new FatFileSystem(xMBR.PartInfo[i]);
                                     if (xFileSystem.IsValid)
                                     {
-                                        VirtualFileSystem.MountDevice(null, xFileSystem);
                                         VirtualFileSystem.MountDevice(null, xFileSystem);
                                         Clean = false;
                                     }

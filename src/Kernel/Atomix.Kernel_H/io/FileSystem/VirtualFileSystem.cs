@@ -28,6 +28,8 @@ namespace Atomix.Kernel_H.io.FileSystem
 
         public static GenericFileSystem GetFS(string aDevice)
         {
+            if (!MountedFS.Contains(aDevice))
+                return null;
             return MountedFS[aDevice];
         }
 
@@ -38,7 +40,7 @@ namespace Atomix.Kernel_H.io.FileSystem
             if (FileSystem == null)
                 return null;
             var xStream = FileSystem.GetFile(paths, 1);
-            Heap.Free(paths);
+            Heap.FreeArray(paths);
             return xStream;
         }
 
@@ -49,7 +51,7 @@ namespace Atomix.Kernel_H.io.FileSystem
             if (FileSystem == null)
                 return false;
             var xValue = FileSystem.CreateFile(paths, 1);
-            Heap.Free(paths);
+            Heap.FreeArray(paths);
             return xValue;
         }
 
@@ -73,7 +75,7 @@ namespace Atomix.Kernel_H.io.FileSystem
         private static string GetDeviceLabel()
         {
             string suffix = (mDeviceLabelCounter++).ToString();
-            string Label = ("sda") + suffix;
+            string Label = ("disk") + suffix;
             Heap.Free(suffix);
             return Label;
         }

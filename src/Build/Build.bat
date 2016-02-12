@@ -6,5 +6,6 @@ Title Atomix Batch Builder
 chdir ".\Output"
 nasm.exe -fbin ".\Kernel.asm" -o "..\ISO\Kernel.bin"
 mkisofs.exe -o AtomOS-Alfa.iso -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table "..\ISO"
+chdir ".."
 ::%SystemRoot%\explorer.exe ".\Output"
 echo %time%

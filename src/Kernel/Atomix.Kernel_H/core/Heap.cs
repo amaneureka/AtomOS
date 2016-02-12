@@ -252,11 +252,11 @@ namespace Atomix.Kernel_H.core
             return pos;
         }
 
-        public static void Free(object[] objs)
+        public static void FreeArray(object[] objs)
         {
             for (int i = 0; i < objs.Length; i++)
                 Free(objs[i]);
-            Free((object)objs);
+            Free(objs);
         }
 
         /// <summary>

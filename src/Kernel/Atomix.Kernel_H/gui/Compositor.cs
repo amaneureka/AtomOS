@@ -7,7 +7,6 @@ using Atomix.Kernel_H.arch.x86;
 using Atomix.Kernel_H.lib.graphic;
 using Atomix.Kernel_H.drivers.video;
 using Atomix.Kernel_H.drivers.input;
-using Atomix.Kernel_H.io.FileSystem;
 
 namespace Atomix.Kernel_H.gui
 {
@@ -62,7 +61,7 @@ namespace Atomix.Kernel_H.gui
         private static uint pRender;
         private static void Render()
         {
-            Debug.Write("[@Compositor]: Render()\n");
+            Debug.Write("[Compositor]: Render()\n");
 
             int old_mouse_X = 0, old_mouse_Y = 0, screen_width = VBE.Xres, screen_height = VBE.Yres;
             var emptyscreen = Helper.GetEmptyScreen();
@@ -215,7 +214,7 @@ namespace Atomix.Kernel_H.gui
         private static uint pHandleMouse;
         private static void HandleMouse()
         {
-            Debug.Write("[@Compositor]: Handle Mouse()\n");
+            Debug.Write("[Compositor]: Handle Mouse()\n");
 
             var packet = new byte[4];
             var compositor_packet = new byte[PACKET_SIZE];
