@@ -53,10 +53,21 @@ namespace Atomix.IL
                                     Core.AssemblerCode.Add(new Cmp { DestinationReg = Registers.EAX, SourceRef = "0x0" });
                                     Core.AssemblerCode.Add(new Jmp { Condition = ConditionalJumpEnum.JNE, DestinationRef = xTrueLabel });
                                 }
-                                break;                                
+                                break;
+                            case 8:
+                                {
+                                    Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
+                                    Core.AssemblerCode.Add(new Cmp { DestinationReg = Registers.EAX, SourceRef = "0x0" });
+                                    
+                                    Core.AssemblerCode.Add(new Jmp { Condition = ConditionalJumpEnum.JNE, DestinationRef = xTrueLabel });
+                                    Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
+                                    Core.AssemblerCode.Add(new Cmp { DestinationReg = Registers.EAX, SourceRef = "0x0" });
+                                    Core.AssemblerCode.Add(new Jmp { Condition = ConditionalJumpEnum.JNE, DestinationRef = xTrueLabel });
+                                }
+                                break;
                             default:
                                 //Size > 4 is never called don't know why
-                                throw new Exception("@Brfalse: Unexpected size called");
+                                throw new Exception("@Brtrue: Unexpected size called := " + xSize);
                         }
                     }
                     break;

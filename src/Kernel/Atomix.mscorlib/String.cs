@@ -21,23 +21,30 @@ namespace Atomix.mscorlib
             ctor(aFirstChar, aChar, 0, aChar.Length);
         }
 
+        [Plug("System_Void__System_String__ctor_System_Char__")]
+        public static unsafe void ctor(byte* aFirstChar, char* aChar)
+        {
+            int i = 0;
+            char* chars = (char*)(aFirstChar + 0x10);
+            while (*aChar != '\0')
+            {
+                *chars = *aChar;
+                ++chars;
+                ++aChar;
+                ++i;
+            }
+            *((int*)(aFirstChar + 0xC)) = i;
+        }
+
         [Plug("System_Void__System_String__ctor_System_Char____System_Int32__System_Int32_")]
         public static unsafe void ctor(byte* aFirstChar, char[] aChar, int Start, int Length)
         {
-            byte* length = (byte*)(aFirstChar + 0xC);
-
-            var _a = BitConverter.GetBytes(Length);
-            length[0] = _a[0];
-            length[1] = _a[1];
-            length[2] = _a[2];
-            length[3] = _a[3];
-
+            int i;
             char* chars = (char*)(aFirstChar + 0x10);
-            for (int i = 0; i < Length; i++)
-            {
+            for (i = 0; i < Length; i++)
                 chars[i] = aChar[i + Start];
-            }
-            #warning TODO: Trim the last null chars
+
+            *((int*)(aFirstChar + 0xC)) = i;
         }
 
         [Plug("System_Char_System_String_get_Chars_System_Int32_")]
@@ -141,6 +148,18 @@ namespace Atomix.mscorlib
         public static string PadRight(string aThis, int TotalWidth, char paddingchar)
         {
             return Padding(aThis, TotalWidth, paddingchar, true);
+        }
+
+        [Label("getLength_System_Char__")]
+        public unsafe static int getLength(char* str)
+        {
+            int length = 0;
+            while (*str != '\0')
+            {
+                ++str;
+                ++length;
+            }
+            return length;
         }
 
         private static string Padding(string aThis, int TotalWidth, char PaddingChar, bool Direction)
