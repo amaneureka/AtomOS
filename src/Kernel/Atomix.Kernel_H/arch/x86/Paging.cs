@@ -128,7 +128,7 @@ namespace Atomix.Kernel_H.arch.x86
                 {
                     for (int j = 0; j < 32; j++)
                     {
-                        if ((MemoryFrames[i] & (0x1 << j)) == 0)
+                        if ((uint)(MemoryFrames[i] & (0x1 << j)) == 0)
                             return (uint)((i << 5) + j);
                     }
                 }

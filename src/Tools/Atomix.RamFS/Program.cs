@@ -65,18 +65,17 @@ namespace Atomix.RamFS
             using (var xOutput = File.Create(OutputFile))
             {
                 //TODO: First Entry
+                var HeaderInfo = new byte[32];
                 foreach(var file in FilesToAdd)
                 {
-                    xOutput.Seek(EntryPointer, SeekOrigin.Begin);
-                    xOutput.Write(file.GetEntryData(DataAreaPointer), 0, 32);
+                    file.GetEntryData(DataAreaPointer, HeaderInfo);
 
-                    var xData = new byte[file.Data.Length];
-                    file.Data.Read(xData, 0, xData.Length);
+                    xOutput.Seek(EntryPointer, SeekOrigin.Begin);
+                    xOutput.Write(HeaderInfo, 0, 32);
 
                     xOutput.Seek(DataAreaPointer, SeekOrigin.Begin);
-                    xOutput.Write(xData, 0, xData.Length);
 
-                    DataAreaPointer += xData.Length;
+                    DataAreaPointer += file.Dump(xOutput);
                     Align256(ref DataAreaPointer);
                     EntryPointer += 32;
                 }
