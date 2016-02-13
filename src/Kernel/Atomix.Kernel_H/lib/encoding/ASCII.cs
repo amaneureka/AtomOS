@@ -13,7 +13,7 @@ namespace Atomix.Kernel_H.lib.encoding
             {
                 if (aData[index + i] == 0x0)
                 {
-                    newlen = i + 1;
+                    newlen = i;
                     break;
                 }
             }

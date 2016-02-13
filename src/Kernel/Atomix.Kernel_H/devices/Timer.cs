@@ -23,12 +23,8 @@ namespace Atomix.Kernel_H.devices
 
         public static void Tick()
         {
+            //Tick Tok Tick Tok :P
             TicksFromStart++;
-            /*if (TicksFromStart % 100 == 0)
-            {
-                Debug.Write("FPS:=%d\n", gui.Compositor.FRAMES);
-                gui.Compositor.FRAMES = 0;
-            }*/
         }
 
         private static void SetFrequency(int Hz)

@@ -115,26 +115,21 @@ namespace Atomix.IL
                             else
                             {
                                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.ESP, SourceIndirect = true, SourceDisplacement = (int)xThisOffset });
-                                Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX, DestinationIndirect = true });
-
-                                //TypeID
+                                Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EAX, SourceIndirect = true });
+                                
+                                Core.AssemblerCode.Add(new Push { DestinationRef = "__VTable_Flush__" });
+                                Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
+                                Core.AssemblerCode.Add(new Push { DestinationRef = "0x" + xOp.MethodUID.ToString("X") });
+                                Core.AssemblerCode.Add(new Call("VTableImpl", true));
                                 Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
-                                Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceRef = "200" });//50 * 4
-                                //Hmm, Look at VTableFlush();
-                                Core.AssemblerCode.Add(new Multiply { DestinationReg = Registers.EBX });
-                                Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EAX, SourceRef = "0x" + (4 * (xOp.MethodUID + 0)).ToString("X") });
-                                Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EAX, SourceRef = "__VTable_Flush__" });
 
                                 if (xTarget.DeclaringType == typeof(object))
-                                {
                                     throw new Exception("@Callvirt:: Not implemented");
-                                }
 
                                 if (SizeToReserve > 0)
-                                {
                                     Core.AssemblerCode.Add(new Sub { DestinationReg = Registers.ESP, SourceRef = "0x" + SizeToReserve.ToString("X") });
-                                }
-                                Core.AssemblerCode.Add(new Call("[EAX]"));
+                                
+                                Core.AssemblerCode.Add(new Call("EAX"));
                             }
                         }
 

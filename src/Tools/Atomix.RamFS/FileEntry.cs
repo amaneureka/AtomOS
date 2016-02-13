@@ -11,7 +11,6 @@ namespace Atomix.RamFS
     {
         public string FileName { get; private set; }
         public Stream FileData { get; private set; }
-
         public byte[] RawData { get; private set; }
         
         public FileEntry(string aName, Stream aData)
@@ -41,7 +40,7 @@ namespace Atomix.RamFS
                             for (int x = 0; x < bitmap.Width; x++, pointer += 4)
                                 Array.Copy(BitConverter.GetBytes(bitmap.GetPixel(x, y).ToArgb()), 0, RawData, pointer, 4);
                     }
-                    FileName.Replace(".png", ".xmp");
+                    FileName = FileName.Replace(".png", ".xmp");
                     break;
                 default:
                     {
@@ -62,7 +61,7 @@ namespace Atomix.RamFS
             var xNameByteArray = Encoding.Unicode.GetBytes(FileName);
             Array.Copy(xNameByteArray, 0, xResult, 0, xNameByteArray.Length);
             Array.Copy(BitConverter.GetBytes(StartAddress), 0, xResult, 24, 4);
-            Array.Copy(BitConverter.GetBytes(FileData.Length), 0, xResult, 28, 4);
+            Array.Copy(BitConverter.GetBytes(RawData.Length), 0, xResult, 28, 4);
         }
 
         public int Dump(Stream xOutput)

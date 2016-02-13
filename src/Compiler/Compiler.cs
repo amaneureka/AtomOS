@@ -722,24 +722,41 @@ namespace Atomix
 
         private void VTableFlush()
         {
-            #warning Here is a constant of 50 types with 100 methods are takes (HACK!!), Same code in Callvirt.cs
-            var xList = new string[50 * 100];
-            uint xUID = 0, tmp = 0, max = 0;
+            uint xUID = 0;
+
+            var xDict = new Dictionary<int, List<MethodInfo>>();
             foreach (var xV in Virtuals)
-            {   
-                ILOpCodes.OpMethod.MethodUIDs.TryGetValue(xV.GetBaseDefinition(), out xUID);
+            {
+                OpMethod.MethodUIDs.TryGetValue(xV.GetBaseDefinition(), out xUID);
                 if (xUID == 0)
                     continue;
 
                 var xTypeID = ILHelper.GetTypeID(xV.DeclaringType);
-                tmp = (uint)((xTypeID * 50) + xUID);
-                xList[tmp] = xV.FullName();
-                if (tmp > max)
-                    max = tmp;
+                if (!xDict.ContainsKey(xTypeID))
+                    xDict[xTypeID] = new List<MethodInfo>();
+                xDict[xTypeID].Add(xV);
             }
-            var xFinalList = new string[max + 1];
-            Array.Copy(xList, xFinalList, max + 1);
-            Core.DataMember.Add(new AsmData("__VTable_Flush__", xFinalList));
+
+            var xVTableData = new List<string>();
+            foreach(var xItem in xDict)
+            {
+                int xTypeID = xItem.Key;
+                int xSize = 3 + (xItem.Value.Count * 2);
+                xVTableData.Add(xSize.ToString());
+                xVTableData.Add(xTypeID.ToString());
+                
+                foreach(var yItem in xItem.Value)
+                {
+                    string xLabel = yItem.FullName();
+                    xUID = OpMethod.MethodUIDs[yItem.GetBaseDefinition()];
+                    xVTableData.Add(xUID.ToString());
+                    xVTableData.Add(xLabel);
+                    //Console.WriteLine(string.Format("[VTable]: {0} {1} {2}", xTypeID, xUID, xLabel));
+                }
+                xVTableData.Add("0");
+            }
+            xVTableData.Add("0");
+            Core.DataMember.Add(new AsmData("__VTable_Flush__", xVTableData.ToArray()));
         }
         
         private void ProcessDelegate(MethodBase xMethod)

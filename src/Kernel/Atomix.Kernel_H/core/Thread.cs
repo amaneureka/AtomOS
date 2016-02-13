@@ -24,7 +24,7 @@ namespace Atomix.Kernel_H.core
             this.Process.Threads.Add(this);
             this.State = ThreadState.NotActive;
             this.StackTop = StackStart;
-            this.StackBottom = StackTop - StackLimit;
+            this.StackBottom = StackStart - StackLimit;
             this.StackLimit = StackLimit;
 
             if (StackStart != 0)
@@ -36,7 +36,7 @@ namespace Atomix.Kernel_H.core
             if (this.State == ThreadState.NotActive)
             {
                 this.State = ThreadState.Running;
-                Debug.Write("[@Thread]: Start()\n");
+                Debug.Write("[Thread]: Start()\n");
                 Scheduler.AddThread(this);
             }
         }

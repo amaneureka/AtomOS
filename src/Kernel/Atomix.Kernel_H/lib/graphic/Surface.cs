@@ -1,42 +1,33 @@
 ﻿using System;
 
-using Atomix.Kernel_H.core;
-
-using Atomix.CompilerExt;
-using Atomix.CompilerExt.Attributes;
-
 using Atomix.Assembler;
 using Atomix.Assembler.x86;
+
+using Atomix.CompilerExt.Attributes;
 using Core = Atomix.Assembler.AssemblyHelper;
 
 namespace Atomix.Kernel_H.lib.graphic
 {
     public unsafe class Surface
     {
-        private byte* aBuffer;
-        private int Width;
-        private int Height;
+        private byte* mBuffer;
+        private int mWidth;
+        private int mHeight;
 
         private Rectangle* Rectangle_List;
         private int Rectangle_List_index;
         
         public Surface(byte* backbuffer, int width, int height)
         {
-            this.aBuffer = backbuffer;
-            this.Width = width;
-            this.Height = height;
-
-            this.Rectangle_List = (Rectangle*)Heap.kmalloc(0x10 * 1000);//1000 rectangles
-            this.Rectangle_List_index = 0;
-        }
-
-        public void Reset()
-        {
-            Rectangle_List_index = 0;
+            this.mBuffer = backbuffer;
+            this.mWidth = width;
+            this.mHeight = height;
         }
         
         public void Fill(byte* bitamp, int x, int y, int w, int h)
         {
+            return;
+
             int a, b, c, d, p, q, r, s, l, m, n, o;
 
             a = x;
@@ -65,10 +56,71 @@ namespace Atomix.Kernel_H.lib.graphic
                 o = Math.Min(s, d);
 
                 //Draw on buffer @{(l, m), (n, o)} from bitamp {(l-x, m-y), (n-x, o-y)}
-                CopyToBuffer(aBuffer, bitamp, l, m, Width, Height, l - x, m - y, w, n - l + 1, o - m + 1);
+                CopyToBuffer(mBuffer, bitamp, l, m, mWidth, mHeight, l - x, m - y, w, n - l + 1, o - m + 1);
             }
         }
 
+        public void Clear(uint aColor)
+        {
+            Surface.Clear(mBuffer, aColor, (mWidth * mHeight * 4));
+        }
+        
+        public void Rectangle(int x, int y, int w, int h)
+        {
+            return;
+
+            if (w <= 0 || h <= 0)
+                return;
+
+            int a, b, c, d, p, q, r, s, l, m, n, o;
+
+            a = x;
+            b = y;
+            c = a + w - 1;
+            d = b + h - 1;
+
+            int count = Rectangle_List_index;
+            for (int index = 0; index < count; index++)
+            {
+                var rect_a = Rectangle_List[index];
+
+                p = rect_a.x;
+                q = rect_a.y;
+                r = p + rect_a.width - 1;
+                s = q + rect_a.height - 1;
+
+                //They won't overlap
+                if (r < x || s < y || c < p || d < q)
+                    continue;
+
+                //Overlaping rectangles
+                l = Math.Min(p, a);
+                m = Math.Min(q, b);
+                n = Math.Max(r, c);
+                o = Math.Max(s, d);
+
+                rect_a.x = l;
+                rect_a.y = m;
+                rect_a.width = n - l + 1;
+                rect_a.height = o - m + 1;
+                return;
+            }
+            List_Add(x, y, w, h);
+        }
+
+        private void List_Add(int x, int y, int w, int h)
+        {
+            return;
+
+            int index = Rectangle_List_index;
+            Rectangle_List[index].x = x;
+            Rectangle_List[index].y = y;
+            Rectangle_List[index].width = w;
+            Rectangle_List[index].height = h;
+            //Rectangle_List_index = index + 1;
+        }
+
+        #region Static Functions
         /*
          * "des"                [EBP + 48]
          * "src"                [EBP + 44]
@@ -156,56 +208,21 @@ namespace Atomix.Kernel_H.lib.graphic
             Core.AssemblerCode.Add(new Jmp { Condition = ConditionalJumpEnum.JNZ, DestinationRef = Label.PrimaryLabel + ".draw_loop" });
             Core.AssemblerCode.Add(new Add { DestinationReg = Registers.ESP, SourceRef = "0x8" });//2 items on stack
         }
-
-        public void Rectangle(int x, int y, int w, int h)
+        
+        [Assembly(0x8)]
+        public static void Clear(byte* aAddress, uint aColor, int aSize)
         {
-            if (w <= 0 || h <= 0)
-                return;
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0xC, SourceIndirect = true });
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ESI, SourceReg = Registers.EBP, SourceDisplacement = 0x10, SourceIndirect = true });
 
-            int a, b, c, d, p, q, r, s, l, m, n, o;
-
-            a = x;
-            b = y;
-            c = a + w - 1;
-            d = b + h - 1;
-
-            int count = Rectangle_List_index;
-            for (int index = 0; index < count; index++)
-            {
-                var rect_a = Rectangle_List[index];
-
-                p = rect_a.x;
-                q = rect_a.y;
-                r = p + rect_a.width - 1;
-                s = q + rect_a.height - 1;
-
-                //They won't overlap
-                if (r < x || s < y || c < p || d < q)
-                    continue;
-
-                //Overlaping rectangles
-                l = Math.Min(p, a);
-                m = Math.Min(q, b);
-                n = Math.Max(r, c);
-                o = Math.Max(s, d);
-
-                rect_a.x = l;
-                rect_a.y = m;
-                rect_a.width = n - l + 1;
-                rect_a.height = o - m + 1;
-                return;
-            }
-            List_Add(x, y, w, h);
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.EBX });
+            Core.AssemblerCode.Add(new Shr { DestinationReg = Registers.ECX, SourceRef = "0x2" });
+            Core.AssemblerCode.Add(new Literal("rep stosd"));
+            Core.AssemblerCode.Add(new And { DestinationReg = Registers.EBX, SourceRef = "0x3" });
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.EBX });
+            Core.AssemblerCode.Add(new Literal("rep stosd"));
         }
-
-        private void List_Add(int x, int y, int w, int h)
-        {
-            int index = Rectangle_List_index;
-            Rectangle_List[index].x = x;
-            Rectangle_List[index].y = y;
-            Rectangle_List[index].width = w;
-            Rectangle_List[index].height = h;
-            Rectangle_List_index = index + 1;
-        }
+        #endregion
     }
 }

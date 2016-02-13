@@ -37,10 +37,10 @@ namespace Atomix.Kernel_H.io.FileSystem.FAT.Find
 
             for (index = 0; index < dot; index++)
             {
-                if (data[offset + index] != Name[index])
+                if ((data[offset + index] & 0xDF) != (Name[index] & 0xDF))
                     return false;
             }
-            
+
             for (index = 10; index >= 8 && data[offset + index] == ' '; index--) ;
             index -= 7;
 
@@ -53,7 +53,7 @@ namespace Atomix.Kernel_H.io.FileSystem.FAT.Find
             dot++;
             for (index = 0; index < index2; index++)
             {
-                if (data[offset + index + 8] != Name[dot + index])
+                if ((data[offset + index + 8] & 0xDF) != (Name[dot + index] & 0xDF))
                     return false;
             }
 

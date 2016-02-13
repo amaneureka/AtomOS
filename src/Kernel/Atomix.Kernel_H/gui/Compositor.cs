@@ -56,7 +56,24 @@ namespace Atomix.Kernel_H.gui
             new Thread(parent, pRender, RENDER_STACK + 0x1000, 0x1000).Start();
         }
 
-        public static uint FRAMES;
+        public static int AddClient(Pipe aClient)
+        {
+            if (aClient == null)
+                return -1;
+            Clients.Add(aClient);
+            return (Clients.Count - 1);
+        }
+
+        public static byte[] RequestPacket(int aClientID)
+        {
+            var Request = new byte[32];
+            Request.SetUInt(0, MAGIC);
+            Request.SetInt(5, aClientID);
+
+            return Request;
+        }
+
+        public static bool ScreenUpdate = true;
 
         private static uint pRender;
         private static void Render()
@@ -64,10 +81,9 @@ namespace Atomix.Kernel_H.gui
             Debug.Write("[Compositor]: Render()\n");
 
             int old_mouse_X = 0, old_mouse_Y = 0, screen_width = VBE.Xres, screen_height = VBE.Yres;
-            var emptyscreen = Helper.GetEmptyScreen();
             var MouseBuffer = Helper.GetMouseBitamp();
 
-            bool MouseUpdate = true, ScreenUpdate = true;
+            bool MouseUpdate = true;
             while(true)
             {
                 int tmp_mouse_X = Mouse_X;
@@ -76,16 +92,14 @@ namespace Atomix.Kernel_H.gui
                 if (tmp_mouse_X != old_mouse_X || tmp_mouse_Y != old_mouse_Y)
                     MouseUpdate = true;
 
-                if (MouseUpdate)
+                if (ScreenUpdate)
                 {
-                    Surface.CopyToBuffer(VBE.SecondaryBuffer, emptyscreen, 0, 0, screen_width, screen_height, 0, 0, screen_width, screen_width, screen_height);
-
                     Scheduler.SpinLock(WindowList_Lock);
                     for (int i = 0; i < WindowList.Count; i++)
                     {
                         var win = WindowList[i];
                         //Canvas.Fill((byte*)win.Buffer, win.PositionX, win.PositionY, win.Width, win.Height);
-                        Surface.CopyToBuffer(VBE.SecondaryBuffer, (byte*)win.Buffer, tmp_mouse_X, tmp_mouse_Y, screen_width, screen_height, 0, 0, win.Width, win.Width, win.Height);
+                        Surface.CopyToBuffer(VBE.SecondaryBuffer, (byte*)win.Buffer, win.PositionX, win.PositionY, screen_width, screen_height, 0, 0, win.Width, win.Width, win.Height);
                     }
                     Scheduler.SpinUnlock(WindowList_Lock);
 
@@ -93,7 +107,6 @@ namespace Atomix.Kernel_H.gui
                     //TODO: Flip only that much of region
                     VBE.Update();
 
-                    Canvas.Reset();
                     ScreenUpdate = false;
                     MouseUpdate = true;
                 }
@@ -107,7 +120,6 @@ namespace Atomix.Kernel_H.gui
                     old_mouse_Y = tmp_mouse_Y;
                     MouseUpdate = false;
                 }
-                FRAMES++;
             }
             Thread.Die();
         }
@@ -115,7 +127,7 @@ namespace Atomix.Kernel_H.gui
         private static uint pHandleRequest;
         private static void HandleRequest()
         {
-            Debug.Write("[@Compositor]: Handle Request()\n");
+            Debug.Write("[Compositor]: Handle Request()\n");
             var compositor_packet = new byte[PACKET_SIZE];
 
             while(true)
@@ -147,7 +159,16 @@ namespace Atomix.Kernel_H.gui
                              */
                             int WindowWidth = BitConverter.ToInt32(compositor_packet, 9);
                             int WindowHeight = BitConverter.ToInt32(compositor_packet, 13);
-                            var xNewWindow = new Window(ClientID) { Width = WindowWidth, Height = WindowHeight };
+                            int WindowPosX = BitConverter.ToInt32(compositor_packet, 17);
+                            int WindowPosY = BitConverter.ToInt32(compositor_packet, 21);
+
+                            if (WindowWidth == -1)
+                                WindowWidth = VBE.Xres;
+
+                            if (WindowHeight == -1)
+                                WindowHeight = VBE.Yres;
+
+                            var xNewWindow = new Window(ClientID) { Width = WindowWidth, Height = WindowHeight, PositionX = WindowPosX, PositionY = WindowPosY };
 
                             string HashString = xNewWindow.HashString;
                             xNewWindow.Buffer = SHM.Obtain(HashString, (WindowHeight * WindowWidth * VBE.BytesPerPixel), true);
@@ -162,15 +183,15 @@ namespace Atomix.Kernel_H.gui
                             WindowList.Add(xNewWindow);
                             Scheduler.SpinUnlock(WindowList_Lock);
 
-                            //Clients[ClientID].Write(compositor_packet, false);
+                            Clients[ClientID].Write(compositor_packet, false);
                         }
                         break;
                     case RequestHeader.WINDOW_REDRAW:
-                        {
+                        {   
                             string HashCode = lib.encoding.ASCII.GetString(compositor_packet, 9, 23);
-                            var Window = WindowMap[HashCode];
-                            if (Window != null)//We should give a response to client but leave for now!
+                            if (WindowMap.Contains(HashCode))//We should give a response to client but leave for now!
                             {
+                                var Window = WindowMap[HashCode];
                                 MarkRectangle(Window.PositionX, Window.PositionY, Window.Width, Window.Height);
                             }
                         }
@@ -225,7 +246,7 @@ namespace Atomix.Kernel_H.gui
                 Mouse.MousePipe.Read(packet);
                 if (packet[0] != Mouse.MOUSE_MAGIC)
                 {
-                    Debug.Write("Invalid Mouse Packet MAGIC:=%d\n", (uint)packet[0]);
+                    Debug.Write("[Compositor]: Invalid Mouse Packet MAGIC:=%d\n", (uint)packet[0]);
                     continue;
                 }
                 compositor_packet[4] = (byte)RequestHeader.INPUT_MOUSE_EVENT;
@@ -242,6 +263,7 @@ namespace Atomix.Kernel_H.gui
             Scheduler.SpinLock(Surface_Lock);
             Canvas.Rectangle(x, y, width, height);
             Scheduler.SpinUnlock(Surface_Lock);
+            ScreenUpdate = true;
         }
     }
 }

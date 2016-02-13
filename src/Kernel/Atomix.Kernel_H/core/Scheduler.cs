@@ -87,8 +87,8 @@ namespace Atomix.Kernel_H.core
                         ThreadQueue.Enqueue(CurrentTask);
                         break;
                     case ThreadState.Dead:
-                        Heap.Free(CurrentTask);//Free Thread Object
                         CurrentTask.FreeStack();//Free Stack Memory
+                        Heap.Free(CurrentTask);//Free Thread Object
                         break;
                     default://Do nothing for not active
                         break;
