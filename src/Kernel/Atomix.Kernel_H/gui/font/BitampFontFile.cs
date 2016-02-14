@@ -12,8 +12,8 @@ namespace Atomix.Kernel_H.gui.font
 
         public BitampFontFile(string aData)
         {
-            this.FontData = aData;
-            this.IsValid = LoadFontData();
+            FontData = aData;
+            IsValid = LoadFontData();
         }
 
         private bool LoadFontData()
@@ -28,7 +28,27 @@ namespace Atomix.Kernel_H.gui.font
             for (int index = 0; index < NumberOfLines; index++)
             {
                 var xCurrent = strs[index];
-                if (ParsingGlyphTable)
+
+                if (xCurrent.StartsWith("STARTCHAR"))
+                {
+                    CurrentGlyph = null;
+                    ParsingIndividualFont = true;
+                }
+                else if (xCurrent == "ENDCHAR")
+                {
+                    CurrentGlyph = new Glyph()
+                    {
+                        Width = GlyphWidth,
+                        Height = GlyphHeight,
+                        xOffset = GlyphXOffset,
+                        yOffset = GlyphYOffset,
+                        DWidth = GlyphDWidth,
+                        Character = GlyphCode
+                    };
+                    ParsingIndividualFont = false;
+                    ParsingGlyphTable = false;
+                }
+                else if (ParsingGlyphTable)
                 {
 
                 }
@@ -53,29 +73,10 @@ namespace Atomix.Kernel_H.gui.font
                         GlyphYOffset = int.Parse(PropertyAndtag[4]);
                     }
                 }
-                else if (xCurrent.StartsWith("STARTCHAR"))
-                {
-                    CurrentGlyph = null;
-                    ParsingIndividualFont = true;
-                }
-                else if (xCurrent == "ENDCHAR")
-                {
-                    CurrentGlyph = new Glyph()
-                        {
-                            Width = GlyphWidth,
-                            Height = GlyphHeight,
-                            xOffset = GlyphXOffset,
-                            yOffset = GlyphYOffset,
-                            DWidth = GlyphDWidth,
-                            Character = GlyphCode
-                        };
-                    ParsingIndividualFont = false;
-                    ParsingGlyphTable = false;
-                }
                 Heap.Free(xCurrent);
             }
 
-            Heap.Free((object)strs);
+            Heap.Free(strs);
             return true;
         }
     }

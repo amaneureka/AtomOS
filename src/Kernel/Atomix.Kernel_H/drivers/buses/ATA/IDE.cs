@@ -201,7 +201,7 @@ namespace Atomix.Kernel_H.drivers.buses.ATA
                         return false;
 
                     //Lock up device
-                    Scheduler.SpinLock(mResourceID);
+                    Scheduler.MutexLock(mResourceID);
 
                     //SCSI Packet Command
                     mATAPI_Packet[0] = (byte)Cmd.ATAPI_CMD_READ;
@@ -242,7 +242,7 @@ namespace Atomix.Kernel_H.drivers.buses.ATA
                     while (((Status)PortIO.In8(StatusReg) & (Status.ATA_SR_BSY | Status.ATA_SR_DRQ)) != 0) ;
 
                     //UnLock up device
-                    Scheduler.SpinUnlock(mResourceID);
+                    Scheduler.MutexUnlock(mResourceID);
 
                     return true;
                 }
@@ -251,7 +251,7 @@ namespace Atomix.Kernel_H.drivers.buses.ATA
             else if (mDevice == Device.IDE_ATA)
             {
                 //Lock up device
-                Scheduler.SpinLock(mResourceID);
+                Scheduler.MutexLock(mResourceID);
 
                 //Disable IRQ
                 IRQInvoked = false;
@@ -359,7 +359,7 @@ namespace Atomix.Kernel_H.drivers.buses.ATA
                 }
 
                 //UnLock up device
-                Scheduler.SpinUnlock(mResourceID);
+                Scheduler.MutexUnlock(mResourceID);
                 return true;
             }
             return false;

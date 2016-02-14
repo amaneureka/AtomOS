@@ -111,7 +111,7 @@ namespace Atomix.Kernel_H.core
                 return kmalloc(len);
             }
             //Because access of same array from different threads can cause unexpected result -- So lock this thread
-            Scheduler.SpinLock(HEAP_RESOURCE_ID);
+            Scheduler.MutexLock(HEAP_RESOURCE_ID);
             
             //Find a suitable hole
             int iterator;
@@ -183,7 +183,7 @@ namespace Atomix.Kernel_H.core
                     }
                     HeapManagerPosition--;//Reduce size of array, no need to clear last empty because we never read it                    
                 }
-                Scheduler.SpinUnlock(HEAP_RESOURCE_ID);
+                Scheduler.MutexUnlock(HEAP_RESOURCE_ID);
                 Clear(Address, len);//Clear the memory and return
                 return Address;
             }
@@ -247,7 +247,7 @@ namespace Atomix.Kernel_H.core
                     HeapManagerPosition++;
                 }
             }
-            Scheduler.SpinUnlock(HEAP_RESOURCE_ID);       
+            Scheduler.MutexUnlock(HEAP_RESOURCE_ID);       
             Clear(pos, len);
             return pos;
         }
@@ -310,7 +310,7 @@ namespace Atomix.Kernel_H.core
                 return;
 
             //Because access of same array from different threads can cause unexpected result -- So spin lock this thread
-            Scheduler.SpinLock(HEAP_RESOURCE_ID);
+            Scheduler.MutexLock(HEAP_RESOURCE_ID);
 
             //Check if any block can fit to left/Right of this
             int iterator, left = -1, right = -1;
@@ -381,7 +381,7 @@ namespace Atomix.Kernel_H.core
                 BlockAddress[HeapManagerPosition] = NewAddress;
                 HeapManagerPosition++;
             }
-            Scheduler.SpinUnlock(HEAP_RESOURCE_ID);
+            Scheduler.MutexUnlock(HEAP_RESOURCE_ID);
         }
         
         [Assembly(0x8)]

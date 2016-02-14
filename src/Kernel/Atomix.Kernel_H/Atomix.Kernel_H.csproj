@@ -120,6 +120,7 @@
     <Compile Include="plugs\Array.cs" />
     <Compile Include="plugs\BitConverter.cs" />
     <Compile Include="plugs\Enum.cs" />
+    <Compile Include="plugs\Helper.cs" />
     <Compile Include="plugs\Math.cs" />
     <Compile Include="plugs\NativeException.cs" />
     <Compile Include="plugs\Exception.cs" />

@@ -10,9 +10,9 @@ namespace Atomix.Kernel_H.io.FileSystem.RFS
     {
         public readonly string Name;
         public readonly uint StartAddress;
-        public readonly int Length;
+        public readonly uint Length;
 
-        public RamFile(string aName, uint aStartAddress, int aLength)
+        public RamFile(string aName, uint aStartAddress, uint aLength)
         {
             this.Name = aName;
             this.StartAddress = aStartAddress;

@@ -11,6 +11,7 @@ namespace Atomix.Kernel_H.io.FileSystem.RFS
         private int mPosition;
         
         public FileStream(RamFile aRamFile)
+            :base(aRamFile.Length)
         {
             this.RamFile = aRamFile;
             this.mPosition = 0;
@@ -19,7 +20,7 @@ namespace Atomix.Kernel_H.io.FileSystem.RFS
         public override int Read(byte[] aBuffer, int aCount)
         {
             if (aCount + mPosition > RamFile.Length)
-                aCount = RamFile.Length - mPosition;
+                aCount = (int)RamFile.Length - mPosition;
 
             var xAddress = (byte*)(RamFile.StartAddress + mPosition);
             for (int index = 0; index < aCount; index++)

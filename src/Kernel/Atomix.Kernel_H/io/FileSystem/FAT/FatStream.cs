@@ -18,6 +18,7 @@ namespace Atomix.Kernel_H.io.FileSystem.FAT
         private byte[] mBufferCluster;
 
         public FatStream(FatFileSystem aFS, string aName, uint aFirstCluster, uint aSize)
+            :base(aSize)
         {
             this.mFS = aFS;
             this.mFileName = aName;

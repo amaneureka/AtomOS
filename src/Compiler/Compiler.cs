@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+
 using System.IO;
 using System.Reflection;
-using Atomix;
+
 using Atomix.IL;
 using Atomix.Assembler;
 using Atomix.ILOpCodes;
@@ -14,7 +14,6 @@ using Atomix.Assembler.x86;
 using Atomix.CompilerExt.Attributes;
 using System.Runtime.InteropServices;
 using Core = Atomix.Assembler.AssemblyHelper;
-using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Atomix
 {

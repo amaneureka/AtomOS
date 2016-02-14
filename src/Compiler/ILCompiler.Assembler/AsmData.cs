@@ -40,17 +40,7 @@ namespace Atomix.Assembler
             {
                 sw.Write(mName);
                 sw.Write(" dd ");
-                foreach (var xobj in mValue2)
-                {
-                    if (xobj == null)
-                        sw.Write("0");
-                    else
-                    {
-                        sw.Write(xobj.ToString());
-                    }
-                    sw.Write(", ");
-                }
-                sw.WriteLine("0");
+                sw.WriteLine(string.Join(", ", (mValue2).Select(a => (a == null ? "0" : a.ToString()))));
             }
             else
                 sw.WriteLine(mName + " " + aRAW);

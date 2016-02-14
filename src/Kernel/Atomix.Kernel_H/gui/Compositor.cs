@@ -94,14 +94,14 @@ namespace Atomix.Kernel_H.gui
 
                 if (ScreenUpdate)
                 {
-                    Scheduler.SpinLock(WindowList_Lock);
+                    Scheduler.MutexLock(WindowList_Lock);
                     for (int i = 0; i < WindowList.Count; i++)
                     {
                         var win = WindowList[i];
                         //Canvas.Fill((byte*)win.Buffer, win.PositionX, win.PositionY, win.Width, win.Height);
                         Surface.CopyToBuffer(VBE.SecondaryBuffer, (byte*)win.Buffer, win.PositionX, win.PositionY, screen_width, screen_height, 0, 0, win.Width, win.Width, win.Height);
                     }
-                    Scheduler.SpinUnlock(WindowList_Lock);
+                    Scheduler.MutexUnlock(WindowList_Lock);
 
                     //Flip only if we have updates on screen
                     //TODO: Flip only that much of region
@@ -179,9 +179,9 @@ namespace Atomix.Kernel_H.gui
                             WindowMap.Add(HashString, xNewWindow);
 
                             //Spin Lock WindowList because it is shared between compositor and render thread
-                            Scheduler.SpinLock(WindowList_Lock);
+                            Scheduler.MutexLock(WindowList_Lock);
                             WindowList.Add(xNewWindow);
-                            Scheduler.SpinUnlock(WindowList_Lock);
+                            Scheduler.MutexUnlock(WindowList_Lock);
 
                             Clients[ClientID].Write(compositor_packet, false);
                         }
@@ -260,9 +260,9 @@ namespace Atomix.Kernel_H.gui
 
         private static void MarkRectangle(int x, int y, int width, int height)
         {
-            Scheduler.SpinLock(Surface_Lock);
+            Scheduler.MutexLock(Surface_Lock);
             Canvas.Rectangle(x, y, width, height);
-            Scheduler.SpinUnlock(Surface_Lock);
+            Scheduler.MutexUnlock(Surface_Lock);
             ScreenUpdate = true;
         }
     }

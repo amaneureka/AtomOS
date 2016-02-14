@@ -27,13 +27,13 @@ namespace Atomix.Kernel_H.arch.x86
 
         public static unsafe uint Obtain(string aID, int Size, bool CreateIfNotExist)
         {
-            Scheduler.SpinLock(ResourceKey);
+            Scheduler.MutexLock(ResourceKey);
             
             if (!Nodes.Contains(aID))
             {
                 if (!CreateIfNotExist)
                 {
-                    Scheduler.SpinUnlock(ResourceKey);
+                    Scheduler.MutexUnlock(ResourceKey);
                     return 0;
                 }
                 CreateNew(aID, Size);
@@ -76,7 +76,7 @@ namespace Atomix.Kernel_H.arch.x86
                                 xOffset++;
                                 Index++;
                             }
-                            Scheduler.SpinUnlock(ResourceKey);
+                            Scheduler.MutexUnlock(ResourceKey);
                             return xReturnAddress;
                         }
                     }
@@ -87,7 +87,7 @@ namespace Atomix.Kernel_H.arch.x86
                 }
             }
 
-            Scheduler.SpinUnlock(ResourceKey);
+            Scheduler.MutexUnlock(ResourceKey);
             Debug.Write("shm_mapping failed, Process id:=%d ", ParentProcess.pid);
             Debug.Write("shm_id := %s\n", aID);            
             return 0;

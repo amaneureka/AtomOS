@@ -56,12 +56,7 @@ namespace Atomix.Kernel_H
             Debug.Write("Reading Test\n");
             var stream = VirtualFileSystem.GetFile("disk1/README.TXT");
             if (stream != null)
-            {
-                var xData = new byte[256];
-                int c = 0;
-                while ((c = stream.Read(xData, xData.Length)) != 0)
-                    Debug.Write(lib.encoding.ASCII.GetString(xData, 0, c));
-            }
+                Debug.Write(stream.ReadToEnd());
             else
                 Debug.Write("File not found!\n");
             while (true) ;

@@ -55,14 +55,14 @@ namespace Atomix.Kernel_H.core
         /// Lock up this resource till it won't freed up
         /// </summary>
         /// <param name="ID"></param>
-        public static void SpinLock(int ID)
+        public static void MutexLock(int ID)
         {
             //we should switch task here because we are running on single core
             while (ResourceArray[ID] != 0) ;//Hookup that thread till other thread free up that resource
             ResourceArray[ID] = 1;
         }
 
-        public static void SpinUnlock(int ID)
+        public static void MutexUnlock(int ID)
         {
             ResourceArray[ID] = 0;
         }
