@@ -1,13 +1,35 @@
-﻿using System;
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+* Copyright (c) 2015, Atomix Development, Inc - All Rights Reserved                                        *
+*                                                                                                          *
+* Unauthorized copying of this file, via any medium is strictly prohibited                                 *
+* Proprietary and confidential                                                                             *
+* Written by Aman Priyadarshi <aman.eureka@gmail.com>, June 2015                                           *
+*                                                                                                          *
+*   Namespace     ::  Atomix.Kernel_H.plugs                                                                *
+*   File          ::  BitConverter.cs                                                                      *
+*                                                                                                          *
+*   Description                                                                                            *
+*       File Contains various mscorlib plug belongs to BitConverter class                                  *
+*                                                                                                          *
+*   History                                                                                                *
+*       05-06-2015      Aman Priyadarshi      Added ToUInt32 and ToInt32 Method                            *
+*       23-07-2015      Aman Priyadarshi      Added ToUInt16 and ToInt16 Method                            *
+*       23-03-2016      Aman Priyadarshi      Added File Header                                            *
+*                                                                                                          *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-using Atomix.CompilerExt;
+using System;
+
 using Atomix.CompilerExt.Attributes;
-using Atomix.Kernel_H.core;
 
 namespace Atomix.Kernel_H.plugs
 {
     public static class BitConverter
     {
+        /* 
+         * Based on the assumption that we are on arch. which supports Little Endian.
+         */
+
         [Plug("System_UInt32_System_BitConverter_ToUInt32_System_Byte____System_Int32_")]
         public static UInt32 ToUInt32(byte[] xData, int pos)
         {

@@ -1,5 +1,24 @@
-﻿using System;
-using Atomix.Kernel_H.core;
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+* Copyright (c) 2015, Atomix Development, Inc - All Rights Reserved                                        *
+*                                                                                                          *
+* Unauthorized copying of this file, via any medium is strictly prohibited                                 *
+* Proprietary and confidential                                                                             *
+* Written by Aman Priyadarshi <aman.eureka@gmail.com>, February 2016                                       *
+*                                                                                                          *
+*   Namespace     ::  Atomix.Kernel_H.plugs                                                                *
+*   File          ::  VTable.cs                                                                            *
+*                                                                                                          *
+*   Description                                                                                            *
+*       Implementation of C# .NET Virtual Table Compiler Feature                                           *
+*                                                                                                          *
+*   History                                                                                                *
+*       13-02-2016      Aman Priyadarshi      Added Methods                                                *
+*       23-03-2016      Aman Priyadarshi      Added File Header                                            *
+*                                                                                                          *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+using System;
+
 using Atomix.CompilerExt.Attributes;
 
 namespace Atomix.Kernel_H.plugs

@@ -1,19 +1,35 @@
-﻿/* Copyright (C) Atomix Development, Inc - All Rights Reserved
- * Unauthorized copying of this file, via any medium is strictly prohibited
- * Proprietary and confidential
- * Written by Aman Priyadarshi <aman.eureka@gmail.com>, December 2014
- * 
- * String.cs
- *      .Net string implementation plug
- *      
- *      History:
- *          19-12-14    File Created    Aman Priyadarshi
- */
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+* Copyright (c) 2015, Atomix Development, Inc - All Rights Reserved                                        *
+*                                                                                                          *
+* Unauthorized copying of this file, via any medium is strictly prohibited                                 *
+* Proprietary and confidential                                                                             *
+* Written by Aman Priyadarshi <aman.eureka@gmail.com>, December 2014                                       *
+*                                                                                                          *
+*   Namespace     ::  Atomix.Kernel_H.plugs                                                                *
+*   File          ::  String.cs                                                                            *
+*                                                                                                          *
+*   Description                                                                                            *
+*       File Contains various mscorlib plug belongs to String class                                        *
+*                                                                                                          *
+*   History                                                                                                *
+*       19-12-2014      Aman Priyadarshi      Added ctor, getLength, getChar Function                      *
+*       16-05-2015      Aman Priyadarshi      Memory Mangement Fixes                                       *
+*       30-05-2015      Aman Priyadarshi      ctor, split, equality method                                 *
+*       20-12-2015      Aman Priyadarshi      Inequality method                                            *
+*       04-01-2016      Aman Priyadarshi      Fixes and String Concat Function                             *
+*       17-01-2016      Aman Priyadarshi      Fixes Concate and StartsWith Function                        *
+*       06-02-2016      Aman Priyadarshi      String split plug and Fixes                                  *
+*       07-02-2016      Aman Priyadarshi      Compiler Edit: Ctor Funtion Added                            *
+*       08-02-2016      Aman Priyadarshi      IndexOf Function Added                                       *
+*       23-03-2016      Aman Priyadarshi      String split plug fixes                                      *
+*       23-03-2016      Aman Priyadarshi      Added File Header                                            *
+*                                                                                                          *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
 
-using Atomix.CompilerExt;
 using Atomix.CompilerExt.Attributes;
+
 using Atomix.Kernel_H.core;
 
 namespace Atomix.Kernel_H.plugs

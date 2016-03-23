@@ -1,20 +1,27 @@
-﻿/* Copyright (C) Atomix Development, Inc - All Rights Reserved
- * Unauthorized copying of this file, via any medium is strictly prohibited
- * Proprietary and confidential
- * Written by Aman Priyadarshi <aman.eureka@gmail.com>, December 2014
- * 
- * Exception.cs
- *      .Net Exception class implementation plug
- *      
- *      History:
- *          19-12-14    File Created    Aman Priyadarshi
- */
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+* Copyright (c) 2015, Atomix Development, Inc - All Rights Reserved                                        *
+*                                                                                                          *
+* Unauthorized copying of this file, via any medium is strictly prohibited                                 *
+* Proprietary and confidential                                                                             *
+* Written by Aman Priyadarshi <aman.eureka@gmail.com>, Decmber 2014                                        *
+*                                                                                                          *
+*   Namespace     ::  Atomix.Kernel_H.plugs                                                                *
+*   File          ::  Exception.cs                                                                         *
+*                                                                                                          *
+*   Description                                                                                            *
+*       File Contains various mscorlib plug belongs to Exception class                                     *
+*                                                                                                          *
+*   History                                                                                                *
+*       19-12-2014      Aman Priyadarshi      Added Basic Exception Handler                                *
+*       06-02-2016      Aman Priyadarshi      Better Exception Handler (Multiprocess)                      *
+*       23-03-2016      Aman Priyadarshi      Added File Header                                            *
+*                                                                                                          *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
 
 using Atomix.Kernel_H.core;
 
-using Atomix.CompilerExt;
 using Atomix.CompilerExt.Attributes;
 
 namespace Atomix.Kernel_H.plugs

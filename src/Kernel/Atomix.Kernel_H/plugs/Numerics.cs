@@ -1,8 +1,28 @@
-﻿using System;
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+* Copyright (c) 2015, Atomix Development, Inc - All Rights Reserved                                        *
+*                                                                                                          *
+* Unauthorized copying of this file, via any medium is strictly prohibited                                 *
+* Proprietary and confidential                                                                             *
+* Written by Aman Priyadarshi <aman.eureka@gmail.com>, January 2016                                        *
+*                                                                                                          *
+*   Namespace     ::  Atomix.Kernel_H.plugs                                                                *
+*   File          ::  Numerics.cs                                                                          *
+*                                                                                                          *
+*   Description                                                                                            *
+*       File Contains various mscorlib plug belongs to Numerics class                                      *
+*                                                                                                          *
+*   History                                                                                                *
+*       04-01-2016      Aman Priyadarshi      Added ToString Function                                      *
+*       06-02-2016      Aman Priyadarshi      Memory Mangement Fixes                                       *
+*       23-03-2016      Aman Priyadarshi      Added Integer Parse Function                                 *
+*       23-03-2016      Aman Priyadarshi      Added File Header                                            *
+*                                                                                                          *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+using System;
 
 using Atomix.Kernel_H.core;
 
-using Atomix.CompilerExt;
 using Atomix.CompilerExt.Attributes;
 
 namespace Atomix.Kernel_H.plugs
