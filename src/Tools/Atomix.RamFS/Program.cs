@@ -68,6 +68,7 @@ namespace Atomix.RamFS
                 var HeaderInfo = new byte[32];
                 foreach(var file in FilesToAdd)
                 {
+                    Array.Clear(HeaderInfo, 0, 32);
                     file.GetEntryData(DataAreaPointer, HeaderInfo);
 
                     xOutput.Seek(EntryPointer, SeekOrigin.Begin);

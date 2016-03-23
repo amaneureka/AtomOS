@@ -18,8 +18,8 @@ namespace Atomix.RamFS
             this.FileName = aName;
             this.FileData = aData;
 
-            if (FileName.Length > 24)
-                FileName = FileName.Substring(0, 24);
+            if (FileName.Length > 12)
+                FileName = FileName.Substring(0, 12);
 
             PrepareRawData();
         }
