@@ -100,6 +100,9 @@ namespace Atomix.Kernel_H.plugs
                 }
             }
 
+            if (MaximumLength == 0)
+                MaximumLength = str.Length;
+
             var xResult = new string[parts + 1];
             var xTemp = new char[MaximumLength + 1];
 
@@ -188,7 +191,8 @@ namespace Atomix.Kernel_H.plugs
             return -1;
         }
 
-        public static bool StartWith(string str, string toFind)
+        [Plug("System_Boolean_System_String_StartsWith_System_String_")]
+        public static bool StartsWith(string str, string toFind)
         {
             int length = str.Length;
             int length2 = toFind.Length;

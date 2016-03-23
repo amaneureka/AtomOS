@@ -26,6 +26,30 @@ namespace Atomix.Kernel_H.plugs
                 return ToString32Bit((uint)(-aThis), true);
         }
 
+        [Plug("System_UInt32_System_UInt32_Parse_System_String_")]
+        public static int ParseInt32(string aStr)
+        {
+            int aValue = 0;
+#warning Add Invalid format exception
+            foreach (var aChar in aStr)
+            {
+                if (aChar == '-')
+                    continue;
+                aValue = (aValue * 10) + (aChar - '0');
+            }
+            return (aStr[0] == '-' ? -aValue : aValue);
+        }
+
+        [Plug("System_UInt32_System_UInt32_Parse_System_String_")]
+        public static uint ParseUInt32(string aStr)
+        {
+            uint aValue = 0;
+#warning Add Invalid format exception
+            foreach(var aChar in aStr)
+                aValue = (aValue * 10) + (uint)(aChar - '0');
+            return aValue;
+        }
+
         public static string ToString32Bit(uint aNum, bool Signed)
         {
             var xResult = new char[11];
