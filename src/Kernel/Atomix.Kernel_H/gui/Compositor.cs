@@ -4,6 +4,7 @@ using Atomix.Kernel_H.io;
 using Atomix.Kernel_H.lib;
 using Atomix.Kernel_H.core;
 using Atomix.Kernel_H.arch.x86;
+using Atomix.Kernel_H.lib.crypto;
 using Atomix.Kernel_H.lib.graphic;
 using Atomix.Kernel_H.drivers.video;
 using Atomix.Kernel_H.drivers.input;
@@ -25,7 +26,7 @@ namespace Atomix.Kernel_H.gui
                 
         static IList<Pipe> Clients;
         static IList<Window> WindowList;        
-        static IDictionary<Window> WindowMap;
+        static IDictionary<string, Window> WindowMap;
 
         static Surface Canvas;
         #endregion
@@ -39,7 +40,7 @@ namespace Atomix.Kernel_H.gui
             SERVER = new Pipe(PACKET_SIZE, 1000);
             Clients = new IList<Pipe>(100);
             WindowList = new IList<Window>(100);
-            WindowMap = new IDictionary<Window>();
+            WindowMap = new IDictionary<string, Window>(sdbm.GetHashCode, string.Equals);
             Canvas = new Surface(VBE.SecondaryBuffer, VBE.Xres, VBE.Yres);
 
             WindowList_Lock = Scheduler.GetResourceID();

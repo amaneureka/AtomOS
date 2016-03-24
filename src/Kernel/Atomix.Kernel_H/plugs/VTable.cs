@@ -13,7 +13,7 @@
 *                                                                                                          *
 *   History                                                                                                *
 *       13-02-2016      Aman Priyadarshi      Added Methods                                                *
-*       23-03-2016      Aman Priyadarshi      Added File Header                                            *
+*       23-03-2016      Aman Priyadarshi      Added File Header and Typos                                  *
 *                                                                                                          *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -26,7 +26,7 @@ namespace Atomix.Kernel_H.plugs
     public static unsafe class VTableImpl
     {
         [Label("VTableImpl")]
-        public static uint AddEntry(uint* aTable, uint aTypeID, uint aMethodID)
+        public static uint GetEntry(uint* aTable, uint aTypeID, uint aMethodID)
         {
             uint TypeID, MethodID, Size;
             while((Size = *aTable) != 0)

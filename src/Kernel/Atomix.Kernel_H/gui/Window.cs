@@ -24,7 +24,7 @@ namespace Atomix.Kernel_H.gui
         public Window(int aClientID)
         {
             this.ClientID = aClientID;
-            this.HashCode = ("Compositor").GetsdbmHash(Timer.TicksFromStart);
+            this.HashCode = ("Compositor").GetHashCode(Timer.TicksFromStart);
             
             var HashCodeString = HashCode.ToString();
             HashString = "win." + HashCodeString;

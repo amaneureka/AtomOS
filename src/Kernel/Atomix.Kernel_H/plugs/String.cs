@@ -23,6 +23,7 @@
 *       08-02-2016      Aman Priyadarshi      IndexOf Function Added                                       *
 *       23-03-2016      Aman Priyadarshi      String split plug fixes                                      *
 *       23-03-2016      Aman Priyadarshi      Added File Header                                            *
+*       24-03-2016      Aman Priyadarshi      Added Equals function because .NET Equals is not working :/  *
 *                                                                                                          *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -168,7 +169,7 @@ namespace Atomix.Kernel_H.plugs
         }
 
         [Plug("System_Boolean_System_String_op_Equality_System_String__System_String_")]
-        public static bool Equality(string str1, string str2)
+        public static bool opEquality(string str1, string str2)
         {
             var len = str1.Length;
             if (len != str2.Length)
@@ -182,8 +183,14 @@ namespace Atomix.Kernel_H.plugs
             return true;
         }
 
+        [Plug("System_Boolean_System_String_Equals_System_String__System_String_")]
+        public static bool Equals(string aStr1, string aStr2)
+        {
+            return opEquality(aStr1, aStr2);
+        }
+
         [Plug("System_Boolean_System_String_op_Inequality_System_String__System_String_")]
-        public static bool InEquality(string str1, string str2)
+        public static bool opInEquality(string str1, string str2)
         {
             var len = str1.Length;
             if (len != str2.Length)

@@ -1,6 +1,7 @@
 ﻿using System;
 
 using Atomix.Kernel_H.lib;
+using Atomix.Kernel_H.lib.crypto;
 using Atomix.Kernel_H.io.FileSystem.RFS;
 
 using System.Runtime.InteropServices;
@@ -11,14 +12,14 @@ namespace Atomix.Kernel_H.io.FileSystem
     {
         uint DataAddress;
         uint DataLength;
-        IDictionary<RamFile> Files;
+        IDictionary<string, RamFile> Files;
 
         public RamFileSystem(uint aAddress, uint aLength)
         {
-            this.DataAddress = aAddress;
-            this.DataLength = aLength;
-            this.Files = new IDictionary<RamFile>();
-            this.mIsValid = LoadFileSystem();
+            DataAddress = aAddress;
+            DataLength = aLength;
+            Files = new IDictionary<string, RamFile>(sdbm.GetHashCode, string.Equals);
+            mIsValid = LoadFileSystem();
         }
 
         private bool LoadFileSystem()
@@ -52,7 +53,7 @@ namespace Atomix.Kernel_H.io.FileSystem
         struct FileEntry
         {
             [FieldOffset(0)]
-            public fixed char Name[24];
+            public fixed char Name[12];
 
             [FieldOffset(24)]
             public uint StartAddress;

@@ -24,8 +24,7 @@ namespace Atomix.Kernel_H.gui.font
             int GlyphLine = 0;
             bool ReadingCharProperties = false, ReadingGlyphTable = false;
             
-            Glyph xGlyph;
-            xGlyph.Bitmap = null;
+            Glyph xGlyph = null;
             foreach (var line in Lines)
             {
                 if (line.StartsWith("STARTCHAR"))

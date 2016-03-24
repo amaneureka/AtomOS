@@ -1,7 +1,29 @@
-﻿using System;
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+* Copyright (c) 2015, Atomix Development, Inc - All Rights Reserved                                        *
+*                                                                                                          *
+* Unauthorized copying of this file, via any medium is strictly prohibited                                 *
+* Proprietary and confidential                                                                             *
+* Written by Aman Priyadarshi <aman.eureka@gmail.com>, December 2015                                       *
+*                                                                                                          *
+*   Namespace     ::  Atomix.Kernel_H.arch.x86                                                             *
+*   File          ::  SHM.cs                                                                               *
+*                                                                                                          *
+*   Description                                                                                            *
+*       Handles Shared memory allocation stuffs                                                            *
+*                                                                                                          *
+*   History                                                                                                *
+*       20-12-2015      Aman Priyadarshi      Added Methods                                                *
+*       04-01-2016      Aman Priyadarshi      CreateIfNotExist                                             *
+*       22-01-2016      Aman Priyadarshi      Fixes                                                        *
+*       24-03-2016      Aman Priyadarshi      File Header                                                  *
+*                                                                                                          *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-using Atomix.Kernel_H.core;
+using System;
+
 using Atomix.Kernel_H.lib;
+using Atomix.Kernel_H.core;
+using Atomix.Kernel_H.lib.crypto;
 
 namespace Atomix.Kernel_H.arch.x86
 {
@@ -17,26 +39,26 @@ namespace Atomix.Kernel_H.arch.x86
         public const int LIMIT_TO_PROCESS = 0x10000 >> 5;//Maximum of 0x10000 frames starting from SHM_Start to any process
 
         static int ResourceKey;
-        static IDictionary<shm_chunk> Nodes;
+        static IDictionary<string, shm_chunk> Nodes;
         
         public static void Install()
         {
-            Nodes = new IDictionary<shm_chunk>();
+            Nodes = new IDictionary<string, shm_chunk>(sdbm.GetHashCode, string.Equals);
             ResourceKey = Scheduler.GetResourceID();
         }
 
-        public static unsafe uint Obtain(string aID, int Size, bool CreateIfNotExist)
+        public static unsafe uint Obtain(string aID, int aSize, bool aCreateIfNotExist)
         {
             Scheduler.MutexLock(ResourceKey);
             
             if (!Nodes.Contains(aID))
             {
-                if (!CreateIfNotExist)
+                if (!aCreateIfNotExist)
                 {
                     Scheduler.MutexUnlock(ResourceKey);
                     return 0;
                 }
-                CreateNew(aID, Size);
+                CreateNew(aID, aSize);
             }
 
             shm_chunk Current;

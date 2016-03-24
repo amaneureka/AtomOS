@@ -1,95 +1,110 @@
-﻿using System;
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+* Copyright (c) 2015, Atomix Development, Inc - All Rights Reserved                                        *
+*                                                                                                          *
+* Unauthorized copying of this file, via any medium is strictly prohibited                                 *
+* Proprietary and confidential                                                                             *
+* Written by Aman Priyadarshi <aman.eureka@gmail.com>, December 2015                                       *
+*                                                                                                          *
+*   Namespace     ::  Atomix.Kernel_H.lib                                                                  *
+*   File          ::  IDictionary.cs                                                                       *
+*                                                                                                          *
+*   Description                                                                                            *
+*       File Contains Dictionary implementation                                                            *
+*                                                                                                          *
+*   History                                                                                                *
+*       20-12-2015      Aman Priyadarshi      Basic Implementation                                         *
+*       24-03-2016      Aman Priyadarshi      Fully qualified Dictionary Implementaion and File Header     *
+*                                                                                                          *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-using Atomix.Kernel_H.lib.crypto;
+using System;
 
 namespace Atomix.Kernel_H.lib
 {
-#warning Supported for strings only
-    public class IDictionary<T_Value>
+    public delegate uint HashFunction<_key>(_key athis);
+    public delegate bool EqualityFunction<_key>(_key a, _key b);
+
+    public class IDictionary<_key, _value>
     {
-        
-        Bucket<T_Value>[] Buckets;
-        uint[] Bucket_Size;
         const uint Capacity = (1 << 5);//Should be a power of 2
-        
-        public class Bucket<T_Value>
+
+        uint mModulo;
+        Bucket[] mBuckets;
+
+        HashFunction<_key> mFunction;
+        EqualityFunction<_key> mEquality;
+
+        class Bucket
         {
-            public string Key;
-            public T_Value Value;
-            public Bucket<T_Value> Next;
+            public _key mKey;
+            public _value mValue;
+            public Bucket mNext;
         }
 
-        public IDictionary()
+        public IDictionary(HashFunction<_key> aFunction, EqualityFunction<_key> aEquality)
         {
-            this.Buckets = new Bucket<T_Value>[Capacity];
-            this.Bucket_Size = new uint[Capacity];
+            mFunction = aFunction;
+            mEquality = aEquality;
+            mModulo = Capacity - 1;
+            mBuckets = new Bucket[Capacity];
         }
 
-        public T_Value this[string Key]
+        public _value this[_key aKey]
         {
             get
             {
-                uint Hash = Key.GetsdbmHash();
-                uint Index = Hash & (Capacity - 1);//Equivalent to (Hash % Capacity) if Capacity is power of 2
-#warning What If hash is not in the buckets
-                uint SIZE = Bucket_Size[Index];
-                var Current = Buckets[Index];
-                
-                uint p = 0;
-                while (p++ < SIZE && Current.Key != Key)
-                    Current = Current.Next;
-                return Current.Value;
+                uint Index = mFunction(aKey) & mModulo;
+                Bucket Current = mBuckets[Index];
+
+                while (Current != null && !mEquality(Current.mKey, aKey))
+                    Current = Current.mNext;
+
+                if (Current == null || !mEquality(Current.mKey, aKey))
+                    throw new Exception("[IDictionary]: Key not found!");
+
+                return Current.mValue;
             }
         }
 
-        public void Add(string Key, T_Value Value)
+        public void Add(_key aKey, _value aValue)
         {
-            uint Hash = Key.GetsdbmHash();
-            uint Index = Hash & (Capacity - 1);
+            uint Index = mFunction(aKey) & mModulo;
+            Bucket Current = mBuckets[Index];
 
-            uint SIZE = Bucket_Size[Index];
-
-            var Current = Buckets[Index];
-            if (SIZE == 0)
+            Bucket NewBucket = new Bucket
             {
-                Current = new Bucket<T_Value>();
-                Current.Key = Key;
-                Current.Value = Value;
-                Bucket_Size[Index] = 1;
-                Buckets[Index] = Current;
+                mKey = aKey,
+                mValue = aValue,
+                mNext = null
+            };
+
+            if (Current == null)
+            {
+                mBuckets[Index] = NewBucket;
                 return;
             }
+            
+            while (Current.mNext != null && !mEquality(Current.mKey, aKey))
+                Current = Current.mNext;
 
-#warning What If same key is added twice            
+            if (Current.mNext != null)
+                throw new Exception("[IDictionary]: Key Already Present!");
 
-            uint p = 1;
-            while (p++ < SIZE)
-                Current = Current.Next;
-
-            var NewBucket = new Bucket<T_Value>();
-            NewBucket.Key = Key;
-            NewBucket.Value = Value;
-            Bucket_Size[Index] = SIZE + 1;
-            Current.Next = NewBucket;
+            Current.mNext = NewBucket;
         }
-
-        public bool Contains(string Key)
+        
+        public bool Contains(_key aKey)
         {
-            uint Hash = Key.GetsdbmHash();
-            uint Index = Hash & (Capacity - 1);
+            uint Index = mFunction(aKey) & mModulo;
+            Bucket Current = mBuckets[Index];
+                        
+            while (Current != null && !mEquality(Current.mKey, aKey))
+                Current = Current.mNext;
+            
+            if (Current == null)
+                return false;
 
-            uint SIZE = Bucket_Size[Index];
-            var Current = Buckets[Index];
-
-            uint p = 0;
-            while (p++ < SIZE)
-            {
-                if (Current.Key == Key)
-                    return true;
-                Current = Current.Next;
-            }
-
-            return false;
+            return true;
         }
     }
 }

@@ -14,16 +14,17 @@ using System;
 
 using Atomix.Kernel_H.lib;
 using Atomix.Kernel_H.core;
+using Atomix.Kernel_H.lib.crypto;
 
 namespace Atomix.Kernel_H.io.FileSystem
 {
     public static class VirtualFileSystem
     {
-        static IDictionary<GenericFileSystem> MountedFS;
+        static IDictionary<string, GenericFileSystem> MountedFS;
 
         public static void Setup()
         {
-            MountedFS = new IDictionary<GenericFileSystem>();
+            MountedFS = new IDictionary<string, GenericFileSystem>(sdbm.GetHashCode, string.Equals);
         }
 
         public static GenericFileSystem GetFS(string aDevice)
