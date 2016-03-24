@@ -190,7 +190,7 @@ namespace Atomix.Kernel_H.gui
                     case RequestHeader.WINDOW_REDRAW:
                         {   
                             string HashCode = lib.encoding.ASCII.GetString(compositor_packet, 9, 23);
-                            if (WindowMap.Contains(HashCode))//We should give a response to client but leave for now!
+                            if (WindowMap.ContainsKey(HashCode))//We should give a response to client but leave for now!
                             {
                                 var Window = WindowMap[HashCode];
                                 MarkRectangle(Window.PositionX, Window.PositionY, Window.Width, Window.Height);

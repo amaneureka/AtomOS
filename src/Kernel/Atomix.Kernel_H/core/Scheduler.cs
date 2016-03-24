@@ -13,11 +13,16 @@ namespace Atomix.Kernel_H.core
 
         static byte[] ResourceArray = new byte[500];
 
-        public static Thread CurrentThread
+        public static Thread RunningThread
         { get { return CurrentTask; } }
 
-        public static Process CurrentProcess
-        { get { return CurrentTask.Process; } }
+        public static int RunningThreadID
+        { 
+            get
+            {
+                return (CurrentTask != null ? CurrentTask.ThreadID : 0);
+            }
+        }
 
         public static Process SystemProcess;
 

@@ -19,11 +19,10 @@
 
 using System;
 
+using Atomix.Kernel_H.core;
+
 namespace Atomix.Kernel_H.lib
 {
-    public delegate uint HashFunction<_key>(_key athis);
-    public delegate bool EqualityFunction<_key>(_key a, _key b);
-
     public class IDictionary<_key, _value>
     {
         const uint Capacity = (1 << 5);//Should be a power of 2
@@ -66,7 +65,28 @@ namespace Atomix.Kernel_H.lib
             }
         }
 
+        public _value GetValue(_key aKey, _value defaultValue)
+        {
+            uint Index = mFunction(aKey) & mModulo;
+            Bucket Current = mBuckets[Index];
+
+            while (Current != null && !mEquality(Current.mKey, aKey))
+                Current = Current.mNext;
+
+            if (Current == null || !mEquality(Current.mKey, aKey))
+                return defaultValue;
+
+            return Current.mValue;
+        }
+        
         public void Add(_key aKey, _value aValue)
+        {
+            if (SafeAdd(aKey, aValue))
+                return;
+            throw new Exception("[IDictionary]: Key Already present!");
+        }
+
+        public bool SafeAdd(_key aKey, _value aValue)
         {
             uint Index = mFunction(aKey) & mModulo;
             Bucket Current = mBuckets[Index];
@@ -81,19 +101,20 @@ namespace Atomix.Kernel_H.lib
             if (Current == null)
             {
                 mBuckets[Index] = NewBucket;
-                return;
+                return true;
             }
-            
+
             while (Current.mNext != null && !mEquality(Current.mKey, aKey))
                 Current = Current.mNext;
 
             if (Current.mNext != null)
-                throw new Exception("[IDictionary]: Key Already Present!");
+                return false;
 
             Current.mNext = NewBucket;
+            return true;
         }
         
-        public bool Contains(_key aKey)
+        public bool ContainsKey(_key aKey)
         {
             uint Index = mFunction(aKey) & mModulo;
             Bucket Current = mBuckets[Index];
@@ -105,6 +126,28 @@ namespace Atomix.Kernel_H.lib
                 return false;
 
             return true;
+        }
+
+        public void RemoveKey(_key mKey)
+        {
+            uint Index = mFunction(mKey) & mModulo;
+            Bucket Current = mBuckets[Index];
+
+            if (Current == null)
+                throw new Exception("[IDictionary]: Key not present!");
+
+            if (mEquality(Current.mKey, mKey))
+                mBuckets[Index] = Current.mNext;
+
+            while (Current.mNext != null && !mEquality(Current.mNext.mKey, mKey))
+                Current = Current.mNext;
+
+            if (Current.mNext == null)
+                throw new Exception("[IDictionary]: Key not present!");
+
+            var ToDelete = Current.mNext;
+            Current.mNext = ToDelete.mNext;
+            Heap.Free(ToDelete);//Free bucket
         }
     }
 }

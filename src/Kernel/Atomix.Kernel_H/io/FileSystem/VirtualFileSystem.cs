@@ -29,7 +29,7 @@ namespace Atomix.Kernel_H.io.FileSystem
 
         public static GenericFileSystem GetFS(string aDevice)
         {
-            if (!MountedFS.Contains(aDevice))
+            if (!MountedFS.ContainsKey(aDevice))
                 return null;
             return MountedFS[aDevice];
         }
@@ -64,7 +64,7 @@ namespace Atomix.Kernel_H.io.FileSystem
             if (aDeviceName == null)
                 aDeviceName = GetDeviceLabel();
 
-            if (MountedFS.Contains(aDeviceName))
+            if (MountedFS.ContainsKey(aDeviceName))
                 return false;
 
             MountedFS.Add(aDeviceName, aFS);

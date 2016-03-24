@@ -190,6 +190,7 @@
     <Compile Include="IL\Load\Ldnull.cs" />
     <Compile Include="IL\SizeOf.cs" />
     <Compile Include="IL\Isinst.cs" />
+    <Compile Include="IL\Endfinally.cs" />
     <Compile Include="IL\Volatile.cs" />
     <Compile Include="IL\Throw.cs" />
     <Compile Include="IL\Branch\Brfalse.cs" />

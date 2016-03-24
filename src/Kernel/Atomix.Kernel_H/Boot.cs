@@ -51,7 +51,7 @@ namespace Atomix.Kernel_H
             LoadIDE(true, true);
             LoadIDE(false, true);
             #endregion
-
+            
             //FILE READING TEST
             Debug.Write("Reading Test\n");
             var stream = VirtualFileSystem.GetFile("disk1/README.TXT");
@@ -61,7 +61,7 @@ namespace Atomix.Kernel_H
                 Debug.Write("File not found!\n");
             while (true) ;
         }
-        
+                        
         public static uint pBootAnimation;
         public static unsafe void BootAnimation()
         {

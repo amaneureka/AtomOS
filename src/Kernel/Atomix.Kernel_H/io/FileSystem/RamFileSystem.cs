@@ -38,7 +38,7 @@ namespace Atomix.Kernel_H.io.FileSystem
         public override Stream GetFile(string[] path, int pointer)
         {
             var FileName = path[pointer];
-            if (Files.Contains(FileName))
+            if (Files.ContainsKey(FileName))
                 return new FileStream(Files[FileName]);
             return null;
         }

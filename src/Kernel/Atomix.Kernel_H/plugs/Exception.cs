@@ -49,7 +49,7 @@ namespace Atomix.Kernel_H.plugs
         [Label("SetException")]
         public static void SetException(Exception aException)
         {
-            var Thread = Scheduler.CurrentThread;
+            var Thread = Scheduler.RunningThread;
             if (Thread != null)
                 Thread.Exception = aException;
             Debug.Write("[SetException]: %s\n", aException.Message);
@@ -58,7 +58,7 @@ namespace Atomix.Kernel_H.plugs
         [Label("GetException")]
         public static Exception GetException()
         {
-            var Thread = Scheduler.CurrentThread;
+            var Thread = Scheduler.RunningThread;
             if (Thread != null)
                 return Thread.Exception;
             return null;

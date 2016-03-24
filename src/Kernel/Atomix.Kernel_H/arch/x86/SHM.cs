@@ -51,7 +51,7 @@ namespace Atomix.Kernel_H.arch.x86
         {
             Scheduler.MutexLock(ResourceKey);
             
-            if (!Nodes.Contains(aID))
+            if (!Nodes.ContainsKey(aID))
             {
                 if (!aCreateIfNotExist)
                 {
@@ -65,7 +65,7 @@ namespace Atomix.Kernel_H.arch.x86
             Current = Nodes[aID];
             Current.RefCount++;
 
-            var ParentProcess = Scheduler.CurrentThread.Process;
+            var ParentProcess = Scheduler.RunningThread.Process;
             var shm_mapping = ParentProcess.shm_mapping;
 
             int FramesRequired = Current.Frames.Length;

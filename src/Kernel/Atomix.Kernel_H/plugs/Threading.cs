@@ -3,18 +3,16 @@
 *                                                                                                          *
 * Unauthorized copying of this file, via any medium is strictly prohibited                                 *
 * Proprietary and confidential                                                                             *
-* Written by Aman Priyadarshi <aman.eureka@gmail.com>, February 2016                                       *
+* Written by Aman Priyadarshi <aman.eureka@gmail.com>, March 2016                                          *
 *                                                                                                          *
 *   Namespace     ::  Atomix.Kernel_H.plugs                                                                *
-*   File          ::  Helper.cs                                                                            *
+*   File          ::  Threading.cs                                                                         *
 *                                                                                                          *
 *   Description                                                                                            *
-*       File Contains various mscorlib plug                                                                *
+*       File Contains various mscorlib plug belongs to Threading class                                     *
 *                                                                                                          *
 *   History                                                                                                *
-*       14-02-2016      Aman Priyadarshi      Added Char Ctor Method                                       *
-*       23-03-2016      Aman Priyadarshi      Added File Header                                            *
-*       24-03-2016      Aman Priyadarshi      Added Object Equals                                          *
+*       24-03-2016      Aman Priyadarshi      Added Methods                                                *
 *                                                                                                          *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -22,23 +20,25 @@ using System;
 
 using Atomix.CompilerExt.Attributes;
 
+using Atomix.Assembler.x86;
+using Core = Atomix.Assembler.AssemblyHelper;
+
 namespace Atomix.Kernel_H.plugs
 {
-    public static class Helper
+    public class ThreadingImpl
     {
-        /// <summary>
-        /// Dummy plug don't let the compiler to compile method with given signature
-        /// </summary>
-        [Dummy, Plug("System_Void__System_Char__cctor__")]
-        public static void Char_ctor()
+        [Assembly(0x8), Plug("System_Void_System_Threading_Monitor_Enter_System_Object__System_Boolean__")]
+        public static void AcquireLock(object aObj, ref bool aLockTaken)
         {
-
+            Core.AssemblerCode.Add(new Call("AcquireLock", true));
+            //we don't carry exception flag from here, although Thread.Exception contains the flag
         }
 
-        [Plug("System_Boolean_System_Object_Equals_System_Object_")]
-        public static bool Object_Equals(uint aObjA, uint aObjB)//Treat it as address
+        [Assembly(0x4), Plug("System_Void_System_Threading_Monitor_Exit_System_Object_")]
+        public static void ReleaseLock(object aObj)
         {
-            return (aObjA == aObjB);
+            Core.AssemblerCode.Add(new Call("ReleaseLock", true));
+            //we don't carry exception flag from here, although Thread.Exception contains the flag
         }
     }
 }

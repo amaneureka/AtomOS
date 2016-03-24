@@ -4,19 +4,21 @@ namespace Atomix.Kernel_H.lib
 {
     public class Numerics
     {
-        /*public static int ParseHex(string str)
+        public static uint ParseHex(string str)
         {
-            int temp, index = 0, ans = 1;
-            while((temp = str[index++]) >= '0')
+            uint ans = 0;
+            int temp, index = 0, len = str.Length;
+            while(index < len && (temp = str[index++]) >= '0')
             {
                 ans <<= 0x4;
                 if (temp <= '9')
-                    ans *= temp - '0';
+                    ans += (uint)(temp - '0');
                 else if (temp <= 'F')
-                    ans *= (temp - 'A') + 10;
+                    ans += (uint)(temp - 'A') + 10;
                 else
-                    ans *= (temp - 'a') + 10;
+                    ans += (uint)(temp - 'a') + 10;
             }
-        }*/
+            return ans;
+        }
     }
 }

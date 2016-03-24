@@ -129,6 +129,9 @@ namespace Atomix.Kernel_H
             /* Multiboot Info Parsing */
             Multiboot.Setup(magic, address);
 
+            /* Setup Monitor */
+            Monitor.Setup();
+
             /* Setup Paging */
             Paging.Setup(KernelDirectory);
 

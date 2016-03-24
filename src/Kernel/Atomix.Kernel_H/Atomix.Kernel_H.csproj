@@ -67,6 +67,7 @@
     <Compile Include="arch\x86\PIC.cs" />
     <Compile Include="arch\x86\PortIO.cs" />
     <Compile Include="arch\x86\SHM.cs" />
+    <Compile Include="core\Monitor.cs" />
     <Compile Include="devices\MBR.cs" />
     <Compile Include="devices\Partition.cs" />
     <Compile Include="devices\Storage.cs" />
@@ -84,9 +85,9 @@
     <Compile Include="core\Thread.cs" />
     <Compile Include="devices\Timer.cs" />
     <Compile Include="Boot.cs" />
-    <Compile Include="gui\font\BDF\Glyph.cs" />
-    <Compile Include="gui\font\BitampFontFile.cs" />
+    <Compile Include="gui\font\BDF.cs" />
     <Compile Include="gui\font\GenericFont.cs" />
+    <Compile Include="gui\font\Glyph.cs" />
     <Compile Include="gui\gui.cs" />
     <Compile Include="gui\Helper.cs" />
     <Compile Include="gui\Print.cs" />
@@ -112,6 +113,8 @@
     <Compile Include="lib\ds\IDictionary.cs" />
     <Compile Include="lib\ds\IList.cs" />
     <Compile Include="lib\ds\IQueue.cs" />
+    <Compile Include="lib\ds\ISet.cs" />
+    <Compile Include="lib\ds\misc.cs" />
     <Compile Include="lib\ds\Pair.cs" />
     <Compile Include="lib\encoding\ASCII.cs" />
     <Compile Include="lib\graphic\misc.cs" />
@@ -126,6 +129,7 @@
     <Compile Include="plugs\Exception.cs" />
     <Compile Include="plugs\Numerics.cs" />
     <Compile Include="plugs\String.cs" />
+    <Compile Include="plugs\Threading.cs" />
     <Compile Include="plugs\VTable.cs" />
     <Compile Include="Start-x86.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

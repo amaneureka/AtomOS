@@ -9,6 +9,7 @@ namespace Atomix.Kernel_H.core
     public class Thread
     {
         public readonly Process Process;
+        public readonly int ThreadID;
         public Exception Exception;
 
         ThreadState State;
@@ -16,6 +17,8 @@ namespace Atomix.Kernel_H.core
         uint StackBottom;
         uint StackTop;
         uint StackLimit;
+
+        static int ThreadCounter = 0;
         
         public Thread(Process Parent, uint xAddress, uint StackStart, uint StackLimit)
         {
@@ -26,6 +29,7 @@ namespace Atomix.Kernel_H.core
             this.StackTop = StackStart;
             this.StackBottom = StackStart - StackLimit;
             this.StackLimit = StackLimit;
+            this.ThreadID = ++ThreadCounter;
 
             if (StackStart != 0)
                 SetupInitialStack();
@@ -80,7 +84,7 @@ namespace Atomix.Kernel_H.core
 
         public static void Die()
         {
-            var curr = Scheduler.CurrentThread;
+            var curr = Scheduler.RunningThread;
             if (curr == null)
                 return;
             curr.State = ThreadState.Dead;
