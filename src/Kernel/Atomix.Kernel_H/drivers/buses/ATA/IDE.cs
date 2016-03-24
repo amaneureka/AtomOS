@@ -37,8 +37,7 @@ namespace Atomix.Kernel_H.drivers.buses.ATA
         protected bool mIsRemovable;
         protected int mBufferSize;
         protected byte[] mATAPI_Packet;
-
-        protected int mResourceID;
+        
         protected bool IRQInvoked;
 
         public IDE(bool IsPrimary, bool IsMaster = true)
@@ -176,8 +175,7 @@ namespace Atomix.Kernel_H.drivers.buses.ATA
             //Read Model, Firmware, SerialNo.
             mModel      = xBuff.GetString((int)Identify.ATA_IDENT_MODEL, 40);
             mSerialNo   = xBuff.GetString((int)Identify.ATA_IDENT_SERIAL, 20);
-            mResourceID = Scheduler.GetResourceID();
-
+            
             Heap.Free(xBuff);
         }
 
@@ -201,7 +199,7 @@ namespace Atomix.Kernel_H.drivers.buses.ATA
                         return false;
 
                     //Lock up device
-                    Scheduler.MutexLock(mResourceID);
+                    Monitor.AcquireLock(this);
 
                     //SCSI Packet Command
                     mATAPI_Packet[0] = (byte)Cmd.ATAPI_CMD_READ;
@@ -242,7 +240,7 @@ namespace Atomix.Kernel_H.drivers.buses.ATA
                     while (((Status)PortIO.In8(StatusReg) & (Status.ATA_SR_BSY | Status.ATA_SR_DRQ)) != 0) ;
 
                     //UnLock up device
-                    Scheduler.MutexUnlock(mResourceID);
+                    Monitor.ReleaseLock(this);
 
                     return true;
                 }
@@ -251,7 +249,7 @@ namespace Atomix.Kernel_H.drivers.buses.ATA
             else if (mDevice == Device.IDE_ATA)
             {
                 //Lock up device
-                Scheduler.MutexLock(mResourceID);
+                Monitor.AcquireLock(this);
 
                 //Disable IRQ
                 IRQInvoked = false;
@@ -359,7 +357,7 @@ namespace Atomix.Kernel_H.drivers.buses.ATA
                 }
 
                 //UnLock up device
-                Scheduler.MutexUnlock(mResourceID);
+                Monitor.ReleaseLock(this);
                 return true;
             }
             return false;

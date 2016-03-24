@@ -10,9 +10,7 @@ namespace Atomix.Kernel_H.core
     {
         static Thread CurrentTask;
         static IQueue<Thread> ThreadQueue;
-
-        static byte[] ResourceArray = new byte[500];
-
+        
         public static Thread RunningThread
         { get { return CurrentTask; } }
 
@@ -55,29 +53,7 @@ namespace Atomix.Kernel_H.core
             CurrentTask = NextTask;
             return NextTask.LoadStack();
         }
-
-        /// <summary>
-        /// Lock up this resource till it won't freed up
-        /// </summary>
-        /// <param name="ID"></param>
-        public static void MutexLock(int ID)
-        {
-            //we should switch task here because we are running on single core
-            while (ResourceArray[ID] != 0) ;//Hookup that thread till other thread free up that resource
-            ResourceArray[ID] = 1;
-        }
-
-        public static void MutexUnlock(int ID)
-        {
-            ResourceArray[ID] = 0;
-        }
-
-        static int ResID = 0;
-        public static int GetResourceID()
-        {
-            return ResID++;
-        }
-
+                
         private static Thread InvokeNext()
         {
             if (ThreadQueue.Count == 0)

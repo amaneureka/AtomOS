@@ -28,35 +28,39 @@ namespace Atomix.Kernel_H.core
     public static class Monitor
     {
         //Holds Object which are locked and thread id which has acquired the lock
-        static IDictionary<object, int> AcquiredLock;
+        static IDictionary<object, int> mLocks;
 
         public static void Setup()
         {
-            AcquiredLock = new IDictionary<object, int>(delegate (object aObj)
+            mLocks = new IDictionary<object, int>(delegate (object aObj)
             {
                 //If two objects shares the same address
                 return Native.GetAddress(aObj);
             }, object.Equals);
         }
-                
+
+        public static void AcquireLock(object aObj)
+        {
+            bool Lock = false;
+            AcquireLock(aObj, ref Lock);
+        }
+
         [Label("AcquireLock")]
         //https://msdn.microsoft.com/en-us/library/dd289498(v=vs.110).aspx
         public static void AcquireLock(object aObj, ref bool aLockTaken)
         {
             aLockTaken = false;
-
-            int ID = -1;
+            
             int ThreadID = Scheduler.RunningThreadID;
+            int ID = mLocks.GetValue(aObj, -1);
 
-            ID = AcquiredLock.GetValue(aObj, -1);
             if (ThreadID == ID)//If thread has already acquired lock
                 return;
 
             do
             {
-                AcquiredLock.SafeAdd(aObj, ThreadID);
-                ID = AcquiredLock[aObj];
-
+                mLocks.SafeAdd(aObj, ThreadID);
+                ID = mLocks[aObj];
 #warning Add thread sleep
             }
             while (ID != ThreadID);//Make sure we have owned the lock
@@ -68,13 +72,14 @@ namespace Atomix.Kernel_H.core
         //https://msdn.microsoft.com/en-in/library/system.threading.monitor.exit(v=vs.110).aspx
         public static void ReleaseLock(object aObj)
         {
-            int ID = -1;
             int ThreadID = Scheduler.RunningThreadID;
+            int ID = mLocks.GetValue(aObj, -1);
 
-            ID = AcquiredLock.GetValue(aObj, -1);
             if (ThreadID == ID)//If thread has already acquired lock
-                AcquiredLock.RemoveKey(aObj);
-
+            {
+                mLocks.RemoveKey(aObj);
+                return;
+            }
             throw new Exception("[Release Lock]: This thread has not owned the lock");
         }
     }

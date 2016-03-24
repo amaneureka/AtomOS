@@ -12,12 +12,7 @@
  */
 
 using System;
-using System.Runtime.InteropServices;
 
-using Atomix.Kernel_H.core;
-using Atomix.Kernel_H.arch.x86;
-
-using Atomix.CompilerExt;
 using Atomix.CompilerExt.Attributes;
 
 using Atomix.Assembler;
@@ -28,29 +23,31 @@ namespace Atomix.Kernel_H.core
 {
     public static unsafe class Heap
     {
-        private static uint HeapStart = 0;
-        private static uint HeapCurrent = 0;
-        private static uint HeapEnd = 0;
+        static uint HeapStart;
+        static uint HeapCurrent;
+        static uint HeapEnd;
 
         /// <summary>
         /// Keep track of free block address and there size (contigous) in the memory
         /// These array should not free up, and hence resides in old heap space
         /// </summary>
-        private static uint[] BlockAddress;
-        private static uint[] BlockSize;
+        static uint[] BlockAddress;
+        static uint[] BlockSize;
 
 #warning Heap Manager Assumption
-        private const int HeapManagerSize = 1024 * 16;//~16K items, complete assumption, so should take care of this
-        private static int HeapManagerPosition = 0;
-        private static bool HeapManagerSetup = false;
+        static bool HeapManagerSetup;
+        static int HeapManagerPosition;
+        const int HeapManagerSize = 1024 * 16;//~16K items, complete assumption, so should take care of this
 
-        private static int HEAP_RESOURCE_ID;
+        static int LockStatus;
 
         public static void Init(uint InitHeap)
         {
             HeapStart = InitHeap;
             HeapCurrent = InitHeap;
             HeapEnd = HeapStart + 0x100000;//Completely Assumption
+            HeapManagerSetup = false;
+
             Debug.Write("Heap Initialized!!\n");
             Debug.Write("       Start Address::%d\n", InitHeap);
             Debug.Write("       End Address  ::%d\n", HeapEnd);
@@ -58,8 +55,6 @@ namespace Atomix.Kernel_H.core
             //Allocate memory for future heap manager
             BlockAddress = new uint[HeapManagerSize];//64KB
             BlockSize = new uint[HeapManagerSize];//64KB
-
-            HEAP_RESOURCE_ID = Scheduler.GetResourceID();
         }
 
         public static void Setup(uint Start, uint End)
@@ -77,6 +72,7 @@ namespace Atomix.Kernel_H.core
             BlockSize[0] = HeapEnd - HeapStart;
             HeapManagerPosition = 1;
             HeapManagerSetup = true;
+            LockStatus = -1;
         }
 
         [Label("Heap")]
@@ -110,9 +106,9 @@ namespace Atomix.Kernel_H.core
                 }
                 return kmalloc(len);
             }
-            //Because access of same array from different threads can cause unexpected result -- So lock this thread
-            Scheduler.MutexLock(HEAP_RESOURCE_ID);
             
+            HeapLock();
+
             //Find a suitable hole
             int iterator;
             for (iterator = 0; iterator < HeapManagerPosition; iterator++)
@@ -183,7 +179,7 @@ namespace Atomix.Kernel_H.core
                     }
                     HeapManagerPosition--;//Reduce size of array, no need to clear last empty because we never read it                    
                 }
-                Scheduler.MutexUnlock(HEAP_RESOURCE_ID);
+                HeapUnLock();
                 Clear(Address, len);//Clear the memory and return
                 return Address;
             }
@@ -247,7 +243,7 @@ namespace Atomix.Kernel_H.core
                     HeapManagerPosition++;
                 }
             }
-            Scheduler.MutexUnlock(HEAP_RESOURCE_ID);       
+            HeapUnLock();
             Clear(pos, len);
             return pos;
         }
@@ -309,8 +305,7 @@ namespace Atomix.Kernel_H.core
             if (len == 0)
                 return;
 
-            //Because access of same array from different threads can cause unexpected result -- So spin lock this thread
-            Scheduler.MutexLock(HEAP_RESOURCE_ID);
+            HeapLock();
 
             //Check if any block can fit to left/Right of this
             int iterator, left = -1, right = -1;
@@ -381,7 +376,28 @@ namespace Atomix.Kernel_H.core
                 BlockAddress[HeapManagerPosition] = NewAddress;
                 HeapManagerPosition++;
             }
-            Scheduler.MutexUnlock(HEAP_RESOURCE_ID);
+            HeapUnLock();
+        }
+        
+        /// <summary>
+        /// Monitor class uses memory allocation for maintaing the list of acquired locks so we can't use it for
+        /// Heap lock
+        /// </summary>
+        private static void HeapLock()
+        {
+            int ThreadID = Scheduler.RunningThreadID;
+            if (LockStatus == ThreadID)
+                return;
+
+            while (LockStatus != -1) ;
+            LockStatus = ThreadID;
+        }
+
+        private static void HeapUnLock()
+        {
+            int ThreadID = Scheduler.RunningThreadID;
+            if (LockStatus == ThreadID)
+                LockStatus = -1;
         }
         
         [Assembly(0x8)]

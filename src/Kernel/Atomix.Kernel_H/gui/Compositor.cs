@@ -21,9 +21,7 @@ namespace Atomix.Kernel_H.gui
         static uint RENDER_STACK;
 
         static int Mouse_X, Mouse_Y;
-        static int WindowList_Lock;
-        static int Surface_Lock;
-                
+                        
         static IList<Pipe> Clients;
         static IList<Window> WindowList;        
         static IDictionary<string, Window> WindowMap;
@@ -42,10 +40,7 @@ namespace Atomix.Kernel_H.gui
             WindowList = new IList<Window>(100);
             WindowMap = new IDictionary<string, Window>(sdbm.GetHashCode, string.Equals);
             Canvas = new Surface(VBE.SecondaryBuffer, VBE.Xres, VBE.Yres);
-
-            WindowList_Lock = Scheduler.GetResourceID();
-            Surface_Lock = Scheduler.GetResourceID();
-            
+                        
             //Threads stack memory allocation
             MOUSE_INPUT_STACK = Heap.kmalloc(0x1000);
             COMPOSITOR_STACK = Heap.kmalloc(0x1000);
@@ -95,14 +90,14 @@ namespace Atomix.Kernel_H.gui
 
                 if (ScreenUpdate)
                 {
-                    Scheduler.MutexLock(WindowList_Lock);
+                    Monitor.AcquireLock(WindowList);
                     for (int i = 0; i < WindowList.Count; i++)
                     {
                         var win = WindowList[i];
                         //Canvas.Fill((byte*)win.Buffer, win.PositionX, win.PositionY, win.Width, win.Height);
                         Surface.CopyToBuffer(VBE.SecondaryBuffer, (byte*)win.Buffer, win.PositionX, win.PositionY, screen_width, screen_height, 0, 0, win.Width, win.Width, win.Height);
                     }
-                    Scheduler.MutexUnlock(WindowList_Lock);
+                    Monitor.ReleaseLock(WindowList);
 
                     //Flip only if we have updates on screen
                     //TODO: Flip only that much of region
@@ -180,9 +175,9 @@ namespace Atomix.Kernel_H.gui
                             WindowMap.Add(HashString, xNewWindow);
 
                             //Spin Lock WindowList because it is shared between compositor and render thread
-                            Scheduler.MutexLock(WindowList_Lock);
+                            Monitor.AcquireLock(WindowList);
                             WindowList.Add(xNewWindow);
-                            Scheduler.MutexUnlock(WindowList_Lock);
+                            Monitor.ReleaseLock(WindowList);
 
                             Clients[ClientID].Write(compositor_packet, false);
                         }
@@ -261,9 +256,9 @@ namespace Atomix.Kernel_H.gui
 
         private static void MarkRectangle(int x, int y, int width, int height)
         {
-            Scheduler.MutexLock(Surface_Lock);
+            Monitor.AcquireLock(Canvas);
             Canvas.Rectangle(x, y, width, height);
-            Scheduler.MutexUnlock(Surface_Lock);
+            Monitor.ReleaseLock(Canvas);
             ScreenUpdate = true;
         }
     }

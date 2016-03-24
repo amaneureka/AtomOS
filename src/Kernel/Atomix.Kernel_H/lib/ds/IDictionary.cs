@@ -136,17 +136,23 @@ namespace Atomix.Kernel_H.lib
             if (Current == null)
                 throw new Exception("[IDictionary]: Key not present!");
 
+            Bucket ToDelete;
             if (mEquality(Current.mKey, mKey))
+            {
                 mBuckets[Index] = Current.mNext;
+                ToDelete = Current;
+            }
+            else
+            {
+                while (Current.mNext != null && !mEquality(Current.mNext.mKey, mKey))
+                    Current = Current.mNext;
 
-            while (Current.mNext != null && !mEquality(Current.mNext.mKey, mKey))
-                Current = Current.mNext;
+                if (Current.mNext == null)
+                    throw new Exception("[IDictionary]: Key not present!");
 
-            if (Current.mNext == null)
-                throw new Exception("[IDictionary]: Key not present!");
-
-            var ToDelete = Current.mNext;
-            Current.mNext = ToDelete.mNext;
+                ToDelete = Current.mNext;
+                Current.mNext = ToDelete.mNext;
+            }
             Heap.Free(ToDelete);//Free bucket
         }
     }

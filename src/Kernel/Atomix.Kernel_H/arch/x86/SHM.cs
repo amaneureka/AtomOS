@@ -37,25 +37,23 @@ namespace Atomix.Kernel_H.arch.x86
     {
         public const uint START = 0xB0000000;
         public const int LIMIT_TO_PROCESS = 0x10000 >> 5;//Maximum of 0x10000 frames starting from SHM_Start to any process
-
-        static int ResourceKey;
+        
         static IDictionary<string, shm_chunk> Nodes;
         
         public static void Install()
         {
             Nodes = new IDictionary<string, shm_chunk>(sdbm.GetHashCode, string.Equals);
-            ResourceKey = Scheduler.GetResourceID();
         }
 
         public static unsafe uint Obtain(string aID, int aSize, bool aCreateIfNotExist)
         {
-            Scheduler.MutexLock(ResourceKey);
+            Monitor.AcquireLock(Nodes);
             
             if (!Nodes.ContainsKey(aID))
             {
                 if (!aCreateIfNotExist)
                 {
-                    Scheduler.MutexUnlock(ResourceKey);
+                    Monitor.ReleaseLock(Nodes);
                     return 0;
                 }
                 CreateNew(aID, aSize);
@@ -98,7 +96,7 @@ namespace Atomix.Kernel_H.arch.x86
                                 xOffset++;
                                 Index++;
                             }
-                            Scheduler.MutexUnlock(ResourceKey);
+                            Monitor.ReleaseLock(Nodes);
                             return xReturnAddress;
                         }
                     }
@@ -109,7 +107,7 @@ namespace Atomix.Kernel_H.arch.x86
                 }
             }
 
-            Scheduler.MutexUnlock(ResourceKey);
+            Monitor.ReleaseLock(Nodes);
             Debug.Write("shm_mapping failed, Process id:=%d ", ParentProcess.pid);
             Debug.Write("shm_id := %s\n", aID);            
             return 0;
