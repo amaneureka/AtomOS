@@ -45,13 +45,10 @@ namespace Kernel_alpha
             }
 
             Console.WriteLine("Partition Count::" + c.ToString());
-            Console.Clear();
             Console.WriteLine();
             Multitasking.CreateTask(pFAT32test, true);
             Multitasking.CreateTask(pSerialTest, true);
             Multitasking.CreateTask(pIdleTask, true);
-            Console.WriteLine("Its working...;)" + x86.Heap.AllocateMem(0).ToString());
-            Console.WriteLine("Aayush Mittal");
             //Screen.Setup();
             //Screen.Clear(0xFFBB977E);
         }
@@ -262,7 +259,7 @@ namespace Kernel_alpha
         {
             if (Global.Devices.Count >= 1)
             {
-                var xFAT = new FileSystem.FatFileSystem(Global.Devices[1]);
+                var xFAT = new FileSystem.FatFileSystem(Global.Devices[2]);
                 if (xFAT.IsValid)
                 {
                     for (; ; )
