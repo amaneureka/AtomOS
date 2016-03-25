@@ -51,17 +51,17 @@ namespace Atomix.Kernel_H
             LoadIDE(true, true);
             LoadIDE(false, true);
             #endregion
-            
+
             //FILE READING TEST
-            Debug.Write("Reading Test\n");
-            var stream = VirtualFileSystem.GetFile("disk1/README.TXT");
-            if (stream != null)
+            var stream = VirtualFileSystem.GetFile("disk0/gohu-11.bdf");
+            
+            /*if (stream != null)
                 Debug.Write(stream.ReadToEnd());
             else
-                Debug.Write("File not found!\n");
+                Debug.Write("File not found!\n");*/
             while (true) ;
         }
-                        
+
         public static uint pBootAnimation;
         public static unsafe void BootAnimation()
         {

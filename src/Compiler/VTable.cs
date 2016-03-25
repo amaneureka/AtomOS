@@ -5,7 +5,7 @@
 * Proprietary and confidential                                                                             *
 * Written by Aman Priyadarshi <aman.eureka@gmail.com>, February 2016                                       *
 *                                                                                                          *
-*   Namespace     ::  Atomix.Kernel_H.plugs                                                                *
+*   Namespace     ::  Atomix                                                                               *
 *   File          ::  VTable.cs                                                                            *
 *                                                                                                          *
 *   Description                                                                                            *
@@ -14,28 +14,26 @@
 *   History                                                                                                *
 *       13-02-2016      Aman Priyadarshi      Added Methods                                                *
 *       23-03-2016      Aman Priyadarshi      Added File Header and Typos                                  *
+*       25-03-2016      Aman Priyadarshi      Moved to Compiler Internals                                  *
 *                                                                                                          *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
 
-using Atomix.CompilerExt.Attributes;
-
-namespace Atomix.Kernel_H.plugs
+namespace Atomix
 {
-    public static unsafe class VTableImpl
+    public static class VTable
     {
-        [Label("VTableImpl")]
-        public static uint GetEntry(uint* aTable, uint aTypeID, uint aMethodID)
+        public static unsafe uint GetEntry(uint* aTable, uint aTypeID, uint aMethodID)
         {
             uint TypeID, MethodID, Size;
-            while((Size = *aTable) != 0)
+            while ((Size = *aTable) != 0)
             {
                 TypeID = aTable[1];
                 if (TypeID == aTypeID)
                 {
                     aTable += 2;
-                    while((MethodID = *aTable) != 0)
+                    while ((MethodID = *aTable) != 0)
                     {
                         if (MethodID == aMethodID)
                             return aTable[1];

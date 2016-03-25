@@ -107,9 +107,12 @@ namespace Atomix
             QueuedMember.Enqueue(xStartup);
             ScanPlugs();
 
+            /* Compiler Included Code */
+            LoadCompilerLibrary();
+
             ILCompiler.Logger.Write("Enququed Start Method");            
             while (QueuedMember.Count > 0)
-            {
+            {   
                 //Man we do scarifice to code, first come first process policy is our
                 var xMethod = QueuedMember.Dequeue();
                 /* Build Only when it is not yet processed mean not in build definations */
@@ -416,6 +419,14 @@ namespace Atomix
             }
             //Add it build definations
             BuildDefinations.Add(aField);
+        }
+
+        private void LoadCompilerLibrary()
+        {
+            var xMethod = typeof(VTable).GetMethod("GetEntry", BindingFlags.Public | BindingFlags.Static);
+
+            Core.StaticLabels.Add("VTableImpl", xMethod);
+            QueuedMember.Enqueue(xMethod);
         }
 
         /// <summary>

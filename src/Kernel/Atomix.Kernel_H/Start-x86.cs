@@ -38,7 +38,7 @@ namespace Atomix.Kernel_H
         [Assembly, Plug("Kernel_Main")]
         public static void main()
         {
-            Core.DataMember.Add(new AsmData("[map all main.map]", ""));
+            Core.DataMember.Add(new AsmData("[map all main.map]", string.Empty));
 
             /* Multiboot Header */
             Core.DataMember.Add(new AsmData("MultibootSignature", BitConverter.GetBytes(0x1BADB002)));

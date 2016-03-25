@@ -36,6 +36,7 @@ namespace Atomix.Kernel_H.gui.font
                 {
                     ReadingGlyphTable = true;
                     ReadingCharProperties = true;
+                    Debug.Write("Found %d\n", xGlyph.Unicode);
                 }
                 else if (ReadingCharProperties)
                 {
@@ -49,7 +50,7 @@ namespace Atomix.Kernel_H.gui.font
                     {
                         var prop = line.Split(' ');
                         var key = prop[0];
-
+                        
                         if (key == "ENCODING")
                             xGlyph.Unicode = uint.Parse(prop[1]);
                         else if (key == "DWIDTH")

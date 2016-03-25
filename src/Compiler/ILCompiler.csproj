@@ -50,6 +50,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>Atomix.ILCompiler</StartupObject>
@@ -219,6 +220,7 @@
     <Compile Include="log2htmlcode.cs" />
     <Compile Include="OpCodes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VTable.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

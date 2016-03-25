@@ -46,28 +46,45 @@ namespace Atomix.Kernel_H.plugs
                 return ToString32Bit((uint)(-aThis), true);
         }
 
-        [Plug("System_UInt32_System_UInt32_Parse_System_String_")]
+        [Plug("System_Int32_System_Int32_Parse_System_String_")]
         public static int ParseInt32(string aStr)
         {
-            int aValue = 0;
-#warning Add Invalid format exception
-            foreach (var aChar in aStr)
+            int xStart = 0;
+
+            bool IsNeg = false;
+            if (aStr[0] == '-')
             {
-                if (aChar == '-')
-                    continue;
-                aValue = (aValue * 10) + (aChar - '0');
+                xStart++;
+                IsNeg = true;
             }
-            return (aStr[0] == '-' ? -aValue : aValue);
+
+            int len = aStr.Length;
+
+            int value = 0;
+            for (int i = xStart; i < len; i++)
+            {
+                var aChar = aStr[i];
+                if (aChar >= '0' && aChar <= '9')
+                    value = value * 10 + (int)(aChar - '0');
+                else
+                    break;
+            }
+
+            return (IsNeg ? -value : value);
         }
 
         [Plug("System_UInt32_System_UInt32_Parse_System_String_")]
         public static uint ParseUInt32(string aStr)
         {
-            uint aValue = 0;
-#warning Add Invalid format exception
-            foreach(var aChar in aStr)
-                aValue = (aValue * 10) + (uint)(aChar - '0');
-            return aValue;
+            uint value = 0;
+            foreach (var aChar in aStr)
+            {
+                if (aChar >= '0' && aChar <= '9')
+                    value = value * 10 + (uint)(aChar - '0');
+                else
+                    break;
+            }
+            return value;
         }
 
         public static string ToString32Bit(uint aNum, bool Signed)
