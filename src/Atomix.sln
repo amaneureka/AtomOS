@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ILCompiler", "Compiler\ILCompiler.csproj", "{5F140860-2A9A-44DD-831E-61C0D052CC6B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atomix.ILCompiler", "Compiler\Atomix.ILCompiler.csproj", "{5F140860-2A9A-44DD-831E-61C0D052CC6B}"
 	ProjectSection(ProjectDependencies) = postProject
 		{38E89611-ED10-4B9F-8E9D-1FAA4EF97E73} = {38E89611-ED10-4B9F-8E9D-1FAA4EF97E73}
 		{D4F08E1C-074D-4BB8-8D3C-08A8797CACF3} = {D4F08E1C-074D-4BB8-8D3C-08A8797CACF3}
@@ -20,11 +20,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Kernel", "Kernel", "{C53B4F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel_alpha", "Kernel\Kernel_alpha\Kernel_alpha.csproj", "{AEA97938-D7F4-484F-8CF2-3F62BC2A11EC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompilerExt", "Compiler\CompilerExt\CompilerExt.csproj", "{8974125B-52CA-48BD-92F5-C8B28F1C1DEE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atomix.CompilerExt", "Compiler\CompilerExt\Atomix.CompilerExt.csproj", "{8974125B-52CA-48BD-92F5-C8B28F1C1DEE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ILOptimizer", "Compiler\ILOptimizer\ILOptimizer.csproj", "{ECA9C753-5F48-427C-B432-E7D61324AB41}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atomix.ILOptimizer", "Compiler\ILOptimizer\Atomix.ILOptimizer.csproj", "{ECA9C753-5F48-427C-B432-E7D61324AB41}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ILCompiler.Assembler", "Compiler\ILCompiler.Assembler\ILCompiler.Assembler.csproj", "{C39C02EF-559E-47A6-98D9-E5B79D683948}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atomix.Assembler", "Compiler\ILCompiler.Assembler\Atomix.Assembler.csproj", "{C39C02EF-559E-47A6-98D9-E5B79D683948}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Virtual Resources", "Virtual Resources", "{FF33C910-44B2-4135-822D-38BE75CA45BF}"
 EndProject
@@ -54,6 +54,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atomix.Debugger", "Tools\Atomix.Debugger\Atomix.Debugger.csproj", "{D4F08E1C-074D-4BB8-8D3C-08A8797CACF3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atomix.RamFS", "Tools\Atomix.RamFS\Atomix.RamFS.csproj", "{2A356941-C071-4873-BCE2-12BB24E33B0D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apps", "Apps", "{8815667D-CE68-4ADC-834B-9817807938E5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atomix.Core", "Apps\Atomix.Core\Atomix.Core.csproj", "{A22414A7-E2BB-44F8-B04C-1BF0B7C12410}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atomix.Shell", "Apps\Atomix.Shell\Atomix.Shell.csproj", "{C2AE9D7B-9FB4-4D3B-911B-039C3EF5C7BF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -209,6 +215,30 @@ Global
 		{2A356941-C071-4873-BCE2-12BB24E33B0D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2A356941-C071-4873-BCE2-12BB24E33B0D}.Release|x86.ActiveCfg = Release|Any CPU
 		{2A356941-C071-4873-BCE2-12BB24E33B0D}.Release|x86.Build.0 = Release|Any CPU
+		{A22414A7-E2BB-44F8-B04C-1BF0B7C12410}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A22414A7-E2BB-44F8-B04C-1BF0B7C12410}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A22414A7-E2BB-44F8-B04C-1BF0B7C12410}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A22414A7-E2BB-44F8-B04C-1BF0B7C12410}.Debug|x86.Build.0 = Debug|Any CPU
+		{A22414A7-E2BB-44F8-B04C-1BF0B7C12410}.Release H|Any CPU.ActiveCfg = Release|Any CPU
+		{A22414A7-E2BB-44F8-B04C-1BF0B7C12410}.Release H|Any CPU.Build.0 = Release|Any CPU
+		{A22414A7-E2BB-44F8-B04C-1BF0B7C12410}.Release H|x86.ActiveCfg = Release|Any CPU
+		{A22414A7-E2BB-44F8-B04C-1BF0B7C12410}.Release H|x86.Build.0 = Release|Any CPU
+		{A22414A7-E2BB-44F8-B04C-1BF0B7C12410}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A22414A7-E2BB-44F8-B04C-1BF0B7C12410}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A22414A7-E2BB-44F8-B04C-1BF0B7C12410}.Release|x86.ActiveCfg = Release|Any CPU
+		{A22414A7-E2BB-44F8-B04C-1BF0B7C12410}.Release|x86.Build.0 = Release|Any CPU
+		{C2AE9D7B-9FB4-4D3B-911B-039C3EF5C7BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2AE9D7B-9FB4-4D3B-911B-039C3EF5C7BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2AE9D7B-9FB4-4D3B-911B-039C3EF5C7BF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C2AE9D7B-9FB4-4D3B-911B-039C3EF5C7BF}.Debug|x86.Build.0 = Debug|Any CPU
+		{C2AE9D7B-9FB4-4D3B-911B-039C3EF5C7BF}.Release H|Any CPU.ActiveCfg = Release|Any CPU
+		{C2AE9D7B-9FB4-4D3B-911B-039C3EF5C7BF}.Release H|Any CPU.Build.0 = Release|Any CPU
+		{C2AE9D7B-9FB4-4D3B-911B-039C3EF5C7BF}.Release H|x86.ActiveCfg = Release|Any CPU
+		{C2AE9D7B-9FB4-4D3B-911B-039C3EF5C7BF}.Release H|x86.Build.0 = Release|Any CPU
+		{C2AE9D7B-9FB4-4D3B-911B-039C3EF5C7BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2AE9D7B-9FB4-4D3B-911B-039C3EF5C7BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2AE9D7B-9FB4-4D3B-911B-039C3EF5C7BF}.Release|x86.ActiveCfg = Release|Any CPU
+		{C2AE9D7B-9FB4-4D3B-911B-039C3EF5C7BF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -228,59 +258,69 @@ Global
 		{2C16BB5C-E9DB-46BF-9AB7-A04872455BCF} = {FF33C910-44B2-4135-822D-38BE75CA45BF}
 		{D4F08E1C-074D-4BB8-8D3C-08A8797CACF3} = {F6278EAD-5D78-4224-9484-518D17CF826F}
 		{2A356941-C071-4873-BCE2-12BB24E33B0D} = {F6278EAD-5D78-4224-9484-518D17CF826F}
+		{A22414A7-E2BB-44F8-B04C-1BF0B7C12410} = {8815667D-CE68-4ADC-834B-9817807938E5}
+		{C2AE9D7B-9FB4-4D3B-911B-039C3EF5C7BF} = {8815667D-CE68-4ADC-834B-9817807938E5}
 	EndGlobalSection
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 13
+		SccNumberOfProjects = 15
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://atomixos.visualstudio.com/defaultcollection
 		SccLocalPath0 = .
-		SccProjectUniqueName1 = Compiler\\ILCompiler.csproj
+		SccProjectUniqueName1 = Kernel\\Atomix.mscorlib\\Atomix.mscorlib.csproj
 		SccProjectTopLevelParentUniqueName1 = Atomix.sln
-		SccProjectName1 = Compiler
-		SccLocalPath1 = Compiler
-		SccProjectUniqueName2 = Kernel\\Atomix.mscorlib\\Atomix.mscorlib.csproj
+		SccProjectName1 = Kernel/Atomix.mscorlib
+		SccLocalPath1 = Kernel\\Atomix.mscorlib
+		SccProjectUniqueName2 = Virtual\u0020Resources\\File\u0020System\u0020v2.0\\FileSystem.csproj
 		SccProjectTopLevelParentUniqueName2 = Atomix.sln
-		SccProjectName2 = Kernel/Atomix.mscorlib
-		SccLocalPath2 = Kernel\\Atomix.mscorlib
-		SccProjectUniqueName3 = Virtual\u0020Resources\\File\u0020System\u0020v2.0\\FileSystem.csproj
+		SccProjectName2 = Virtual\u0020Resources/File\u0020System\u0020v2.0
+		SccLocalPath2 = Virtual\u0020Resources\\File\u0020System\u0020v2.0
+		SccProjectUniqueName3 = Virtual\u0020Resources\\Debug\u0020Window\\Debug\u0020Window.csproj
 		SccProjectTopLevelParentUniqueName3 = Atomix.sln
-		SccProjectName3 = Virtual\u0020Resources/File\u0020System\u0020v2.0
-		SccLocalPath3 = Virtual\u0020Resources\\File\u0020System\u0020v2.0
-		SccProjectUniqueName4 = Virtual\u0020Resources\\Debug\u0020Window\\Debug\u0020Window.csproj
+		SccProjectName3 = Virtual\u0020Resources/Debug\u0020Window
+		SccLocalPath3 = Virtual\u0020Resources\\Debug\u0020Window
+		SccProjectUniqueName4 = Virtual\u0020Resources\\RamFS\\RamFS.csproj
 		SccProjectTopLevelParentUniqueName4 = Atomix.sln
-		SccProjectName4 = Virtual\u0020Resources/Debug\u0020Window
-		SccLocalPath4 = Virtual\u0020Resources\\Debug\u0020Window
-		SccProjectUniqueName5 = Virtual\u0020Resources\\RamFS\\RamFS.csproj
+		SccProjectName4 = Virtual\u0020Resources/RamFS
+		SccLocalPath4 = Virtual\u0020Resources\\RamFS
+		SccProjectUniqueName5 = Tools\\Atomix.Debugger\\Atomix.Debugger.csproj
 		SccProjectTopLevelParentUniqueName5 = Atomix.sln
-		SccProjectName5 = Virtual\u0020Resources/RamFS
-		SccLocalPath5 = Virtual\u0020Resources\\RamFS
-		SccProjectUniqueName6 = Tools\\Atomix.Debugger\\Atomix.Debugger.csproj
+		SccProjectName5 = Tools/Atomix.Debugger
+		SccLocalPath5 = Tools\\Atomix.Debugger
+		SccProjectUniqueName6 = Tools\\Atomix.RamFS\\Atomix.RamFS.csproj
 		SccProjectTopLevelParentUniqueName6 = Atomix.sln
-		SccProjectName6 = Tools/Atomix.Debugger
-		SccLocalPath6 = Tools\\Atomix.Debugger
-		SccProjectUniqueName7 = Tools\\Atomix.RamFS\\Atomix.RamFS.csproj
+		SccProjectName6 = Tools/Atomix.RamFS
+		SccLocalPath6 = Tools\\Atomix.RamFS
+		SccProjectUniqueName7 = Kernel\\Atomix.Kernel_H\\Atomix.Kernel_H.csproj
 		SccProjectTopLevelParentUniqueName7 = Atomix.sln
-		SccProjectName7 = Tools/Atomix.RamFS
-		SccLocalPath7 = Tools\\Atomix.RamFS
-		SccProjectUniqueName8 = Compiler\\CompilerExt\\CompilerExt.csproj
+		SccProjectName7 = Kernel/Atomix.Kernel_H
+		SccLocalPath7 = Kernel\\Atomix.Kernel_H
+		SccProjectUniqueName8 = Kernel\\Kernel_alpha\\Kernel_alpha.csproj
 		SccProjectTopLevelParentUniqueName8 = Atomix.sln
-		SccProjectName8 = Compiler/CompilerExt
-		SccLocalPath8 = Compiler\\CompilerExt
-		SccProjectUniqueName9 = Compiler\\ILCompiler.Assembler\\ILCompiler.Assembler.csproj
+		SccProjectName8 = Kernel/Kernel_alpha
+		SccLocalPath8 = Kernel\\Kernel_alpha
+		SccProjectUniqueName9 = Apps\\Atomix.Core\\Atomix.Core.csproj
 		SccProjectTopLevelParentUniqueName9 = Atomix.sln
-		SccProjectName9 = Compiler/ILCompiler.Assembler
-		SccLocalPath9 = Compiler\\ILCompiler.Assembler
-		SccProjectUniqueName10 = Compiler\\ILOptimizer\\ILOptimizer.csproj
+		SccProjectName9 = Apps/Atomix.Core
+		SccLocalPath9 = Apps\\Atomix.Core
+		SccProjectUniqueName10 = Apps\\Atomix.Shell\\Atomix.Shell.csproj
 		SccProjectTopLevelParentUniqueName10 = Atomix.sln
-		SccProjectName10 = Compiler/ILOptimizer
-		SccLocalPath10 = Compiler\\ILOptimizer
-		SccProjectUniqueName11 = Kernel\\Atomix.Kernel_H\\Atomix.Kernel_H.csproj
+		SccProjectName10 = Apps/Atomix.Shell
+		SccLocalPath10 = Apps\\Atomix.Shell
+		SccProjectUniqueName11 = Compiler\\CompilerExt\\Atomix.CompilerExt.csproj
 		SccProjectTopLevelParentUniqueName11 = Atomix.sln
-		SccProjectName11 = Kernel/Atomix.Kernel_H
-		SccLocalPath11 = Kernel\\Atomix.Kernel_H
-		SccProjectUniqueName12 = Kernel\\Kernel_alpha\\Kernel_alpha.csproj
+		SccProjectName11 = Compiler/CompilerExt
+		SccLocalPath11 = Compiler\\CompilerExt
+		SccProjectUniqueName12 = Compiler\\Atomix.ILCompiler.csproj
 		SccProjectTopLevelParentUniqueName12 = Atomix.sln
-		SccProjectName12 = Kernel/Kernel_alpha
-		SccLocalPath12 = Kernel\\Kernel_alpha
+		SccProjectName12 = Compiler
+		SccLocalPath12 = Compiler
+		SccProjectUniqueName13 = Compiler\\ILOptimizer\\Atomix.ILOptimizer.csproj
+		SccProjectTopLevelParentUniqueName13 = Atomix.sln
+		SccProjectName13 = Compiler/ILOptimizer
+		SccLocalPath13 = Compiler\\ILOptimizer
+		SccProjectUniqueName14 = Compiler\\ILCompiler.Assembler\\Atomix.Assembler.csproj
+		SccProjectTopLevelParentUniqueName14 = Atomix.sln
+		SccProjectName14 = Compiler/ILCompiler.Assembler
+		SccLocalPath14 = Compiler\\ILCompiler.Assembler
 	EndGlobalSection
 EndGlobal

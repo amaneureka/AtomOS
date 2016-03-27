@@ -100,13 +100,13 @@
     <Compile Include="UInt32.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Compiler\CompilerExt\CompilerExt.csproj">
+    <ProjectReference Include="..\..\Compiler\CompilerExt\Atomix.CompilerExt.csproj">
       <Project>{8974125b-52ca-48bd-92f5-c8b28f1c1dee}</Project>
-      <Name>CompilerExt</Name>
+      <Name>Atomix.CompilerExt</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Compiler\ILCompiler.Assembler\ILCompiler.Assembler.csproj">
+    <ProjectReference Include="..\..\Compiler\ILCompiler.Assembler\Atomix.Assembler.csproj">
       <Project>{c39c02ef-559e-47a6-98d9-e5b79d683948}</Project>
-      <Name>ILCompiler.Assembler</Name>
+      <Name>Atomix.Assembler</Name>
     </ProjectReference>
     <ProjectReference Include="..\Kernel_alpha\Kernel_alpha.csproj">
       <Project>{aea97938-d7f4-484f-8cf2-3f62bc2a11ec}</Project>

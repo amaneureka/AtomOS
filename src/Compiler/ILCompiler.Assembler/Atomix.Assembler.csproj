@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Atomix.Assembler</RootNamespace>
-    <AssemblyName>ILCompiler.Assembler</AssemblyName>
+    <AssemblyName>Atomix.Assembler</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
@@ -105,9 +105,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CompilerExt\CompilerExt.csproj">
+    <ProjectReference Include="..\CompilerExt\Atomix.CompilerExt.csproj">
       <Project>{8974125b-52ca-48bd-92f5-c8b28f1c1dee}</Project>
-      <Name>CompilerExt</Name>
+      <Name>Atomix.CompilerExt</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
