@@ -22,7 +22,7 @@ namespace Atomix
         /// <summary>
         /// Build Output Directory
         /// </summary>
-        public static string OutputDir;
+        public static string OutputFile;
 
         /// <summary>
         /// CPU Architechture i.e. x86, ARM, x64
@@ -67,7 +67,7 @@ namespace Atomix
                         }
                         else if (args[i] == "-o")
                         {
-                            OutputDir = args[i + 1];
+                            OutputFile = args[i + 1];
                             i++;
                         }
                         else if (args[i] == "-d")
@@ -116,16 +116,16 @@ namespace Atomix
                 else if (!Path.IsPathRooted(InputDll))
                     InputDll = Path.Combine(Environment.CurrentDirectory, InputDll);
                                 
-                if (OutputDir == string.Empty || OutputDir == null)
-                    OutputDir = Environment.CurrentDirectory;
+                if (OutputFile == string.Empty || OutputFile == null)
+                    OutputFile = Environment.CurrentDirectory;
                 else
-                    OutputDir = Path.Combine(Environment.CurrentDirectory, OutputDir);
-                
+                    OutputFile = Path.Combine(Environment.CurrentDirectory, OutputFile);
+
                 /* Building Starts Here */
-                Logger = new Logger(OutputDir, DoLogging);
+                Logger = new Logger(Path.GetDirectoryName(OutputFile), DoLogging);
                 Logger.Write("@ILCompiler", "Initialized parameters", "Building Started...");
                 Logger.Write("Architecture     : " + CPUArchitecture);
-                Logger.Write("Output Directory : " + OutputDir);
+                Logger.Write("Output Directory : " + OutputFile);
                 Logger.Write("Input Assembly   : " + InputDll);
                 Compiler xCompiler = new Compiler(DoOptimization); 
                 try

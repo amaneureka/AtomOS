@@ -915,7 +915,7 @@ namespace Atomix
             //Add a label of Kernel End, it is used by our heap to know from where it starts allocating memory
             Core.AssemblerCode.Add(new Label("Compiler_End"));
 
-            using (var xWriter = new StreamWriter(Path.Combine(ILCompiler.OutputDir, Helper.KernelFile), false))
+            using (var xWriter = new StreamWriter(ILCompiler.OutputFile, false))
             {
                 //Firstly add datamember
                 foreach (var dm in Core.DataMember)
@@ -926,14 +926,14 @@ namespace Atomix
 
                 if (DoOptimization)
                 {
-                    Console.WriteLine("Optimizating Output Assembly");
-                    Console.WriteLine("Before Optimization: " + Core.AssemblerCode.Count);
+                    //Console.WriteLine("Optimizating Output Assembly");
+                    //Console.WriteLine("Before Optimization: " + Core.AssemblerCode.Count);
 
                     //Try to execute optimizer
                     try { Core.AssemblerCode = new Worker(Core.AssemblerCode).Start(); }
                     catch (Exception e) { Console.WriteLine("Optimization-Exception:" + e.ToString()); }
 
-                    Console.WriteLine("After Optimization: " + Core.AssemblerCode.Count);
+                    //Console.WriteLine("After Optimization: " + Core.AssemblerCode.Count);
                 }
 
                 foreach (var ac in Core.AssemblerCode)

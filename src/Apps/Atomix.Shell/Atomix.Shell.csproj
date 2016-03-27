@@ -28,7 +28,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\Build\Bin\</OutputPath>
+    <OutputPath>..\..\Build\Bin\Apps\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -44,10 +44,12 @@
     <ProjectReference Include="..\..\Compiler\CompilerExt\Atomix.CompilerExt.csproj">
       <Project>{8974125b-52ca-48bd-92f5-c8b28f1c1dee}</Project>
       <Name>Atomix.CompilerExt</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\Atomix.Core\Atomix.Core.csproj">
       <Project>{a22414a7-e2bb-44f8-b04c-1bf0b7c12410}</Project>
       <Name>Atomix.Core</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
