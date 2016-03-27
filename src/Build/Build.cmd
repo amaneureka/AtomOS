@@ -43,7 +43,7 @@ FOR %%I IN (%ATOMIX_APPS%\*.dll) DO (
 )
 
 REM CREATE RAM DISK
-%ATOMIX_RamFS% ATOMIX_RD -o %ATOMIX_ISO_DIR%\Initrd.bin
+%ATOMIX_RamFS% %ATOMIX_RD% -o %ATOMIX_ISO_DIR%\Initrd.bin
 
 REM CREATE ISO IMAGE
 mkisofs.exe -o %OUTPUT_DIR%\%BUILD_NAME%.iso -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table %ATOMIX_ISO_DIR%
