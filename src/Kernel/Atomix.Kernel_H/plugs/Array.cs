@@ -48,7 +48,7 @@ namespace Atomix.Kernel_H.plugs
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.EAX });
             Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EDI, SourceRef = "0x4" });
 
-            Core.AssemblerCode.Add(new Shr { DestinationReg = Registers.ECX, SourceRef = "0x2" });
+            Core.AssemblerCode.Add(new ShiftRight { DestinationReg = Registers.ECX, SourceRef = "0x2" });
             Core.AssemblerCode.Add(new And { DestinationReg = Registers.EAX, SourceRef = "0x3" });
             Core.AssemblerCode.Add(new Literal("rep movsd"));
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.EAX });
@@ -91,7 +91,7 @@ namespace Atomix.Kernel_H.plugs
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDX, SourceReg = Registers.EBP, SourceDisplacement = 0xC, SourceIndirect = true });
             Core.AssemblerCode.Add(new Multiply { DestinationReg = Registers.EDX });
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.EAX });
-            Core.AssemblerCode.Add(new Shr { DestinationReg = Registers.ECX, SourceRef = "0x2" });
+            Core.AssemblerCode.Add(new ShiftRight { DestinationReg = Registers.ECX, SourceRef = "0x2" });
             Core.AssemblerCode.Add(new And { DestinationReg = Registers.EAX, SourceRef = "0x3" });
             Core.AssemblerCode.Add(new Literal("rep movsd"));
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.EAX });

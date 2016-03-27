@@ -69,7 +69,7 @@ namespace Atomix.IL
                                 {
                                     Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
                                     Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, DestinationIndirect = true, DestinationDisplacement = (int)((xSize / 4) * 4), SourceReg = Registers.AX, Size = 16 });
-                                    Core.AssemblerCode.Add(new Shr { DestinationReg = Registers.EAX, SourceRef = "0x10" });
+                                    Core.AssemblerCode.Add(new ShiftRight { DestinationReg = Registers.EAX, SourceRef = "0x10" });
                                     Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, DestinationIndirect = true, DestinationDisplacement = (int)((xSize / 4) * 4) + 2, SourceReg = Registers.AL, Size = 8 });
                                     break;
                                 }

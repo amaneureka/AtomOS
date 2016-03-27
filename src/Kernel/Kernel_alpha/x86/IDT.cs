@@ -143,7 +143,7 @@ namespace Kernel_alpha.x86
 
                 Core.AssemblerCode.Add(new Mov { DestinationRef = "GDT_And_IDT_Content", DestinationIndirect = true, DestinationDisplacement = (i * 8) + 2 + 6, SourceRef = "0x8", Size = 8 });
                 Core.AssemblerCode.Add(new Mov { DestinationRef = "GDT_And_IDT_Content", DestinationIndirect = true, DestinationDisplacement = (i * 8) + 5 + 6, SourceRef = "0x8E", Size = 8 });
-                Core.AssemblerCode.Add(new Shr { DestinationReg = Registers.EAX, SourceRef = "0x10" });
+                Core.AssemblerCode.Add(new ShiftRight { DestinationReg = Registers.EAX, SourceRef = "0x10" });
                 Core.AssemblerCode.Add(new Mov { DestinationRef = "GDT_And_IDT_Content", DestinationIndirect = true, DestinationDisplacement = (i * 8) + 6 + 6, SourceReg = Registers.AL, Size = 8 });
                 Core.AssemblerCode.Add(new Mov { DestinationRef = "GDT_And_IDT_Content", DestinationIndirect = true, DestinationDisplacement = (i * 8) + 7 + 6, SourceReg = Registers.AH, Size = 8 });
             }

@@ -37,7 +37,7 @@ namespace Atomix.IL
                         else
                         {
                             Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.ECX }); //Shift Amount
-                            Core.AssemblerCode.Add(new Shr { DestinationReg = Registers.ESP, DestinationIndirect = true,SourceReg = Registers.CL });
+                            Core.AssemblerCode.Add(new ShiftRight { DestinationReg = Registers.ESP, DestinationIndirect = true,SourceReg = Registers.CL });
                         }
                     }
                     break;

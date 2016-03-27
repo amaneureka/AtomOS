@@ -77,7 +77,7 @@ namespace Atomix.Kernel_H
             #endregion
 
             //Prepare for our quantum jump to Higher address
-            Core.AssemblerCode.Add(new Literal("lea ECX, [Higher_Half_Kernel]"));
+            Core.AssemblerCode.Add(new Lea { DestinationReg = Registers.ECX, SourceRef = "Higher_Half_Kernel", SourceIndirect = true });
             Core.AssemblerCode.Add(new Jmp { DestinationRef = "ECX" });
 
             Core.AssemblerCode.Add(new Label("Higher_Half_Kernel"));

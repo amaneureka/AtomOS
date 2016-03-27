@@ -92,7 +92,7 @@ namespace Atomix.Kernel_H.arch.x86
 
                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = (i * 8) + 2, SourceRef = "0x8", Size = 8 });
                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = (i * 8) + 5, SourceRef = "0x8E", Size = 8 });
-                Core.AssemblerCode.Add(new Shr { DestinationReg = Registers.EBX, SourceRef = "0x10" });
+                Core.AssemblerCode.Add(new ShiftRight { DestinationReg = Registers.EBX, SourceRef = "0x10" });
                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = (i * 8) + 6, SourceReg = Registers.BL, Size = 8 });
                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = (i * 8) + 7, SourceReg = Registers.BH, Size = 8 });
             }

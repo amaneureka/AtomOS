@@ -8,9 +8,10 @@ using Atomix.Assembler;
 
 namespace Atomix.Assembler.x86
 {
-    public class Shr : DestinationSourceSize
+    public class Lea : DestinationSource
     {
-        public Shr()
-            : base("shr") { }        
+        public Lea()
+            : base("lea")
+        { }
     }
 }

@@ -185,7 +185,7 @@ namespace Atomix.Kernel_H.lib.graphic
             Core.AssemblerCode.Add(new Sub { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 40 });
             Core.AssemblerCode.Add(new Multiply { DestinationReg = Registers.ECX });
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDX, SourceReg = Registers.EAX });
-            Core.AssemblerCode.Add(new Shr { DestinationReg = Registers.EAX, SourceRef = "0x2" });//Divide by 4
+            Core.AssemblerCode.Add(new ShiftRight { DestinationReg = Registers.EAX, SourceRef = "0x2" });//Divide by 4
             Core.AssemblerCode.Add(new And { DestinationReg = Registers.EDX, SourceRef = "0x3" });//Modulo by 4
 
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 8 });
@@ -217,7 +217,7 @@ namespace Atomix.Kernel_H.lib.graphic
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ESI, SourceReg = Registers.EBP, SourceDisplacement = 0x10, SourceIndirect = true });
 
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.EBX });
-            Core.AssemblerCode.Add(new Shr { DestinationReg = Registers.ECX, SourceRef = "0x2" });
+            Core.AssemblerCode.Add(new ShiftRight { DestinationReg = Registers.ECX, SourceRef = "0x2" });
             Core.AssemblerCode.Add(new Literal("rep stosd"));
             Core.AssemblerCode.Add(new And { DestinationReg = Registers.EBX, SourceRef = "0x3" });
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.EBX });

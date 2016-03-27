@@ -8,9 +8,9 @@ using Atomix.Assembler;
 
 namespace Atomix.Assembler.x86
 {
-    public class Shl : DestinationSourceSize
+    public class ShiftRight : DestinationSourceSize
     {
-        public Shl()
-            : base("shl") { }        
+        public ShiftRight()
+            : base("shr") { }        
     }
 }

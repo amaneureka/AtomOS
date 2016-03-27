@@ -72,7 +72,7 @@ namespace Atomix.IL
 
                             // shift divisor 1 bit right
                             Core.AssemblerCode.Add(new Literal("shrd ESI, EDI, 0x1"));
-                            Core.AssemblerCode.Add(new Shr { DestinationReg = Registers.EDI, SourceRef = "0x1" });
+                            Core.AssemblerCode.Add(new ShiftRight { DestinationReg = Registers.EDI, SourceRef = "0x1" });
 
                             // increment shift counter
                             Core.AssemblerCode.Add(new Literal("inc ECX"));
@@ -85,7 +85,7 @@ namespace Atomix.IL
                             // shift the divident now in one step
                             // shift divident CL bits right
                             Core.AssemblerCode.Add(new Literal("shrd EAX, EDX, CL"));
-                            Core.AssemblerCode.Add(new Shr { DestinationReg = Registers.EDX, SourceReg = Registers.CL });
+                            Core.AssemblerCode.Add(new ShiftRight { DestinationReg = Registers.EDX, SourceReg = Registers.CL });
 
                             // so we shifted both, so we have near the same relation as original values
                             // divide this
