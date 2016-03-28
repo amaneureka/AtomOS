@@ -67,7 +67,7 @@
     <Compile Include="arch\x86\PIC.cs" />
     <Compile Include="arch\x86\PortIO.cs" />
     <Compile Include="arch\x86\SHM.cs" />
-    <Compile Include="core\Environment.cs" />
+    <Compile Include="exec\Environment.cs" />
     <Compile Include="core\Monitor.cs" />
     <Compile Include="devices\MBR.cs" />
     <Compile Include="devices\Partition.cs" />

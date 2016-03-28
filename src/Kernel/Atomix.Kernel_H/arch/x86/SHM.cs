@@ -45,13 +45,13 @@ namespace Atomix.Kernel_H.arch.x86
             Nodes = new IDictionary<string, shm_chunk>(sdbm.GetHashCode, string.Equals);
         }
 
-        public static unsafe uint Obtain(string aID, int aSize, bool aCreateIfNotExist)
+        public static unsafe uint Obtain(string aID, int aSize = -1)
         {
             Monitor.AcquireLock(Nodes);
             
             if (!Nodes.ContainsKey(aID))
             {
-                if (!aCreateIfNotExist)
+                if (aSize == -1)
                 {
                     Monitor.ReleaseLock(Nodes);
                     return 0;

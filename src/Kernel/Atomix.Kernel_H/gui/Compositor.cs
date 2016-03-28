@@ -167,7 +167,7 @@ namespace Atomix.Kernel_H.gui
                             var xNewWindow = new Window(ClientID) { Width = WindowWidth, Height = WindowHeight, PositionX = WindowPosX, PositionY = WindowPosY };
 
                             string HashString = xNewWindow.HashString;
-                            xNewWindow.Buffer = SHM.Obtain(HashString, (WindowHeight * WindowWidth * VBE.BytesPerPixel), true);
+                            xNewWindow.Buffer = SHM.Obtain(HashString, (WindowHeight * WindowWidth * VBE.BytesPerPixel));
                             
                             //Yes! we overwrite this buffer because we have no further refernce to this
                             Helper.CreateNewWindowMessage(compositor_packet, WindowWidth, WindowHeight, HashString);

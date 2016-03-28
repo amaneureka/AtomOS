@@ -457,7 +457,9 @@ namespace Atomix
             var xMethodLabel = aMethod.FullName();
             var xMethodName = aMethod.Name;
             var xLibName = (string)aAttributeData.ConstructorArguments[0].Value;
-            
+
+            var end_exception = xMethodLabel + ".Error";
+
             /*
              * For now assume normal calli method
              * - Push Library Name
@@ -498,10 +500,13 @@ namespace Atomix
 
             Core.AssemblerCode.Add(new Push { DestinationRef = AddStringData(xLibName) });
             Core.AssemblerCode.Add(new Push { DestinationRef = AddStringData(xMethodName) });
-#warning For now let's assume we don't throw any error here
+
             Core.AssemblerCode.Add(new Call("environment_import_dll", true));
             Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
-            
+
+            Core.AssemblerCode.Add(new Test { DestinationReg = Registers.ECX, SourceRef = "0x2" });
+            Core.AssemblerCode.Add(new Jmp { DestinationRef = end_exception, Condition = ConditionalJumpEnum.JNE });
+                        
             //Call the function
             Core.AssemblerCode.Add(new Call("EAX"));
 
@@ -526,6 +531,8 @@ namespace Atomix
                 xRetSize = 0;
 
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "0x0" });
+
+            Core.AssemblerCode.Add(new Label(end_exception));
             Core.AssemblerCode.Add(new Leave());
             Core.AssemblerCode.Add(new Ret { Address = (byte)xRetSize });
         }
