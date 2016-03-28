@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 using System.IO;
 using System.Reflection;
@@ -33,6 +34,10 @@ namespace Atomix
         /// </summary>
         public Dictionary<MethodBase, string> Plugs;
         /// <summary>
+        /// It will contain Methods and DLL name
+        /// </summary>
+        public Dictionary<MethodBase, CustomAttributeData> ImportDLL;
+        /// <summary>
         /// Dummy can be assumed as a doll method which we are not going to build
         /// The uint decide is a plug based building it build the plug containing given integer as string --> Plug
         /// If it is zero than it won't build anything.
@@ -45,6 +50,10 @@ namespace Atomix
         /// and footer (leave, ret) with given return value
         /// </summary>
         private Dictionary<MethodBase, uint> AssemblyNative;
+        /// <summary>
+        /// It contains all literal string datamember
+        /// </summary>
+        private Dictionary<string, string> StringTable;
         /// <summary>
         /// The list of implemented Microsoft IL's by our compiler
         /// </summary>
@@ -62,7 +71,9 @@ namespace Atomix
             QueuedMember = new Queue<_MemberInfo>();            
             BuildDefinations = new List<_MemberInfo>();
             Plugs = new Dictionary<MethodBase, string>();
+            ImportDLL = new Dictionary<MethodBase, CustomAttributeData>();
             Dummys = new Dictionary<uint, MethodBase>();
+            StringTable = new Dictionary<string, string>();
             AssemblyNative = new Dictionary<MethodBase, uint>();
             Core.vStack = new VirtualStack();
             Core.DataMember = new List<AsmData>();
@@ -147,6 +158,12 @@ namespace Atomix
                         ProcessField(xField);
                     }
                 }
+            }
+
+            /* Process External Functions */
+            foreach(var xEntry in ImportDLL)
+            {
+                ProcessExternalMethod(xEntry.Key, xEntry.Value);
             }
         }
 
@@ -357,11 +374,16 @@ namespace Atomix
                             else if (xAttr.AttributeType == typeof(DummyAttribute))
                             {
                                 Dummys.Add((uint)xAttr.ConstructorArguments[0].Value, xMethod);
+                                
+                            }
+                            else if (xAttr.AttributeType == typeof(DllImportAttribute))
+                            {
+                                ImportDLL.Add(xMethod, xAttr);
                                 ILCompiler.Logger.Write(string.Format(
-                                        "<b>Plug Found <u>DummyAttribute</u></b> :: {0}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=>{1}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=>{2}",
+                                        "<b>Plug Found <u>DllImportAttribute</u></b> :: {0}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=>{1}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=>{2}",
                                         xMethod.Name,
                                         xType.FullName,
-                                        xAssembly.FullName));
+                                        (string)xAttr.ConstructorArguments[0].Value));
                             }
                         }                        
                     }                    
@@ -427,6 +449,121 @@ namespace Atomix
 
             Core.StaticLabels.Add("VTableImpl", xMethod);
             QueuedMember.Enqueue(xMethod);
+        }
+
+        private void ProcessExternalMethod(MethodBase aMethod, CustomAttributeData aAttributeData)
+        {
+            ILCompiler.Logger.Write("@Processor", aMethod.FullName(), "Processing External Method");
+            var xMethodLabel = aMethod.FullName();
+            var xMethodName = aMethod.Name;
+            var xLibName = (string)aAttributeData.ConstructorArguments[0].Value;
+            
+            /*
+             * For now assume normal calli method
+             * - Push Library Name
+             * - Push Function Name
+             * - Call Kernel API
+             * - Jump to function address
+             */
+            Core.AssemblerCode.Add(new Label(xMethodLabel));
+
+            Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EBP });
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBP, SourceReg = Registers.ESP });
+
+            #region Calli
+            int ArgSize = (from item in aMethod.GetParameters()
+                           select (int)item.ParameterType.SizeOf().Align()).Sum();
+
+            if (!aMethod.IsStatic)
+            {
+                if (aMethod.DeclaringType.IsValueType)
+                    ArgSize += 4;
+                else
+                    ArgSize += aMethod.DeclaringType.SizeOf().Align();
+            }
+
+            int xReturnSize = (aMethod is MethodInfo) ? ((MethodInfo)aMethod).ReturnType.SizeOf().Align() : 0;
+
+            //Push all the arguments
+            for (int i = (ArgSize / 4) - 1; i >= 0; i--)
+            {
+                Core.AssemblerCode.Add(new Push
+                {
+                    DestinationReg = Registers.EBP,
+                    DestinationDisplacement = (0x8 + i * 4),
+                    DestinationIndirect = true
+                });
+            }
+            #endregion
+
+            Core.AssemblerCode.Add(new Push { DestinationRef = AddStringData(xLibName) });
+            Core.AssemblerCode.Add(new Push { DestinationRef = AddStringData(xMethodName) });
+#warning For now let's assume we don't throw any error here
+            Core.AssemblerCode.Add(new Call("environment_import_dll", true));
+            Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
+            
+            //Call the function
+            Core.AssemblerCode.Add(new Call("EAX"));
+
+            if (xReturnSize > 0)
+            {
+                //For return type Method
+                var xOffset = ILHelper.GetResultCodeOffset((uint)xReturnSize, (uint)ArgSize);
+                for (int i = 0; i < xReturnSize / 4; i++)
+                {
+                    Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
+                    Core.AssemblerCode.Add(new Mov
+                    {
+                        DestinationReg = Registers.EBP,
+                        DestinationIndirect = true,
+                        DestinationDisplacement = (int)(xOffset + ((i + 0) * 4)),
+                        SourceReg = Registers.EAX
+                    });
+                }
+            }
+            var xRetSize = (ArgSize - xReturnSize);
+            if (xRetSize < 0)
+                xRetSize = 0;
+
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "0x0" });
+            Core.AssemblerCode.Add(new Leave());
+            Core.AssemblerCode.Add(new Ret { Address = (byte)xRetSize });
+        }
+
+        static int CurrentLabel = 0;
+        public string AddStringData(string aStr)
+        {
+            if (StringTable.ContainsKey(aStr))
+                return StringTable[aStr];
+
+            var xLabel = "StringContent_" + CurrentLabel.ToString().PadLeft(4, '0');
+            StringTable.Add(aStr, xLabel);
+            CurrentLabel++;
+
+            return xLabel;
+        }
+        
+        public void FlushStringDataTable()
+        {
+            int CurrentLabel = 0;
+            string Content, str;
+            foreach(var xObj in StringTable)
+            {
+                str = xObj.Key;
+                Content = xObj.Value;
+                Encoding xEncoding = Encoding.Unicode;
+                var xBytecount = xEncoding.GetByteCount(str);
+                var xObjectData = new byte[(xBytecount) + 0x10]; //0xC is object data offset
+
+                Array.Copy(BitConverter.GetBytes(ILHelper.GetTypeID(typeof(string))), 0, xObjectData, 0, 4);
+                Array.Copy(BitConverter.GetBytes(0x1), 0, xObjectData, 4, 4);
+                Array.Copy(BitConverter.GetBytes(xObjectData.Length), 0, xObjectData, 8, 4);
+                Array.Copy(BitConverter.GetBytes(str.Length), 0, xObjectData, 12, 4);
+                Array.Copy(xEncoding.GetBytes(str), 0, xObjectData, 16, xBytecount);
+
+                Core.DataMember.Add(new AsmData(Content, xObjectData));
+                CurrentLabel++;
+            }
         }
 
         /// <summary>
@@ -677,13 +814,10 @@ namespace Atomix
                     });
                 }
             }
-            #warning Optimization
             Core.AssemblerCode.Add(new Comment(Worker.OPTIMIAZTION_END_FLAG));
             var xRetSize = ((int)ArgSize) - ((int)xReturnSize);
             if (xRetSize < 0)
-            {
                 xRetSize = 0;
-            }
             //Leave this method mean regain original EBP and ESP offset
             Core.AssemblerCode.Add(new Leave());
             //Return to parent method with given stack offset
@@ -761,7 +895,6 @@ namespace Atomix
                     xUID = OpMethod.MethodUIDs[yItem.GetBaseDefinition()];
                     xVTableData.Add(xUID.ToString());
                     xVTableData.Add(xLabel);
-                    //Console.WriteLine(string.Format("[VTable]: {0} {1} {2}", xTypeID, xUID, xLabel));
                 }
                 xVTableData.Add("0");
             }
@@ -906,15 +1039,14 @@ namespace Atomix
 
         public void FlushAsmFile()
         {
+            //Flush String Data table
+            FlushStringDataTable();
+
             VTableFlush();
-
-            //To Make output assembly looks good
-            //But i comment this because the multiboot header comes to down
-            //Core.DataMember.Sort();
-
+            
             //Add a label of Kernel End, it is used by our heap to know from where it starts allocating memory
             Core.AssemblerCode.Add(new Label("Compiler_End"));
-
+            
             using (var xWriter = new StreamWriter(ILCompiler.OutputFile, false))
             {
                 //Firstly add datamember

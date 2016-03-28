@@ -17,30 +17,17 @@ namespace Atomix.IL
     {
         public Ldstr(Compiler Cmp)
             : base("ldstr", Cmp) { }
-
-        private static int CurrentLabel = 0;
+        
         public override void Execute(ILOpCode instr, MethodBase aMethod)
         {
             var xStr = ((OpString)instr).Value;
-            var Content = "StringContent_" + CurrentLabel.ToString().PadLeft(4, '0');
+            
             switch (ILCompiler.CPUArchitecture)
             {
                 #region _x86_
                 case CPUArch.x86:
-                    {                        
-                        Encoding xEncoding = Encoding.Unicode;
-                        var xBytecount = xEncoding.GetByteCount(xStr);
-                        var xObjectData = new byte[(xBytecount) + 0x10]; //0xC is object data offset
-
-                        Array.Copy(BitConverter.GetBytes(ILHelper.GetTypeID(typeof(string))), 0, xObjectData, 0, 4);
-                        Array.Copy(BitConverter.GetBytes(0x1), 0, xObjectData, 4, 4);
-                        Array.Copy(BitConverter.GetBytes(xObjectData.Length), 0, xObjectData, 8, 4);
-                        Array.Copy(BitConverter.GetBytes(xStr.Length), 0, xObjectData, 12, 4);
-                        Array.Copy(xEncoding.GetBytes(xStr), 0, xObjectData, 16, xBytecount);
-
-                        Core.DataMember.Add(new AsmData(Content, xObjectData));
-
-                        Core.AssemblerCode.Add(new Push { DestinationRef = Content });
+                    {
+                        Core.AssemblerCode.Add(new Push { DestinationRef = Compiler.AddStringData(xStr) });
                     }
                     break;
                 #endregion
@@ -59,7 +46,6 @@ namespace Atomix.IL
                     break;
                 #endregion
             }
-            CurrentLabel++;
             Core.vStack.Push(4, typeof(string));
         }
     }
