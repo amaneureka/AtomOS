@@ -80,7 +80,7 @@ namespace Atomix.Kernel_H
                 SystemClient.Read(Request);
 
                 string HashCode = lib.encoding.ASCII.GetString(Request, 13, 19);
-                var aBuffer = (byte*)SHM.Obtain(HashCode, 0, false);
+                var aBuffer = (byte*)SHM.Obtain(HashCode, -1);
                 
                 BootImage.Read(Request, 8);
                 int c = 0;
