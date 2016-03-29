@@ -888,6 +888,14 @@ namespace Atomix
                 xDict[xTypeID].Add(xV);
             }
 
+            /*
+             * Array of Entries
+             *      - Size of entry in DWORD
+             *      - TypeID
+             *      - ARRAY OF {METHOD_ID, LABEL}
+             *      - Zero at end
+             */
+
             var xVTableData = new List<string>();
             foreach(var xItem in xDict)
             {

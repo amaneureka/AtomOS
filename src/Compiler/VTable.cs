@@ -37,6 +37,7 @@ namespace Atomix
                     {
                         if (MethodID == aMethodID)
                             return aTable[1];
+                        aTable += 2;
                     }
                     throw new Exception("[VTable] Method Not Found!");
                 }
