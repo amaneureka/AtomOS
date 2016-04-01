@@ -128,5 +128,20 @@ namespace Atomix.Kernel_H.arch.x86
             //Save value at mem Location
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.BL, DestinationIndirect = true, Size = 8 });
         }
+
+        [Assembly(0xC)]
+        public static void FastCopy(uint aDest, uint aSrc, uint aLen)
+        {
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 8, SourceIndirect = true });
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ESI, SourceReg = Registers.EBP, SourceDisplacement = 12, SourceIndirect = true });
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDI, SourceReg = Registers.EBP, SourceDisplacement = 16, SourceIndirect = true });
+
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.EAX });
+            Core.AssemblerCode.Add(new ShiftRight { DestinationReg = Registers.ECX, SourceRef = "0x2" });
+            Core.AssemblerCode.Add(new Literal("rep movsd"));
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.EAX });
+            Core.AssemblerCode.Add(new And { DestinationReg = Registers.ECX, SourceRef = "0x3" });
+            Core.AssemblerCode.Add(new Literal("rep movsb"));
+        }
     }
 }
