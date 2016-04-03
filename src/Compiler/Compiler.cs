@@ -496,6 +496,13 @@ namespace Atomix
                     DestinationIndirect = true
                 });
             }
+
+            var xRetSize = (ArgSize - xReturnSize);
+            if (xRetSize < 0)
+            {
+                Core.AssemblerCode.Add(new Sub { DestinationReg = Registers.ESP, SourceRef = "0x" + (-xRetSize).ToString("x") });
+                xRetSize = 0;                
+            }
             #endregion
 
             Core.AssemblerCode.Add(new Push { DestinationRef = AddStringData(xLibName) });
@@ -526,10 +533,7 @@ namespace Atomix
                     });
                 }
             }
-            var xRetSize = (ArgSize - xReturnSize);
-            if (xRetSize < 0)
-                xRetSize = 0;
-
+            
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "0x0" });
 
             Core.AssemblerCode.Add(new Label(end_exception));
