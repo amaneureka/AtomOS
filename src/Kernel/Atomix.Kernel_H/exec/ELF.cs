@@ -4,6 +4,8 @@ using System.Runtime.InteropServices;
 using Atomix.Kernel_H.io;
 using Atomix.Kernel_H.core;
 using Atomix.Kernel_H.arch.x86;
+using Atomix.Kernel_H.lib.encoding;
+using Atomix.Kernel_H.io.FileSystem;
 
 namespace Atomix.Kernel_H.exec
 {
@@ -158,17 +160,19 @@ namespace Atomix.Kernel_H.exec
         };
         #endregion
 
-        public static void Load(Stream aStream)
+        public static uint Load(string aPath)
         {
+            Stream aStream = VirtualFileSystem.GetFile(aPath);
             if (aStream == null)
-                throw new Exception("[ELF]: Stream closed");
+                throw new Exception("[ELF]: File not found!");
 
             var xData = new byte[aStream.FileSize];
             aStream.Read(xData, xData.Length);
 
             //because 0x10 bytes are dedicated for array meta information
             var header = (Elf_Header*)(Native.GetAddress(xData) + 0x10);
-            
+
+            uint EntryPoint = header->e_entry;
             try
             {
                 /* Check if we are supporting this standard */
@@ -195,8 +199,6 @@ namespace Atomix.Kernel_H.exec
                 var section = elf_section(header, 0);
                 for (int index = 0; index < header->e_shnum; index++, section++)
                 {
-                    Debug.Write("Type: %d ", section->sh_type);
-                    Debug.Write("Size: %d\n", section->sh_size);
                     switch ((ShT_Types)section->sh_type)
                     {
                         case ShT_Types.SHT_NOBITS:
@@ -265,16 +267,18 @@ namespace Atomix.Kernel_H.exec
                                 uint count = section->sh_size / section->sh_entsize;
                                 for (uint idx = 0; idx < count; idx++, SymbolTable++)
                                 {
-                                    Debug.Write("Binding: %d ", (uint)(SymbolTable->st_info >> 4));
-                                    Debug.Write("Type: %d ", (uint)(SymbolTable->st_info & 0x0F));
-                                    Debug.Write("shndx: %d ", SymbolTable->st_shndx);
-                                    Debug.Write("st_value: %d ", SymbolTable->st_value);
-                                    Debug.Write("name: %d\n", SymbolTable->st_name);
                                     if ((StT_Bindings)(SymbolTable->st_info >> 4) == StT_Bindings.STB_GLOBAL)
                                     {
                                         var target = elf_section(header, SymbolTable->st_shndx);
-                                        var Address = (uint)header + target->sh_offset + SymbolTable->st_value;
-                                        Debug.Write("Global Address: %d\n", Address);
+                                        var address = (uint)header + target->sh_offset + SymbolTable->st_value;
+
+                                        var stringTable = elf_section(header, section->sh_link);
+                                        //Assuming no symbol is > 255 bytes long
+                                        var name = ASCII.GetString((byte*)((uint)header + stringTable->sh_offset + SymbolTable->st_name), 0, 255);
+
+                                        if (name.Length > 0)
+                                            Scheduler.RunningProcess.SetSymbol(aPath + name, address);
+                                        Heap.Free(name);
                                     }
                                 }
                             }
@@ -297,6 +301,7 @@ namespace Atomix.Kernel_H.exec
                 Heap.Free(xData);
                 throw e;
             }
+            return EntryPoint;
         }
 
         private static Elf_Shdr* elf_section(Elf_Header *header, uint aOffset)

@@ -33,10 +33,7 @@ namespace Atomix.Kernel_H.core
 
         public uint GetSymbols(string aStr)
         {
-            uint add = mSymbols.GetValue(aStr, 0);
-            if (add == 0)
-                throw new Exception("[Process]: Symbol not found!");
-            return add;
+            return mSymbols.GetValue(aStr, 0);
         }
 
         public void SetSymbol(string aStr, uint aAddress)
