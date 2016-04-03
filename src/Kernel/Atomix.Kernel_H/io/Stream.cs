@@ -6,10 +6,12 @@ namespace Atomix.Kernel_H.io
 {
     public abstract class Stream
     {
+        public readonly string FileName;
         public readonly uint FileSize;
 
-        public Stream(uint aSize)
+        public Stream(string aFileName, uint aSize)
         {
+            FileName = aFileName;
             FileSize = aSize;
         }
 

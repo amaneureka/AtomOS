@@ -11,7 +11,7 @@ namespace Atomix.Kernel_H.io.FileSystem.RFS
         private int mPosition;
         
         public FileStream(RamFile aRamFile)
-            :base(aRamFile.Length)
+            :base(aRamFile.Name, aRamFile.Length)
         {
             this.RamFile = aRamFile;
             this.mPosition = 0;

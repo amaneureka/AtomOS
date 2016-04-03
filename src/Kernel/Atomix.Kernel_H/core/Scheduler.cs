@@ -11,6 +11,16 @@ namespace Atomix.Kernel_H.core
         static Thread CurrentTask;
         static IQueue<Thread> ThreadQueue;
         
+        public static Process RunningProcess
+        {
+            get
+            {
+                if (CurrentTask != null)
+                    return CurrentTask.Process;
+                return SystemProcess;
+            }
+        }
+
         public static Thread RunningThread
         { get { return CurrentTask; } }
 
