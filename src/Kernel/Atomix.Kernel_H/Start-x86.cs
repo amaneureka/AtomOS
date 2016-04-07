@@ -162,6 +162,9 @@ namespace Atomix.Kernel_H
             /* Initialise Virtual File system */
             VirtualFileSystem.Setup();
 
+            /* Setup Syscall */
+            Syscall.Setup();
+
             /*
              * Scheduler must be called before Timer because, 
              * just after calling timer, it will enable IRQ0 resulting in refrence call for switch task
