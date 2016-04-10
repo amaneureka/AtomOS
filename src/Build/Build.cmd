@@ -39,7 +39,7 @@ FOR %%I IN (%ATOMIX_APPS%\*.dll) DO (
 	ECHO [APP] %%~nI
 	%ATOMIX_COMPILER% -cpu %BUILD_CPU% -i %%I -o %OUTPUT_DIR%\App\%%~nI.asm %ATOMIX_COMPILER_FLAGS%
 	IF NOT EXIST %OUTPUT_DIR%\App\%%~nI.asm GOTO BUILDER_EXIT
-	nasm.exe -fbin %OUTPUT_DIR%\App\%%~nI.asm -o %ATOMIX_RD%\Apps\%%~nI.bin
+	nasm.exe -felf %OUTPUT_DIR%\App\%%~nI.asm -o %ATOMIX_RD%\Apps\%%~nI.bin
 )
 
 REM CREATE RAM DISK
