@@ -64,6 +64,12 @@ namespace Atomix.Kernel_H.plugs
             Copy(aSourceArray, 0, aDestinationArray, 0, aLength, false);
         }
 
+		[Plug("System_Void_System_Array_Copy_System_Array__System_Int32__System_Array__System_Int32__System_Int32_")]
+        public static void CopyHelper(Array aSourceArray, int aSourceIndex, Array aDestinationArray, int aDestinationIndex, int aLength)
+        {
+            Copy(aSourceArray, aSourceIndex, aDestinationArray, aDestinationIndex, aLength, false);
+        }
+
         [Assembly(0x18), Plug("System_Void_System_Array_Copy_System_Array__System_Int32__System_Array__System_Int32__System_Int32__System_Boolean_")]
         public static void Copy(Array aSourceArray, int aSourceIndex, Array aDestinationArray, int aDestinationIndex, int aLength, bool aReliable)
         {
