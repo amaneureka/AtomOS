@@ -121,8 +121,11 @@ namespace Atomix
                 else
                     OutputFile = Path.Combine(Environment.CurrentDirectory, OutputFile);
 
+                //Create missing directory
+                Directory.CreateDirectory(Path.GetDirectoryName(OutputFile));
+
                 /* Building Starts Here */
-                Logger = new Logger(Path.GetDirectoryName(OutputFile), DoLogging);
+                Logger = new Logger(OutputFile, DoLogging);
                 Logger.Write("@ILCompiler", "Initialized parameters", "Building Started...");
                 Logger.Write("Architecture     : " + CPUArchitecture);
                 Logger.Write("Output Directory : " + OutputFile);
