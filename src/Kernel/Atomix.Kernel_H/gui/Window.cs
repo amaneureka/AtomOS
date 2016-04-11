@@ -13,20 +13,20 @@ namespace Atomix.Kernel_H.gui
         public readonly uint HashCode;
         public readonly string HashString;
         
-        public uint Buffer { get; set; }
-        public int Width { get; set; }
-        public int Height { get; set; }
+		public int Width;
+		public int Height;
+		public uint Buffer;
 
-        public int PositionX { get; set; }
+		public int PositionX;
 
-        public int PositionY { get; set; }
+		public int PositionY;
 
         public Window(int aClientID)
         {
             this.ClientID = aClientID;
             this.HashCode = ("Compositor").GetHashCode(Timer.TicksFromStart);
             
-            var HashCodeString = HashCode.ToString();
+			var HashCodeString = Convert.ToString(HashCode);
             HashString = "win." + HashCodeString;
             Heap.Free(HashCodeString);
             Debug.Write("[Window]: Window Created `%s`\n", HashString);

@@ -75,7 +75,7 @@ namespace Atomix.Kernel_H.io.FileSystem
         static uint mDeviceLabelCounter = 0;
         private static string GetDeviceLabel()
         {
-            string suffix = (mDeviceLabelCounter++).ToString();
+			string suffix = Convert.ToString(mDeviceLabelCounter++);
             string Label = ("disk") + suffix;
             Heap.Free(suffix);
             return Label;
