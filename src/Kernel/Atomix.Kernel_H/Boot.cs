@@ -1,7 +1,5 @@
 ﻿using System;
 
-using System.Runtime.InteropServices;
-
 using Atomix.Kernel_H.io;
 using Atomix.Kernel_H.lib;
 using Atomix.Kernel_H.gui;
@@ -55,11 +53,12 @@ namespace Atomix.Kernel_H
             #endregion
 
             //FILE READING TEST
-            var stream = VirtualFileSystem.GetFile("disk0/gohu-11.bdf");
-            /*if (stream != null)
+            /*var stream = VirtualFileSystem.GetFile("disk0/gohu-11.bdf");
+            if (stream != null)
                 Debug.Write(stream.ReadToEnd());
             else
-                Debug.Write("File not found!\n");*/
+                Debug.Write("File not found!\n");
+            Debug.Write("lol: %d\n", __main(0xac));*/
             while (true) ;
         }
         

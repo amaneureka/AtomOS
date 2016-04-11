@@ -11,7 +11,7 @@ namespace Atomix.CompilerExt
         /// <summary>
         /// Log file name
         /// </summary>
-        public const string LoggerFile = "log.html";
+        public const string LoggerFile = ".log.html";
         /// <summary>
         /// Startup method inside kernel main type
         /// </summary>

@@ -27,7 +27,7 @@ namespace Atomix
                 this.Script = new ArrayList();
                 this.Message = new ArrayList();
                 this.Details = new ArrayList();
-                this.path = Path.Combine(Path.GetDirectoryName(mPath), Path.Combine(Path.GetFileName(mPath), Helper.LoggerFile));
+                this.path = Path.Combine(Path.GetDirectoryName(mPath), Path.GetFileName(mPath) + Helper.LoggerFile);
                 this.timer = new Stopwatch();
                 timer.Start();                
             }
