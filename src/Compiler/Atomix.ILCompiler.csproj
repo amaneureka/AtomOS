@@ -265,18 +265,6 @@
       <Project>{2a356941-c071-4873-bce2-12bb24e33b0d}</Project>
       <Name>Atomix.RamFS</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Virtual Resources\Debug Window\Debug Window.csproj">
-      <Project>{38e89611-ed10-4b9f-8e9d-1faa4ef97e73}</Project>
-      <Name>Debug Window</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Virtual Resources\File System v2.0\FileSystem.csproj">
-      <Project>{caccfb22-a659-459f-9891-504224635a3f}</Project>
-      <Name>FileSystem</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Virtual Resources\RamFS\RamFS.csproj">
-      <Project>{2c16bb5c-e9db-46bf-9ab7-a04872455bcf}</Project>
-      <Name>RamFS</Name>
-    </ProjectReference>
     <ProjectReference Include="CompilerExt\Atomix.CompilerExt.csproj">
       <Project>{8974125b-52ca-48bd-92f5-c8b28f1c1dee}</Project>
       <Name>Atomix.CompilerExt</Name>
