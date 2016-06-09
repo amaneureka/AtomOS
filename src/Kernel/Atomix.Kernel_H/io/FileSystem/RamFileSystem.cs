@@ -1,4 +1,11 @@
-﻿using System;
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is strictly prohibited
+*                   Proprietary and confidential
+* PURPOSE:          Ram File System
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
 
 using Atomix.Kernel_H.lib;
 using Atomix.Kernel_H.lib.crypto;

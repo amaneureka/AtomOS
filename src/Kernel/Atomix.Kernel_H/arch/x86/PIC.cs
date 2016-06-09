@@ -1,16 +1,11 @@
-﻿/* Copyright (C) Atomix Development, Inc - All Rights Reserved
- * Unauthorized copying of this file, via any medium is strictly prohibited
- * Proprietary and confidential
- * Written by Aman Priyadarshi <aman.eureka@gmail.com>, December 2014
- * 
- * PIC.cs
- *      Programmable Interrupt Controller 8086 Chip Handler, basically remapping IRQs
- *      
- *      History:
- *          19-12-14    File Created    Aman Priyadarshi
- */
-
-using System;
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is strictly prohibited
+*                   Proprietary and confidential
+* PURPOSE:          Programmable Interrupt Controller 8086 Chip Handler, basically remapping IRQs
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
 
 namespace Atomix.Kernel_H.arch.x86
 {

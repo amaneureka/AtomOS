@@ -1,18 +1,12 @@
-﻿/* Copyright (C) Atomix Development, Inc - All Rights Reserved
- * Unauthorized copying of this file, via any medium is strictly prohibited
- * Proprietary and confidential
- * Written by Aman Priyadarshi <aman.eureka@gmail.com>, December 2014
- * 
- * Memory.cs
- *      Native Plugs to read write memory in RAM
- *      
- *      History:
- *          19-12-14    File Created    Aman Priyadarshi
- */
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is strictly prohibited
+*                   Proprietary and confidential
+* PURPOSE:          Unsafe Memory support functions
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
 
-using System;
-
-using Atomix.CompilerExt;
 using Atomix.CompilerExt.Attributes;
 
 using Atomix.Assembler;

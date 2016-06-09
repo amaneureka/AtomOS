@@ -1,4 +1,13 @@
-﻿using System;
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is strictly prohibited
+*                   Proprietary and confidential
+* PURPOSE:          Graphics Surface
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
+
+using System;
 
 using Atomix.Assembler;
 using Atomix.Assembler.x86;

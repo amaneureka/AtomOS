@@ -1,8 +1,13 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is strictly prohibited
+*                   Proprietary and confidential
+* PURPOSE:          Thread Class
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
 
-using Atomix.Kernel_H.arch;
-using Atomix.Kernel_H.arch.x86;
+using System;
 
 namespace Atomix.Kernel_H.core
 {

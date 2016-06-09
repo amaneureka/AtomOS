@@ -1,21 +1,11 @@
-﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-* Copyright (c) 2015, Atomix Development, Inc - All Rights Reserved                                        *
-*                                                                                                          *
-* Unauthorized copying of this file, via any medium is strictly prohibited                                 *
-* Proprietary and confidential                                                                             *
-* Written by Aman Priyadarshi <aman.eureka@gmail.com>, December 2015                                       *
-*                                                                                                          *
-*   Namespace     ::  Atomix.Kernel_H.lib                                                                  *
-*   File          ::  IDictionary.cs                                                                       *
-*                                                                                                          *
-*   Description                                                                                            *
-*       File Contains Dictionary implementation                                                            *
-*                                                                                                          *
-*   History                                                                                                *
-*       20-12-2015      Aman Priyadarshi      Basic Implementation                                         *
-*       24-03-2016      Aman Priyadarshi      Fully qualified Dictionary Implementaion and File Header     *
-*                                                                                                          *
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is strictly prohibited
+*                   Proprietary and confidential
+* PURPOSE:          IDictionay Generic Class
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
 
 using System;
 

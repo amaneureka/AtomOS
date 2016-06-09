@@ -1,18 +1,14 @@
-﻿/* Copyright (C) Atomix Development, Inc - All Rights Reserved
- * Unauthorized copying of this file, via any medium is strictly prohibited
- * Proprietary and confidential
- * Written by Aman Priyadarshi <aman.eureka@gmail.com>, December 2014
- * 
- * PortIO.cs
- *      I/O Port In out Functions
- *      
- *      History:
- *          20-12-14    File Created    Aman Priyadarshi
- */
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is strictly prohibited
+*                   Proprietary and confidential
+* PURPOSE:          I/O Port In out Functions
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
 
 using System;
 
-using Atomix.CompilerExt;
 using Atomix.CompilerExt.Attributes;
 
 using Atomix.Assembler;

@@ -1,24 +1,11 @@
-﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-* Copyright (c) 2015, Atomix Development, Inc - All Rights Reserved                                        *
-*                                                                                                          *
-* Unauthorized copying of this file, via any medium is strictly prohibited                                 *
-* Proprietary and confidential                                                                             *
-* Written by Aman Priyadarshi <aman.eureka@gmail.com>, December 2014                                       *
-*                                                                                                          *
-*   Namespace     ::  Atomix.Kernel_H.plugs                                                                *
-*   File          ::  Array.cs                                                                             *
-*                                                                                                          *
-*   Description                                                                                            *
-*       File Contains various mscorlib plug belongs to Array class                                         *
-*                                                                                                          *
-*   History                                                                                                *
-*       20-12-2014      Aman Priyadarshi      Added InitializeArray Method                                 *
-*       26-03-2015      Aman Priyadarshi      Added Copy Function                                          *
-*       30-05-2015      Aman Priyadarshi      Added CopyHelper Function                                    *
-*       13-02-2016      Aman Priyadarshi      Copy Function Optimization                                   *
-*       23-03-2016      Aman Priyadarshi      Added File Header, changes to InitializeArray and comments   *
-*                                                                                                          *
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is strictly prohibited
+*                   Proprietary and confidential
+* PURPOSE:          File Contains various mscorlib plug belongs to Array class
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
 
 using System;
 

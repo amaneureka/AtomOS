@@ -1,23 +1,11 @@
-﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-* Copyright (c) 2015, Atomix Development, Inc - All Rights Reserved                                        *
-*                                                                                                          *
-* Unauthorized copying of this file, via any medium is strictly prohibited                                 *
-* Proprietary and confidential                                                                             *
-* Written by Aman Priyadarshi <aman.eureka@gmail.com>, December 2015                                       *
-*                                                                                                          *
-*   Namespace     ::  Atomix.Kernel_H.lib.crypto                                                           *
-*   File          ::  sdbm.cs                                                                              *
-*                                                                                                          *
-*   Description                                                                                            *
-*       SDBM Hashing Functions                                                                             *
-*                                                                                                          *
-*   History                                                                                                *
-*       20-12-2015      Aman Priyadarshi      Added Method                                                 *
-*       04-01-2016      Aman Priyadarshi      Added Seed option                                            *
-*       24-03-2016      Aman Priyadarshi      Added File Header and Typos                                  *
-*                                                                                                          *
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-using System;
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is strictly prohibited
+*                   Proprietary and confidential
+* PURPOSE:          Sdbm Hashing Function
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
 
 namespace Atomix.Kernel_H.lib.crypto
 {

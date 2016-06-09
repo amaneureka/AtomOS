@@ -1,22 +1,17 @@
-﻿/* Copyright (C) Atomix Development, Inc - All Rights Reserved
- * Unauthorized copying of this file, via any medium is strictly prohibited
- * Proprietary and confidential
- * Written by Aman Priyadarshi <aman.eureka@gmail.com>, December 2014
- * 
- * Paging.cs
- *      Setting up x86-paging
- *      
- *      History:
- *          20-12-14    File Created    Aman Priyadarshi
- */
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is strictly prohibited
+*                   Proprietary and confidential
+* PURPOSE:          Paging Setup
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
 
 
 using System;
 
 using Atomix.Kernel_H.core;
-using Atomix.Kernel_H.arch.x86;
 
-using Atomix.CompilerExt;
 using Atomix.CompilerExt.Attributes;
 
 using Atomix.Assembler;

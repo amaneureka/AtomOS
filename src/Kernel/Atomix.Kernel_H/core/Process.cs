@@ -1,4 +1,13 @@
-﻿using System;
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is strictly prohibited
+*                   Proprietary and confidential
+* PURPOSE:          Process Class
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
+
+using System;
 
 using Atomix.Kernel_H.lib;
 using Atomix.Kernel_H.arch.x86;
@@ -18,12 +27,12 @@ namespace Atomix.Kernel_H.core
         
         public Process(string aName, UInt32 Directory)
         {
-            this.pid = NewID();
-            this.mPageDirectory = Directory;
-            this.Name = aName;
-            this.Threads = new IList<Thread>();
-            this.shm_mapping = new uint[SHM.LIMIT_TO_PROCESS];
-            this.mSymbols = new IDictionary<string, uint>(sdbm.GetHashCode, string.Equals);
+            pid = NewID();
+            mPageDirectory = Directory;
+            Name = aName;
+            Threads = new IList<Thread>();
+            shm_mapping = new uint[SHM.LIMIT_TO_PROCESS];
+            mSymbols = new IDictionary<string, uint>(sdbm.GetHashCode, string.Equals);
         }
         
         public void SetEnvironment()

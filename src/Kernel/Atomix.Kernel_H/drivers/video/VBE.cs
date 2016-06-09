@@ -1,11 +1,18 @@
-﻿using System;
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is strictly prohibited
+*                   Proprietary and confidential
+* PURPOSE:          VBE 2.0 Driver
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
+
+using System;
 using System.Runtime.InteropServices;
 
-using Atomix.Kernel_H;
 using Atomix.Kernel_H.core;
 using Atomix.Kernel_H.arch.x86;
 
-using Atomix.CompilerExt;
 using Atomix.CompilerExt.Attributes;
 
 using Atomix.Assembler;

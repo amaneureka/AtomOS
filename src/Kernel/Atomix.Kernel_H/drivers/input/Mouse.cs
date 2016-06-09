@@ -1,9 +1,17 @@
-﻿using System;
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is strictly prohibited
+*                   Proprietary and confidential
+* PURPOSE:          PS2 mouse driver
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
+
+using System;
 
 using Atomix.Kernel_H.io;
 using Atomix.Kernel_H.core;
 using Atomix.Kernel_H.arch.x86;
-using Atomix.Kernel_H.io.FileSystem;
 
 namespace Atomix.Kernel_H.drivers.input
 {

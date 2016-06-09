@@ -95,7 +95,6 @@
     <Compile Include="gui\font\Glyph.cs" />
     <Compile Include="gui\gui.cs" />
     <Compile Include="gui\Helper.cs" />
-    <Compile Include="gui\Print.cs" />
     <Compile Include="gui\Window.cs" />
     <Compile Include="io\FileSystem\FatFileSystem.cs" />
     <Compile Include="io\FileSystem\FAT\FatStream.cs" />

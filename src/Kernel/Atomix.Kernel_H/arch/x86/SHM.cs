@@ -1,25 +1,11 @@
-﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-* Copyright (c) 2015, Atomix Development, Inc - All Rights Reserved                                        *
-*                                                                                                          *
-* Unauthorized copying of this file, via any medium is strictly prohibited                                 *
-* Proprietary and confidential                                                                             *
-* Written by Aman Priyadarshi <aman.eureka@gmail.com>, December 2015                                       *
-*                                                                                                          *
-*   Namespace     ::  Atomix.Kernel_H.arch.x86                                                             *
-*   File          ::  SHM.cs                                                                               *
-*                                                                                                          *
-*   Description                                                                                            *
-*       Handles Shared memory allocation stuffs                                                            *
-*                                                                                                          *
-*   History                                                                                                *
-*       20-12-2015      Aman Priyadarshi      Added Methods                                                *
-*       04-01-2016      Aman Priyadarshi      CreateIfNotExist                                             *
-*       22-01-2016      Aman Priyadarshi      Fixes                                                        *
-*       24-03-2016      Aman Priyadarshi      File Header                                                  *
-*                                                                                                          *
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-using System;
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is strictly prohibited
+*                   Proprietary and confidential
+* PURPOSE:          Handles Shared memory allocation stuffs
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
 
 using Atomix.Kernel_H.lib;
 using Atomix.Kernel_H.core;

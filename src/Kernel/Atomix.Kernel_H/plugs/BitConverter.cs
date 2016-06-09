@@ -1,22 +1,11 @@
-﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-* Copyright (c) 2015, Atomix Development, Inc - All Rights Reserved                                        *
-*                                                                                                          *
-* Unauthorized copying of this file, via any medium is strictly prohibited                                 *
-* Proprietary and confidential                                                                             *
-* Written by Aman Priyadarshi <aman.eureka@gmail.com>, June 2015                                           *
-*                                                                                                          *
-*   Namespace     ::  Atomix.Kernel_H.plugs                                                                *
-*   File          ::  BitConverter.cs                                                                      *
-*                                                                                                          *
-*   Description                                                                                            *
-*       File Contains various mscorlib plug belongs to BitConverter class                                  *
-*                                                                                                          *
-*   History                                                                                                *
-*       05-06-2015      Aman Priyadarshi      Added ToUInt32 and ToInt32 Method                            *
-*       23-07-2015      Aman Priyadarshi      Added ToUInt16 and ToInt16 Method                            *
-*       23-03-2016      Aman Priyadarshi      Added File Header                                            *
-*                                                                                                          *
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is strictly prohibited
+*                   Proprietary and confidential
+* PURPOSE:          File Contains various mscorlib plug belongs to BitConverter class
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
 
 using System;
 

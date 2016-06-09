@@ -1,20 +1,12 @@
-﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-* Copyright (c) 2015, Atomix Development, Inc - All Rights Reserved                                        *
-*                                                                                                          *
-* Unauthorized copying of this file, via any medium is strictly prohibited                                 *
-* Proprietary and confidential                                                                             *
-* Written by Aman Priyadarshi <aman.eureka@gmail.com>, March 2016                                          *
-*                                                                                                          *
-*   Namespace     ::  Atomix.Kernel_H.lib                                                                  *
-*   File          ::  IDictionary.cs                                                                       *
-*                                                                                                          *
-*   Description                                                                                            *
-*       File Contains Dictionary implementation                                                            *
-*                                                                                                          *
-*   History                                                                                                *
-*       24-03-2016      Aman Priyadarshi      Implementation                                               *
-*                                                                                                          *
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is strictly prohibited
+*                   Proprietary and confidential
+* PURPOSE:          ISet Generic Class
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
+
 using System;
 
 using Atomix.Kernel_H.core;

@@ -1,17 +1,11 @@
-﻿/* Copyright (C) Atomix Development, Inc - All Rights Reserved
- * Unauthorized copying of this file, via any medium is strictly prohibited
- * Proprietary and confidential
- * Written by Aman Priyadarshi <aman.eureka@gmail.com>, December 2014
- * 
- * Heap.cs
- *      Heap Memory Manager
- *      
- *      History:
- *          20-12-14    File Created    Aman Priyadarshi
- *          28-05-14    Heap Manager    Aman Priyadarshi
- */
-
-using System;
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is strictly prohibited
+*                   Proprietary and confidential
+* PURPOSE:          kernel Heap Memory Manager
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
 
 using Atomix.CompilerExt.Attributes;
 

@@ -1,22 +1,11 @@
-﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-* Copyright (c) 2015, Atomix Development, Inc - All Rights Reserved                                        *
-*                                                                                                          *
-* Unauthorized copying of this file, via any medium is strictly prohibited                                 *
-* Proprietary and confidential                                                                             *
-* Written by Aman Priyadarshi <aman.eureka@gmail.com>, Decmber 2014                                        *
-*                                                                                                          *
-*   Namespace     ::  Atomix.Kernel_H.plugs                                                                *
-*   File          ::  Exception.cs                                                                         *
-*                                                                                                          *
-*   Description                                                                                            *
-*       File Contains various mscorlib plug belongs to Exception class                                     *
-*                                                                                                          *
-*   History                                                                                                *
-*       19-12-2014      Aman Priyadarshi      Added Basic Exception Handler                                *
-*       06-02-2016      Aman Priyadarshi      Better Exception Handler (Multiprocess)                      *
-*       23-03-2016      Aman Priyadarshi      Added File Header                                            *
-*                                                                                                          *
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is strictly prohibited
+*                   Proprietary and confidential
+* PURPOSE:          File Contains various mscorlib plug belongs to Exception class
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
 
 using System;
 

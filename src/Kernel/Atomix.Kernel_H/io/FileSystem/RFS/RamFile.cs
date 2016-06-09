@@ -1,8 +1,11 @@
-﻿using System;
-
-using Atomix.Kernel_H.core;
-
-using Atomix.Kernel_H.lib;
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is strictly prohibited
+*                   Proprietary and confidential
+* PURPOSE:          RFS (Ram File System) Helper
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
 
 namespace Atomix.Kernel_H.io.FileSystem.RFS
 {

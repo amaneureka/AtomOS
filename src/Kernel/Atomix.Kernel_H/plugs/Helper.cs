@@ -1,24 +1,11 @@
-﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-* Copyright (c) 2015, Atomix Development, Inc - All Rights Reserved                                        *
-*                                                                                                          *
-* Unauthorized copying of this file, via any medium is strictly prohibited                                 *
-* Proprietary and confidential                                                                             *
-* Written by Aman Priyadarshi <aman.eureka@gmail.com>, February 2016                                       *
-*                                                                                                          *
-*   Namespace     ::  Atomix.Kernel_H.plugs                                                                *
-*   File          ::  Helper.cs                                                                            *
-*                                                                                                          *
-*   Description                                                                                            *
-*       File Contains various mscorlib plug                                                                *
-*                                                                                                          *
-*   History                                                                                                *
-*       14-02-2016      Aman Priyadarshi      Added Char Ctor Method                                       *
-*       23-03-2016      Aman Priyadarshi      Added File Header                                            *
-*       24-03-2016      Aman Priyadarshi      Added Object Equals                                          *
-*                                                                                                          *
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-using System;
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is strictly prohibited
+*                   Proprietary and confidential
+* PURPOSE:          File Contains various mscorlib plug
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
 
 using Atomix.CompilerExt.Attributes;
 

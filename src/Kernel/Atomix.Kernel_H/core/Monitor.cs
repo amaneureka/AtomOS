@@ -1,20 +1,11 @@
-﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-* Copyright (c) 2015, Atomix Development, Inc - All Rights Reserved                                        *
-*                                                                                                          *
-* Unauthorized copying of this file, via any medium is strictly prohibited                                 *
-* Proprietary and confidential                                                                             *
-* Written by Aman Priyadarshi <aman.eureka@gmail.com>, March 2016                                          *
-*                                                                                                          *
-*   Namespace     ::  Atomix.Kernel_H.core                                                                 *
-*   File          ::  Monitor.cs                                                                           *
-*                                                                                                          *
-*   Description                                                                                            *
-*       Apply a mutual exclusive lock to thread also implements `lock`keyword                              *
-*                                                                                                          *
-*   History                                                                                                *
-*       24-03-2016      Aman Priyadarshi      Added Required Functions                                     *
-*                                                                                                          *
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is strictly prohibited
+*                   Proprietary and confidential
+* PURPOSE:          Apply a mutual exclusive lock to thread also implements `lock`keyword
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
 
 using System;
 

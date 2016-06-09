@@ -1,23 +1,11 @@
-﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-* Copyright (c) 2015, Atomix Development, Inc - All Rights Reserved                                        *
-*                                                                                                          *
-* Unauthorized copying of this file, via any medium is strictly prohibited                                 *
-* Proprietary and confidential                                                                             *
-* Written by Aman Priyadarshi <aman.eureka@gmail.com>, March 2015                                          *
-*                                                                                                          *
-*   Namespace     ::  Atomix.Kernel_H.plugs                                                                *
-*   File          ::  NativeException.cs                                                                   *
-*                                                                                                          *
-*   Description                                                                                            *
-*       File Contains various mscorlib exceptions                                                          *
-*                                                                                                          *
-*   History                                                                                                *
-*       26-03-2015      Aman Priyadarshi      Added Exceptions                                             *
-*       23-03-2016      Aman Priyadarshi      Added File Header                                            *
-*                                                                                                          *
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-using System;
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is strictly prohibited
+*                   Proprietary and confidential
+* PURPOSE:          File Contains various mscorlib exceptions
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
 
 using Atomix.CompilerExt.Attributes;
 

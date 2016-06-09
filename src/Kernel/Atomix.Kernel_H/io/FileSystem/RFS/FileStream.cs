@@ -1,6 +1,12 @@
-﻿using System;
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is strictly prohibited
+*                   Proprietary and confidential
+* PURPOSE:          RFS (Ram File System) File Stream class
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
 
-using Atomix.Kernel_H.lib;
 using Atomix.Kernel_H.core;
 
 namespace Atomix.Kernel_H.io.FileSystem.RFS
@@ -13,8 +19,8 @@ namespace Atomix.Kernel_H.io.FileSystem.RFS
         public FileStream(RamFile aRamFile)
             :base(aRamFile.Name, aRamFile.Length)
         {
-            this.RamFile = aRamFile;
-            this.mPosition = 0;
+            RamFile = aRamFile;
+            mPosition = 0;
         }
 
         public override int Read(byte[] aBuffer, int aCount)

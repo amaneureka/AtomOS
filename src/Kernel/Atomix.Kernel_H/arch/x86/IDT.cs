@@ -1,20 +1,16 @@
-﻿/* Copyright (C) Atomix Development, Inc - All Rights Reserved
- * Unauthorized copying of this file, via any medium is strictly prohibited
- * Proprietary and confidential
- * Written by Aman Priyadarshi <aman.eureka@gmail.com>, December 2014
- * 
- * IDT.cs
- *      Interrupt Descript Table Setup and Interrupt Handler
- *      
- *      History:
- *          19-12-14    File Created    Aman Priyadarshi
- */
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is strictly prohibited
+*                   Proprietary and confidential
+* PURPOSE:          Kernel IDT Setup
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
 
 using System;
 
 using Atomix.Kernel_H.core;
 
-using Atomix.CompilerExt;
 using Atomix.CompilerExt.Attributes;
 
 using Atomix.Assembler;
