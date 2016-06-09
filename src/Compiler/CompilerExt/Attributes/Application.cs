@@ -6,10 +6,10 @@ using System.Text;
 namespace Atomix.CompilerExt.Attributes
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-    public class KernelAttribute : Attribute
+    public class ApplicationAttribute : Attribute
     {
         protected CPUArch mCPUArch;
-        protected string mOrganize;
+
         #region Constructor
         public CPUArch CPUArch
         {
@@ -20,10 +20,9 @@ namespace Atomix.CompilerExt.Attributes
         }
         #endregion
 
-        public KernelAttribute(CPUArch CpuArch, string Organize)
+        public ApplicationAttribute(CPUArch CpuArch)
         {
             this.mCPUArch = CpuArch;
-            this.mOrganize = Organize;
-        }        
+        }
     }
 }

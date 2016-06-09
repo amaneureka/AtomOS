@@ -39,6 +39,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\Application.cs" />
     <Compile Include="Attributes\Dummy.cs" />
     <Compile Include="Attributes\Assembly.cs" />
     <Compile Include="Attributes\Kernel.cs" />

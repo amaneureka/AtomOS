@@ -64,6 +64,10 @@ namespace Atomix
         private List<string> BuildMethods;
         private List<MethodInfo> Virtuals;
         private bool DoOptimization;
+        /// <summary>
+        /// Are we building ELF binary?
+        /// </summary>
+        private bool BuildingApplication;
 
         public Compiler(bool aDoOptimization)
         {
@@ -98,12 +102,17 @@ namespace Atomix
             
             ILCompiler.Logger.Write(string.Format("{0} Kernel Type Found :: {1}", ILCompiler.CPUArchitecture.ToString(), xType.ToString()));
             //Just find the start method, which is constant label method inside the kernel type
-            var xStartup = xType.GetMethod(Helper.StartupMethod);
-            
-            if (xStartup == null)
-                throw new Exception("No startup found");
+            var xStartup = xType.GetMethod(Helper.StartupMethod, BindingFlags.Static | BindingFlags.Public);
 
-            ILCompiler.Logger.Write("Found Startup Method :: " + Helper.StartupMethod);
+            if (xStartup == null)
+            {
+                if (BuildingApplication)
+                    ILCompiler.Logger.Write("Application has no entry point :: " + Helper.StartupMethod);
+                else
+                    throw new Exception("No startup found");
+            }
+            else
+                ILCompiler.Logger.Write("Found Startup Method :: " + Helper.StartupMethod);
 
             //Load our MSIL implementation (basically init it and save into memory)
             LoadMSIL();
@@ -115,13 +124,15 @@ namespace Atomix
              * if it will not be in assembly header than multiboot signature will be disturbed.
              * Just after this we scan plugs and enquque them
              */
-            QueuedMember.Enqueue(xStartup);
+            if (xStartup != null)
+                QueuedMember.Enqueue(xStartup);
+
             ScanPlugs();
 
             /* Compiler Included Code */
             LoadCompilerLibrary();
 
-            ILCompiler.Logger.Write("Enququed Start Method");            
+            ILCompiler.Logger.Write("Enququed Start Method");
             while (QueuedMember.Count > 0)
             {   
                 //Man we do scarifice to code, first come first process policy is our
@@ -214,8 +225,17 @@ namespace Atomix
                                         Core.DataMember.Add(new AsmData("org", xAttr.ConstructorArguments[1].Value as string));
                                     }
                                     break;
-                                //Need it to implement for other platforms too
+                                    //Need it to implement for other platforms too
                             }
+                            return xType;
+                        }
+                    }
+                    else if (xAttr.AttributeType == typeof(ApplicationAttribute))
+                    {
+                        if ((CPUArch)xAttr.ConstructorArguments[0].Value == cpu)
+                        {
+                            Core.DataMember.Add(new AsmData("SECTION", ".text"));
+                            BuildingApplication = true;
                             return xType;
                         }
                     }
@@ -586,6 +606,10 @@ namespace Atomix
         {
             ILCompiler.Logger.Write("@Processor", aMethod.FullName(), "Scanning Inline Assembly Method()");
             string xMethodLabel = aMethod.FullName();
+
+            if (aMethod.IsPublic && BuildingApplication)
+                Core.DataMember.Add(new AsmData("GLOBAL", xMethodLabel));
+
             Core.AssemblerCode.Add(new Label(xMethodLabel));
 
             var xReturn = AssemblyNative[aMethod];
@@ -682,10 +706,13 @@ namespace Atomix
             ILCompiler.Logger.Write ("MSIL Codes Loaded... Count::" + OpCodes.Count);
 
             string xMethodLabel = aMethod.FullName();
-                        
-            /* Method begin */            
+
+            /* Method begin */
             Core.AssemblerCode.Add(new Label(xMethodLabel));
-            
+
+            if (aMethod.IsPublic && BuildingApplication)
+                Core.DataMember.Add(new AsmData("GLOBAL", xMethodLabel));
+
             Core.AssemblerCode.Add(new Comment(Worker.OPTIMIZATION_START_FLAG));
             if (aMethod.IsStatic && aMethod is ConstructorInfo)
             {

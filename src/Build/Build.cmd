@@ -38,9 +38,9 @@ nasm.exe -fbin %OUTPUT_DIR%\Kernel.asm -o %ATOMIX_ISO_DIR%\Kernel.bin
 REM BUILD APP ONE BY ONE
 FOR %%I IN (%ATOMIX_APPS%\*.dll) DO (
 	ECHO [APP] %%~nI
-	%ATOMIX_COMPILER% -cpu %BUILD_CPU% -i %ATOMIX_LIB%;%%I -o %OUTPUT_DIR%\Apps\%%~nI.asm %ATOMIX_COMPILER_FLAGS%
+	%ATOMIX_COMPILER% -cpu %BUILD_CPU% -i %%I;%ATOMIX_LIB% -o %OUTPUT_DIR%\Apps\%%~nI.asm %ATOMIX_COMPILER_FLAGS%
 	IF NOT EXIST %OUTPUT_DIR%\Apps\%%~nI.asm GOTO BUILDER_EXIT
-	nasm.exe -felf %OUTPUT_DIR%\Apps\%%~nI.asm -o %ATOMIX_RD%\Apps\%%~nI.bin
+	nasm.exe -felf %OUTPUT_DIR%\Apps\%%~nI.asm -o %ATOMIX_RD%\%%~nI.o
 )
 
 REM CREATE RAM DISK

@@ -30,7 +30,7 @@ namespace Atomix.Assembler
 
         public override void FlushText(StreamWriter sw)
         {
-            sw.WriteLine(FinalisedName + ": ");
+            sw.WriteLine(FinalisedName + ":");
         }
     }
 }

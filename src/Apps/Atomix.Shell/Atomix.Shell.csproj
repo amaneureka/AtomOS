@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Atomix.Shell</RootNamespace>
-    <AssemblyName>Atomix.Shell</AssemblyName>
+    <AssemblyName>shell</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
@@ -36,10 +36,15 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Start-x86.cs" />
+    <Compile Include="Startx86.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Compiler\CompilerExt\Atomix.CompilerExt.csproj">
+      <Project>{8974125b-52ca-48bd-92f5-c8b28f1c1dee}</Project>
+      <Name>Atomix.CompilerExt</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\Atomix.Core\Atomix.Core.csproj">
       <Project>{A22414A7-E2BB-44F8-B04C-1BF0B7C12410}</Project>
       <Name>Atomix.Core</Name>
