@@ -1,8 +1,8 @@
 ﻿/*
 * PROJECT:          Atomix Development
 * LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
-*                   Unauthorized copying of this file, via any medium is strictly prohibited
-*                   Proprietary and confidential
+*                   Unauthorized copying of this file, via any medium is
+*                   strictly prohibited Proprietary and confidential.
 * PURPOSE:          Programmable Interrupt Controller 8086 Chip Handler, basically remapping IRQs
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */

@@ -58,7 +58,7 @@ namespace Atomix.RamFS
             foreach(var FilePath in Directory.EnumerateFiles(InputFile))
                 FilesToAdd.Add(new FileEntry(Path.GetFileName(FilePath), File.OpenRead(FilePath)));
 
-            int DataAreaPointer = (FilesToAdd.Count * 32);
+            int DataAreaPointer = ((FilesToAdd.Count + 2) * 32);
             Align256(ref DataAreaPointer);
 
             int EntryPointer = 32;

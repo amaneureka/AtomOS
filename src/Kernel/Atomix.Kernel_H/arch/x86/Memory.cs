@@ -137,5 +137,20 @@ namespace Atomix.Kernel_H.arch.x86
             Core.AssemblerCode.Add(new And { DestinationReg = Registers.ECX, SourceRef = "0x3" });
             Core.AssemblerCode.Add(new Literal("rep movsb"));
         }
+
+        [Assembly(0x8)]
+        public static unsafe void FastClear(uint Address, uint Length)
+        {
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDI, SourceReg = Registers.EBP, SourceDisplacement = 0xC, SourceIndirect = true });
+
+            Core.AssemblerCode.Add(new Xor { DestinationReg = Registers.EAX, SourceReg = Registers.EAX });
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.EBX });
+            Core.AssemblerCode.Add(new ShiftRight { DestinationReg = Registers.ECX, SourceRef = "0x2" });
+            Core.AssemblerCode.Add(new Literal("rep stosd"));//Copy EAX to EDI
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.EBX });
+            Core.AssemblerCode.Add(new And { DestinationReg = Registers.ECX, SourceRef = "0x3" });//Modulo by 4
+            Core.AssemblerCode.Add(new Literal("rep stosb"));
+        }
     }
 }

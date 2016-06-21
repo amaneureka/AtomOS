@@ -7,6 +7,8 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
+using Atomix.Kernel_H.arch.x86;
+
 using Atomix.CompilerExt.Attributes;
 
 using Atomix.Assembler;
@@ -28,10 +30,11 @@ namespace Atomix.Kernel_H.core
         static uint[] BlockAddress;
         static uint[] BlockSize;
 
-#warning Heap Manager Assumption
+#warning [Heap] : "HeapManagerSize" is a constant
         static bool HeapManagerSetup;
         static int HeapManagerPosition;
-        const int HeapManagerSize = 1024 * 16;//~16K items, complete assumption, so should take care of this
+        // ~16K items, complete assumption, so should take care of this
+        const int HeapManagerSize = 1024 * 16;
 
         static int LockStatus;
 
@@ -39,16 +42,17 @@ namespace Atomix.Kernel_H.core
         {
             HeapStart = InitHeap;
             HeapCurrent = InitHeap;
-            HeapEnd = HeapStart + 0x100000;//Completely Assumption
+#warning [Heap] : "HeapEnd" and "HeapStart" are based on assumption for initial heap setup.
+            HeapEnd = HeapStart + 0x100000;
             HeapManagerSetup = false;
 
             Debug.Write("Heap Initialized!!\n");
             Debug.Write("       Start Address::%d\n", InitHeap);
             Debug.Write("       End Address  ::%d\n", HeapEnd);
 
-            //Allocate memory for future heap manager
-            BlockAddress = new uint[HeapManagerSize];//64KB
-            BlockSize = new uint[HeapManagerSize];//64KB
+            // Allocate memory for future heap manager
+            BlockSize = new uint[HeapManagerSize];
+            BlockAddress = new uint[HeapManagerSize];
         }
 
         public static void Setup(uint Start, uint End)
@@ -61,7 +65,7 @@ namespace Atomix.Kernel_H.core
             Debug.Write("       Start Address::%d\n", Start);
             Debug.Write("       End Address  ::%d\n", End);
 
-            //Assign rest of memory as free
+            // Assign rest of memory as free
             BlockAddress[0] = HeapStart;
             BlockSize[0] = HeapEnd - HeapStart;
             HeapManagerPosition = 1;
@@ -80,7 +84,7 @@ namespace Atomix.Kernel_H.core
                 }
                 uint tmp = HeapCurrent;
                 HeapCurrent += len;
-                Clear(tmp, len);
+                Memory.FastClear(tmp, len);
                 return tmp;
             }
             else
@@ -91,7 +95,7 @@ namespace Atomix.Kernel_H.core
 
         public static uint kmalloc(uint len, bool Aligned)
         {
-            //If Heap Manager is not setup then use our old heap alogrithm -- Basically paging is calling this
+            // If Heap Manager is not setup then use our old heap alogrithm -- Basically paging is calling this
             if (Aligned && !HeapManagerSetup)
             {
                 if ((HeapCurrent & 0xFFFFF000) != HeapCurrent)
@@ -103,7 +107,7 @@ namespace Atomix.Kernel_H.core
             
             HeapLock();
 
-            //Find a suitable hole
+            // Find a suitable hole
             int iterator;
             for (iterator = 0; iterator < HeapManagerPosition; iterator++)
             {
@@ -114,16 +118,16 @@ namespace Atomix.Kernel_H.core
                     uint offset = 0;
                     if ((pos & 0xFFFFF000) != pos)
                     {
-                        //Not aligned
+                        // Not aligned
                         offset = (pos & 0xFFFFF000) - pos + 0x1000;
                     }
 
-                    //Check if we fit?
+                    // Check if we fit?
                     if (size >= len + offset)
-                        break;//Yes :)
+                        break; // Yes :)
                 }
                 else if (BlockSize[iterator] >= len)
-                    break;//Yes :)
+                    break; // Yes :)
             }
             
             if (iterator == HeapManagerPosition || HeapManagerPosition == HeapManagerSize) //No block to allocate :(
@@ -132,51 +136,48 @@ namespace Atomix.Kernel_H.core
                 while (true) ;
             }
 
-            //So, memory need to be aligned?
+            // So, memory need to be aligned?
             if (Aligned)
                 return malloc_aligned(iterator, len);
-            
-            //So we have a block, right?
-            {
-                uint Address = BlockAddress[iterator];
-                uint Size = BlockSize[iterator];
-                if (Size > len)//we have to split the block
-                {
-                    uint Add2 = Address + len;
-                    uint Size2 = Size - len;
-                    for (int i = 0; i <= iterator; i++)
-                    {
-                        if (BlockSize[i] > Size2)
-                        {
-                            //here we have to put this
 
-                            //Shift everything else
-                            for (int j = iterator; j >= i + 1; j--)
-                            {
-                                BlockSize[j] = BlockSize[j - 1];
-                                BlockAddress[j] = BlockAddress[j - 1];
-                            }
-                            BlockSize[i] = Size2;//Now put this element and come out
-                            BlockAddress[i] = Add2;
-                            break;
-                        }
-                    }
-                }
-                else//we find a perfect size
+            // So we have a block, right?
+            uint Address = BlockAddress[iterator];
+            uint Size = BlockSize[iterator];
+            if (Size > len) // we have to split the block
+            {
+                uint Add2 = Address + len;
+                uint Size2 = Size - len;
+                for (int i = 0; i <= iterator; i++)
                 {
-                    //Remove this from free and return it
-                    iterator++;
-                    for ( ; iterator < HeapManagerPosition; iterator++)
+                    if (BlockSize[i] > Size2)
                     {
-                        BlockAddress[iterator - 1] = BlockAddress[iterator];
-                        BlockSize[iterator - 1] = BlockSize[iterator];
+                        // here we have to put this
+                        // Shift everything else
+                        for (int j = iterator; j >= i + 1; j--)
+                        {
+                            BlockSize[j] = BlockSize[j - 1];
+                            BlockAddress[j] = BlockAddress[j - 1];
+                        }
+                        BlockSize[i] = Size2; // Now put this element and come out
+                        BlockAddress[i] = Add2;
+                        break;
                     }
-                    HeapManagerPosition--;//Reduce size of array, no need to clear last empty because we never read it                    
                 }
-                HeapUnLock();
-                Clear(Address, len);//Clear the memory and return
-                return Address;
             }
+            else // we find a perfect size
+            {
+                // Remove this from free and return it
+                iterator++;
+                for (; iterator < HeapManagerPosition; iterator++)
+                {
+                    BlockAddress[iterator - 1] = BlockAddress[iterator];
+                    BlockSize[iterator - 1] = BlockSize[iterator];
+                }
+                HeapManagerPosition--; // Reduce size of array, no need to clear last empty because we never read it                    
+            }
+            HeapUnLock();
+            Memory.FastClear(Address, len); // Clear the memory and return
+            return Address;
         }
 
         private static uint malloc_aligned(int iterator, uint len)
@@ -187,11 +188,11 @@ namespace Atomix.Kernel_H.core
             uint pos = Address;
             if ((Address & 0xFFFFF000) != Address)
             {
-                pos = (Address & 0xFFFFF000) + 0x1000;//Align it first
+                pos = (Address & 0xFFFFF000) + 0x1000; // Align it first
             }
 
             uint NewSize = (pos - Address);
-            if (NewSize != 0)//Maybe it is not aligned left, so mark left part free
+            if (NewSize != 0) // Maybe it is not aligned left, so mark left part free
             {
                 for (int i = 0; i <= iterator; i++)
                 {
@@ -209,9 +210,9 @@ namespace Atomix.Kernel_H.core
                 }
             }
             
-            NewSize = Size - len - NewSize;//End block
+            NewSize = Size - len - NewSize; // End block
             Address = pos + len;
-            if (NewSize != 0)//Free up end part of this too
+            if (NewSize != 0) // Free up end part of this too
             {
                 int i;
                 for (i = 0; i <= iterator; i++)
@@ -231,14 +232,14 @@ namespace Atomix.Kernel_H.core
 
                 if (i > iterator)
                 {
-                    //we are at the end
+                    // we are at the end
                     BlockSize[HeapManagerPosition] = NewSize;
                     BlockAddress[HeapManagerPosition] = Address;
                     HeapManagerPosition++;
                 }
             }
             HeapUnLock();
-            Clear(pos, len);
+            Memory.FastClear(pos, len);
             return pos;
         }
 
@@ -288,8 +289,8 @@ namespace Atomix.Kernel_H.core
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.ECX, SourceDisplacement = 0x8, SourceIndirect = true });
 
             Core.AssemblerCode.Add(new Label(xEndlbl));
-            Core.AssemblerCode.Add(new Push { DestinationReg = Registers.ECX });//Address
-            Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });//Length
+            Core.AssemblerCode.Add(new Push { DestinationReg = Registers.ECX }); // Address
+            Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX }); // Length
             Core.AssemblerCode.Add(new Call("__Heap_Free__", true));
         }
 
@@ -301,7 +302,7 @@ namespace Atomix.Kernel_H.core
 
             HeapLock();
 
-            //Check if any block can fit to left/Right of this
+            // Check if any block can fit to left/Right of this
             int iterator, left = -1, right = -1;
             for (iterator = 0; iterator < HeapManagerPosition; iterator++)
             {
@@ -317,7 +318,7 @@ namespace Atomix.Kernel_H.core
                 }
             }
 
-            //Compute new address and new size of block
+            // Compute new address and new size of block
             uint NewAddress = Address;
             uint NewSize = len;
             if (left != -1)
@@ -331,7 +332,7 @@ namespace Atomix.Kernel_H.core
                 NewSize += BlockSize[right];
             }
                         
-            //Remove left and right blocks
+            // Remove left and right blocks
             int lastempty = 0;
             for (iterator = 0; iterator < HeapManagerPosition; iterator++)
             {
@@ -344,27 +345,26 @@ namespace Atomix.Kernel_H.core
             }
             HeapManagerPosition = lastempty;
 
-            //Add our new block to memory
+            // Add our new block to memory
             for (iterator = 0; iterator < HeapManagerPosition; iterator++)
             {
                 if (BlockSize[iterator] > NewSize)
                 {
-                    //here we have to put this
-
-                    //Shift everything else
+                    // here we have to put this
+                    // Shift everything else
                     for (int j = HeapManagerPosition; j >= iterator + 1; j--)
                     {
                         BlockSize[j] = BlockSize[j - 1];
                         BlockAddress[j] = BlockAddress[j - 1];
                     }
-                    BlockSize[iterator] = NewSize;//Now put this element and come out
+                    BlockSize[iterator] = NewSize; // Now put this element and come out
                     BlockAddress[iterator] = NewAddress;
                     HeapManagerPosition++;
-                    iterator = -1;//Flag
+                    iterator = -1; // Flag
                     break;
                 }
             }
-            if (iterator != -1)//End of loop
+            if (iterator != -1) // End of loop
             {
                 BlockSize[HeapManagerPosition] = NewSize;
                 BlockAddress[HeapManagerPosition] = NewAddress;
@@ -392,21 +392,6 @@ namespace Atomix.Kernel_H.core
             int ThreadID = Scheduler.RunningThreadID;
             if (LockStatus == ThreadID)
                 LockStatus = -1;
-        }
-        
-        [Assembly(0x8)]
-        private static unsafe void Clear(uint Address, uint Length)
-        {
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDI, SourceReg = Registers.EBP, SourceDisplacement = 0xC, SourceIndirect = true });
-
-            Core.AssemblerCode.Add(new Xor { DestinationReg = Registers.EAX, SourceReg = Registers.EAX });
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.EBX });
-            Core.AssemblerCode.Add(new ShiftRight { DestinationReg = Registers.ECX, SourceRef = "0x2" });
-            Core.AssemblerCode.Add(new Literal("rep stosd"));//Copy EAX to EDI
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.EBX });
-            Core.AssemblerCode.Add(new And { DestinationReg = Registers.ECX, SourceRef = "0x3" });//Modulo by 4
-            Core.AssemblerCode.Add(new Literal("rep stosb"));
         }
     }
 }

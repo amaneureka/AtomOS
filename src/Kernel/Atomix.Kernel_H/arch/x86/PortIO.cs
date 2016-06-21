@@ -1,8 +1,8 @@
 ﻿/*
 * PROJECT:          Atomix Development
 * LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
-*                   Unauthorized copying of this file, via any medium is strictly prohibited
-*                   Proprietary and confidential
+*                   Unauthorized copying of this file, via any medium is
+*                   strictly prohibited Proprietary and confidential.
 * PURPOSE:          I/O Port In out Functions
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
@@ -25,15 +25,15 @@ namespace Atomix.Kernel_H.arch.x86
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
         [Assembly(0x0)]
-        public static byte In8(UInt16 aAddress)
+        public static byte In8(uint aAddress)
         {
-            //Load address into EDX
+            // Load address into EDX
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
-            //Set EAX = 0x00000000
+            // Set EAX = 0x00000000
             Core.AssemblerCode.Add(new Xor { DestinationReg = Registers.EAX, SourceReg = Registers.EAX });
-            //Read 8 byte And put result into EAX (AL)
+            // Read 8 byte And put result into EAX (AL)
             Core.AssemblerCode.Add(new In { DestinationReg = Registers.AL, SourceReg = Registers.DX });
-            //Save value
+            // Save value
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBP, SourceReg = Registers.EAX, DestinationDisplacement = 0x8, DestinationIndirect = true });
 
             return 0x0;
@@ -45,13 +45,13 @@ namespace Atomix.Kernel_H.arch.x86
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
         [Assembly(0x8)]
-        public static void Out8(UInt16 aAddress, byte aValue)
+        public static void Out8(uint aAddress, byte aValue)
         {
-            //Load address into EDX
+            // Load address into EDX
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDX, SourceReg = Registers.EBP, SourceDisplacement = 0xC, SourceIndirect = true });
-            //Load value into EAX
+            // Load value into EAX
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
-            //Write 8 byte
+            // Write 8 byte
             Core.AssemblerCode.Add(new Out { DestinationReg = Registers.DX, SourceReg = Registers.AL });
         }
 
@@ -61,15 +61,15 @@ namespace Atomix.Kernel_H.arch.x86
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
         [Assembly(0x0)]
-        public static ushort In16(UInt16 aAddress)
+        public static ushort In16(uint aAddress)
         {
-            //Load address into EDX
+            // Load address into EDX
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
-            //Set EAX = 0x00000000
+            // Set EAX = 0x00000000
             Core.AssemblerCode.Add(new Xor { DestinationReg = Registers.EAX, SourceReg = Registers.EAX });
-            //Read 16 byte And put result into EAX (AX)
+            // Read 16 byte And put result into EAX (AX)
             Core.AssemblerCode.Add(new In { DestinationReg = Registers.AX, SourceReg = Registers.DX });
-            //Save value
+            // Save value
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBP, SourceReg = Registers.EAX, DestinationDisplacement = 0x8, DestinationIndirect = true });
 
             return 0x0;
@@ -81,13 +81,13 @@ namespace Atomix.Kernel_H.arch.x86
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
         [Assembly(0x8)]
-        public static void Out16(UInt16 aAddress, ushort aValue)
+        public static void Out16(uint aAddress, ushort aValue)
         {
-            //Load address into EDX
+            // Load address into EDX
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDX, SourceReg = Registers.EBP, SourceDisplacement = 0xC, SourceIndirect = true });
-            //Load value into EAX
+            // Load value into EAX
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
-            //Write 16 byte
+            // Write 16 byte
             Core.AssemblerCode.Add(new Out { DestinationReg = Registers.DX, SourceReg = Registers.AX });
         }
 
@@ -97,15 +97,15 @@ namespace Atomix.Kernel_H.arch.x86
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
         [Assembly(0x0)]
-        public static uint In32(UInt16 aAddress)
+        public static uint In32(uint aAddress)
         {
-            //Load address into EDX
+            // Load address into EDX
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
-            //Set EAX = 0x00000000
+            // Set EAX = 0x00000000
             Core.AssemblerCode.Add(new Xor { DestinationReg = Registers.EAX, SourceReg = Registers.EAX });
-            //Read 16 byte And put result into EAX (AX)
+            // Read 16 byte And put result into EAX (AX)
             Core.AssemblerCode.Add(new In { DestinationReg = Registers.EAX, SourceReg = Registers.DX });
-            //Save value
+            // Save value
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBP, SourceReg = Registers.EAX, DestinationDisplacement = 0x8, DestinationIndirect = true });
 
             return 0x0;
@@ -117,17 +117,17 @@ namespace Atomix.Kernel_H.arch.x86
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
         [Assembly(0x8)]
-        public static void Out32(UInt16 aAddress, uint aValue)
+        public static void Out32(uint aAddress, uint aValue)
         {
-            //Load address into EDX
+            // Load address into EDX
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDX, SourceReg = Registers.EBP, SourceDisplacement = 0xC, SourceIndirect = true });
-            //Load value into EAX
+            // Load value into EAX
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
-            //Write 16 byte
+            // Write 16 byte
             Core.AssemblerCode.Add(new Out { DestinationReg = Registers.DX, SourceReg = Registers.EAX });
         }
 
-        public static void Read16(UInt16 aAddress, UInt16[] xData)
+        public static void Read16(uint aAddress, UInt16[] xData)
         {
             for (int i = 0; i < xData.Length; i++)
             {
@@ -135,7 +135,7 @@ namespace Atomix.Kernel_H.arch.x86
             }
         }
 
-        public static void Read16(UInt16 aAddress, byte[] xData)
+        public static void Read16(uint aAddress, byte[] xData)
         {
             for (int i = 0; i < xData.Length; i += 2)
             {
@@ -145,7 +145,7 @@ namespace Atomix.Kernel_H.arch.x86
             }
         }
 
-        public static void Read16(UInt16 aAddress, byte[] xData, uint size)
+        public static void Read16(uint aAddress, byte[] xData, uint size)
         {
             Read16(aAddress, xData);
 
@@ -153,7 +153,7 @@ namespace Atomix.Kernel_H.arch.x86
                 In16(aAddress);
         }
 
-        public static void Write16(UInt16 aAddress, UInt16[] xData)
+        public static void Write16(uint aAddress, UInt16[] xData)
         {
             for (int i = 0; i < xData.Length; i++)
             {
@@ -161,7 +161,7 @@ namespace Atomix.Kernel_H.arch.x86
             }
         }
 
-        public static void Write16(UInt16 aAddress, byte[] xData)
+        public static void Write16(uint aAddress, byte[] xData)
         {
             for (int i = 0; i < xData.Length; i += 2)
             {

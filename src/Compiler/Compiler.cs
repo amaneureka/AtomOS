@@ -36,7 +36,7 @@ namespace Atomix
         /// <summary>
         /// It will contain Methods and DLL name
         /// </summary>
-        public Dictionary<MethodBase, CustomAttributeData> ImportDLL;
+        public Dictionary<MethodBase, DllImportAttribute> ImportDLL;
         /// <summary>
         /// Dummy can be assumed as a doll method which we are not going to build
         /// The uint decide is a plug based building it build the plug containing given integer as string --> Plug
@@ -75,7 +75,7 @@ namespace Atomix
             QueuedMember = new Queue<_MemberInfo>();            
             BuildDefinations = new List<_MemberInfo>();
             Plugs = new Dictionary<MethodBase, string>();
-            ImportDLL = new Dictionary<MethodBase, CustomAttributeData>();
+            ImportDLL = new Dictionary<MethodBase, DllImportAttribute>();
             Dummys = new Dictionary<uint, MethodBase>();
             StringTable = new Dictionary<string, string>();
             AssemblyNative = new Dictionary<MethodBase, uint>();
@@ -352,6 +352,17 @@ namespace Atomix
                             QueuedMember.Enqueue(xMethod);
                         }
                         //Now we are going for method attributes and Enqueue them all =P
+                        if (xMethod.GetCustomAttribute(typeof(DllImportAttribute)) != null)
+                        {
+                            var attrib = (DllImportAttribute)xMethod.GetCustomAttribute(typeof(DllImportAttribute));
+                            ImportDLL.Add(xMethod, attrib);
+                            ILCompiler.Logger.Write(string.Format(
+                                    "<b>Plug Found <u>DllImportAttribute</u></b> :: {0}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=>{1}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=>{2}",
+                                    xMethod.Name,
+                                    xType.FullName,
+                                    attrib.Value));
+                        }
+                        // TODO: review the below code
                         foreach (var xAttr in xMethod.CustomAttributes)
                         {                            
                             if (xAttr.AttributeType == typeof(PlugAttribute))
@@ -394,16 +405,6 @@ namespace Atomix
                             else if (xAttr.AttributeType == typeof(DummyAttribute))
                             {
                                 Dummys.Add((uint)xAttr.ConstructorArguments[0].Value, xMethod);
-                                
-                            }
-                            else if (xAttr.AttributeType == typeof(DllImportAttribute))
-                            {
-                                ImportDLL.Add(xMethod, xAttr);
-                                ILCompiler.Logger.Write(string.Format(
-                                        "<b>Plug Found <u>DllImportAttribute</u></b> :: {0}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=>{1}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=>{2}",
-                                        xMethod.Name,
-                                        xType.FullName,
-                                        (string)xAttr.ConstructorArguments[0].Value));
                             }
                         }                        
                     }                    
@@ -471,12 +472,13 @@ namespace Atomix
             QueuedMember.Enqueue(xMethod);
         }
 
-        private void ProcessExternalMethod(MethodBase aMethod, CustomAttributeData aAttributeData)
+        private void ProcessExternalMethod(MethodBase aMethod, DllImportAttribute aAttributeData)
         {
             ILCompiler.Logger.Write("@Processor", aMethod.FullName(), "Processing External Method");
+            
             var xMethodLabel = aMethod.FullName();
-            var xMethodName = aMethod.Name;
-            var xLibName = (string)aAttributeData.ConstructorArguments[0].Value;
+            var xMethodName = aAttributeData.EntryPoint == null ? aMethod.Name : aAttributeData.EntryPoint;
+            var xLibName = aAttributeData.Value;
 
             var end_exception = xMethodLabel + ".Error";
 
