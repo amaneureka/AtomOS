@@ -34,7 +34,11 @@ namespace Atomix.Kernel_H.exec
             ELF.Load(aDLLName);
             Scheduler.RunningProcess.SetSymbol(aDLLName, 1);
 
-            return Scheduler.RunningProcess.GetSymbols(SymbolName);
+            Address = Scheduler.RunningProcess.GetSymbols(SymbolName);
+            if (Address == 0)
+                throw new Exception("[ImportDLL]: No such symbol found!");
+
+            return Address;
         }
     }
 }
