@@ -22,7 +22,9 @@ namespace Atomix.Kernel_H.arch.x86
     public class SHM
     {
         public const uint START = 0xB0000000;
-        public const int LIMIT_TO_PROCESS = 0x10000 >> 5;//Maximum of 0x10000 frames starting from SHM_Start to any process
+
+        // Maximum of 0x10000 frames starting from SHM_Start to any process
+        public const int LIMIT_TO_PROCESS = 0x10000 >> 5;
         
         static IDictionary<string, shm_chunk> Nodes;
         
@@ -75,7 +77,7 @@ namespace Atomix.Kernel_H.arch.x86
                                 Paging.AllocateFrame(Paging.GetPage(CurrentDirectory, xVirtualAddress, true), (Frames[Index] << 12), false);
                                 Paging.InvalidatePageAt(xVirtualAddress);
                                 
-                                //Also Mark in shm_mapping
+                                // Also Mark in shm_mapping
                                 shm_mapping[(xOffset >> 5)] |= (uint)(0x1 << (xOffset & 31));
 
                                 xVirtualAddress += 0x1000;
@@ -109,12 +111,13 @@ namespace Atomix.Kernel_H.arch.x86
             
             for (int index = 0; index < NumberOfFrames; index++)
             {
-                //Allocate New Frame to this guy!
+                // Allocate New Frame to this guy!
                 uint NewFrame = Paging.FirstFreeFrame();
                 Paging.SetFrame(NewFrame);
-#warning Check If we are not out of run of memory
+
+#warning [SHM] : Check for memory out of run condition.
+
                 NewChunk.Frames[index] = NewFrame;
-                //Debug.Write(0x0);
             }
             Nodes.Add(aID, NewChunk);
         }

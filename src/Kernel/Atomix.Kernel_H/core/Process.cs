@@ -20,7 +20,7 @@ namespace Atomix.Kernel_H.core
         public readonly uint pid;
         public readonly string Name;
         public readonly IList<Thread> Threads;
-        public readonly uint[] shm_mapping;//Using Bitmask keeps a track of which shm region is occupied
+        public readonly uint[] shm_mapping;// Using Bitmask keeps a track of which shm region is occupied
 
         uint mPageDirectory;
         IDictionary<string, uint> mSymbols;

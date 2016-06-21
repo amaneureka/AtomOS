@@ -9,7 +9,7 @@
 
 namespace Atomix.Kernel_H.lib.crypto
 {
-    //Source: http://www.cse.yorku.ca/~oz/hash.html
+    // Source: http://www.cse.yorku.ca/~oz/hash.html
     public static class sdbm
     {
         public static uint GetHashCode(this string aData)

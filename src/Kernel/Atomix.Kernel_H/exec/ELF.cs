@@ -178,7 +178,7 @@ namespace Atomix.Kernel_H.exec
             var xData = new byte[aStream.FileSize];
             aStream.Read(xData, xData.Length);
 
-            //because 0x10 bytes are dedicated for array meta information
+            // because 0x10 bytes are dedicated for array meta information
             var header = (Elf_Header*)(Native.GetAddress(xData) + 0x10);
 
             uint EntryPoint = header->e_entry;
@@ -212,11 +212,11 @@ namespace Atomix.Kernel_H.exec
                     {
                         case ShT_Types.SHT_NOBITS:
                             {
-                                //Ignore if size == 0
+                                // Ignore if size == 0
                                 if (section->sh_size == 0)
                                     continue;
 
-                                //do we really have to copy it to memory?
+                                // do we really have to copy it to memory?
                                 if ((section->sh_flags & (int)ShT_Attributes.SHF_ALLOC) != 0)
                                 {
                                     var Mem = Heap.kmalloc(section->sh_size);
@@ -227,7 +227,7 @@ namespace Atomix.Kernel_H.exec
                         case ShT_Types.SHT_REL:
                             {
                                 Elf32_Rel* relTable = (Elf32_Rel*)((uint)header + section->sh_offset);
-                                Elf_Shdr* targetSection = elf_section(header, section->sh_info);//move to elf section header
+                                Elf_Shdr* targetSection = elf_section(header, section->sh_info);// move to elf section header
                                 uint sectionOffset = (uint)header + targetSection->sh_offset;
                                 for (int i = 0; i < section->sh_size / section->sh_entsize; i++, relTable++)
                                 {
@@ -235,7 +235,7 @@ namespace Atomix.Kernel_H.exec
                                     uint SymIndex = (relTable->r_info >> 8);
                                     if (SymIndex != 0)
                                     {
-                                        //Lookup symbol
+                                        // Lookup symbol
                                         var SymbolSection = elf_section(header, targetSection->sh_link);
 
                                         var SymbolTable = (Elf32_Sym*)(SymbolSection->sh_offset + (uint)header);
@@ -254,7 +254,7 @@ namespace Atomix.Kernel_H.exec
 
                                     uint* addr_ref = (uint*)(sectionOffset + relTable->r_offset);
 
-                                    //Perform Relocation
+                                    // Perform Relocation
                                     switch((RtT_Types)(relTable->r_info & 0xFF))
                                     {
                                         case RtT_Types.R_386_32:
@@ -282,7 +282,7 @@ namespace Atomix.Kernel_H.exec
                                         var address = (uint)header + target->sh_offset + SymbolTable->st_value;
 
                                         var stringTable = elf_section(header, section->sh_link);
-                                        //Assuming no symbol is > 255 bytes long
+                                        // Assuming no symbol is > 255 bytes long
                                         var name = ASCII.GetString((byte*)((uint)header + stringTable->sh_offset + SymbolTable->st_name), 0, 255);
 
                                         if (name.Length > 0)
@@ -294,7 +294,7 @@ namespace Atomix.Kernel_H.exec
                             break;
                     }
 
-                    //Copy segment to memory
+                    // Copy segment to memory
                     if ((ShT_Types)section->sh_type != ShT_Types.SHT_NOBITS)
                     {
                         //Copy section to memory

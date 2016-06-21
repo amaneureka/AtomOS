@@ -41,10 +41,10 @@ namespace Atomix.Kernel_H.devices
             byte xSystemID = aMBR[aLoc + 4];
             if (xSystemID == 0x5 || xSystemID == 0xF || xSystemID == 0x85)
             {
-                //Extended Partition Detected
-                //DOS only knows about 05, Windows 95 introduced 0F, Linux introduced 85 
-                //Search for logical volumes
-                //http://thestarman.pcministry.com/asm/mbr/PartTables2.htm          
+                // Extended Partition Detected
+                // DOS only knows about 05, Windows 95 introduced 0F, Linux introduced 85 
+                // Search for logical volumes
+                // http://thestarman.pcministry.com/asm/mbr/PartTables2.htm          
                 Debug.Write("[MBR]: EBR Partition Found!\n");
             }
             else if (xSystemID != 0)

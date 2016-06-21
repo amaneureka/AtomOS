@@ -15,7 +15,7 @@ namespace Atomix.Kernel_H.lib
 {
     public class ISet<_type>
     {
-        const uint Capacity = (1 << 5);//Should be a power of 2
+        const uint Capacity = (1 << 5);// Should be a power of 2
 
         uint mModulo;
         Bucket[] mBuckets;
@@ -67,7 +67,7 @@ namespace Atomix.Kernel_H.lib
 
             var ToDelete = Current.mNext;
             Current.mNext = ToDelete.mNext;
-            Heap.Free(ToDelete);//Free bucket
+            Heap.Free(ToDelete);// Free bucket
         }
     }
 }

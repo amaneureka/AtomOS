@@ -18,14 +18,14 @@ namespace Atomix.Kernel_H.core
 {
     public static class Monitor
     {
-        //Holds Object which are locked and thread id which has acquired the lock
+        // Holds Object which are locked and thread id which has acquired the lock
         static IDictionary<object, int> mLocks;
 
         public static void Setup()
         {
             mLocks = new IDictionary<object, int>(delegate (object aObj)
             {
-                //If two objects shares the same address
+                // If two objects shares the same address
                 return Native.GetAddress(aObj);
             }, object.Equals);
         }
@@ -45,7 +45,7 @@ namespace Atomix.Kernel_H.core
             int ThreadID = Scheduler.RunningThreadID;
             int ID = mLocks.GetValue(aObj, -1);
 
-            if (ThreadID == ID)//If thread has already acquired lock
+            if (ThreadID == ID)// If thread has already acquired lock
                 return;
 
             do
@@ -54,7 +54,7 @@ namespace Atomix.Kernel_H.core
                 ID = mLocks[aObj];
 #warning Add thread sleep
             }
-            while (ID != ThreadID);//Make sure we have owned the lock
+            while (ID != ThreadID);// Make sure we have owned the lock
             
             aLockTaken = true;
         }
@@ -66,7 +66,7 @@ namespace Atomix.Kernel_H.core
             int ThreadID = Scheduler.RunningThreadID;
             int ID = mLocks.GetValue(aObj, -1);
 
-            if (ThreadID == ID)//If thread has already acquired lock
+            if (ThreadID == ID)// If thread has already acquired lock
             {
                 mLocks.RemoveKey(aObj);
                 return;

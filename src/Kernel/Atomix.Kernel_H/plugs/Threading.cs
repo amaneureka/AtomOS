@@ -20,14 +20,14 @@ namespace Atomix.Kernel_H.plugs
         public static void AcquireLock(object aObj, ref bool aLockTaken)
         {
             Core.AssemblerCode.Add(new Call("AcquireLock", true));
-            //we don't carry exception flag from here, although Thread.Exception contains the flag
+            // we don't carry exception flag from here, although Thread.Exception contains the flag
         }
 
         [Assembly(0x4), Plug("System_Void_System_Threading_Monitor_Exit_System_Object_")]
         public static void ReleaseLock(object aObj)
         {
             Core.AssemblerCode.Add(new Call("ReleaseLock", true));
-            //we don't carry exception flag from here, although Thread.Exception contains the flag
+            // we don't carry exception flag from here, although Thread.Exception contains the flag
         }
     }
 }

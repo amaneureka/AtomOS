@@ -25,14 +25,14 @@ namespace Atomix.Kernel_H.arch.x86
         [Assembly(0x0)]
         public static uint Read32(uint aAddress)
         {
-            //Load address into EAX
+            // Load address into EAX
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
-            //Read memory into EAX
+            // Read memory into EAX
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.EAX, SourceIndirect = true });
-            //Save read out value into stack
+            // Save read out value into stack
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBP, SourceReg = Registers.EBX, DestinationDisplacement = 0x8, DestinationIndirect = true });
 
-            return 0; //For c# error --> Don't make any sense for compiler
+            return 0; // For c# error --> Don't make any sense for compiler
         }
 
         /// <summary>
@@ -43,16 +43,16 @@ namespace Atomix.Kernel_H.arch.x86
         [Assembly(0x0)]
         public static ushort Read16(uint aAddress)
         {
-            //Load address into EAX
+            // Load address into EAX
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
-            //Clean EBX Register
+            // Clean EBX Register
             Core.AssemblerCode.Add(new Xor { DestinationReg = Registers.EBX, SourceReg = Registers.EBX });
-            //Read memory into EAX
+            // Read memory into EAX
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.EAX, SourceIndirect = true });
-            //Save read out value into stack
+            // Save read out value into stack
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBP, SourceReg = Registers.BX, DestinationDisplacement = 0x8, DestinationIndirect = true, Size = 16 });
 
-            return 0; //For c# error --> Don't make any sense for compiler
+            return 0; // For c# error --> Don't make any sense for compiler
         }
 
         /// <summary>
@@ -63,16 +63,16 @@ namespace Atomix.Kernel_H.arch.x86
         [Assembly(0x0)]
         public static byte Read8(uint aAddress)
         {
-            //Load address into EAX
+            // Load address into EAX
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
-            //Clean EBX Register
+            // Clean EBX Register
             Core.AssemblerCode.Add(new Xor { DestinationReg = Registers.EBX, SourceReg = Registers.EBX });
-            //Read memory into EAX
+            // Read memory into EAX
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.EAX, SourceIndirect = true });
-            //Save read out value into stack
+            // Save read out value into stack
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBP, SourceReg = Registers.BL, DestinationDisplacement = 0x8, DestinationIndirect = true, Size = 8 });
 
-            return 0; //For c# error --> Don't make any sense for compiler
+            return 0; // For c# error --> Don't make any sense for compiler
         }
 
         /// <summary>
@@ -83,11 +83,11 @@ namespace Atomix.Kernel_H.arch.x86
         [Assembly(0x8)]
         public static void Write32(uint aAddress, uint Value)
         {
-            //Load address into EAX
+            // Load address into EAX
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0xC, SourceIndirect = true });
-            //Load Value into EDX
+            // Load Value into EDX
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
-            //Save value at mem Location
+            // Save value at mem Location
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBX, DestinationIndirect = true });
         }
 
@@ -99,11 +99,11 @@ namespace Atomix.Kernel_H.arch.x86
         [Assembly(0x8)]
         public static void Write16(uint aAddress, ushort Value)
         {
-            //Load address into EAX
+            // Load address into EAX
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0xC, SourceIndirect = true });
-            //Load Value into EDX
+            // Load Value into EDX
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
-            //Save value at mem Location
+            // Save value at mem Location
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.BX, DestinationIndirect = true, Size = 16 });
         }
 
@@ -115,11 +115,11 @@ namespace Atomix.Kernel_H.arch.x86
         [Assembly(0x8)]
         public static void Write8(uint aAddress, byte Value)
         {
-            //Load address into EAX
+            // Load address into EAX
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0xC, SourceIndirect = true });
-            //Load Value into EDX
+            // Load Value into EDX
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
-            //Save value at mem Location
+            // Save value at mem Location
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.BL, DestinationIndirect = true, Size = 8 });
         }
 
@@ -147,9 +147,9 @@ namespace Atomix.Kernel_H.arch.x86
             Core.AssemblerCode.Add(new Xor { DestinationReg = Registers.EAX, SourceReg = Registers.EAX });
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.EBX });
             Core.AssemblerCode.Add(new ShiftRight { DestinationReg = Registers.ECX, SourceRef = "0x2" });
-            Core.AssemblerCode.Add(new Literal("rep stosd"));//Copy EAX to EDI
+            Core.AssemblerCode.Add(new Literal("rep stosd"));// Copy EAX to EDI
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.EBX });
-            Core.AssemblerCode.Add(new And { DestinationReg = Registers.ECX, SourceRef = "0x3" });//Modulo by 4
+            Core.AssemblerCode.Add(new And { DestinationReg = Registers.ECX, SourceRef = "0x3" });// Modulo by 4
             Core.AssemblerCode.Add(new Literal("rep stosb"));
         }
     }

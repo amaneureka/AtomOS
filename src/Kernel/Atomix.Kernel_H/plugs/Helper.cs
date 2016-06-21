@@ -23,7 +23,7 @@ namespace Atomix.Kernel_H.plugs
         }
 
         [Plug("System_Boolean_System_Object_Equals_System_Object_")]
-        public static bool Object_Equals(uint aObjA, uint aObjB)//Treat it as address
+        public static bool Object_Equals(uint aObjA, uint aObjB)// Treat it as address
         {
             return (aObjA == aObjB);
         }

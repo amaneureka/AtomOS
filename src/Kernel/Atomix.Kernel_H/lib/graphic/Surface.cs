@@ -54,17 +54,17 @@ namespace Atomix.Kernel_H.lib.graphic
                 r = p + rect_a.width - 1;
                 s = q + rect_a.height - 1;
 
-                //They won't overlap
+                // They won't overlap
                 if (r < x || s < y || c < p || d < q)
                     continue;
 
-                //Overlaping rectangles
+                // Overlaping rectangles
                 l = Math.Max(p, a);
                 m = Math.Max(q, b);
                 n = Math.Min(r, c);
                 o = Math.Min(s, d);
 
-                //Draw on buffer @{(l, m), (n, o)} from bitamp {(l-x, m-y), (n-x, o-y)}
+                // Draw on buffer @{(l, m), (n, o)} from bitamp {(l-x, m-y), (n-x, o-y)}
                 CopyToBuffer(mBuffer, bitamp, l, m, mWidth, mHeight, l - x, m - y, w, n - l + 1, o - m + 1);
             }
         }
@@ -98,11 +98,11 @@ namespace Atomix.Kernel_H.lib.graphic
                 r = p + rect_a.width - 1;
                 s = q + rect_a.height - 1;
 
-                //They won't overlap
+                // They won't overlap
                 if (r < x || s < y || c < p || d < q)
                     continue;
 
-                //Overlaping rectangles
+                // Overlaping rectangles
                 l = Math.Min(p, a);
                 m = Math.Min(q, b);
                 n = Math.Max(r, c);
@@ -126,7 +126,7 @@ namespace Atomix.Kernel_H.lib.graphic
             Rectangle_List[index].y = y;
             Rectangle_List[index].width = w;
             Rectangle_List[index].height = h;
-            //Rectangle_List_index = index + 1;
+            // Rectangle_List_index = index + 1;
         }
 
         #region Static Functions

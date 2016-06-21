@@ -93,7 +93,7 @@ namespace Atomix.Kernel_H.core
             if (curr == null)
                 return;
             curr.State = ThreadState.Dead;
-            while (true) ;//Hook up till the next time slice
+            while (true) ;// Hook up till the next time slice
         }
                 
         public ThreadState Status
@@ -104,8 +104,8 @@ namespace Atomix.Kernel_H.core
     public enum ThreadState : int
     {
         NotActive = 0,
-        Running = 1,    //Thread is currently running
-        Dead = 2,       //Thread is terminated
-        Sleep = 3,      //Thread is sleeping
+        Running = 1,    // Thread is currently running
+        Dead = 2,       // Thread is terminated
+        Sleep = 3,      // Thread is sleeping
     };
 }

@@ -71,17 +71,17 @@ namespace Atomix.Kernel_H.drivers.buses.ATA
 
             DeviceSelect = (UInt16)(xBAR0 + (byte)Register.ATA_REG_HDDEVSEL);
 
-            //Disable IRQ
+            // Disable IRQ
             PortIO.Out8(ControlReg, 0x2);
 
-            //Discover what we have =P
+            // Discover what we have =P
             Discover();
 
             if (mDevice != Device.IDE_None)
             {
                 IRQInvoked = false;
 
-                //Register Interrupt Handler :-)
+                // Register Interrupt Handler :-)
                 IDT.RegisterInterrupt(
                     delegate(ref IRQContext xContext) 
                     { 
@@ -109,15 +109,15 @@ namespace Atomix.Kernel_H.drivers.buses.ATA
             Status xStatus;
             bool Error = false;
 
-            //Select Drive
+            // Select Drive
             SelectDrive();
 
-            //Send Identify command
+            // Send Identify command
             PortIO.Out8(CommandReg, (byte)Cmd.ATA_CMD_IDENTIFY);
             Wait();
 
             if (PortIO.In8(StatusReg) == 0)
-                return; //No Device
+                return; // No Device
 
             while (true)
             {
@@ -129,7 +129,7 @@ namespace Atomix.Kernel_H.drivers.buses.ATA
                 }
 
                 if (((xStatus & Status.ATA_SR_BSY) == 0) && ((xStatus & Status.ATA_SR_DRQ) != 0))
-                    break; //Everything is fine
+                    break; // Everything is fine
                 Wait();
             }
 
@@ -153,7 +153,7 @@ namespace Atomix.Kernel_H.drivers.buses.ATA
                     return;
                 }
 
-                //Send Identify packet command
+                // Send Identify packet command
                 PortIO.Out8(CommandReg, (byte)Cmd.ATA_CMD_IDENTIFY_PACKET);
                 Wait();
             }
@@ -161,17 +161,17 @@ namespace Atomix.Kernel_H.drivers.buses.ATA
             var xBuff = new ushort[256];            
             PortIO.Read16(DataReg, xBuff);
 
-            //ATA/ATAPI COnfig
+            // ATA/ATAPI COnfig
             mIsRemovable        = (xBuff[(int)Identify.ATA_IDENT_DEVICETYPE] & (1 << 7)) > 0;
 
-            //CHS configurations
+            // CHS configurations
             mCylinder           = xBuff.ToUInt32((int)Identify.ATA_IDENT_CYLINDERS);
             mHeads              = xBuff.ToUInt32((int)Identify.ATA_IDENT_HEADS);
             mSectorsPerTrack    = xBuff.ToUInt32((int)Identify.ATA_IDENT_SECTORS);
             mCommandSet         = xBuff.ToUInt32((int)Identify.ATA_IDENT_COMMANDSETS);
 
             ushort xFieldValid  = xBuff[(int)Identify.ATA_IDENT_FIELDVALID];
-            //1st bit determine weather it support LBA or not
+            // 1st bit determine weather it support LBA or not
             mLBASupport         = (bool)((xFieldValid & 1) == 1);
 
             if ((mCommandSet & (1 << 26)) != 0)
@@ -181,7 +181,7 @@ namespace Atomix.Kernel_H.drivers.buses.ATA
                 // Device uses CHS or 28-bit Addressing:
                 mSize = xBuff.ToUInt32((int)Identify.ATA_IDENT_MAX_LBA);
 
-            //Read Model, Firmware, SerialNo.
+            // Read Model, Firmware, SerialNo.
             mModel      = xBuff.GetString((int)Identify.ATA_IDENT_MODEL, 40);
             mSerialNo   = xBuff.GetString((int)Identify.ATA_IDENT_SERIAL, 20);
             
@@ -204,13 +204,13 @@ namespace Atomix.Kernel_H.drivers.buses.ATA
             {
                 if (IsReading)
                 {
-                    if (SectorCount != 1)//Only 1 sector we can read at a time
+                    if (SectorCount != 1)// Only 1 sector we can read at a time
                         return false;
 
-                    //Lock up device
+                    // Lock up device
                     Monitor.AcquireLock(this);
 
-                    //SCSI Packet Command
+                    // SCSI Packet Command
                     mATAPI_Packet[0] = (byte)Cmd.ATAPI_CMD_READ;
                     mATAPI_Packet[1] = 0x00;
                     mATAPI_Packet[2] = (byte)((SectorNo >> 24) & 0xFF);
@@ -224,31 +224,31 @@ namespace Atomix.Kernel_H.drivers.buses.ATA
                     mATAPI_Packet[10] = 0x00;
                     mATAPI_Packet[11] = 0x00;
 
-                    //Enable IRQ
+                    // Enable IRQ
                     IRQInvoked = false;
                     PortIO.Out8(ControlReg, 0x0);
 
                     SelectDrive();
 
-                    PortIO.Out8(FeatureReg, 0x0);//Tell controller that we are going to use PIO mode
+                    PortIO.Out8(FeatureReg, 0x0);// Tell controller that we are going to use PIO mode
 
-                    //Tell constroller the size of each buffer
+                    // Tell constroller the size of each buffer
                     PortIO.Out8(LBA1, (byte)((mBufferSize) & 0xFF));// Lower Byte of Sector Size. ATA_LBA_MID_PORT
                     PortIO.Out8(LBA2, (byte)((mBufferSize >> 8) & 0xFF));// Upper Byte of Sector Size. ATA_LBA_HI_PORT          
 
-                    //Send Packet command
+                    // Send Packet command
                     Send_SCSI_Package();
 
-                    //Actual size that is to transferred
+                    // Actual size that is to transferred
                     UInt32 size = (UInt32)(PortIO.In8(LBA2) << 8 | PortIO.In8(LBA1));
 
-                    //Read the data
+                    // Read the data
                     PortIO.Read16(DataReg, xData, size);
 
                     WaitIRQ();
                     while (((Status)PortIO.In8(StatusReg) & (Status.ATA_SR_BSY | Status.ATA_SR_DRQ)) != 0) ;
 
-                    //UnLock up device
+                    // UnLock up device
                     Monitor.ReleaseLock(this);
 
                     return true;
@@ -257,10 +257,10 @@ namespace Atomix.Kernel_H.drivers.buses.ATA
             }
             else if (mDevice == Device.IDE_ATA)
             {
-                //Lock up device
+                // Lock up device
                 Monitor.AcquireLock(this);
 
-                //Disable IRQ
+                // Disable IRQ
                 IRQInvoked = false;
                 PortIO.Out8(ControlReg, 0x2);
 
@@ -327,10 +327,10 @@ namespace Atomix.Kernel_H.drivers.buses.ATA
                 PortIO.Out8(LBA1, lba_io[1]);
                 PortIO.Out8(LBA2, lba_io[2]);
 
-                //Free up this memory
+                // Free up this memory
                 Heap.Free(lba_io);
 
-                //We are not using DMA so don't care about that
+                // We are not using DMA so don't care about that
                 byte cmd = 0;
                 if (lba_mode == 0 && IsReading) cmd = (byte)Cmd.ATA_CMD_READ_PIO;
                 else if (lba_mode == 1 && IsReading) cmd = (byte)Cmd.ATA_CMD_READ_PIO;
@@ -350,7 +350,7 @@ namespace Atomix.Kernel_H.drivers.buses.ATA
                 else
                 {
                     // PIO Write.
-                    Poll(false);//Just Poll we don't want any error
+                    Poll(false);// Just Poll we don't want any error
                     PortIO.Write16(DataReg, xData);
                     switch (lba_mode)
                     {
@@ -365,7 +365,7 @@ namespace Atomix.Kernel_H.drivers.buses.ATA
                     Poll(false);
                 }
 
-                //UnLock up device
+                // UnLock up device
                 Monitor.ReleaseLock(this);
                 return true;
             }
@@ -376,7 +376,7 @@ namespace Atomix.Kernel_H.drivers.buses.ATA
         {
             if (mDevice == Device.IDE_ATAPI)
             {
-                //SCSI Packet Command
+                // SCSI Packet Command
                 mATAPI_Packet[0] = (byte)Cmd.ATAPI_CMD_EJECT;
                 mATAPI_Packet[1] = 0x00;
                 mATAPI_Packet[2] = 0x00;
@@ -390,7 +390,7 @@ namespace Atomix.Kernel_H.drivers.buses.ATA
                 mATAPI_Packet[10] = 0x00;
                 mATAPI_Packet[11] = 0x00;
 
-                //Enable IRQ; Currently IRQ is not working...so we ignore it but very important                
+                // Enable IRQ; Currently IRQ is not working...so we ignore it but very important                
                 IRQInvoked = false;
                 PortIO.Out8(ControlReg, 0x0);
 
@@ -405,19 +405,19 @@ namespace Atomix.Kernel_H.drivers.buses.ATA
         
         private void Send_SCSI_Package()
         {
-            //Tell Controller that we are sending package
+            // Tell Controller that we are sending package
             PortIO.Out8(CommandReg, (byte)Cmd.ATA_CMD_PACKET);
 
-            //Wait till device get ready
+            // Wait till device get ready
             Poll(true);
 
-            //Send SCSI-Packet command to controller
+            // Send SCSI-Packet command to controller
             PortIO.Write16(DataReg, mATAPI_Packet);
 
-            //IRQ
+            // IRQ
             WaitIRQ();
 
-            //Poll and check for error
+            // Poll and check for error
             Poll(false);
         }
 
@@ -467,7 +467,7 @@ namespace Atomix.Kernel_H.drivers.buses.ATA
 
         private void Wait()
         {
-            //reading status byte takes 100ns
+            // reading status byte takes 100ns
             PortIO.In8(StatusReg);
             PortIO.In8(StatusReg);
             PortIO.In8(StatusReg);

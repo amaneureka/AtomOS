@@ -7,8 +7,6 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-using System;
-
 using Atomix.Kernel_H.core;
 using Atomix.Kernel_H.lib;
 
@@ -68,7 +66,7 @@ namespace Atomix.Kernel_H.gui
             Buffer.SetInt(5, Width);
             Buffer.SetInt(9, Height);
             Buffer.SetStringASCII(13, WindowHash);
-            Buffer.SetByte((uint)(13 + WindowHash.Length), 0x0);//End string with '\0'
+            Buffer.SetByte((uint)(13 + WindowHash.Length), 0x0);// End string with '\0'
         }
 
     }

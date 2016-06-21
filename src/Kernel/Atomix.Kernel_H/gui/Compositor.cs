@@ -50,7 +50,7 @@ namespace Atomix.Kernel_H.gui
             WindowMap = new IDictionary<string, Window>(sdbm.GetHashCode, string.Equals);
             Canvas = new Surface(VBE.SecondaryBuffer, VBE.Xres, VBE.Yres);
                         
-            //Threads stack memory allocation
+            // Threads stack memory allocation
             MOUSE_INPUT_STACK = Heap.kmalloc(0x1000);
             COMPOSITOR_STACK = Heap.kmalloc(0x1000);
             RENDER_STACK = Heap.kmalloc(0x1000);
@@ -178,12 +178,12 @@ namespace Atomix.Kernel_H.gui
                             string HashString = xNewWindow.HashString;
                             xNewWindow.Buffer = SHM.Obtain(HashString, (WindowHeight * WindowWidth * VBE.BytesPerPixel));
                             
-                            //Yes! we overwrite this buffer because we have no further refernce to this
+                            // Yes! we overwrite this buffer because we have no further refernce to this
                             Helper.CreateNewWindowMessage(compositor_packet, WindowWidth, WindowHeight, HashString);
 
                             WindowMap.Add(HashString, xNewWindow);
 
-                            //Spin Lock WindowList because it is shared between compositor and render thread
+                            // Spin Lock WindowList because it is shared between compositor and render thread
                             Monitor.AcquireLock(WindowList);
                             WindowList.Add(xNewWindow);
                             Monitor.ReleaseLock(WindowList);

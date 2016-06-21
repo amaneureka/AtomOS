@@ -67,7 +67,7 @@ namespace Atomix.Kernel_H.arch.x86
                 return;
             }
             aIsValid = true;
-            Address += 0xC0000000;//We are in higher half =D
+            Address += 0xC0000000;// We are in higher half =D
             Mb_Info = (Multiboot_Info*)Address;
             Debug.Write("Multiboot Found!!\n");
             Debug.Write("       Address       ::%d\n", Address);
@@ -103,10 +103,8 @@ namespace Atomix.Kernel_H.arch.x86
                 {
                     if (mmap->Type == MULTIBOOT_MEMORY_RESERVED)
                     {
-                        /*
-                         * Let's assume High part is 0 always, because we are running on 32bit CPU
-                         */
-                        for (uint index = 0; index < mmap->Length_Low; index += 0x1000)//Page size
+                        // Let's assume High part is 0 always, because we are running on 32bit CPU
+                        for (uint index = 0; index < mmap->Length_Low; index += 0x1000)// Page size
                         {
                             uint Address = mmap->BaseAddress_Low + index;
                             Debug.Write("Marking Address: %d\n", Address);

@@ -52,7 +52,7 @@ namespace Atomix.Kernel_H.arch.x86
         [Assembly(0x0)]
         public static unsafe uint GetAddress(object obj)
         {
-            return 0;//Only me and my compiler knows how it is working :P
+            return 0; // Only me and my compiler knows how it is working :P
         }
 
         /// <summary>
@@ -62,10 +62,10 @@ namespace Atomix.Kernel_H.arch.x86
         [Assembly(0x0)]
         public static uint EndOfKernel()
         {
-            //Just put Compiler_End location into return value
+            // Just put Compiler_End location into return value
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBP, DestinationDisplacement = 0x8, DestinationIndirect = true, SourceRef = "Compiler_End" });
 
-            return 0; //just for c# error
+            return 0; // just for c# error
         }
 
         [Assembly(0x0)]

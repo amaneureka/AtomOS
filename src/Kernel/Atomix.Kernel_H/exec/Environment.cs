@@ -27,7 +27,7 @@ namespace Atomix.Kernel_H.exec
             if (Address != 0)
                 return Address;
 
-            //check if DLL has been loaded or not
+            // check if DLL has been loaded or not
             if (Scheduler.RunningProcess.GetSymbols(aDLLName) == 1)
                 throw new Exception("[ImportDLL]: No such symbol found!");
 

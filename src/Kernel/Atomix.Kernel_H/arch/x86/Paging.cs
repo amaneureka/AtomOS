@@ -31,7 +31,7 @@ namespace Atomix.Kernel_H.arch.x86
             KernelDirectory = (UInt32*)aKernelDirectory;
             Frames = new uint[Multiboot.RAM / 0x20000];
             
-            //Tell Frame Allocator that we have already used first 4MB
+            // Tell Frame Allocator that we have already used first 4MB
             uint i = 0;
             while (i < 32)
                 Frames[i++] = 0xFFFFFFFF;
@@ -55,7 +55,7 @@ namespace Atomix.Kernel_H.arch.x86
                 phy += 0x1000;
             }
             
-            //Lets Map the new Heap; Just to the end of kernel
+            // Lets Map the new Heap; Just to the end of kernel
             uint HeapSize = 0x2000000, HeapStart = virt;//32MB
             end = virt + HeapSize;
             
@@ -65,7 +65,7 @@ namespace Atomix.Kernel_H.arch.x86
                 virt += 0x1000;
             }
             
-            //Setup our New Heap
+            // Setup our New Heap
             Heap.Setup(HeapStart, end);
             CurrentDirectory = KernelDirectory;
             Debug.Write("@Paging:: Directory: %d\n", (uint)CurrentDirectory);
@@ -73,7 +73,7 @@ namespace Atomix.Kernel_H.arch.x86
         
         public static uint AllocateMainBuffer(uint phybase)
         {
-            //4MB * 1 => 4MB
+            // 4MB * 1 => 4MB
             uint VirtLocation = 0xE0000000, VirtEnd = VirtLocation + 0x400000;
             while(VirtLocation < VirtEnd)
             {
@@ -87,7 +87,7 @@ namespace Atomix.Kernel_H.arch.x86
 
         public static uint AllocateSecondayBuffer()
         {
-            //4MB * 1 => 4MB
+            // 4MB * 1 => 4MB
             uint VirtLocation = 0xE0400000, VirtEnd = VirtLocation + 0x400000;
             while (VirtLocation < VirtEnd)
             {
@@ -103,7 +103,7 @@ namespace Atomix.Kernel_H.arch.x86
             Page += 0xC0000000;
             var Add = *((UInt32*)Page);
             if (Add != 0)
-                return;//We don't want to overwrite anything
+                return; // We don't want to overwrite anything
             else
             {                
                 if (Allocate)
@@ -134,7 +134,7 @@ namespace Atomix.Kernel_H.arch.x86
 
         public static UInt32 GetPage(UInt32* Directory, UInt32 VirtAddress, bool Make, uint flags = 0x3)//Present, ReadWrite, Supervisor
         {
-            VirtAddress /= 0x1000;//Align it to page
+            VirtAddress /= 0x1000; // Align it to page
             uint index = VirtAddress / 1024;
 
             if (Directory[index] != 0)

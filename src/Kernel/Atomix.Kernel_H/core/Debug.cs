@@ -13,9 +13,6 @@ namespace Atomix.Kernel_H.core
 {
     public static class Debug
     {
-        /*
-         * TODO: Add Resource Lock
-         */
         public enum Port : uint
         {
             Com1 = 0x3F8,

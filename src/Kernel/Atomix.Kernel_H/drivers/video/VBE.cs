@@ -76,7 +76,7 @@ namespace Atomix.Kernel_H.drivers.video
         [Assembly(0x0)]
         public static void Update()
         {
-#warning *4MB* is not good size
+#warning [VBE] : fixed size memory copy
             //Copy 4MB of data from Secondary Buffer to Virtual Frame Buffer            
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ESI, SourceRef = "static_Field__System_Byte__Atomix_Kernel_H_drivers_video_VBE_SecondaryBuffer", SourceIndirect = true });
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDI, SourceRef = "static_Field__System_Byte__Atomix_Kernel_H_drivers_video_VBE_VirtualFrameBuffer", SourceIndirect = true });

@@ -19,7 +19,7 @@ namespace Atomix.Kernel_H.io.FileSystem
 {
     public class FatFileSystem : GenericFileSystem
     {
-        //They should be private set only, so take care of this later
+        // They should be private set only, so take care of this later
         public UInt32 BytePerSector;
         public UInt32 SectorsPerCluster;
         public UInt32 ReservedSector;
@@ -91,7 +91,7 @@ namespace Atomix.Kernel_H.io.FileSystem
             }
 
             /* Not Necessary, To Avoid Crashes during corrupted BPB Info */
-            //Just to prevent ourself from hacking
+            // Just to prevent ourself from hacking
             if (TotalFAT == 0 || TotalFAT > 2 || BytePerSector == 0 || TotalSectors == 0 || SectorsPerCluster == 0)
             {
                 Heap.Free(BootSector);
@@ -248,25 +248,25 @@ namespace Atomix.Kernel_H.io.FileSystem
 
         public static bool IsClusterBad(uint Cluster)
         {
-            //Values are depend only on FAT 32 FS
+            // Values are depend only on FAT 32 FS
             return (Cluster == 0x0FFFFFF7);
         }
 
         public static bool IsClusterFree(uint Cluster)
         {
-            //Values are depend only on FAT 32 FS
+            // Values are depend only on FAT 32 FS
             return (Cluster == 0x0);
         }
 
         public static bool IsClusterReserved(uint Cluster)
         {
-            //Values are depend only on FAT 32 FS
+            // Values are depend only on FAT 32 FS
             return ((Cluster == 0x0) || (Cluster >= 0xFFF0) && (Cluster < 0x0FFFFFF7));
         }
 
         public static bool IsClusterLast(uint Cluster)
         {
-            //Values are depend only on FAT 32 FS
+            // Values are depend only on FAT 32 FS
             return (Cluster == 0x0FFFFFF8);
         }
 

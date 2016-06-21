@@ -78,7 +78,7 @@ namespace Atomix.Kernel_H.plugs
         [Plug("System_String___System_String_Split_System_Char___")]
         public static string[] Split(string str, params char[] delimiters)
         {
-            bool[] IsDelimiter = new bool[255];//assuming that we will split string with only first 255 chars
+            bool[] IsDelimiter = new bool[255];// assuming that we will split string with only first 255 chars
             for (int index = 0; index < delimiters.Length; index++)
                 IsDelimiter[delimiters[index]] = true;
 

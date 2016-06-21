@@ -32,7 +32,7 @@ namespace Atomix.Kernel_H.devices
 
         public static void Tick()
         {
-            //Tick Tok Tick Tok :P
+            // Tick Tok Tick Tok :P
             TicksFromStart++;
         }
 

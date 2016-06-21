@@ -91,7 +91,7 @@ namespace Atomix.Kernel_H.core
             }
             catch (Exception e)
             {
-                state.ECX |= 0x2;//Mark it as fail
+                state.ECX |= 0x2;// Mark it as fail
                 Heap.Free(e);
             }
         }
