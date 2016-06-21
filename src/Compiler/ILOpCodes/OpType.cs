@@ -1,9 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is
+*                   strictly prohibited Proprietary and confidential.
+* PURPOSE:          MSIL OpType
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
+
+using System;
 using System.Reflection;
-using Atomix;
 
 namespace Atomix.ILOpCodes
 {
@@ -11,8 +16,8 @@ namespace Atomix.ILOpCodes
     {
         public readonly Type Value;
 
-        public OpType(ILCode c, int pos, int np, Type aValue, ExceptionHandlingClause ehc)
-            :base (c, pos, np, ehc)
+        public OpType(ILCode aCode, int aPosition, int aNextPosition, Type aValue, ExceptionHandlingClause aEhc)
+            : base(aCode, aPosition, aNextPosition, aEhc)
         {
             Value = aValue;
         }

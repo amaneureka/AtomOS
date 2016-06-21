@@ -1,12 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is
+*                   strictly prohibited Proprietary and confidential.
+* PURPOSE:          NewObj MSIL
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
+
+using System;
 using System.Linq;
-using System.Text;
-using Atomix.IL;
+using System.Reflection;
+
 using Atomix.Assembler;
 using Atomix.Assembler.x86;
 using Atomix.CompilerExt;
-using System.Reflection;
 using Atomix.ILOpCodes;
 using Core = Atomix.Assembler.AssemblyHelper;
 

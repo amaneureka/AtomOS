@@ -224,7 +224,6 @@
     <Compile Include="VTable.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
     <None Include="log2html.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>log2html.cs</LastGenOutput>

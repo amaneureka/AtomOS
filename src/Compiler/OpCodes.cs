@@ -1,7 +1,14 @@
-﻿using System;
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is
+*                   strictly prohibited Proprietary and confidential.
+* PURPOSE:          MSIL Opcode
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Reflection;
 using System.Reflection.Emit;
 
@@ -23,13 +30,13 @@ namespace Atomix
         /// </summary>
         public static void Start()
         {
-            //Just lookup into IL list
+            // Just lookup into IL list
             foreach (var xField in typeof(OpCodes).GetFields(BindingFlags.DeclaredOnly | BindingFlags.Static | BindingFlags.Public))
             {
                 var xOpCode = (OpCode)xField.GetValue(null);
                 var xValue = (ushort)xOpCode.Value;
 
-                //Classify each by high low
+                // Classify each by high low
                 if (xValue <= 0xFF)
                     OpCodeLo[xValue] = xOpCode;
                 else
@@ -62,14 +69,14 @@ namespace Atomix
             if (xBody == null)
                 return null;
 
-            //Get IL as a byte Array using microsoft implementation
+            // Get IL as a byte Array using microsoft implementation
             var msIL = xBody.GetILAsByteArray();
 
             /* Exactly below code just simplfy the IL byte array and give us IL class and operand type
              * This is just to make the life easier
              */
 
-            //Set current position of IL as zero
+            // Set current position of IL as zero
             int xPos = 0;                        
             while (xPos < msIL.Length)
             {
@@ -138,8 +145,8 @@ namespace Atomix
                 {
                     LabelTarget.Add(xCurrentHandler.HandlerOffset);
                 }
-                
-                //Well here we have an op code holder and also a operand type holder
+
+                // Well here we have an op code holder and also a operand type holder
                 ILCode xOpCodeVal;
                 OpCode xOpCode;
                 int xOpPos = xPos;
@@ -156,15 +163,15 @@ namespace Atomix
                     xPos++;
                 }
 
-                //This will be our final OpCode class =)
-                //We just set its value and add it to above list
+                // This will be our final OpCode class =)
+                // We just set its value and add it to above list
                 ILOpCode xILOpCode = null;
 
-                //And below is some magic :P , which give us OpCode class, exactly a hardcoded classification
-                //So, i'm not going to take any garrentee if you touch this :P
-                //handle with care =P
-                //And we also add the labels breakpoints here, so take that in mind before merging IL
-                //As we don't want waste labels =)
+                // And below is some magic :P , which give us OpCode class, exactly a hardcoded classification
+                // So, i'm not going to take any garrentee if you touch this :P
+                // handle with care =P
+                // And we also add the labels breakpoints here, so take that in mind before merging IL
+                // As we don't want waste labels =)
                 switch (xOpCode.OperandType)
                 {                        
                     #region Inline None
@@ -436,7 +443,7 @@ namespace Atomix
                     default:
                         throw new Exception("Internal Compiler error" + xOpCode.OperandType);
                 }
-                //Add few more label lists
+                // Add few more label lists
                 switch (xILOpCode.Code)
                 {
                     case ILCode.Call:
@@ -447,10 +454,10 @@ namespace Atomix
                         break;
                 }
 
-                //Add our result of magic code to list
+                // Add our result of magic code to list
                 xResult.Add(xILOpCode);
             }
-            //Return the magic code result and be happy =)
+            // Return the magic code result and be happy =)
             return xResult;
         }
     }    

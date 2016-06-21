@@ -1,22 +1,11 @@
-﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-* Copyright (c) 2015, Atomix Development, Inc - All Rights Reserved                                        *
-*                                                                                                          *
-* Unauthorized copying of this file, via any medium is strictly prohibited                                 *
-* Proprietary and confidential                                                                             *
-* Written by Aman Priyadarshi <aman.eureka@gmail.com>, February 2016                                       *
-*                                                                                                          *
-*   Namespace     ::  Atomix                                                                               *
-*   File          ::  VTable.cs                                                                            *
-*                                                                                                          *
-*   Description                                                                                            *
-*       Implementation of C# .NET Virtual Table Compiler Feature                                           *
-*                                                                                                          *
-*   History                                                                                                *
-*       13-02-2016      Aman Priyadarshi      Added Methods                                                *
-*       23-03-2016      Aman Priyadarshi      Added File Header and Typos                                  *
-*       25-03-2016      Aman Priyadarshi      Moved to Compiler Internals                                  *
-*                                                                                                          *
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is
+*                   strictly prohibited Proprietary and confidential.
+* PURPOSE:          Virtual Table Implementation
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
 
 using System;
 

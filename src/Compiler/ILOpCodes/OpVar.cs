@@ -1,18 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is
+*                   strictly prohibited Proprietary and confidential.
+* PURPOSE:          MSIL OpVar
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
+
 using System.Reflection;
-using Atomix;
 
 namespace Atomix.ILOpCodes
 {
     public class OpVar : ILOpCode
     {
-        public readonly UInt16 Value;
+        public readonly ushort Value;
 
-        public OpVar(ILCode c, int pos, int np, UInt16 aValue, ExceptionHandlingClause ehc)
-            :base (c, pos, np, ehc)
+        public OpVar(ILCode aCode, int aPosition, int aNextPosition, ushort aValue, ExceptionHandlingClause aEhc)
+            : base(aCode, aPosition, aNextPosition, aEhc)
         {
             Value = aValue;
         }

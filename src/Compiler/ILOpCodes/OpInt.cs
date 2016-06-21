@@ -1,18 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is
+*                   strictly prohibited Proprietary and confidential.
+* PURPOSE:          MSIL OpField
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
+
 using System.Reflection;
-using Atomix;
 
 namespace Atomix.ILOpCodes
 {
     public class OpInt : ILOpCode
     {
-        public readonly Int32 Value;
+        public readonly int Value;
 
-        public OpInt(ILCode c, int pos, int np, Int32 aValue, ExceptionHandlingClause ehc)
-            :base (c, pos, np, ehc)
+        public OpInt(ILCode aCode, int aPosition, int aNextPosition, int aValue, ExceptionHandlingClause aEhc)
+            : base(aCode, aPosition, aNextPosition, aEhc)
         {
             Value = aValue;
         }

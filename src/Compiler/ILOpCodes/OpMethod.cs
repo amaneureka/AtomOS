@@ -1,9 +1,14 @@
-﻿using System;
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is
+*                   strictly prohibited Proprietary and confidential.
+* PURPOSE:          MSIL OpMethod
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
+
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Reflection;
-using Atomix;
 
 namespace Atomix.ILOpCodes
 {
@@ -15,8 +20,8 @@ namespace Atomix.ILOpCodes
         private static uint Counter = 1;
         public static Dictionary<MethodBase, uint> MethodUIDs = new Dictionary<MethodBase, uint>();
 
-        public OpMethod(ILCode c, int pos, int np, MethodBase aValue, ExceptionHandlingClause ehc)
-            :base (c, pos, np, ehc)
+        public OpMethod(ILCode aCode, int aPosition, int aNextPosition, MethodBase aValue, ExceptionHandlingClause aEhc)
+            : base(aCode, aPosition, aNextPosition, aEhc)
         {
             Value = aValue;
             MethodUID = 0;

@@ -1,15 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is
+*                   strictly prohibited Proprietary and confidential.
+* PURPOSE:          MSIL OpToken
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
+
+using System;
 using System.Reflection;
-using Atomix;
 
 namespace Atomix.ILOpCodes
 {
     public class OpToken : ILOpCode
     {
-        public readonly Int32 Value;
+        public readonly int Value;
         public readonly FieldInfo ValueField;
         public readonly Type ValueType;
 
@@ -44,8 +49,8 @@ namespace Atomix.ILOpCodes
             }
         }
 
-        public OpToken(ILCode c, int pos, int np, Int32 aValue, Module aModule, Type[] aTypeGenericArgs, Type[] aMethodGenericArgs, ExceptionHandlingClause ehc)
-            :base (c, pos, np, ehc)
+        public OpToken(ILCode aCode, int aPosition, int aNextPosition, int aValue, Module aModule, Type[] aTypeGenericArgs, Type[] aMethodGenericArgs, ExceptionHandlingClause aEhc)
+            : base(aCode, aPosition, aNextPosition, aEhc)
         {
             Value = aValue;
             if (ValueIsField)

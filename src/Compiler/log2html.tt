@@ -11,21 +11,21 @@
 	<body>
 		<center>
 			<h1>Atomix Compiler v2.0 Log File</h1>
-			<p>Build Date: <#= System.DateTime.Now.ToString() #> | Execute Time: <#= ExecuteTime #>ms</p>
+			<p>Build Date: <#= System.DateTime.Now.ToString() #> | Execute Time: <#= mExecuteTime #>ms</p>
 		</center>
 		
 		<h3>Logger Index:</h3>
 		<ul>
-		<# for(int i=0; i < Ascript.Count ; i++)
+		<# for(int i=0; i < mScript.Count ; i++)
 		   { #>
-	    <li><a href='#D<#= i #>'> <#= Ascript[i].ToString() #> : <#= Amessage[i] #> </a></li>
+	    <li><a href='#D<#= i #>'> <#= mScript[i].ToString() #> : <#= mMessage[i] #> </a></li>
 		<# } #>
 		</ul>
 		<hr>
-		<# for(int i=0; i < Adetail.Count ; i++)
+		<# for(int i=0; i < mDetail.Count ; i++)
 		   { #>
-		<h4><a name='D<#= i #>'> <#= Ascript[i].ToString() #> : <#= Amessage[i] #> </a></h4>
-		<ul><p><#= Adetail[i].ToString() #></p></ul>
+		<h4><a name='D<#= i #>'> <#= mScript[i].ToString() #> : <#= mMessage[i] #> </a></h4>
+		<ul><p><#= mDetail[i].ToString() #></p></ul>
 		<hr>
 		<# } #>
 	</body>

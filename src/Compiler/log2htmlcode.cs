@@ -1,25 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is
+*                   strictly prohibited Proprietary and confidential.
+* PURPOSE:          Compiler Logger template class
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
+
 using System.Collections;
-using System.Linq;
-using System.Text;
 
 namespace Atomix
 {
     public partial class log2html
     {
-        ArrayList Ascript;
-        ArrayList Amessage;
-        ArrayList Adetail;
+        ArrayList mScript;
+        ArrayList mMessage;
+        ArrayList mDetail;
 
-        string ExecuteTime = string.Empty;
+        string mExecuteTime;
 
-        public log2html(ArrayList ascript, ArrayList amessage, ArrayList adetail, string executetime)
+        public log2html(ArrayList aScript, ArrayList aMessage, ArrayList aDetail, string aExecutionTime)
         {
-            Ascript = ascript;
-            Amessage = amessage;
-            Adetail = adetail;
-            ExecuteTime = executetime;
+            mScript = aScript;
+            mMessage = aMessage;
+            mDetail = aDetail;
+            mExecuteTime = aExecutionTime;
         }
     }
 }

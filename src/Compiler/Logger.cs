@@ -1,8 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is
+*                   strictly prohibited Proprietary and confidential.
+* PURPOSE:          Compiler Logger
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
+
 using System.Collections;
-using System.Linq;
-using System.Text;
 using System.IO;
 using System.Diagnostics;
 using Atomix.CompilerExt;
@@ -11,57 +16,58 @@ namespace Atomix
 {
     public class Logger
     {        
-        string path;
-        Stopwatch timer;
-        bool DoLog;
+        private string LoggerPath;
+        private Stopwatch Timer;
+        private bool IsLogging;
 
         ArrayList Script;
         ArrayList Message;
         ArrayList Details;
 
-        public Logger(string mPath, bool aDo)
+        public Logger(string aPath, bool aDoLog)
         {
-            this.DoLog = aDo;
-            if (DoLog)
-            {
-                this.Script = new ArrayList();
-                this.Message = new ArrayList();
-                this.Details = new ArrayList();
-                this.path = Path.Combine(Path.GetDirectoryName(mPath), Path.GetFileName(mPath) + Helper.LoggerFile);
-                this.timer = new Stopwatch();
-                timer.Start();                
-            }
-        }
+            IsLogging = aDoLog;
 
-        public void Write(string mscript, string message, string aDetail)
-        {
-            if (!DoLog)
+            if (!aDoLog)
                 return;
 
-            Script.Add(mscript);
-            Message.Add(message);
+            Script = new ArrayList();
+            Message = new ArrayList();
+            Details = new ArrayList();
+            LoggerPath = Path.Combine(Path.GetDirectoryName(aPath), Path.GetFileName(aPath) + Helper.LoggerFile);
+            Timer = new Stopwatch();
+            Timer.Start();
+        }
+
+        public void Write(string aScript, string aMessage, string aDetail)
+        {
+            if (!IsLogging)
+                return;
+
+            Script.Add(aScript);
+            Message.Add(aMessage);
             Details.Add(aDetail);
         }
 
-        public void Write(string append, bool Sub = true)
+        public void Write(string aAppend, bool aSub = true)
         {
-            if (!DoLog)
+            if (!IsLogging)
                 return;
             
-            if (Sub)
-                Details[Details.Count - 1] = string.Format("{0}<li>{1}</li>", Details[Details.Count - 1], append);
+            if (aSub)
+                Details[Details.Count - 1] = string.Format("{0}<li>{1}</li>", Details[Details.Count - 1], aAppend);
             else
-                Details[Details.Count - 1] = string.Format("{0}<br>{1}", Details[Details.Count - 1], append);
+                Details[Details.Count - 1] = string.Format("{0}<br>{1}", Details[Details.Count - 1], aAppend);
         }
 
         public void Dump()
         {
-            if (!DoLog)
+            if (!IsLogging)
                 return;
 
-            timer.Stop();
-            log2html page = new log2html(Script, Message, Details, timer.ElapsedMilliseconds.ToString());
-            File.WriteAllText(path, page.TransformText());
+            Timer.Stop();
+            log2html page = new log2html(Script, Message, Details, Timer.ElapsedMilliseconds.ToString());
+            File.WriteAllText(LoggerPath, page.TransformText());
         }
     }
 }

@@ -1,18 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is
+*                   strictly prohibited Proprietary and confidential.
+* PURPOSE:          MSIL OpSingle
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
+
 using System.Reflection;
-using Atomix;
 
 namespace Atomix.ILOpCodes
 {
     public class OpSingle : ILOpCode
     {
-        public readonly Single Value;
+        public readonly float Value;
 
-        public OpSingle(ILCode c, int pos, int np, Single aValue, ExceptionHandlingClause ehc)
-            :base (c, pos, np, ehc)
+        public OpSingle(ILCode aCode, int aPosition, int aNextPosition, float aValue, ExceptionHandlingClause aEhc)
+            : base(aCode, aPosition, aNextPosition, aEhc)
         {
             Value = aValue;
         }

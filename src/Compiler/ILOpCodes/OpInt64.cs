@@ -1,18 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is
+*                   strictly prohibited Proprietary and confidential.
+* PURPOSE:          MSIL OpInt64
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
+
 using System.Reflection;
-using Atomix;
 
 namespace Atomix.ILOpCodes
 {
     public class OpInt64 : ILOpCode
     {
-        public readonly UInt64 Value;
+        public readonly ulong Value;
 
-        public OpInt64(ILCode c, int pos, int np, UInt64 aValue, ExceptionHandlingClause ehc)
-            :base (c, pos, np, ehc)
+        public OpInt64(ILCode aCode, int aPosition, int aNextPosition, ulong aValue, ExceptionHandlingClause aEhc)
+            : base(aCode, aPosition, aNextPosition, aEhc)
         {
             Value = aValue;
         }

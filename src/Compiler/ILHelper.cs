@@ -1,12 +1,19 @@
-﻿using System;
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is
+*                   strictly prohibited Proprietary and confidential.
+* PURPOSE:          Compiler Helper Function
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
+
+using System;
 using System.Collections.Generic;
-using System.Collections;
 using System.Linq;
 using System.Text;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
+
 using Atomix.CompilerExt;
 using Atomix.Assembler;
 using Core = Atomix.Assembler.AssemblyHelper;
@@ -431,10 +438,9 @@ namespace Atomix
                 case "System.UInt64":
                 case "System.Int64":
                     return 8;
-                //No Idea currently =(
                 case "System.UIntPtr":
                 case "System.IntPtr":
-                    return ILCompiler.CPUArchitecture == CompilerExt.CPUArch.x86 ? 4 : 8;
+                    return ILCompiler.CPUArchitecture == CPUArch.x86 ? 4 : 8;
                 case "System.Boolean":
                     return 1;
                 case "System.Single":
@@ -508,12 +514,11 @@ namespace Atomix
         /// <param name="aDeclaringType"></param>
         /// <returns></returns>
         public static int StorageSize(Type aDeclaringType)
-        {            
-            
-            //Here is we do thing same as GetFieldOffset
-            //but we want last offset or just sum of sizes
+        {
+            // Here is we do thing same as GetFieldOffset
+            // but we want last offset or just sum of sizes
 
-            int xOffset = 0; //This is another way of calculation offset we just add the size of each field
+            int xOffset = 0; // This is another way of calculation offset we just add the size of each field
             
             
             var xFields = (from item in aDeclaringType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
@@ -525,12 +530,12 @@ namespace Atomix
                                   orderby item.Name, item.DeclaringType.ToString()
                                   select item).ToList());
 
-            //Here reversing is not necessary so why waste time
+            // Here reversing is not necessary so why waste time
             for (int i = 0; i < xFields.Count; i++)
             {
                 var xField = xFields[i];
 
-                //Maybe the entry is not what we want
+                // Maybe the entry is not what we want
                 //if (xField.DeclaringType != aDeclaringType)
                 //    continue;
 
@@ -554,7 +559,7 @@ namespace Atomix
              * same field is as given and than we check the offset attribute ==> This is very necessary that
              * the field has an offset attribute
              */
-            int xOffset = 0; //This is another way of calculation offset we just add the size of each field
+            int xOffset = 0; // This is another way of calculation offset we just add the size of each field
             var xFields = (from item in aDeclaringType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
                            orderby item.Name, item.DeclaringType.ToString()
                            select item).ToList();
@@ -575,7 +580,7 @@ namespace Atomix
                 //if (xField.DeclaringType != aDeclaringType)
                 //    continue;
 
-                //Check if this is what we want
+                // Check if this is what we want
                 if (xField.FullName() == aFieldId)
                 {
                     var xFieldOffsetAttrib = xField.GetCustomAttributes(typeof(FieldOffsetAttribute), true).FirstOrDefault() as FieldOffsetAttribute;
@@ -588,7 +593,7 @@ namespace Atomix
                 xOffset += xField.FieldType.SizeOf();
             }
 
-            //If not found it should throw an error
+            // If not found it should throw an error
             throw new Exception("FieldId Not found: " + aDeclaringType + ", " + aFieldId ); 
         }
 
@@ -611,8 +616,7 @@ namespace Atomix
          * where we have to set its metadata etc, and also Type ID
          * By assigning each type a unique number
          */
-#warning read comment below
-        private static int xCounter = 0;//start with some random number except zero :) but before changing xCounter change method for obtaining virtual methods
+        private static int TypeIdCounter = 1;
         public static Dictionary<string, int> TypeIDLabel = new Dictionary<string, int>();
         public static string GetTypeIDLabel(Type aType)
         {
@@ -627,14 +631,14 @@ namespace Atomix
                     xResult[i] = '_';
             }
 
-            string xResult2 = ("TYPE_ID_LABEL__" + (new String(xResult)));
+            string xResult2 = ("TYPE_ID_LABEL__" + new string(xResult));
 
-            //Add it to Data Members
+            // Add it to Data Members
             if (!TypeIDLabel.ContainsKey(xResult2))
             {
-                Core.DataMember.Add(new AsmData(xResult2, "dd " + xCounter));
-                TypeIDLabel.Add(xResult2, xCounter);
-                xCounter++;
+                Core.DataMember.Add(new AsmData(xResult2, "dd " + TypeIdCounter));
+                TypeIDLabel.Add(xResult2, TypeIdCounter);
+                TypeIdCounter++;
             }
             
             return xResult2;
@@ -653,15 +657,15 @@ namespace Atomix
                     xResult[i] = '_';
             }
 
-            string xResult2 = ("TYPE_ID_LABEL__" + (new String(xResult)));
+            string xResult2 = ("TYPE_ID_LABEL__" + new string(xResult));
 
-            //Add it to Data Members
+            // Add it to Data Members
             if (!TypeIDLabel.ContainsKey(xResult2))
             {
-                //we don't add those labels in output assembly which we don't call literal -- optimization
-                //Core.DataMember.Add(new AsmData(xResult2, "dd " + xCounter));
-                TypeIDLabel.Add(xResult2, xCounter);
-                xCounter++;
+                // we don't add those labels in output assembly which we don't call literal -- optimization
+                // Core.DataMember.Add(new AsmData(xResult2, "dd " + xCounter));
+                TypeIDLabel.Add(xResult2, TypeIdCounter);
+                TypeIdCounter++;
             }
 
             return TypeIDLabel[xResult2];
@@ -690,6 +694,11 @@ namespace Atomix
             
             // constructors -- no return type
             return 0;
+        }
+
+        public static bool IsDelegate(Type type)
+        {
+            return typeof(Delegate).IsAssignableFrom(type.BaseType);
         }
     }
 }

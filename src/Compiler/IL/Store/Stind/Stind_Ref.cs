@@ -1,14 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Atomix.IL;
-using Atomix.Assembler;
-using Atomix.Assembler.x86;
-using Atomix.CompilerExt;
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is
+*                   strictly prohibited Proprietary and confidential.
+* PURPOSE:          Stind_Ref MSIL
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
+
+using System;
 using System.Reflection;
-using Atomix.ILOpCodes;
-using Core = Atomix.Assembler.AssemblyHelper;
+
+using Atomix.CompilerExt;
 
 namespace Atomix.IL
 {
@@ -20,10 +22,14 @@ namespace Atomix.IL
 
         public override void Execute(ILOpCode instr, MethodBase aMethod)
         {
-            if (ILCompiler.CPUArchitecture == CompilerExt.CPUArch.x86)
-                Stind_I.Stind_All(4);
-            else if (ILCompiler.CPUArchitecture == CompilerExt.CPUArch.x64)
-                Stind_I.Stind_All(8);
+            switch(ILCompiler.CPUArchitecture)
+            {
+                case CPUArch.x86:
+                    Stind_I.Stind_All(4);
+                    break;
+                default:
+                    throw new Exception("[Stind_Ref]: Not Implemented");
+            }
         }
     }
 }
