@@ -29,7 +29,7 @@ do
     FILE_NAME="$(basename $file .dll)"
     echo "[APP] $FILE_NAME"
     mono $ATOMIX_COMPILER -cpu $BUILD_CPU -i "$ATOMIX_APPS/$FILE_NAME.dll;$ATOMIX_LIB" -o "$OUTPUT_DIR/Apps/$FILE_NAME.asm" $ATOMIX_COMPILER_FLAGS
-    nasm -felf "$OUTPUT_DIR/Apps/$FILE_NAME.asm" -o "$ATOMIX_RD/Apps/$FILE_NAME.bin"
+    nasm -felf "$OUTPUT_DIR/Apps/$FILE_NAME.asm" -o "$ATOMIX_RD/$FILE_NAME.o"
 done
 
 #CREATE RAM DISK
