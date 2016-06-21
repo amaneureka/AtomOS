@@ -38,19 +38,6 @@ namespace Atomix
         /// </summary>
         public Dictionary<MethodBase, DllImportAttribute> ImportDLL;
         /// <summary>
-        /// Dummy can be assumed as a doll method which we are not going to build
-        /// The uint decide is a plug based building it build the plug containing given integer as string --> Plug
-        /// If it is zero than it won't build anything.
-        /// </summary>
-        public Dictionary<uint, MethodBase> Dummys;
-        /// <summary>
-        /// It is the dictionary of all Assembly methods (which has Assembly Attribute)
-        /// The integer decide its return value size, if it is 0xFF than it will not add footer and header of method
-        /// by the compiler itself else it will default header (calli instructions) 
-        /// and footer (leave, ret) with given return value
-        /// </summary>
-        private Dictionary<MethodBase, uint> AssemblyNative;
-        /// <summary>
         /// It contains all literal string datamember
         /// </summary>
         private Dictionary<string, string> StringTable;
@@ -76,9 +63,7 @@ namespace Atomix
             BuildDefinations = new List<_MemberInfo>();
             Plugs = new Dictionary<MethodBase, string>();
             ImportDLL = new Dictionary<MethodBase, DllImportAttribute>();
-            Dummys = new Dictionary<uint, MethodBase>();
             StringTable = new Dictionary<string, string>();
-            AssemblyNative = new Dictionary<MethodBase, uint>();
             Core.vStack = new VirtualStack();
             Core.DataMember = new List<AsmData>();
             Core.AssemblerCode = new List<Instruction>();
@@ -144,18 +129,12 @@ namespace Atomix
                     if (xMethod is MethodBase)
                     {
                         var Method = xMethod as MethodBase;
-                        /* Well what is dummy, a good question, 
-                         * exactly it is used when we want to fool VS compiler, because we are smarter than bill gates hehe =P (will be in future)
-                         * And Replace a method with something else, not like plug...and also if we want not to build something =P                         * 
-                         */
-                        if (!Dummys.ContainsValue(Method))
-                        {
-                            //Check if we want to build it inline assembly
-                            if (AssemblyNative.ContainsKey(Method))
-                                InlineMethod(Method);
-                            else
-                                ScanMethod(Method);
-                        }
+
+                        // Check if we want to build it inline assembly
+                        if (Method.GetCustomAttribute(typeof(AssemblyAttribute)) != null)
+                            ExecutableMethod(Method);
+                        else
+                            ScanMethod(Method);
                     }
                     //Process Type
                     else if (xMethod is Type)
@@ -351,7 +330,7 @@ namespace Atomix
                             //Well these pointers are used so we make sure the method is also build so we Enqueue it
                             QueuedMember.Enqueue(xMethod);
                         }
-                        //Now we are going for method attributes and Enqueue them all =P
+                        // Now we are going for method attributes and Enqueue them all =P
                         if (xMethod.GetCustomAttribute(typeof(DllImportAttribute)) != null)
                         {
                             var attrib = (DllImportAttribute)xMethod.GetCustomAttribute(typeof(DllImportAttribute));
@@ -391,20 +370,6 @@ namespace Atomix
                                         xMethod.Name,
                                         xType.FullName,
                                         xAssembly.FullName));
-                            }
-                            else if (xAttr.AttributeType == typeof(AssemblyAttribute))
-                            {
-                                AssemblyNative.Add(xMethod, (uint)xAttr.ConstructorArguments[0].Value);
-                                QueuedMember.Enqueue(xMethod);
-                                ILCompiler.Logger.Write(string.Format(
-                                        "<b>Plug Found <u>AssemblyAttribute</u></b> :: {0}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=>{1}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=>{2}",
-                                        xMethod.Name,
-                                        xType.FullName,
-                                        xAssembly.FullName));
-                            }
-                            else if (xAttr.AttributeType == typeof(DummyAttribute))
-                            {
-                                Dummys.Add((uint)xAttr.ConstructorArguments[0].Value, xMethod);
                             }
                         }                        
                     }                    
@@ -604,7 +569,7 @@ namespace Atomix
         /// So, remember we want use parameters of an assembly method via c#, we have to be completely literal        
         /// </summary>
         /// <param name="aMethod"></param>
-        private void InlineMethod(MethodBase aMethod)
+        private void ExecutableMethod(MethodBase aMethod)
         {
             ILCompiler.Logger.Write("@Processor", aMethod.FullName(), "Scanning Inline Assembly Method()");
             string xMethodLabel = aMethod.FullName();
@@ -614,12 +579,13 @@ namespace Atomix
 
             Core.AssemblerCode.Add(new Label(xMethodLabel));
 
-            var xReturn = AssemblyNative[aMethod];
+            var Attribute = (AssemblyAttribute)aMethod.GetCustomAttribute(typeof(AssemblyAttribute));
+            var NeedCalliHeader = Attribute.NeedCalliHeader;
 
             /* Well we check if we assign any return size than it means we are lazy 
              * and we want compiler to add calli and return code.
              */
-            if (xReturn != 0xFF)
+            if (NeedCalliHeader)
             {
                 Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EBP });
                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBP, SourceReg = Registers.ESP });
@@ -629,11 +595,13 @@ namespace Atomix
             aMethod.Invoke(null, new object[aMethod.GetParameters().Length]);
             ILCompiler.Logger.Write("Method Successfully Invoked()");
 
-            if (xReturn != 0xFF)
+            if (NeedCalliHeader)
             {
+                byte RetSize = (byte)Math.Max(0, ILHelper.GetArgumentsSize(aMethod) - ILHelper.GetReturnTypeSize(aMethod));
+
                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "0x0" });
                 Core.AssemblerCode.Add(new Leave());
-                Core.AssemblerCode.Add(new Ret { Address = (byte)xReturn });
+                Core.AssemblerCode.Add(new Ret { Address = (byte)RetSize });
             }
 
             BuildDefinations.Add(aMethod);
@@ -735,7 +703,7 @@ namespace Atomix
 
             /* Calculate Method Variables Size */
             int Size = (from item in xBody.LocalVariables
-                        select (int)item.LocalType.SizeOf().Align()).Sum();
+                        select item.LocalType.SizeOf().Align()).Sum();
 
             if (Size > 0)
             {
@@ -748,11 +716,11 @@ namespace Atomix
             /* Exceute IL Codes */
             foreach (var Op in OpCodes)
             {
-                //Check if we need exception to push?
+                // Check if we need exception to push?
                 var xNeedsExceptionPush = (Op.Ehc != null) && (((Op.Ehc.HandlerOffset > 0 && Op.Ehc.HandlerOffset == Op.Position) || ((Op.Ehc.Flags & ExceptionHandlingClauseOptions.Filter) > 0 && Op.Ehc.FilterOffset > 0 && Op.Ehc.FilterOffset == Op.Position)) && (Op.Ehc.Flags == ExceptionHandlingClauseOptions.Clause));
                                 
                 ILCompiler.Logger.Write(Op.ToString() + "; Stack Count => " + Core.vStack.Count);
-                //Check if current position inside the list of label list, if yes than break label and make a new one
+                // Check if current position inside the list of label list, if yes than break label and make a new one
                 if (NewLabels.Contains(Op.Position))
                 {
                     var xLbl = new Label(ILHelper.GetLabel(aMethod, Op.Position));
@@ -760,7 +728,7 @@ namespace Atomix
                         Core.AssemblerCode.Add(xLbl);
                 }
 
-                //If catch IL here than push current error so, that catch IL pop and do what it want
+                // If catch IL here than push current error so, that catch IL pop and do what it want
                 if (xNeedsExceptionPush)
                 {
                     Core.AssemblerCode.Add(new Push { DestinationRef = "0x0" });
@@ -768,18 +736,18 @@ namespace Atomix
                     Core.vStack.Push(4, typeof(Exception));
                 }
 
-                //Well this is just to comment whole output Assembly
+                // Well this is just to comment whole output Assembly
                 if (!DoOptimization)
                     Core.AssemblerCode.Add(new Comment(Op.ToString() + "; " + Core.vStack.Count));
 
-                //Check if this IL is in out implementation
+                // Check if this IL is in out implementation
                 if (MSIL.ContainsKey(Op.Code))
                 {
-                    //If yes than execute it
+                    // If yes than execute it
                     MSIL[Op.Code].Execute(Op, aMethod);
                 }
                 else
-                    //If it is not implementation than throw error while compilation
+                    // If it is not implementation than throw error while compilation
                     throw new Exception(Op.ToString() + "; " + xMethodLabel);
                 #region Queue Inline calls
                 if (Op is OpMethod)
@@ -817,32 +785,23 @@ namespace Atomix
                 }
                 #endregion
             }
-            //End the method and return method, without exception
+            // End the method and return method, without exception
             Core.AssemblerCode.Add(new Label(xMethodLabel + ".End"));
-            //We assume that if the ecx is 0x0 then the method is done without any exception
-            //it can be assumed by test instruction followed by conditional jump while calling a function
+            // We assume that if the ecx is 0x0 then the method is done without any exception
+            // it can be assumed by test instruction followed by conditional jump while calling a function
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "0x0" });
 
             Core.AssemblerCode.Add(new Label(xMethodLabel + ".Error"));
-            //Now below code save the return value to EBP varaible
-            //And calculate size
-            int ArgSize = (from item in aMethod.GetParameters()
-                        select (int)item.ParameterType.SizeOf().Align()).Sum();
+            // Now below code save the return value to EBP varaible
+            // And calculate size
+            int ArgSize = ILHelper.GetArgumentsSize(aMethod);
             
-            if (!aMethod.IsStatic)
+            int ReturnSize = ILHelper.GetReturnTypeSize(aMethod);
+            if (ReturnSize > 0)
             {
-                if (aMethod.DeclaringType.IsValueType)
-                    ArgSize += 4;
-                else
-                    ArgSize += aMethod.DeclaringType.SizeOf().Align();
-            }
-
-            int xReturnSize = (aMethod is MethodInfo) ? ((MethodInfo)aMethod).ReturnType.SizeOf().Align() : 0;
-            if (xReturnSize > 0)
-            {
-                //For return type Method
-                var xOffset = ILHelper.GetResultCodeOffset((uint)xReturnSize, (uint)ArgSize);
-                for (int i = 0; i < xReturnSize / 4; i++)
+                // For return type Method
+                var xOffset = ILHelper.GetResultCodeOffset((uint)ReturnSize, (uint)ArgSize);
+                for (int i = 0; i < ReturnSize / 4; i++)
                 {
                     Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
                     Core.AssemblerCode.Add(new Mov
@@ -855,19 +814,19 @@ namespace Atomix
                 }
             }
             Core.AssemblerCode.Add(new Comment(Worker.OPTIMIAZTION_END_FLAG));
-            var xRetSize = ((int)ArgSize) - ((int)xReturnSize);
-            if (xRetSize < 0)
-                xRetSize = 0;
-            //Leave this method mean regain original EBP and ESP offset
-            Core.AssemblerCode.Add(new Leave());
-            //Return to parent method with given stack offset
-            Core.AssemblerCode.Add(new Ret { Address = (byte)xRetSize });
 
-            //Add this method to build definations so we will not build it again
+            byte RetSize = (byte)Math.Max(0, ILHelper.GetArgumentsSize(aMethod) - ILHelper.GetReturnTypeSize(aMethod));
+
+            // Leave this method mean regain original EBP and ESP offset
+            Core.AssemblerCode.Add(new Leave());
+            // Return to parent method with given stack offset
+            Core.AssemblerCode.Add(new Ret { Address = RetSize });
+
+            // Add this method to build definations so we will not build it again
             BuildDefinations.Add(aMethod);
             BuildMethods.Add(aMethod.FullName());
 
-            //And log it
+            // And log it
             ILCompiler.Logger.Write("Method Build Done()");
         }
         /// <summary>

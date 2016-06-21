@@ -24,7 +24,7 @@ namespace Atomix.Kernel_H.arch.x86
         /// </summary>
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
-        [Assembly(0x0)]
+        [Assembly(true)]
         public static byte In8(uint aAddress)
         {
             // Load address into EDX
@@ -44,7 +44,7 @@ namespace Atomix.Kernel_H.arch.x86
         /// </summary>
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
-        [Assembly(0x8)]
+        [Assembly(true)]
         public static void Out8(uint aAddress, byte aValue)
         {
             // Load address into EDX
@@ -60,7 +60,7 @@ namespace Atomix.Kernel_H.arch.x86
         /// </summary>
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
-        [Assembly(0x0)]
+        [Assembly(true)]
         public static ushort In16(uint aAddress)
         {
             // Load address into EDX
@@ -80,7 +80,7 @@ namespace Atomix.Kernel_H.arch.x86
         /// </summary>
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
-        [Assembly(0x8)]
+        [Assembly(true)]
         public static void Out16(uint aAddress, ushort aValue)
         {
             // Load address into EDX
@@ -96,7 +96,7 @@ namespace Atomix.Kernel_H.arch.x86
         /// </summary>
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
-        [Assembly(0x0)]
+        [Assembly(true)]
         public static uint In32(uint aAddress)
         {
             // Load address into EDX
@@ -116,7 +116,7 @@ namespace Atomix.Kernel_H.arch.x86
         /// </summary>
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
-        [Assembly(0x8)]
+        [Assembly(true)]
         public static void Out32(uint aAddress, uint aValue)
         {
             // Load address into EDX

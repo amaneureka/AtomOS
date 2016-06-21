@@ -1,29 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Reflection;
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is
+*                   strictly prohibited Proprietary and confidential.
+* PURPOSE:          Label Attribute
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
+
+using System;
 
 namespace Atomix.CompilerExt.Attributes
 {
     [AttributeUsage(AttributeTargets.All , AllowMultiple = false)]
     public class LabelAttribute : Attribute
     {
-        protected string mLabel;
-
-        #region Constructor
-        public string Label
+        public readonly string Label;
+        
+        public LabelAttribute(string aLabel)
         {
-            get
-            {
-                return mLabel;
-            }
-        }
-        #endregion
-
-        public LabelAttribute(string xLabel)
-        {
-            this.mLabel = xLabel;
+            Label = aLabel;
         }
     }
 }

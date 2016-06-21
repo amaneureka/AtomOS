@@ -180,21 +180,21 @@ namespace Atomix.Kernel_H.arch.x86
             Frames[(page >> 5)] &= ~(uint)(0x1 << ((int)page & 31));
         }
 
-        [Assembly(0x0)]
+        [Assembly(true)]
         public static void RefreshTLB()
         {
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.CR3 });
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.CR3, SourceReg = Registers.EAX });
         }
 
-        [Assembly(0x4)]
+        [Assembly(true)]
         public static void InvalidatePageAt(uint xAddress)
         {
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
             Core.AssemblerCode.Add(new Literal("invlpg [EAX]"));
         }
 
-        [Assembly(0x4)]
+        [Assembly(true)]
         public static void SwitchDirectory(uint Directory)
         {            
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });

@@ -56,7 +56,7 @@ namespace Kernel_alpha.x86
             Native.Write8(entry + (byte)Offset.Access, access);
         }
         
-        [Assembly(0x0)]
+        [Assembly(true)]
         private static void FlushGDT()
         {
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.AX, SourceRef = "0x10", Size = 16 });

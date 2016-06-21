@@ -22,7 +22,12 @@ namespace Atomix.Assembler.x86
         {
             if (!Condition.HasValue)
                 Condition = ConditionalJumpEnum.JMP;
-            aSW.WriteLine(string.Format("{0} near {1}", Condition.ToString(), DestinationRef));
+
+            var jmpStr = Condition.ToString().ToLower();
+            if (Condition == ConditionalJumpEnum.JMP)
+                aSW.WriteLine(string.Format("{0} {1}", jmpStr, DestinationRef));
+            else
+                aSW.WriteLine(string.Format("{0} near {1}", jmpStr, DestinationRef));
         }        
     }
 }

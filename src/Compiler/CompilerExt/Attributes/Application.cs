@@ -1,28 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is
+*                   strictly prohibited Proprietary and confidential.
+* PURPOSE:          Application Attribute
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
+
+using System;
 
 namespace Atomix.CompilerExt.Attributes
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
     public class ApplicationAttribute : Attribute
     {
-        protected CPUArch mCPUArch;
+        public readonly CPUArch CPUArch;
 
-        #region Constructor
-        public CPUArch CPUArch
+        public ApplicationAttribute(CPUArch aCpuArch = CPUArch.x86)
         {
-            get
-            {
-                return mCPUArch;
-            }
-        }
-        #endregion
-
-        public ApplicationAttribute(CPUArch CpuArch)
-        {
-            this.mCPUArch = CpuArch;
+            CPUArch = aCpuArch;
         }
     }
 }

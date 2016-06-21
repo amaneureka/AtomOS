@@ -144,7 +144,7 @@ namespace Kernel_alpha.x86
             SetRegister(Current_Directory);
         }
 
-        [Assembly(0x4)]
+        [Assembly(true)]
         private static void SetRegister(uint PageDirectory)
         {
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });

@@ -40,12 +40,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\Application.cs" />
-    <Compile Include="Attributes\Dummy.cs" />
     <Compile Include="Attributes\Assembly.cs" />
     <Compile Include="Attributes\Kernel.cs" />
-    <Compile Include="Attributes\PlugClass.cs" />
     <Compile Include="Attributes\Label.cs" />
-    <Compile Include="Attributes\PlugMethod.cs" />
+    <Compile Include="Attributes\Plug.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

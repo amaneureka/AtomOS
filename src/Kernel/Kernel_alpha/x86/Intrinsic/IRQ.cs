@@ -15,7 +15,7 @@ namespace Kernel_alpha.x86.Intrinsic
         /// <summary>
         /// Fire Timer Interrupt
         /// </summary>
-        [Assembly(0x0)]
+        [Assembly(true)]
         public static void Timer()
         {
             Core.AssemblerCode.Add(new Literal("int 0x20"));
@@ -24,7 +24,7 @@ namespace Kernel_alpha.x86.Intrinsic
         /// <summary>
         /// Fire Keyboard Interrupt
         /// </summary>
-        [Assembly(0x0)]
+        [Assembly(true)]
         public static void Keyboard()
         {
             Core.AssemblerCode.Add(new Literal("int 0x21"));
@@ -33,7 +33,7 @@ namespace Kernel_alpha.x86.Intrinsic
         /// <summary>
         /// Fire Mouse Interrupt
         /// </summary>
-        [Assembly (0x0)]
+        [Assembly(true)]
         public static void Mouse ()
         {
             Core.AssemblerCode.Add (new Literal ("int 0x2C"));

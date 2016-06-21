@@ -126,7 +126,7 @@ namespace Kernel_alpha.x86
             Native.SetInterrupt();
         }
         
-        [Assembly(0x0)]
+        [Assembly(true)]
         private static void UpdateIDT()
         {
             Core.AssemblerCode.Add(new Cli());

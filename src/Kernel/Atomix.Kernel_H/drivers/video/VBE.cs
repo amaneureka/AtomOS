@@ -62,7 +62,7 @@ namespace Atomix.Kernel_H.drivers.video
             return (uint)(buffer[2] << 16 | buffer[1] << 8 | buffer[0]);
         }
 
-        [Assembly(0x0)]
+        [Assembly(true)]
         public static void Clear(uint color)
         {
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDI, SourceRef = "static_Field__System_Byte__Atomix_Kernel_H_drivers_video_VBE_SecondaryBuffer", SourceIndirect = true });
@@ -73,7 +73,7 @@ namespace Atomix.Kernel_H.drivers.video
             Core.AssemblerCode.Add(new Sti());
         }
 
-        [Assembly(0x0)]
+        [Assembly(true)]
         public static void Update()
         {
 #warning [VBE] : fixed size memory copy

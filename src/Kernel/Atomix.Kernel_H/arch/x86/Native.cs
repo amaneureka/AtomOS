@@ -20,7 +20,7 @@ namespace Atomix.Kernel_H.arch.x86
         /// <summary>
         /// Clear Interrupts
         /// </summary>
-        [Assembly(0x0)]
+        [Assembly(true)]
         public static void Cli()
         {
             Core.AssemblerCode.Add(new Cli());
@@ -29,7 +29,7 @@ namespace Atomix.Kernel_H.arch.x86
         /// <summary>
         /// Enable Interrupts
         /// </summary>
-        [Assembly(0x0)]
+        [Assembly(true)]
         public static void Sti()
         {
             Core.AssemblerCode.Add(new Sti());
@@ -38,7 +38,7 @@ namespace Atomix.Kernel_H.arch.x86
         /// <summary>
         /// Halt The Processor
         /// </summary>
-        [Assembly(0x0)]
+        [Assembly(true)]
         public static void Hlt()
         {
             Core.AssemblerCode.Add(new Literal("hlt"));
@@ -49,7 +49,7 @@ namespace Atomix.Kernel_H.arch.x86
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        [Assembly(0x0)]
+        [Assembly(true)]
         public static unsafe uint GetAddress(object obj)
         {
             return 0; // Only me and my compiler knows how it is working :P
@@ -59,7 +59,7 @@ namespace Atomix.Kernel_H.arch.x86
         /// End of kernel offset
         /// </summary>
         /// <returns></returns>
-        [Assembly(0x0)]
+        [Assembly(true)]
         public static uint EndOfKernel()
         {
             // Just put Compiler_End location into return value
@@ -68,7 +68,7 @@ namespace Atomix.Kernel_H.arch.x86
             return 0; // just for c# error
         }
 
-        [Assembly(0x0)]
+        [Assembly(true)]
         public static uint CR2Register()
         {
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.CR2 });

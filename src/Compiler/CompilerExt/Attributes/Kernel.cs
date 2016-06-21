@@ -1,29 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is
+*                   strictly prohibited Proprietary and confidential.
+* PURPOSE:          Kernel Attribute
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
+
+using System;
 
 namespace Atomix.CompilerExt.Attributes
 {
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class KernelAttribute : Attribute
     {
-        protected CPUArch mCPUArch;
-        protected string mOrganize;
-        #region Constructor
-        public CPUArch CPUArch
-        {
-            get
-            {
-                return mCPUArch;
-            }
-        }
-        #endregion
+        public readonly CPUArch CPUArch;
+        public readonly string Organize;
 
-        public KernelAttribute(CPUArch CpuArch, string Organize)
+        public KernelAttribute(CPUArch aCpuArch, string aOrganize)
         {
-            this.mCPUArch = CpuArch;
-            this.mOrganize = Organize;
+            CPUArch = aCpuArch;
+            Organize = aOrganize;
         }        
     }
 }

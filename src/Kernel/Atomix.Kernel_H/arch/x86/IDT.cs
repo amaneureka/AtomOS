@@ -71,7 +71,7 @@ namespace Atomix.Kernel_H.arch.x86
             Debug.Write("Interrupt Handler Registered: %d\n", Interrupt);
         }
 
-        [Assembly(0x4)]
+        [Assembly(true)]
         private static void LoadIDT(uint idt_table, uint idt_entries)
         {
             Core.AssemblerCode.Add(new Cli());

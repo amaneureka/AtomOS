@@ -57,7 +57,7 @@ namespace Atomix.Kernel_H.arch.x86
             Debug.Write("       Gate-%d Present\n", index);
         }
         
-        [Assembly(0x4)]
+        [Assembly(true)]
         private static void SetupGDT(uint gdtpointer)
         {
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 0x8 });

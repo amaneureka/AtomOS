@@ -12,7 +12,7 @@ namespace Atomix.mscorlib
 {
     public static class ArrayImpl
     {
-        [Assembly(0x18), Plug("System_Void_System_Array_Copy_System_Array__System_Int32__System_Array__System_Int32__System_Int32__System_Boolean_")]
+        [Assembly(true), Plug("System_Void_System_Array_Copy_System_Array__System_Int32__System_Array__System_Int32__System_Int32__System_Boolean_")]
         public static void Copy(Array sourceArray, int sourceIndex, Array destinationArray, int destinationIndex, int length, bool reliable)
         {
             Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EBP, DestinationIndirect = true, DestinationDisplacement = 0x1C });

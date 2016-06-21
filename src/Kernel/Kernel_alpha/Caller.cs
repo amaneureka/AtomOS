@@ -369,7 +369,7 @@ namespace Kernel_alpha
             Thread.Die();
         }
 
-        [Assembly(0x4)]
+        [Assembly(true)]
         private static void CallExecutableFile(uint pos)
         {
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });

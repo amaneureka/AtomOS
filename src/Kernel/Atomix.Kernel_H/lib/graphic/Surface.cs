@@ -143,7 +143,7 @@ namespace Atomix.Kernel_H.lib.graphic
          * "data_width"         [EBP + 12]
          * "data_height"        [EBP + 08]
          */
-        [Assembly(0x2C)]
+        [Assembly(true)]
         public static void CopyToBuffer(byte* des, byte* src, int des_x, int des_y, int des_width, int des_height, int src_x, int src_y, int src_width, int data_width, int data_height)
         {
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "static_Field__System_Int32_Atomix_Kernel_H_drivers_video_VBE_BytesPerPixel", SourceIndirect = true });
@@ -218,7 +218,7 @@ namespace Atomix.Kernel_H.lib.graphic
             Core.AssemblerCode.Add(new Add { DestinationReg = Registers.ESP, SourceRef = "0x8" });//2 items on stack
         }
         
-        [Assembly(0x8)]
+        [Assembly(true)]
         public static void Clear(byte* aAddress, uint aColor, int aSize)
         {
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });

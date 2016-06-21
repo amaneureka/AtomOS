@@ -19,7 +19,7 @@ namespace Atomix.Kernel_H.plugs
 {
     public static class ArrayImpl
     {
-        [Assembly(0x8), Plug("System_Void_System_Runtime_CompilerServices_RuntimeHelpers_InitializeArray_System_Array__System_RuntimeFieldHandle_")]
+        [Assembly(true), Plug("System_Void_System_Runtime_CompilerServices_RuntimeHelpers_InitializeArray_System_Array__System_RuntimeFieldHandle_")]
         public static void InitializeArray(Array aArray, RuntimeFieldHandle aHandler)
         {
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDI, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 0xC });
@@ -57,7 +57,7 @@ namespace Atomix.Kernel_H.plugs
             Copy(aSourceArray, aSourceIndex, aDestinationArray, aDestinationIndex, aLength, false);
         }
 
-        [Assembly(0x18), Plug("System_Void_System_Array_Copy_System_Array__System_Int32__System_Array__System_Int32__System_Int32__System_Boolean_")]
+        [Assembly(true), Plug("System_Void_System_Array_Copy_System_Array__System_Int32__System_Array__System_Int32__System_Int32__System_Boolean_")]
         public static void Copy(Array aSourceArray, int aSourceIndex, Array aDestinationArray, int aDestinationIndex, int aLength, bool aReliable)
         {
             // Destination

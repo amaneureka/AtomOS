@@ -16,7 +16,7 @@ namespace Atomix.Kernel_H.plugs
         /// <summary>
         /// Dummy plug don't let the compiler to compile method with given signature
         /// </summary>
-        [Dummy, Plug("System_Void__System_Char__cctor__")]
+        [Plug("System_Void__System_Char__cctor__")]
         public static void Char_ctor()
         {
 

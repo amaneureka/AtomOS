@@ -254,7 +254,7 @@ namespace Atomix.Kernel_H.core
         /// Clear Object class and Array type objects
         /// </summary>
         /// <param name="obj"></param>
-        [Assembly(0x4)]
+        [Assembly(true)]
         public static unsafe void Free(object obj)
         {
             var xEndlbl = Label.PrimaryLabel + ".End";

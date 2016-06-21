@@ -15,7 +15,7 @@ namespace Kernel_alpha.x86.Intrinsic
         /// <summary>
         /// Clear Interrupt Flag
         /// </summary>
-        [Assembly(0x0)]        
+        [Assembly(true)]        
         public static void ClearInterrupt()
         {
             Core.AssemblerCode.Add(new Cli());
@@ -24,7 +24,7 @@ namespace Kernel_alpha.x86.Intrinsic
         /// <summary>
         /// Setup Interrupt Flag
         /// </summary>
-        [Assembly(0x0)]
+        [Assembly(true)]
         public static void SetInterrupt()
         {
             Core.AssemblerCode.Add(new Sti());
@@ -33,7 +33,7 @@ namespace Kernel_alpha.x86.Intrinsic
         /// <summary>
         /// Halt CPU
         /// </summary>
-        [Assembly(0x0)]
+        [Assembly(true)]
         public static void Halt()
         {
             Core.AssemblerCode.Add(new Literal("hlt"));
@@ -43,7 +43,7 @@ namespace Kernel_alpha.x86.Intrinsic
         /// </summary>
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
-        [Assembly(0x0)]
+        [Assembly(true)]
         public static uint Read32(uint aAddress)
         {
             //Load address into EAX
@@ -61,7 +61,7 @@ namespace Kernel_alpha.x86.Intrinsic
         /// </summary>
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
-        [Assembly(0x0)]
+        [Assembly(true)]
         public static ushort Read16(uint aAddress)
         {
             //Load address into EAX
@@ -81,7 +81,7 @@ namespace Kernel_alpha.x86.Intrinsic
         /// </summary>
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
-        [Assembly(0x0)]
+        [Assembly(true)]
         public static byte Read8(uint aAddress)
         {
             //Load address into EAX
@@ -101,7 +101,7 @@ namespace Kernel_alpha.x86.Intrinsic
         /// </summary>
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
-        [Assembly(0x8)]
+        [Assembly(true)]
         public static void Write32(uint aAddress, uint Value)
         {
             //Load address into EAX
@@ -117,7 +117,7 @@ namespace Kernel_alpha.x86.Intrinsic
         /// </summary>
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
-        [Assembly(0x8)]
+        [Assembly(true)]
         public static void Write16(uint aAddress, ushort Value)
         {
             //Load address into EAX
@@ -133,7 +133,7 @@ namespace Kernel_alpha.x86.Intrinsic
         /// </summary>
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
-        [Assembly(0x8)]
+        [Assembly(true)]
         public static void Write8(uint aAddress, byte Value)
         {
             //Load address into EAX
@@ -149,7 +149,7 @@ namespace Kernel_alpha.x86.Intrinsic
         /// </summary>
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
-        [Assembly(0x0)]
+        [Assembly(true)]
         public static byte In8(UInt16 aAddress)
         {
             //Load address into EDX
@@ -169,7 +169,7 @@ namespace Kernel_alpha.x86.Intrinsic
         /// </summary>
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
-        [Assembly(0x8)]
+        [Assembly(true)]
         public static void Out8(UInt16 aAddress, byte aValue)
         {
             //Load address into EDX
@@ -185,7 +185,7 @@ namespace Kernel_alpha.x86.Intrinsic
         /// </summary>
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
-        [Assembly(0x0)]
+        [Assembly(true)]
         public static ushort In16(UInt16 aAddress)
         {
             //Load address into EDX
@@ -205,7 +205,7 @@ namespace Kernel_alpha.x86.Intrinsic
         /// </summary>
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
-        [Assembly(0x8)]
+        [Assembly(true)]
         public static void Out16(UInt16 aAddress, ushort aValue)
         {
             //Load address into EDX
@@ -221,7 +221,7 @@ namespace Kernel_alpha.x86.Intrinsic
         /// </summary>
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
-        [Assembly(0x0)]
+        [Assembly(true)]
         public static uint In32(UInt16 aAddress)
         {
             //Load address into EDX
@@ -241,7 +241,7 @@ namespace Kernel_alpha.x86.Intrinsic
         /// </summary>
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
-        [Assembly(0x8)]
+        [Assembly(true)]
         public static void Out32(UInt16 aAddress, uint aValue)
         {
             //Load address into EDX
@@ -255,7 +255,7 @@ namespace Kernel_alpha.x86.Intrinsic
         /// Load GDT Address
         /// </summary>
         /// <param name="aAddress">Address of GDT Entries</param>
-        [Assembly(0x4)]
+        [Assembly(true)]
         public static void Lgdt(uint aAddress)
         {
             //Load Address into EAX
@@ -268,7 +268,7 @@ namespace Kernel_alpha.x86.Intrinsic
         /// Load IDT Address
         /// </summary>
         /// <param name="aAddress">Address of GDT Entries</param>
-        [Assembly(0x4)]
+        [Assembly(true)]
         public static void Lidt(uint aAddress)
         {
             //Load Address into EAX
@@ -281,7 +281,7 @@ namespace Kernel_alpha.x86.Intrinsic
         /// End of kernel offset
         /// </summary>
         /// <returns></returns>
-        [Assembly(0x0)]
+        [Assembly(true)]
         public static uint EndOfKernel()
         {
             //Just put Compiler_End location into return value

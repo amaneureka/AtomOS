@@ -13,7 +13,7 @@ namespace Atomix.mscorlib.Runtime.CompilerServices
 {
     public static class RuntimeHelpers
     {
-        [Assembly(0x8), Plug("System_Void_System_Runtime_CompilerServices_RuntimeHelpers_InitializeArray_System_Array__System_RuntimeFieldHandle_")]
+        [Assembly(true), Plug("System_Void_System_Runtime_CompilerServices_RuntimeHelpers_InitializeArray_System_Array__System_RuntimeFieldHandle_")]
         public static void InitializeArray(Array array, RuntimeFieldHandle fldHandle)
         {
             var xLabel = "System_Void_System_Runtime_CompilerServices_RuntimeHelpers_InitializeArray_System_Array__System_RuntimeFieldHandle_";

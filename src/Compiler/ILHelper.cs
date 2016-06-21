@@ -254,7 +254,7 @@ namespace Atomix
         /// <summary>
         /// The array of assembly Illegal chars, if we won't remove it than we have to face a big legal action ^^
         /// </summary>
-        private static char[] IllegalChars = new char[] 
+        private static HashSet<char> IllegalChars = new HashSet<char> 
         { ':', '.', '[', ']', 
           '(', ')', '<', '>', 
           '|', '/', '=', '+', 
@@ -268,8 +268,8 @@ namespace Atomix
          * By saving the labels in memory and if this label is called again than we just point it to memory
          */
                 
-        private static Dictionary<MethodBase, string> SavedLabels = new Dictionary<MethodBase, string>();
-        private static Dictionary<FieldInfo, string> SavedLabels2 = new Dictionary<FieldInfo, string>();
+        private static Dictionary<MethodBase, string> CachedMethodLabel = new Dictionary<MethodBase, string>();
+        private static Dictionary<FieldInfo, string> CachedFieldLabel = new Dictionary<FieldInfo, string>();
 
         /// <summary>
         /// Save Label for method Base
@@ -278,8 +278,8 @@ namespace Atomix
         /// <param name="lbl"></param>
         private static void SaveLabel(MethodBase xMethod, string lbl)
         {
-            if (!SavedLabels.ContainsKey(xMethod))
-                SavedLabels.Add(xMethod, lbl);
+            if (!CachedMethodLabel.ContainsKey(xMethod))
+                CachedMethodLabel.Add(xMethod, lbl);
         }
 
         /// <summary>
@@ -289,8 +289,8 @@ namespace Atomix
         /// <param name="lbl"></param>
         private static void SaveLabel(FieldInfo xField, string lbl)
         {
-            if (!SavedLabels2.ContainsKey(xField))
-                SavedLabels2.Add(xField, lbl);
+            if (!CachedFieldLabel.ContainsKey(xField))
+                CachedFieldLabel.Add(xField, lbl);
         }
 
         /// <summary>
@@ -301,108 +301,40 @@ namespace Atomix
         /// <returns></returns>
         public static string FullName(this MethodBase aMethod, bool RemoveIllegalChars = true)
         {
-            /*
-             * I've done this saving labels to make compiler bit faster...
-             * So keep in mind, compiler building is fast, but it took a lot ram
-             * because it is saving all things in memory :)
-             */
+            if (RemoveIllegalChars == false)
+            {
+                /* In Later version, I'm planning to make the method Label by random label generator, it took less time
+                 * But the issue is we are not able to debug assembly code by ourself...
+                 * So it can only be done when we have stable assembly debugger
+                 * Till than we have to be happy with this method
+                 */
+                StringBuilder SB = new StringBuilder();
+                SB.Append((aMethod is MethodInfo) ? ((MethodInfo)aMethod).ReturnType.FullName : "System.Void.");
+                SB.Append(".");
+                SB.Append(aMethod.ReflectedType.FullName);
+                SB.Append(".");
+                SB.Append(aMethod.Name);
+                SB.Append("<");
+                SB.Append(string.Join(", ", (aMethod.GetParameters()).Select(b => string.Format("{0}", b.ParameterType))));
+                SB.Append(">");
+                return SB.ToString();
+            }
 
-            #warning READ BELOW MESSAGE
-            //Well i can do check for labels dictionary here, but i won't remember why i haven't done this
-            //Need to check it again, so leaving its comment for now =P bit in hurry
-
-            //Check if this method has any plug attribute
+            if (CachedMethodLabel.ContainsKey(aMethod))
+                return CachedMethodLabel[aMethod];
+            
+            // Check if this method has any plug attribute
             string xLabel = null;
             Compiler.Plugs.TryGetValue(aMethod, out xLabel);
-            
-            //If yes than we ignor its label
-            if (xLabel != null)
-            {
-                uint isDummy = 0;
-                uint.TryParse(xLabel, out isDummy);
-                
-                if (isDummy != 0)
-                {
-                    MethodBase xMethod = null;
-                    Compiler.Dummys.TryGetValue(isDummy, out xMethod);
 
-                    if (xMethod != null)
-                        return FullName(xMethod, RemoveIllegalChars);
-                    else
-                        throw new Exception("Bad Label Found, Check manually :)");
-                }
-                else
-                {
-                    if (RemoveIllegalChars && SavedLabels.ContainsKey(aMethod))
-                        return SavedLabels[aMethod];
-                    
-                    if (RemoveIllegalChars)
-                    {
-                        char[] xResult = new char[xLabel.Length];
+            if (xLabel == null)
+                xLabel = aMethod.FullName(false);
 
-                        for (int i = 0; i < xLabel.Length; i++)
-                        {
-                            if (!IllegalChars.Contains(xLabel[i]))
-                                xResult[i] = xLabel[i];
-                            else
-                                xResult[i] = '_';
-                        }
+            // remove illegal characters
+            xLabel = xLabel.RemoveIllegalCharacters();
+            SaveLabel(aMethod, xLabel);
 
-                        var FinalLabel = new String(xResult);
-                        SaveLabel(aMethod, FinalLabel);
-
-                        return FinalLabel;
-                    }
-                    else
-                    {
-                        SaveLabel(aMethod, xLabel);
-                        return xLabel;
-                    }
-                }
-            }            
-            else
-            {
-                if (RemoveIllegalChars && SavedLabels.ContainsKey(aMethod))
-                    return SavedLabels[aMethod];
-
-                if (RemoveIllegalChars)
-                {
-                    string Name = aMethod.FullName(false);
-                    char[] xResult = new char[Name.Length];
-
-                    for (int i = 0; i < Name.Length; i++)
-                    {
-                        if (!IllegalChars.Contains(Name[i]))
-                            xResult[i] = Name[i];
-                        else
-                            xResult[i] = '_';
-                    }
-
-                    var FinalLabel = new String(xResult);
-                    SaveLabel(aMethod, FinalLabel);
-
-                    return FinalLabel;
-                }
-                else
-                {
-                    /*In Later version, I'm planning to make the method Label by random label generator, it took less time
-                     * But the issue is we are not able to debug assembly code by ourself...
-                     * So it can only be done when we have stable assembly debugger
-                     * Till than we have to be happy with this method
-                     */
-                    StringBuilder SB = new StringBuilder();
-                    SB.Append((aMethod is MethodInfo) ? ((MethodInfo)aMethod).ReturnType.FullName : "System.Void.");
-                    SB.Append(".");
-                    SB.Append(aMethod.ReflectedType.FullName);
-                    SB.Append(".");
-                    SB.Append(aMethod.Name);
-                    SB.Append("<");
-                    SB.Append(string.Join(", ", (aMethod.GetParameters()).Select(b => string.Format("{0}", b.ParameterType))));
-                    SB.Append(">");
-                    return SB.ToString();
-                }                 
-            }
-            throw new Exception("Label unhandeled :("); //I Know it is not possible :)
+            return xLabel;
         }
 
         /// <summary>
@@ -415,27 +347,31 @@ namespace Atomix
         {
             if (RemoveIllegalChars)
             {
-                if (SavedLabels2.ContainsKey(aField))
-                    return SavedLabels2[aField];
-
-                string Name = aField.FullName(false);
-                char[] xResult = new char[Name.Length];
-
-                for (int i = 0; i < Name.Length; i++)
-                {
-                    if (!IllegalChars.Contains(Name[i]))
-                        xResult[i] = Name[i];
-                    else
-                        xResult[i] = '_';
-                }
-
-                var xLabel = new String(xResult);
+                if (CachedFieldLabel.ContainsKey(aField))
+                    return CachedFieldLabel[aField];
+                
+                var xLabel = aField.FullName(false).RemoveIllegalCharacters();
                 SaveLabel(aField, xLabel);
 
                 return xLabel;                
             }
             else
                 return string.Format("static_Field__{2}.{1}.{0}", aField.Name, aField.DeclaringType, aField.FieldType.FullName);
+        }
+
+        public static string RemoveIllegalCharacters(this string aStr)
+        {
+            char[] xResult = new char[aStr.Length];
+
+            for (int i = 0; i < aStr.Length; i++)
+            {
+                if (!IllegalChars.Contains(aStr[i]))
+                    xResult[i] = aStr[i];
+                else
+                    xResult[i] = '_';
+            }
+
+            return new string(xResult);
         }
 
         /// <summary>
@@ -703,6 +639,7 @@ namespace Atomix
             
             return xResult2;
         }
+
         public static int GetTypeID(Type aType)
         {
             var str = aType.FullName;
@@ -728,6 +665,31 @@ namespace Atomix
             }
 
             return TypeIDLabel[xResult2];
+        }
+
+        public static int GetArgumentsSize(MethodBase aMethod)
+        {
+            int ArgSize = (from item in aMethod.GetParameters()
+                           select item.ParameterType.SizeOf().Align()).Sum();
+
+            if (!aMethod.IsStatic)
+            {
+                if (aMethod.DeclaringType.IsValueType)
+                    ArgSize += 4;
+                else
+                    ArgSize += aMethod.DeclaringType.SizeOf().Align();
+            }
+
+            return ArgSize;
+        }
+
+        public static int GetReturnTypeSize(MethodBase aMethod)
+        {
+            if (aMethod is MethodInfo)
+                return ((MethodInfo)aMethod).ReturnType.SizeOf().Align();
+            
+            // constructors -- no return type
+            return 0;
         }
     }
 }
