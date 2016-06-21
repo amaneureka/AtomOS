@@ -26,7 +26,7 @@ namespace Atomix.IL
         public override void Execute(ILOpCode instr, MethodBase aMethod)
         {
             var aParam = ((OpVar)instr).Value;
-            var xDisplacement = Ldarg.GetArgumentDisplacement(aMethod, aParam);
+            var xDisplacement = ILHelper.GetArgumentDisplacement(aMethod, aParam);
             
             switch (ILCompiler.CPUArchitecture)
             {

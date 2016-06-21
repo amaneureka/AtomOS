@@ -32,7 +32,7 @@ namespace Atomix.IL
 
         public void Execute2(ushort aParam, MethodBase aMethod)
         {
-            var xDisplacement = GetArgumentDisplacement(aMethod, aParam);
+            var xDisplacement = ILHelper.GetArgumentDisplacement(aMethod, aParam);
 
             Type xArgType;
             if (aMethod.IsStatic)
@@ -109,73 +109,6 @@ namespace Atomix.IL
             }
 
             Core.vStack.Push(xArgSize, xArgType);
-        }
-
-        public static int GetArgumentDisplacement(MethodBase aMethod, ushort aParam)
-        {
-            var xMethodBase = aMethod;
-            
-            var xMethodInfo = xMethodBase as System.Reflection.MethodInfo;
-            int xReturnSize = 0;
-
-            if (xMethodInfo != null)
-                xReturnSize = xMethodInfo.ReturnType.SizeOf().Align();
-
-            int xOffset = 8;
-            var xCorrectedOpValValue = aParam;
-
-            if (!aMethod.IsStatic && aParam > 0)
-                xCorrectedOpValValue -= 1;
-
-            var xParams = xMethodBase.GetParameters();
-            if (aParam == 0 && !xMethodBase.IsStatic)
-            {
-                int xCurArgSize;
-                if (xMethodBase.DeclaringType.IsValueType)
-                    xCurArgSize = 4;
-                else
-                {
-                    xCurArgSize = xMethodBase.DeclaringType.SizeOf().Align();
-                }
-
-                for (int i = xParams.Length - 1; i >= aParam; i--)
-                {
-                    var xSize = xParams[i].ParameterType.SizeOf().Align();
-                    xOffset += xSize;
-                }
-
-                if (xReturnSize > xCurArgSize)
-                {
-                    int xExtraSize = xReturnSize - xCurArgSize;
-                    xOffset += xExtraSize;
-                }
-
-                return (int)(xOffset + xCurArgSize - 4);
-            }
-            else
-            {
-                for (int i = xParams.Length - 1; i > xCorrectedOpValValue; i--)
-                {
-                    var xSize = xParams[i].ParameterType.SizeOf().Align();
-                    xOffset += xSize;
-                }
-
-                var xCurArgSize = xParams[xCorrectedOpValValue].ParameterType.SizeOf().Align();
-                int xArgSize = 0;
-                foreach (var xParam in xParams)
-                {
-                    xArgSize += xParam.ParameterType.SizeOf().Align();
-                }
-                xReturnSize = 0;
-
-                if (xReturnSize > xArgSize)
-                {
-                    int xExtraSize = xReturnSize - xArgSize;
-                    xOffset += xExtraSize;
-                }
-
-                return (int)(xOffset + xCurArgSize - 4);
-            }
         }
     }
 }

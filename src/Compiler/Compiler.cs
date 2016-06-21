@@ -468,18 +468,8 @@ namespace Atomix
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBP, SourceReg = Registers.ESP });
 
             #region Calli
-            int ArgSize = (from item in aMethod.GetParameters()
-                           select (int)item.ParameterType.SizeOf().Align()).Sum();
-
-            if (!aMethod.IsStatic)
-            {
-                if (aMethod.DeclaringType.IsValueType)
-                    ArgSize += 4;
-                else
-                    ArgSize += aMethod.DeclaringType.SizeOf().Align();
-            }
-
-            int xReturnSize = (aMethod is MethodInfo) ? ((MethodInfo)aMethod).ReturnType.SizeOf().Align() : 0;
+            int ArgSize = ILHelper.GetArgumentsSize(aMethod);
+            int xReturnSize = ILHelper.GetReturnTypeSize(aMethod);
 
             //Push all the arguments
             for (int i = (ArgSize / 4) - 1; i >= 0; i--)
@@ -967,7 +957,7 @@ namespace Atomix
                 for (ushort i = 1; i <= xParms.Length; i++)
                 {
                     // New Code
-                    int xDisplacement = Ldarg.GetArgumentDisplacement(xMethod, i);
+                    int xDisplacement = ILHelper.GetArgumentDisplacement(xMethod, i);
 
                     if (xMethod.IsStatic)
                         xArgSize = xMethod.GetParameters()[i].ParameterType.SizeOf().Align();

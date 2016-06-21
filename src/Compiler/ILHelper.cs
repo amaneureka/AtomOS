@@ -700,5 +700,36 @@ namespace Atomix
         {
             return typeof(Delegate).IsAssignableFrom(type.BaseType);
         }
+
+        public static int GetArgumentDisplacement(MethodBase aMethod, int aParamIndex)
+        {
+            var xMethodInfo = aMethod as MethodInfo;
+            int xReturnSize = 0;
+
+            if (xMethodInfo != null)
+                xReturnSize = xMethodInfo.ReturnType.SizeOf().Align();
+
+            int xOffset = 8; // EIP and EFlag
+            var xCorrectedOpValValue = aParamIndex;
+
+            if (!aMethod.IsStatic)
+                aParamIndex--;
+
+            var xParams = aMethod.GetParameters();
+            for (int i = xParams.Length - 1; i > aParamIndex; i--)
+                xOffset += xParams[i].ParameterType.SizeOf().Align();
+
+            if (aParamIndex == -1) // non-static method
+            {
+                if (aMethod.DeclaringType.IsValueType)
+                    xOffset += 4;
+                else
+                    xOffset += aMethod.DeclaringType.SizeOf().Align();
+            }
+            else
+                xOffset += xParams[aParamIndex].ParameterType.SizeOf().Align();
+
+            return (xOffset - 0x4);
+        }
     }
 }
