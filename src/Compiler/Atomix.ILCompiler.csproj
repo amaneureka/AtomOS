@@ -269,7 +269,7 @@
       <Project>{8974125b-52ca-48bd-92f5-c8b28f1c1dee}</Project>
       <Name>Atomix.CompilerExt</Name>
     </ProjectReference>
-    <ProjectReference Include="ILCompiler.Assembler\Atomix.Assembler.csproj">
+    <ProjectReference Include="Atomix.Assembler\Atomix.Assembler.csproj">
       <Project>{c39c02ef-559e-47a6-98d9-e5b79d683948}</Project>
       <Name>Atomix.Assembler</Name>
     </ProjectReference>

@@ -21,7 +21,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atomix.CompilerExt", "Compi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atomix.ILOptimizer", "Compiler\ILOptimizer\Atomix.ILOptimizer.csproj", "{ECA9C753-5F48-427C-B432-E7D61324AB41}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atomix.Assembler", "Compiler\ILCompiler.Assembler\Atomix.Assembler.csproj", "{C39C02EF-559E-47A6-98D9-E5B79D683948}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atomix.Assembler", "Compiler\Atomix.Assembler\Atomix.Assembler.csproj", "{C39C02EF-559E-47A6-98D9-E5B79D683948}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atomix.mscorlib", "Kernel\Atomix.mscorlib\Atomix.mscorlib.csproj", "{31896A26-F45D-46C2-AF40-D6D409DECBEA}"
 EndProject

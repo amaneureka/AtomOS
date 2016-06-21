@@ -61,7 +61,7 @@ namespace Atomix.IL
                                 //5) Push quotient in EAX to stack
                                 Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EBX });//value2 --> Divisor
                                 Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });//value1 --> Dividend
-                                Core.AssemblerCode.Add(new Conversion { Code = ConversionCode.SignedDWord_2_SignedQWord});
+                                Core.AssemblerCode.Add(new Conversion { Type = ConversionCode.SignedDWord_2_SignedQWord});
                                 Core.AssemblerCode.Add(new IDiv { DestinationReg = Registers.EBX });
                                 Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
                             }
@@ -134,7 +134,7 @@ namespace Atomix.IL
                                 Core.AssemblerCode.Add(new IDiv { DestinationReg = Registers.ESI });
 
                                 // sign extend
-                                Core.AssemblerCode.Add(new Conversion { Code = ConversionCode.SignedDWord_2_SignedQWord });
+                                Core.AssemblerCode.Add(new Conversion { Type = ConversionCode.SignedDWord_2_SignedQWord });
 
                                 // save result to stack
                                 Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EDX });
@@ -149,7 +149,7 @@ namespace Atomix.IL
                                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.EAX });
                                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EDX });
                                 // extend that sign is in edx
-                                Core.AssemblerCode.Add(new Conversion { Code = ConversionCode.SignedDWord_2_SignedQWord });
+                                Core.AssemblerCode.Add(new Conversion { Type = ConversionCode.SignedDWord_2_SignedQWord });
                                 // divide high part
                                 Core.AssemblerCode.Add(new IDiv { DestinationReg = Registers.ESI });
                                 // save high result

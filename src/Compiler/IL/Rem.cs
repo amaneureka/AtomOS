@@ -122,7 +122,7 @@ namespace Atomix.IL
 
                             Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.ECX });
                             Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
-                            Core.AssemblerCode.Add(new Conversion { Code = ConversionCode.SignedDWord_2_SignedQWord });
+                            Core.AssemblerCode.Add(new Conversion { Type = ConversionCode.SignedDWord_2_SignedQWord });
                             Core.AssemblerCode.Add(new Div { DestinationReg = Registers.ECX });
                             Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EDX });
                         }

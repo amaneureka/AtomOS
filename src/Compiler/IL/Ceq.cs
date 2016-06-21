@@ -46,7 +46,7 @@ namespace Atomix.IL
                                         Core.AssemblerCode.Add(new Movss { DestinationReg = Registers.XMM0, SourceReg = Registers.ESP, SourceIndirect = true });
                                         Core.AssemblerCode.Add(new Assembler.x86.Add { DestinationReg = Registers.ESP, SourceRef = "0x4" });
                                         Core.AssemblerCode.Add(new Movss { DestinationReg = Registers.XMM1, SourceReg = Registers.ESP, SourceIndirect = true });
-                                        Core.AssemblerCode.Add(new Cmpss { DestinationReg = Registers.XMM0, SourceReg = Registers.XMM1, pseudoCode = (byte)ComparePseudoOpcodes.Equal });
+                                        Core.AssemblerCode.Add(new Cmpss { DestinationReg = Registers.XMM0, SourceReg = Registers.XMM1, PseudoCode = ComparePseudoOpcodes.Equal });
                                         Core.AssemblerCode.Add(new MovD { SourceReg = Registers.XMM0, DestinationReg = Registers.EBX });
                                         Core.AssemblerCode.Add(new And { DestinationReg = Registers.EBX, SourceRef = "0x1" });
                                         Core.AssemblerCode.Add(new Mov { SourceReg = Registers.EBX, DestinationReg = Registers.ESP, DestinationIndirect = true });
