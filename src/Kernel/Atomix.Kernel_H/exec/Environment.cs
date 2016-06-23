@@ -10,15 +10,15 @@
 using System;
 
 using Atomix.Kernel_H.core;
-using Atomix.Kernel_H.arch.x86;
 
+using Atomix.CompilerExt;
 using Atomix.CompilerExt.Attributes;
 
 namespace Atomix.Kernel_H.exec
 {
     public static class Environment
     {
-        [Label("environment_import_dll")]
+        [Label(Helper.lblImportDll)]
         private static uint ImportDLL(string aDLLName, string aMethodName)
         {
             string SymbolName = aDLLName + aMethodName;

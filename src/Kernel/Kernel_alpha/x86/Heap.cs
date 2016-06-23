@@ -18,7 +18,7 @@ namespace Kernel_alpha.x86
 
         public static uint PlacementAddress = 0;
         
-        [Label("Heap")]
+        [Label(Helper.lblHeap)]
         public static uint kmalloc(uint aLength)
         {
             return AllocateMem(aLength);

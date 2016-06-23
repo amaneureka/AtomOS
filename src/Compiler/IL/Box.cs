@@ -29,9 +29,7 @@ namespace Atomix.IL
             var xOpType = ((OpType)instr).Value;
             var xSize = xOpType.SizeOf().Align();
             var xTypeID = ILHelper.GetTypeID(xOpType);
-            //The Memory Allocator Label
-            var xHeap = (Core.StaticLabels["Heap"] as MethodBase).FullName();
-
+            
             /*
                 A value type is pushed onto the stack.
                 The value type is popped from the stack; the box operation is performed.
@@ -52,7 +50,7 @@ namespace Atomix.IL
                         //2) Call our memory manager
                         //3) After that we have done boxing :P
                         Core.AssemblerCode.Add(new Push { DestinationRef = "0x" + (0xC + xSize).ToString("X") });
-                        Core.AssemblerCode.Add(new Call (xHeap));
+                        Core.AssemblerCode.Add(new Call (Helper.lblHeap, true));
                         Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
                         Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, SourceRef = "0x" + xTypeID.ToString("X") });
                         Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = 4, SourceRef = "0x3" });

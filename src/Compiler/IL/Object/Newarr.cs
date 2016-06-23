@@ -30,7 +30,6 @@ namespace Atomix.IL
             var xTargetType = xOperand.Value;
             //Size of one entry of array i.e. Size_of_one_entry.
             var xSize = xTargetType.SizeOf();
-            var xHeap = (Core.StaticLabels["Heap"] as MethodBase).FullName();
 
             var xTypeID = ILHelper.GetTypeID(typeof(Array));
 
@@ -60,7 +59,7 @@ namespace Atomix.IL
                         Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
 
                         //Call our Heap
-                        Core.AssemblerCode.Add(new Call(xHeap));
+                        Core.AssemblerCode.Add(new Call(Helper.lblHeap, true));
 
                         Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });//Address
                         Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.ESI });//Number of Elements

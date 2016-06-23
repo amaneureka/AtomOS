@@ -31,7 +31,6 @@ namespace Atomix.IL
             var xTargetMethod = xOperand.Value;
             var xTargetType = xTargetMethod.DeclaringType;
             var xCurrentLabel = ILHelper.GetLabel(aMethod, xOperand.Position);
-            var xHeap = (Core.StaticLabels["Heap"] as MethodBase).FullName();
 
             var xEndException = aMethod.FullName() + ".Error";
             if (instr.Ehc != null && instr.Ehc.HandlerOffset > instr.Position)
@@ -122,7 +121,7 @@ namespace Atomix.IL
                                 else if (xParams.Length == 1 && xParams[0].ParameterType.ToString() == "System.Char*")
                                 {
                                     Core.AssemblerCode.Add(new Push { DestinationReg = Registers.ESP, DestinationIndirect = true });
-                                    Core.AssemblerCode.Add(new Call(((MethodInfo)Core.StaticLabels["getLength_System_Char__"]).FullName()));
+                                    Core.AssemblerCode.Add(new Call("getLength_System_Char__", true));
                                     Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
                                     Core.AssemblerCode.Add(new ShiftLeft { DestinationReg = Registers.EAX, SourceRef = "0x1" });
                                     Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
@@ -152,7 +151,7 @@ namespace Atomix.IL
                             }
 
                             //Call our Heap
-                            Core.AssemblerCode.Add(new Call(xHeap));
+                            Core.AssemblerCode.Add(new Call(Helper.lblHeap, true));
                             Core.AssemblerCode.Add(new Push { DestinationReg = Registers.ESP, DestinationIndirect = true });
                             Core.AssemblerCode.Add(new Push { DestinationReg = Registers.ESP, DestinationIndirect = true });
 

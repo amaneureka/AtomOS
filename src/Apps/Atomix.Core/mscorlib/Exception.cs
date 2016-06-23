@@ -7,6 +7,7 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
+using Atomix.CompilerExt;
 using Atomix.CompilerExt.Attributes;
 
 namespace Atomix.Core.mscorlib
@@ -31,13 +32,13 @@ namespace Atomix.Core.mscorlib
             return *(uint*)(aAddress + 0xC);
         }
 
-        [Label("SetException")]
+        [Label(Helper.lblSetException)]
         public static void SetException(Exception aException)
         {
             return;
         }
 
-        [Label("GetException")]
+        [Label(Helper.lblGetException)]
         public static Exception GetException()
         {
             return null;

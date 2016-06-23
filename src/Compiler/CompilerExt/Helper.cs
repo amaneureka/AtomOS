@@ -23,6 +23,13 @@ namespace Atomix.CompilerExt
         /// Output assembly name
         /// </summary>
         public const string KernelFile = "Kernel.asm";
+
+        /* non-optional compiler required label */
+        public const string lblSetException = "SetException";
+        public const string lblGetException = "GetException";
+        public const string lblImportDll = "environment_import_dll";
+        public const string lblVTable = "VTableImpl";
+        public const string lblHeap = "Heap";
     }
 
     public enum CPUArch : uint

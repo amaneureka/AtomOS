@@ -478,9 +478,9 @@ namespace Atomix
         /// <param name="aResultSize"></param>
         /// <param name="aTotalArgumentSize"></param>
         /// <returns></returns>
-        public static uint GetResultCodeOffset(uint aResultSize, uint aTotalArgumentSize)
+        public static int GetResultCodeOffset(int aResultSize, int aTotalArgumentSize)
         {
-            uint xOffset = 8;
+            int xOffset = 8;
             if ((aTotalArgumentSize > 0) && (aTotalArgumentSize >= aResultSize))
             {
                 xOffset += aTotalArgumentSize;
@@ -709,7 +709,7 @@ namespace Atomix
             if (xMethodInfo != null)
                 xReturnSize = xMethodInfo.ReturnType.SizeOf().Align();
 
-            int xOffset = 8; // EIP and EFlag
+            int xOffset = 8; // EIP and calli header
             var xCorrectedOpValValue = aParamIndex;
 
             if (!aMethod.IsStatic)

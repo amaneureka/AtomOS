@@ -441,7 +441,7 @@ namespace Atomix
         {
             var xMethod = typeof(VTable).GetMethod("GetEntry", BindingFlags.Public | BindingFlags.Static);
 
-            Core.StaticLabels.Add("VTableImpl", xMethod);
+            Core.StaticLabels.Add(Helper.lblVTable, xMethod);
             QueuedMember.Enqueue(xMethod);
         }
 
@@ -449,11 +449,14 @@ namespace Atomix
         {
             ILCompiler.Logger.Write("@Processor", aMethod.FullName(), "Processing External Method");
             
+            if (!aMethod.IsStatic)
+                throw new Exception("Non-static extern fields not supported");
+
             var xMethodLabel = aMethod.FullName();
             var xMethodName = aAttributeData.EntryPoint == null ? aMethod.Name : aAttributeData.EntryPoint;
+            var xCalliConvention = (int)aAttributeData.CallingConvention;
             var xLibName = aAttributeData.Value;
-
-            var end_exception = xMethodLabel + ".Error";
+            var xParms = aMethod.GetParameters();
 
             /*
              * For now assume normal calli method
@@ -464,64 +467,121 @@ namespace Atomix
              */
             Core.AssemblerCode.Add(new Label(xMethodLabel));
 
+            // standard calli header
             Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EBP });
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBP, SourceReg = Registers.ESP });
 
-            #region Calli
-            int ArgSize = ILHelper.GetArgumentsSize(aMethod);
-            int xReturnSize = ILHelper.GetReturnTypeSize(aMethod);
-
-            //Push all the arguments
-            for (int i = (ArgSize / 4) - 1; i >= 0; i--)
-            {
-                Core.AssemblerCode.Add(new Push
-                {
-                    DestinationReg = Registers.EBP,
-                    DestinationDisplacement = (0x8 + i * 4),
-                    DestinationIndirect = true
-                });
-            }
-
-            var xRetSize = (ArgSize - xReturnSize);
-            if (xRetSize < 0)
-            {
-                Core.AssemblerCode.Add(new Sub { DestinationReg = Registers.ESP, SourceRef = "0x" + (-xRetSize).ToString("x") });
-                xRetSize = 0;                
-            }
-            #endregion
-
+            // load and get address of external function
             Core.AssemblerCode.Add(new Push { DestinationRef = AddStringData(xLibName) });
             Core.AssemblerCode.Add(new Push { DestinationRef = AddStringData(xMethodName) });
 
-            Core.AssemblerCode.Add(new Call("environment_import_dll", true));
+            Core.AssemblerCode.Add(new Call(Helper.lblImportDll, true));
             Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
 
-            Core.AssemblerCode.Add(new Test { DestinationReg = Registers.ECX, SourceRef = "0x2" });
-            Core.AssemblerCode.Add(new Jmp { DestinationRef = end_exception, Condition = ConditionalJumpEnum.JNE });
-                        
+            int ArgSize = ILHelper.GetArgumentsSize(aMethod);
+            int xReturnSize = ILHelper.GetReturnTypeSize(aMethod);
+            int xRetSize = (ArgSize - xReturnSize);
+
+            #region _CALLI_HEADER_
+            if (xCalliConvention == (int)aMethod.CallingConvention)
+            {
+                
+                // push the arguments from left to right
+                for (int i = 0; i < xParms.Length; i++)
+                {
+                    int xDisplacement = ILHelper.GetArgumentDisplacement(aMethod, i);
+                    int xArgSize = aMethod.GetParameters()[i].ParameterType.SizeOf().Align();
+
+                    for (int j = 0; j < (xArgSize / 4); j++)
+                    {
+                        Core.AssemblerCode.Add(
+                            new Push
+                            {
+                                DestinationReg = Registers.EBP,
+                                DestinationIndirect = true,
+                                DestinationDisplacement = xDisplacement - (j * 4)
+                            });
+                    }
+                }
+
+                if (xRetSize < 0)
+                {
+                    Core.AssemblerCode.Add(new Sub { DestinationReg = Registers.ESP, SourceRef = "0x" + (-xRetSize).ToString("x") });
+                    xRetSize = 0;
+                }
+            }
+            else if (xCalliConvention == (int)CallingConvention.StdCall)
+            {
+                // push arguments to the stack from right to left
+                for (int i = xParms.Length - 1; i >= 0; i--)
+                {
+                    int xDisplacement = ILHelper.GetArgumentDisplacement(aMethod, i);
+                    int xArgSize = aMethod.GetParameters()[i].ParameterType.SizeOf().Align();
+
+                    for (int j = 0; j < (xArgSize / 4); j++)
+                    {
+                        Core.AssemblerCode.Add(
+                            new Push
+                            {
+                                DestinationReg = Registers.EBP,
+                                DestinationIndirect = true,
+                                DestinationDisplacement = xDisplacement - (j * 4)
+                            });
+                    }
+                }
+            }
+            #endregion
+
             // Call the function
             Core.AssemblerCode.Add(new Call("EAX"));
 
+            #region _CALLI_FOOTER_
             if (xReturnSize > 0)
             {
-                // For return type Method
-                var xOffset = ILHelper.GetResultCodeOffset((uint)xReturnSize, (uint)ArgSize);
-                for (int i = 0; i < xReturnSize / 4; i++)
+                var xOffset = ILHelper.GetResultCodeOffset(xReturnSize, ArgSize);
+                if (xCalliConvention == (int)aMethod.CallingConvention)
                 {
-                    Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
+                    // For return type Method
+                    for (int i = 0; i < xReturnSize / 4; i++)
+                    {
+                        Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
+                        Core.AssemblerCode.Add(new Mov
+                        {
+                            DestinationReg = Registers.EBP,
+                            DestinationIndirect = true,
+                            DestinationDisplacement = (xOffset + (i * 4)),
+                            SourceReg = Registers.EAX
+                        });
+                    }
+                }
+                else if (xCalliConvention == (int)CallingConvention.StdCall)
+                {
+                    if (xReturnSize > 8)
+                        throw new Exception("[Extern]: Unsupported Return Size for StdCall");
+
                     Core.AssemblerCode.Add(new Mov
                     {
                         DestinationReg = Registers.EBP,
                         DestinationIndirect = true,
-                        DestinationDisplacement = (int)(xOffset + ((i + 0) * 4)),
+                        DestinationDisplacement = xOffset,
                         SourceReg = Registers.EAX
                     });
+
+                    if (xReturnSize == 8)
+                    {
+                        Core.AssemblerCode.Add(new Mov
+                        {
+                            DestinationReg = Registers.EBP,
+                            DestinationIndirect = true,
+                            DestinationDisplacement = (xOffset + 4),
+                            SourceReg = Registers.EAX
+                        });
+                    }
                 }
             }
-            
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "0x0" });
+            #endregion
 
-            Core.AssemblerCode.Add(new Label(end_exception));
+            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "0x0" });
             Core.AssemblerCode.Add(new Leave());
             Core.AssemblerCode.Add(new Ret { Address = (byte)xRetSize });
         }
@@ -727,7 +787,7 @@ namespace Atomix
                 if (xNeedsExceptionPush)
                 {
                     Core.AssemblerCode.Add(new Push { DestinationRef = "0x0" });
-                    Core.AssemblerCode.Add(new Call(((MethodInfo)Core.StaticLabels["GetException"]).FullName()));
+                    Core.AssemblerCode.Add(new Call (Helper.lblGetException, true));
                     Core.vStack.Push(4, typeof(Exception));
                 }
 
@@ -795,7 +855,7 @@ namespace Atomix
             if (ReturnSize > 0)
             {
                 // For return type Method
-                var xOffset = ILHelper.GetResultCodeOffset((uint)ReturnSize, (uint)ArgSize);
+                var xOffset = ILHelper.GetResultCodeOffset(ReturnSize, ArgSize);
                 for (int i = 0; i < ReturnSize / 4; i++)
                 {
                     Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
@@ -918,9 +978,9 @@ namespace Atomix
             {
                 // Load Argument
                 ((Ldarg)MSIL[ILCode.Ldarg]).Execute2(0, xMethod);
-                
+                Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EBX });
+
                 ((Ldarg)MSIL[ILCode.Ldarg]).Execute2(2, xMethod); // The pointer
-                Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.ESP, SourceDisplacement = 0x4, SourceIndirect = true });
                 Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EBX, SourceRef = "0xC" });
                 Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, DestinationIndirect = true, SourceReg = Registers.EAX });
@@ -929,9 +989,7 @@ namespace Atomix
                 Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
                 Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EBX, SourceRef = "0x4" });
                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, DestinationIndirect = true, SourceReg = Registers.EAX });
-
-                Core.AssemblerCode.Add(new Add { DestinationReg = Registers.ESP, SourceRef = "0x4" });
-
+                
                 // calli footer
                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "0x0" });
                 Core.AssemblerCode.Add(new Leave());
@@ -993,7 +1051,7 @@ namespace Atomix
                 if (xReturnSize > 0)
                 {
                     // For return type Method
-                    var xOffset = ILHelper.GetResultCodeOffset((uint)xReturnSize, (uint)xSize);
+                    var xOffset = ILHelper.GetResultCodeOffset(xReturnSize, xSize);
                     for (int i = 0; i < xReturnSize / 4; i++)
                     {
                         Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });

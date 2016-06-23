@@ -34,8 +34,8 @@ namespace Atomix.Kernel_H.plugs
         {
             return *(uint*)(aAddress + 0xC);
         }
-
-        [Label("SetException")]
+        
+        [Label(CompilerExt.Helper.lblSetException)]
         public static void SetException(Exception aException)
         {
             var Thread = Scheduler.RunningThread;
@@ -44,7 +44,7 @@ namespace Atomix.Kernel_H.plugs
             Debug.Write("[SetException]: %s\n", aException.Message);
         }
 
-        [Label("GetException")]
+        [Label(CompilerExt.Helper.lblGetException)]
         public static Exception GetException()
         {
             var Thread = Scheduler.RunningThread;

@@ -21,9 +21,10 @@ namespace Atomix.Shell
             return (a + b);
         }
 
+        [Plug("lol")]
         public static int AddNums(int a, int b)
         {
-            return AddNums2(a, b) * 2;
+            return (a + b*2);
         }
 
         public static void main(char[] args)

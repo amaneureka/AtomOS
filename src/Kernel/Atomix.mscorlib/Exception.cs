@@ -29,13 +29,13 @@ namespace Atomix.mscorlib
             return *(uint*)(aAddress + 0xC);
         }
 
-        [Label("SetException")]
+        [Label(Helper.lblSetException)]
         public static void SetException(Exception aException)
         {
             GlobalException = aException;
         }
 
-        [Label("GetException")]
+        [Label(Helper.lblGetException)]
         public static Exception GetException()
         {
             return GlobalException;

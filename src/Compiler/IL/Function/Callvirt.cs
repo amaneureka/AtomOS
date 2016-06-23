@@ -126,7 +126,7 @@ namespace Atomix.IL
                                 Core.AssemblerCode.Add(new Push { DestinationRef = "__VTable_Flush__" });
                                 Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
                                 Core.AssemblerCode.Add(new Push { DestinationRef = "0x" + xOp.MethodUID.ToString("X") });
-                                Core.AssemblerCode.Add(new Call("VTableImpl", true));
+                                Core.AssemblerCode.Add(new Call(Helper.lblVTable, true));
                                 Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
 
                                 if (xTarget.DeclaringType == typeof(object))

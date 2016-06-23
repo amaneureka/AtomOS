@@ -9,6 +9,7 @@
 
 using Atomix.Kernel_H.arch.x86;
 
+using Atomix.CompilerExt;
 using Atomix.CompilerExt.Attributes;
 
 using Atomix.Assembler;
@@ -73,7 +74,7 @@ namespace Atomix.Kernel_H.core
             LockStatus = -1;
         }
 
-        [Label("Heap")]
+        [Label(Helper.lblHeap)]
         public static uint kmalloc(uint len)
         {            
             if (!HeapManagerSetup)

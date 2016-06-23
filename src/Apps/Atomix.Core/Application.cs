@@ -7,13 +7,14 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
+using Atomix.CompilerExt;
 using Atomix.CompilerExt.Attributes;
 
 namespace Atomix.Core
 {
     public static class Application
     {
-        [Label("Heap")]
+        [Label(Helper.lblHeap)]
         public static void Heap() { }
     }
 }
