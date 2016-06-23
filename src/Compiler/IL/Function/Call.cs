@@ -96,12 +96,8 @@ namespace Atomix.IL
                             //If yes than jump to next instruction
                             Core.AssemblerCode.Add(new Test { DestinationReg = Registers.ECX, SourceRef = "0x2" });
                             Core.AssemblerCode.Add(new Jmp { Condition = ConditionalJumpEnum.JE, DestinationRef = xNextAddress });
-
-                            //If they are not equal it mean throwed exception, 
-                            //then jump to next exception & firstly change the stack frame back to original 
-                            //one as we are not going to return anything from this method
-                            for (int i = 0; i < xReturnSize / 4; i++)
-                                Core.AssemblerCode.Add(new Add { DestinationReg = Registers.ESP, SourceRef = "0x4" });
+                            
+                            Core.AssemblerCode.Add(new Add { DestinationReg = Registers.ESP, SourceRef = "0x" + xReturnSize.ToString("x") });
                             Core.AssemblerCode.Add(new Jmp { Condition = ConditionalJumpEnum.JNE, DestinationRef = xEndException });
                         }
                     }

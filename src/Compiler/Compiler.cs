@@ -45,10 +45,6 @@ namespace Atomix
         /// </summary>
         public Dictionary<MethodBase, string> Plugs;
         /// <summary>
-        /// It will contain Methods and DLL name
-        /// </summary>
-        public Dictionary<MethodBase, DllImportAttribute> ImportDLL;
-        /// <summary>
         /// It contains all literal string datamember
         /// </summary>
         private Dictionary<string, string> StringTable;
@@ -72,7 +68,6 @@ namespace Atomix
             QueuedMember = new Queue<_MemberInfo>();            
             BuildDefinations = new List<_MemberInfo>();
             Plugs = new Dictionary<MethodBase, string>();
-            ImportDLL = new Dictionary<MethodBase, DllImportAttribute>();
             StringTable = new Dictionary<string, string>();
             Core.vStack = new VirtualStack();
             Core.DataMember = new List<AsmData>();
@@ -142,6 +137,8 @@ namespace Atomix
                         // Check if we want to build it inline assembly
                         if (Method.GetCustomAttribute(typeof(AssemblyAttribute)) != null)
                             ExecutableMethod(Method);
+                        else if (Method.GetCustomAttribute(typeof(DllImportAttribute)) != null)
+                            ProcessExternalMethod(Method);
                         else
                             ScanMethod(Method);
                     }
@@ -157,12 +154,6 @@ namespace Atomix
                         ProcessField(xField);
                     }
                 }
-            }
-
-            /* Process External Functions */
-            foreach(var xEntry in ImportDLL)
-            {
-                ProcessExternalMethod(xEntry.Key, xEntry.Value);
             }
         }
 
@@ -338,17 +329,7 @@ namespace Atomix
                             // Well these pointers are used so we make sure the method is also build so we Enqueue it
                             QueuedMember.Enqueue(xMethod);
                         }
-                        // Now we are going for method attributes and Enqueue them all =P
-                        if (xMethod.GetCustomAttribute(typeof(DllImportAttribute)) != null)
-                        {
-                            var attrib = (DllImportAttribute)xMethod.GetCustomAttribute(typeof(DllImportAttribute));
-                            ImportDLL.Add(xMethod, attrib);
-                            ILCompiler.Logger.Write(string.Format(
-                                    "<b>Plug Found <u>DllImportAttribute</u></b> :: {0}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=>{1}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=>{2}",
-                                    xMethod.Name,
-                                    xType.FullName,
-                                    attrib.Value));
-                        }
+
                         // TODO: review the below code
                         foreach (var xAttr in xMethod.CustomAttributes)
                         {                            
@@ -445,17 +426,23 @@ namespace Atomix
             QueuedMember.Enqueue(xMethod);
         }
 
-        private void ProcessExternalMethod(MethodBase aMethod, DllImportAttribute aAttributeData)
+        private void ProcessExternalMethod(MethodBase aMethod)
         {
             ILCompiler.Logger.Write("@Processor", aMethod.FullName(), "Processing External Method");
             
             if (!aMethod.IsStatic)
                 throw new Exception("Non-static extern fields not supported");
 
-            var xMethodLabel = aMethod.FullName();
-            var xMethodName = aAttributeData.EntryPoint == null ? aMethod.Name : aAttributeData.EntryPoint;
-            var xCalliConvention = (int)aAttributeData.CallingConvention;
-            var xLibName = aAttributeData.Value;
+            var aAttributeData = (DllImportAttribute)aMethod.GetCustomAttribute(typeof(DllImportAttribute));
+            if (aAttributeData == null)
+                throw new Exception("[DllImport]: Invalid Build");
+
+            string xLibName = aAttributeData.Value;
+            string xMethodLabel = aMethod.FullName();
+            string xMethodName = aAttributeData.EntryPoint == null ? aMethod.Name : aAttributeData.EntryPoint;
+            int xCalliConvention = (int)aAttributeData.CallingConvention;
+            bool IsAtomixCompiled = (xCalliConvention == (int)aMethod.CallingConvention);
+
             var xParms = aMethod.GetParameters();
 
             /*
@@ -476,6 +463,8 @@ namespace Atomix
             Core.AssemblerCode.Add(new Push { DestinationRef = AddStringData(xMethodName) });
 
             Core.AssemblerCode.Add(new Call(Helper.lblImportDll, true));
+            Core.AssemblerCode.Add(new Test { DestinationReg = Registers.ECX, SourceRef = "0x2" });
+
             Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
 
             int ArgSize = ILHelper.GetArgumentsSize(aMethod);
@@ -483,7 +472,7 @@ namespace Atomix
             int xRetSize = (ArgSize - xReturnSize);
 
             #region _CALLI_HEADER_
-            if (xCalliConvention == (int)aMethod.CallingConvention)
+            if (IsAtomixCompiled)
             {
                 
                 // push the arguments from left to right
@@ -534,12 +523,12 @@ namespace Atomix
 
             // Call the function
             Core.AssemblerCode.Add(new Call("EAX"));
-
+            
             #region _CALLI_FOOTER_
             if (xReturnSize > 0)
             {
                 var xOffset = ILHelper.GetResultCodeOffset(xReturnSize, ArgSize);
-                if (xCalliConvention == (int)aMethod.CallingConvention)
+                if (IsAtomixCompiled)
                 {
                     // For return type Method
                     for (int i = 0; i < xReturnSize / 4; i++)
@@ -584,6 +573,8 @@ namespace Atomix
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "0x0" });
             Core.AssemblerCode.Add(new Leave());
             Core.AssemblerCode.Add(new Ret { Address = (byte)xRetSize });
+
+            BuildDefinations.Add(aMethod);
         }
 
         static int CurrentLabel = 0;
