@@ -41,7 +41,7 @@ namespace Atomix.Kernel_H.lib.encoding
 
         public static unsafe string GetString(byte[] aData, int index, int length)
         {
-            var add = (byte*)(Native.GetAddress(aData) + 0x10);
+            var add = (byte*)Native.GetContentAddress(aData);
             return GetString(add, index, length);
         }
     }

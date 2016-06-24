@@ -50,9 +50,20 @@ namespace Atomix.Kernel_H.arch.x86
         /// <param name="obj"></param>
         /// <returns></returns>
         [Assembly(true)]
-        public static unsafe uint GetAddress(object obj)
+        public static uint GetAddress(object aObj)
         {
             return 0; // Only me and my compiler knows how it is working :P
+        }
+
+        /// <summary>
+        /// Get Virtual Address of an array (addend reserved length)
+        /// </summary>
+        /// <param name="aArray"></param>
+        /// <returns></returns>
+        public static uint GetContentAddress(object aObj)
+        {
+            // 0x10 bytes are reserved for compiler specific work
+            return (GetAddress(aObj) + 0x10);
         }
 
         /// <summary>

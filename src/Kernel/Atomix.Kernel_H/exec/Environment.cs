@@ -18,26 +18,27 @@ namespace Atomix.Kernel_H.exec
 {
     public static class Environment
     {
+        const uint MAGIC = 0xEF00FE00;
+
         [Label(Helper.lblImportDll)]
         private static uint ImportDLL(string aDLLName, string aMethodName)
         {
             string SymbolName = aDLLName + aMethodName;
             uint Address = Scheduler.RunningProcess.GetSymbols(SymbolName);
 
-            if (Address != 0)
-                return Address;
-
-            // check if DLL has been loaded or not
-            if (Scheduler.RunningProcess.GetSymbols(aDLLName) == 1)
-                throw new Exception("[ImportDLL]: No such symbol found!");
-
-            ELF.Load(aDLLName);
-            Scheduler.RunningProcess.SetSymbol(aDLLName, 1);
-
-            Address = Scheduler.RunningProcess.GetSymbols(SymbolName);
             if (Address == 0)
-                throw new Exception("[ImportDLL]: No such symbol found!");
+            {
+                // check if DLL has been loaded or not
+                if (Scheduler.RunningProcess.GetSymbols(aDLLName) == MAGIC)
+                    throw new Exception("[ImportDLL]: No such symbol found!");
 
+                ELF.Load(aDLLName);
+                Scheduler.RunningProcess.SetSymbol(aDLLName, MAGIC);
+
+                Address = Scheduler.RunningProcess.GetSymbols(SymbolName);
+                if (Address == 0)
+                    throw new Exception("[ImportDLL]: No such symbol found!");
+            }
             return Address;
         }
     }
