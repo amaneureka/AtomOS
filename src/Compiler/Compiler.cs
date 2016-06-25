@@ -886,12 +886,13 @@ namespace Atomix
         {
             if (aType.BaseType != null)
                 QueuedMember.Enqueue(aType.BaseType);
-                        
+            
             foreach (var xCctor in aType.GetConstructors(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public))
             {
                 if (xCctor.DeclaringType == aType)
                     QueuedMember.Enqueue(xCctor);
             }
+            
             foreach (var xAB in aType.GetMethods())
             {
                 /* For abstract methods conditions are :- 

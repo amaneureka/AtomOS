@@ -7,13 +7,11 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-using System;
-
 namespace Atomix.Kernel_H.lib
 {
-    public class Numerics
+    internal class Numerics
     {
-        public static uint ParseHex(string str)
+        internal static uint ParseHex(string str)
         {
             uint ans = 0;
             int temp, index = 0, len = str.Length;

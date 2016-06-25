@@ -15,7 +15,7 @@ using Core = Atomix.Assembler.AssemblyHelper;
 
 namespace Atomix.Kernel_H.arch.x86
 {
-    public static class Memory
+    internal static class Memory
     {
         /// <summary>
         /// Read 32 bit Memory at given address :)
@@ -23,7 +23,7 @@ namespace Atomix.Kernel_H.arch.x86
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
         [Assembly(true)]
-        public static uint Read32(uint aAddress)
+        internal static uint Read32(uint aAddress)
         {
             // Load address into EAX
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
@@ -41,7 +41,7 @@ namespace Atomix.Kernel_H.arch.x86
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
         [Assembly(true)]
-        public static ushort Read16(uint aAddress)
+        internal static ushort Read16(uint aAddress)
         {
             // Load address into EAX
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
@@ -61,7 +61,7 @@ namespace Atomix.Kernel_H.arch.x86
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
         [Assembly(true)]
-        public static byte Read8(uint aAddress)
+        internal static byte Read8(uint aAddress)
         {
             // Load address into EAX
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
@@ -81,7 +81,7 @@ namespace Atomix.Kernel_H.arch.x86
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
         [Assembly(true)]
-        public static void Write32(uint aAddress, uint Value)
+        internal static void Write32(uint aAddress, uint Value)
         {
             // Load address into EAX
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0xC, SourceIndirect = true });
@@ -97,7 +97,7 @@ namespace Atomix.Kernel_H.arch.x86
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
         [Assembly(true)]
-        public static void Write16(uint aAddress, ushort Value)
+        internal static void Write16(uint aAddress, ushort Value)
         {
             // Load address into EAX
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0xC, SourceIndirect = true });
@@ -113,7 +113,7 @@ namespace Atomix.Kernel_H.arch.x86
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
         [Assembly(true)]
-        public static void Write8(uint aAddress, byte Value)
+        internal static void Write8(uint aAddress, byte Value)
         {
             // Load address into EAX
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0xC, SourceIndirect = true });
@@ -124,7 +124,7 @@ namespace Atomix.Kernel_H.arch.x86
         }
 
         [Assembly(true)]
-        public static void FastCopy(uint aDest, uint aSrc, uint aLen)
+        internal static void FastCopy(uint aDest, uint aSrc, uint aLen)
         {
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 8, SourceIndirect = true });
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ESI, SourceReg = Registers.EBP, SourceDisplacement = 12, SourceIndirect = true });
@@ -139,7 +139,7 @@ namespace Atomix.Kernel_H.arch.x86
         }
 
         [Assembly(true)]
-        public static unsafe void FastClear(uint Address, uint Length)
+        internal static unsafe void FastClear(uint Address, uint Length)
         {
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDI, SourceReg = Registers.EBP, SourceDisplacement = 0xC, SourceIndirect = true });

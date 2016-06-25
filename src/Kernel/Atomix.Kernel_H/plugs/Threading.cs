@@ -14,17 +14,17 @@ using Core = Atomix.Assembler.AssemblyHelper;
 
 namespace Atomix.Kernel_H.plugs
 {
-    public class ThreadingImpl
+    internal class ThreadingImpl
     {
         [Assembly(true), Plug("System_Void_System_Threading_Monitor_Enter_System_Object__System_Boolean__")]
-        public static void AcquireLock(object aObj, ref bool aLockTaken)
+        internal static void AcquireLock(object aObj, ref bool aLockTaken)
         {
             Core.AssemblerCode.Add(new Call("AcquireLock", true));
             // we don't carry exception flag from here, although Thread.Exception contains the flag
         }
 
         [Assembly(true), Plug("System_Void_System_Threading_Monitor_Exit_System_Object_")]
-        public static void ReleaseLock(object aObj)
+        internal static void ReleaseLock(object aObj)
         {
             Core.AssemblerCode.Add(new Call("ReleaseLock", true));
             // we don't carry exception flag from here, although Thread.Exception contains the flag

@@ -9,17 +9,17 @@
 
 namespace Atomix.Kernel_H.io.FileSystem.RFS
 {
-    public class RamFile
+    internal class RamFile
     {
-        public readonly string Name;
-        public readonly uint StartAddress;
-        public readonly uint Length;
+        internal readonly string Name;
+        internal readonly uint StartAddress;
+        internal readonly uint Length;
 
-        public RamFile(string aName, uint aStartAddress, uint aLength)
+        internal RamFile(string aName, uint aStartAddress, uint aLength)
         {
-            this.Name = aName;
-            this.StartAddress = aStartAddress;
-            this.Length = aLength;
+            Name = aName;
+            StartAddress = aStartAddress;
+            Length = aLength;
         }
     }
 }

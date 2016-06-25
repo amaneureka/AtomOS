@@ -12,9 +12,9 @@ using Atomix.Kernel_H.lib;
 
 namespace Atomix.Kernel_H.gui
 {
-    public static class Helper
+    internal static class Helper
     {
-        public static unsafe byte* GetMouseBitamp()
+        internal static unsafe byte* GetMouseBitamp()
         {
             var aBuffer = (byte*)Heap.kmalloc(32 * 32 * 4);
             
@@ -34,7 +34,7 @@ namespace Atomix.Kernel_H.gui
             return aBuffer;
         }
 
-        public static unsafe byte* GetEmptyScreen()
+        internal static unsafe byte* GetEmptyScreen()
         {
             var emptyscreen = (byte*)Heap.kmalloc(0x3C000A);
             int xres = drivers.video.VBE.Xres;
@@ -51,7 +51,7 @@ namespace Atomix.Kernel_H.gui
             return emptyscreen;
         }
 
-        public static void CreateNewWindowMessage(byte[] Buffer, int Width, int Height, string WindowHash)
+        internal static void CreateNewWindowMessage(byte[] Buffer, int Width, int Height, string WindowHash)
         {
             /*
              * SIZE     OFFSET      DESCRIPTION
@@ -68,6 +68,5 @@ namespace Atomix.Kernel_H.gui
             Buffer.SetStringASCII(13, WindowHash);
             Buffer.SetByte((uint)(13 + WindowHash.Length), 0x0);// End string with '\0'
         }
-
     }
 }

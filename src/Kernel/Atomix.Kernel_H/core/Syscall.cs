@@ -14,7 +14,7 @@ using Atomix.Kernel_H.arch.x86;
 
 namespace Atomix.Kernel_H.core
 {
-    public static class Syscall
+    internal static class Syscall
     {
         static IDictionary<uint, InterruptHandler> mCallHandlers;
 
@@ -22,7 +22,7 @@ namespace Atomix.Kernel_H.core
         /// <summary>
         /// https://sourceware.org/newlib/libc.html#Syscalls
         /// </summary>
-        public enum Function : uint
+        internal enum Function : uint
         {
             exit            = 1,
             fork            = 2,
@@ -61,7 +61,7 @@ namespace Atomix.Kernel_H.core
         };
         #endregion
 
-        public static void Setup()
+        internal static void Setup()
         {
             mCallHandlers = new IDictionary<uint, InterruptHandler>(delegate (uint a)
             {
@@ -75,7 +75,7 @@ namespace Atomix.Kernel_H.core
             IDT.RegisterInterrupt(Handler, 0x80);
         }
 
-        public static void Register(Function aFunction, InterruptHandler aContext)
+        internal static void Register(Function aFunction, InterruptHandler aContext)
         {
             mCallHandlers.Add((uint)aFunction, aContext);
         }

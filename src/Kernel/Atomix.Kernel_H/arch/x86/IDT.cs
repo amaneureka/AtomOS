@@ -21,10 +21,10 @@ using System.Runtime.InteropServices;
 
 namespace Atomix.Kernel_H.arch.x86
 {
-    public delegate void InterruptHandler(ref IRQContext state);
+    internal delegate void InterruptHandler(ref IRQContext state);
 
     [StructLayout(LayoutKind.Explicit, Size = 56)]
-    public struct IRQContext
+    internal struct IRQContext
     {
         [FieldOffset(0)]
         public uint MMX_Context;
@@ -56,13 +56,13 @@ namespace Atomix.Kernel_H.arch.x86
         public uint EFlags;
     };
 
-    public static class IDT
+    internal static class IDT
     {
         private static uint idt;
         private static uint idt_entries;
         private static InterruptHandler[] xINT;
 
-        public static void Setup()
+        internal static void Setup()
         {
             idt = Heap.kmalloc(2048 + 6);
             idt_entries = idt + 6;
@@ -85,20 +85,20 @@ namespace Atomix.Kernel_H.arch.x86
         {
             var interrupt = xContext.Interrupt;
             var Handler = xINT[interrupt];
-            
+
             if (Handler != null)
                 Handler(ref xContext);
             else if (interrupt < 0x20)
                 Fault.Handle(ref xContext);
             else
                 Debug.Write("Unhandled Interrupt %d\n", interrupt);
-            
+
             // Send End of Interrupt for IRQs
             if (interrupt >= 0x20)
                 PIC.EndOfInterrupt(interrupt);
         }
 
-        public static void RegisterInterrupt(InterruptHandler xHandler, uint Interrupt)
+        internal static void RegisterInterrupt(InterruptHandler xHandler, uint Interrupt)
         {
             xINT[Interrupt] = xHandler;
             Debug.Write("Interrupt Handler Registered: %d\n", Interrupt);
@@ -151,7 +151,7 @@ namespace Atomix.Kernel_H.arch.x86
                 Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
                 Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
                 Core.AssemblerCode.Add(new Literal("jmp 8:__ISR_Handler_" + xHex + ".SetCS"));
-                
+
                 Core.AssemblerCode.Add(new Label("__ISR_Handler_" + xHex + ".SetCS"));
                 Core.AssemblerCode.Add(new Call("__Interrupt_Handler__", true));
                 Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });

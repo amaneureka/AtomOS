@@ -11,10 +11,10 @@ using Atomix.CompilerExt.Attributes;
 
 namespace Atomix.Kernel_H.plugs
 {
-    public static unsafe class Enum
+    internal static unsafe class Enum
     {
         [Plug("System_Void__System_Enum__cctor__")]
-        public static void Cctor(byte* Address)
+        internal static void Cctor(byte* Address)
         {
             return;
         }

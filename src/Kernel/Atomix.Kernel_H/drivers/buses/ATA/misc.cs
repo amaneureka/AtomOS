@@ -97,24 +97,24 @@ namespace Atomix.Kernel_H.drivers.buses.ATA
         ATA_IDENT_MAX_LBA_EXT = 100
     };
 
-    public static class misc
+    internal static class misc
     {
-        public static UInt32 ToUInt32(this ushort[] xBuff, int loc)
+        internal static UInt32 ToUInt32(this ushort[] xBuff, int loc)
         {
             return (UInt32)(xBuff[loc + 1] << 16 | xBuff[loc]);
         }
 
-        public static UInt64 ToUInt64(this ushort[] xBuff, int loc)
+        internal static UInt64 ToUInt64(this ushort[] xBuff, int loc)
         {
             return (UInt64)(xBuff[loc + 3] << 48 | xBuff[loc + 2] << 32 | xBuff[loc + 1] << 16 | xBuff[loc]);
         }
 
-        public static UInt64 ToUInt48(this ushort[] xBuff, int loc)
+        internal static UInt64 ToUInt48(this ushort[] xBuff, int loc)
         {
             return (UInt64)(xBuff[loc + 2] << 32 | xBuff[loc + 1] << 16 | xBuff[loc]);
         }
 
-        public static string GetString(this ushort[] xBuff, int loc, int length)
+        internal static string GetString(this ushort[] xBuff, int loc, int length)
         {
             char[] xResult = new char[length];
             for (int k = 0; k < (length / 2); k++)

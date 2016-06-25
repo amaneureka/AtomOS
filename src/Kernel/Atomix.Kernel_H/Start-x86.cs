@@ -115,7 +115,7 @@ namespace Atomix.Kernel_H
         /// <param name="magic">Magic Number of Multiboot</param>
         /// <param name="address">Multiboot Address</param>
         [Label("Kernel_Start")]
-        public static void Start(uint magic, uint address, uint KernelDirectory, uint InitialHeap)
+        internal static void Start(uint magic, uint address, uint KernelDirectory, uint InitialHeap)
         {
             /* Kernel Logger init */
             Debug.Init();

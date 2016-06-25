@@ -15,13 +15,13 @@ using Core = Atomix.Assembler.AssemblyHelper;
 
 namespace Atomix.Kernel_H.arch.x86
 {
-    public static class Native
+    internal static class Native
     {
         /// <summary>
         /// Clear Interrupts
         /// </summary>
         [Assembly(true)]
-        public static void Cli()
+        internal static void Cli()
         {
             Core.AssemblerCode.Add(new Cli());
         }
@@ -30,7 +30,7 @@ namespace Atomix.Kernel_H.arch.x86
         /// Enable Interrupts
         /// </summary>
         [Assembly(true)]
-        public static void Sti()
+        internal static void Sti()
         {
             Core.AssemblerCode.Add(new Sti());
         }
@@ -39,7 +39,7 @@ namespace Atomix.Kernel_H.arch.x86
         /// Halt The Processor
         /// </summary>
         [Assembly(true)]
-        public static void Hlt()
+        internal static void Hlt()
         {
             Core.AssemblerCode.Add(new Literal("hlt"));
         }
@@ -50,7 +50,7 @@ namespace Atomix.Kernel_H.arch.x86
         /// <param name="obj"></param>
         /// <returns></returns>
         [Assembly(true)]
-        public static uint GetAddress(object aObj)
+        internal static uint GetAddress(object aObj)
         {
             return 0; // Only me and my compiler knows how it is working :P
         }
@@ -60,7 +60,7 @@ namespace Atomix.Kernel_H.arch.x86
         /// </summary>
         /// <param name="aArray"></param>
         /// <returns></returns>
-        public static uint GetContentAddress(object aObj)
+        internal static uint GetContentAddress(object aObj)
         {
             // 0x10 bytes are reserved for compiler specific work
             return (GetAddress(aObj) + 0x10);
@@ -71,7 +71,7 @@ namespace Atomix.Kernel_H.arch.x86
         /// </summary>
         /// <returns></returns>
         [Assembly(true)]
-        public static uint EndOfKernel()
+        internal static uint EndOfKernel()
         {
             // Just put Compiler_End location into return value
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBP, DestinationDisplacement = 0x8, DestinationIndirect = true, SourceRef = "Compiler_End" });
@@ -80,7 +80,7 @@ namespace Atomix.Kernel_H.arch.x86
         }
 
         [Assembly(true)]
-        public static uint CR2Register()
+        internal static uint CR2Register()
         {
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.CR2 });
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBP, DestinationDisplacement = 0x8, DestinationIndirect = true, SourceReg = Registers.EAX });

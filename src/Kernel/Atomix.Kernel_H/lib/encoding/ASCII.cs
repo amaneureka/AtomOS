@@ -14,9 +14,9 @@ using Atomix.Kernel_H.arch.x86;
 
 namespace Atomix.Kernel_H.lib.encoding
 {
-    public static class ASCII
+    internal static class ASCII
     {
-        public static unsafe string GetString(byte* aData, int index, int length)
+        internal static unsafe string GetString(byte* aData, int index, int length)
         {
             int newlen = length;
             for (int i = 0; i < length; i++)
@@ -39,7 +39,7 @@ namespace Atomix.Kernel_H.lib.encoding
             return name;
         }
 
-        public static unsafe string GetString(byte[] aData, int index, int length)
+        internal static unsafe string GetString(byte[] aData, int index, int length)
         {
             var add = (byte*)Native.GetContentAddress(aData);
             return GetString(add, index, length);

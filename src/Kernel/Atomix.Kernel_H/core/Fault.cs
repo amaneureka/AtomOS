@@ -11,12 +11,12 @@ using Atomix.Kernel_H.arch.x86;
 
 namespace Atomix.Kernel_H.core
 {
-    public static class Fault
+    internal static class Fault
     {
         /// <summary>
         /// System at critical condition, so crash the system by giving exception
         /// </summary>
-        public static void Handle(ref IRQContext aDump)
+        internal static void Handle(ref IRQContext aDump)
         {
             Debug.Write("Unhandled Interrupt: %d\nStack Dump::\n", aDump.Interrupt);
             Debug.Write("Error Code: %d\n", aDump.ErrorCode);
