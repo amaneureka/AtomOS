@@ -16,7 +16,7 @@ namespace Atomix.Shell
     [Application(CPUArch.x86)]
     public class Startx86
     {
-        public static int AddNums2(int a, int b)
+        internal static int AddNums2(int a, int b)
         {
             return (a + b);
         }

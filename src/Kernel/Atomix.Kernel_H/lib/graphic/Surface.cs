@@ -17,23 +17,23 @@ using Core = Atomix.Assembler.AssemblyHelper;
 
 namespace Atomix.Kernel_H.lib.graphic
 {
-    public unsafe class Surface
+    internal unsafe class Surface
     {
-        private byte* mBuffer;
-        private int mWidth;
-        private int mHeight;
+        byte* mBuffer;
+        int mWidth;
+        int mHeight;
 
-        private Rectangle* Rectangle_List;
-        private int Rectangle_List_index;
-        
-        public Surface(byte* backbuffer, int width, int height)
+        Rectangle* Rectangle_List;
+        int Rectangle_List_index;
+
+        internal Surface(byte* backbuffer, int width, int height)
         {
-            this.mBuffer = backbuffer;
-            this.mWidth = width;
-            this.mHeight = height;
+            mBuffer = backbuffer;
+            mWidth = width;
+            mHeight = height;
         }
-        
-        public void Fill(byte* bitamp, int x, int y, int w, int h)
+
+        internal void Fill(byte* bitamp, int x, int y, int w, int h)
         {
             return;
 
@@ -69,12 +69,12 @@ namespace Atomix.Kernel_H.lib.graphic
             }
         }
 
-        public void Clear(uint aColor)
+        internal void Clear(uint aColor)
         {
             Surface.Clear(mBuffer, aColor, (mWidth * mHeight * 4));
         }
-        
-        public void Rectangle(int x, int y, int w, int h)
+
+        internal void Rectangle(int x, int y, int w, int h)
         {
             return;
 
@@ -129,7 +129,6 @@ namespace Atomix.Kernel_H.lib.graphic
             // Rectangle_List_index = index + 1;
         }
 
-        #region Static Functions
         /*
          * "des"                [EBP + 48]
          * "src"                [EBP + 44]
@@ -144,7 +143,7 @@ namespace Atomix.Kernel_H.lib.graphic
          * "data_height"        [EBP + 08]
          */
         [Assembly(true)]
-        public static void CopyToBuffer(byte* des, byte* src, int des_x, int des_y, int des_width, int des_height, int src_x, int src_y, int src_width, int data_width, int data_height)
+        internal static void CopyToBuffer(byte* des, byte* src, int des_x, int des_y, int des_width, int des_height, int src_x, int src_y, int src_width, int data_width, int data_height)
         {
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "static_Field__System_Int32_Atomix_Kernel_H_drivers_video_VBE_BytesPerPixel", SourceIndirect = true });
             //EBX = width
@@ -219,7 +218,7 @@ namespace Atomix.Kernel_H.lib.graphic
         }
         
         [Assembly(true)]
-        public static void Clear(byte* aAddress, uint aColor, int aSize)
+        internal static void Clear(byte* aAddress, uint aColor, int aSize)
         {
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0xC, SourceIndirect = true });
@@ -232,6 +231,5 @@ namespace Atomix.Kernel_H.lib.graphic
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.EBX });
             Core.AssemblerCode.Add(new Literal("rep stosd"));
         }
-        #endregion
     }
 }

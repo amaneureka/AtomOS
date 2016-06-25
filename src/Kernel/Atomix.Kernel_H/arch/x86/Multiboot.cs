@@ -15,7 +15,95 @@ using System.Runtime.InteropServices;
 
 namespace Atomix.Kernel_H.arch.x86
 {
-    public static unsafe class Multiboot
+    /// <summary>
+    /// For now it is fine, http://git.savannah.gnu.org/cgit/grub.git/tree/doc/multiboot.h?h=multiboot
+    /// </summary>
+    [StructLayout(LayoutKind.Explicit, Size = 88)]
+    internal unsafe struct Multiboot_Info
+    {
+        /* Multiboot info version number */
+        [FieldOffset(0)]
+        public uint Flags;
+
+        /* Available memory from BIOS */
+        [FieldOffset(4)]
+        public uint mem_lower;
+        [FieldOffset(8)]
+        public uint mem_upper;
+
+        /* "root" partition */
+        [FieldOffset(12)]
+        public uint boot_device;
+
+        /* Kernel command line */
+        [FieldOffset(16)]
+        public uint cmdline;
+
+        /* Boot-Module list */
+        [FieldOffset(20)]
+        public uint mods_count;
+        [FieldOffset(24)]
+        public uint mods_addr;
+
+        /* if bits 4 or 5 in flags are set */
+        [FieldOffset(28)]
+        public fixed uint syms[4];
+        /* if bit 6 in flags is set */
+        [FieldOffset(44)]
+        public uint memMapLength;
+        /* if bit 6 in flags is set */
+        [FieldOffset(48)]
+        public uint memMapAddress;
+        /* if bit 7 in flags is set */
+        [FieldOffset(52)]
+        public uint drivesLength;
+        /* if bit 7 in flags is set */
+        [FieldOffset(56)]
+        public uint drivesAddress;
+        /* if bit 8 in flags is set */
+        [FieldOffset(60)]
+        public uint configTable;
+
+        // Bootloader name =D
+
+        /* if bit 9 in flags is set */
+        [FieldOffset(68)]
+        public uint apmTable;
+        /* if bit 10 in flags is set */
+        [FieldOffset(72)]
+        public uint vbeControlInfo;
+        /* if bit 11 in flags is set */
+        [FieldOffset(76)]
+        public uint vbeModeInfo;
+        /* all vbe_* set if bit 12 in flags are set */
+        [FieldOffset(80)]
+        public ushort vbeMode;
+        [FieldOffset(82)]
+        public ushort vbeInterfaceSeg;
+        [FieldOffset(84)]
+        public ushort vbeInterfaceOff;
+        [FieldOffset(86)]
+        public ushort vbeInterfaceLength;
+    }
+
+    [StructLayout(LayoutKind.Explicit, Size = 24)]
+    public unsafe struct MemoryMap_Info
+    {
+        [FieldOffset(0)]
+        public uint Size;
+        [FieldOffset(4)]
+        public uint BaseAddress_Low;
+        [FieldOffset(8)]
+        public uint BaseAddress_High;
+        [FieldOffset(12)]
+        public uint Length_Low;
+        [FieldOffset(16)]
+        public uint Length_High;
+        [FieldOffset(20)]
+        public uint Type;
+    }
+
+    internal static unsafe class Multiboot
     {
         const uint MULTIBOOT_MEMORY_AVAILABLE = 1;
         const uint MULTIBOOT_MEMORY_RESERVED = 2;
@@ -25,40 +113,40 @@ namespace Atomix.Kernel_H.arch.x86
         static uint Initrd;
         static uint InitrdSize;
 
-        public static bool IsValid
+        internal static bool IsValid
         { get { return aIsValid; } }
 
-        public static uint VBE_Control_Info
+        internal static uint VBE_Control_Info
         {
             get { return Mb_Info->vbeControlInfo; }
         }
 
-        public static uint VBE_Mode_Info
+        internal static uint VBE_Mode_Info
         {
             get { return Mb_Info->vbeModeInfo; }
         }
 
-        public static uint RAM
+        internal static uint RAM
         {
             get { return (Mb_Info->mem_upper + Mb_Info->mem_lower) * 1024; }
         }
 
-        public static uint RamDisk
+        internal static uint RamDisk
         {
             get { return Initrd; }
         }
 
-        public static uint RamDiskSize
+        internal static uint RamDiskSize
         {
             get { return InitrdSize; }
         }
 
-        public static uint RamDiskEnd
+        internal static uint RamDiskEnd
         {
             get { return Initrd + InitrdSize; }
         }
-        
-        public static unsafe void Setup(uint xSig, uint Address)
+
+        internal static unsafe void Setup(uint xSig, uint Address)
         {
             if (xSig != 0x2BADB002)
             {
@@ -91,7 +179,7 @@ namespace Atomix.Kernel_H.arch.x86
             Debug.Write("       Flags:%d\n", Mb_Info->Flags);
         }
 
-        public static void DetectMemory()
+        internal static void DetectMemory()
         {
             if ((Mb_Info->Flags & (0x1<<6)) != 0)
             {
@@ -115,95 +203,5 @@ namespace Atomix.Kernel_H.arch.x86
                 }
             }
         }
-
-        #region Struct
-        /// <summary>
-        /// For now it is fine, http://git.savannah.gnu.org/cgit/grub.git/tree/doc/multiboot.h?h=multiboot
-        /// </summary>
-        [StructLayout(LayoutKind.Explicit, Size = 88)]
-        public unsafe struct Multiboot_Info
-        {
-            /* Multiboot info version number */
-            [FieldOffset(0)]
-            public uint Flags;
-
-            /* Available memory from BIOS */
-            [FieldOffset(4)]
-            public uint mem_lower;
-            [FieldOffset(8)]
-            public uint mem_upper;
-
-            /* "root" partition */
-            [FieldOffset(12)]
-            public uint boot_device;
-
-            /* Kernel command line */
-            [FieldOffset(16)]
-            public uint cmdline;
-
-            /* Boot-Module list */
-            [FieldOffset(20)]
-            public uint mods_count;
-            [FieldOffset(24)]
-            public uint mods_addr;
-
-            /* if bits 4 or 5 in flags are set */
-            [FieldOffset(28)]
-            public fixed UInt32 syms[4];
-            /* if bit 6 in flags is set */
-            [FieldOffset(44)]
-            public UInt32 memMapLength;
-            /* if bit 6 in flags is set */
-            [FieldOffset(48)]
-            public UInt32 memMapAddress;
-            /* if bit 7 in flags is set */
-            [FieldOffset(52)]
-            public UInt32 drivesLength;
-            /* if bit 7 in flags is set */
-            [FieldOffset(56)]
-            public UInt32 drivesAddress;
-            /* if bit 8 in flags is set */
-            [FieldOffset(60)]
-            public UInt32 configTable;
-
-            //Bootloader name =D
-
-            /* if bit 9 in flags is set */
-            [FieldOffset(68)]
-            public UInt32 apmTable;
-            /* if bit 10 in flags is set */
-            [FieldOffset(72)]
-            public UInt32 vbeControlInfo;
-            /* if bit 11 in flags is set */
-            [FieldOffset(76)]
-            public UInt32 vbeModeInfo;
-            /* all vbe_* set if bit 12 in flags are set */
-            [FieldOffset(80)]
-            public UInt16 vbeMode;
-            [FieldOffset(82)]
-            public UInt16 vbeInterfaceSeg;
-            [FieldOffset(84)]
-            public UInt16 vbeInterfaceOff;
-            [FieldOffset(86)]
-            public UInt16 vbeInterfaceLength;
-        }
-
-        [StructLayout(LayoutKind.Explicit, Size = 24)]
-        public unsafe struct MemoryMap_Info
-        {
-            [FieldOffset(0)]
-            public UInt32 Size;
-            [FieldOffset(4)]
-            public UInt32 BaseAddress_Low;
-            [FieldOffset(8)]
-            public UInt32 BaseAddress_High;
-            [FieldOffset(12)]
-            public UInt64 Length_Low;
-            [FieldOffset(16)]
-            public UInt64 Length_High;
-            [FieldOffset(20)]
-            public UInt32 Type;
-        }
-        #endregion
     }
 }

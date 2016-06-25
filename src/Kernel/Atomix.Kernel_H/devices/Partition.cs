@@ -11,31 +11,31 @@ using System;
 
 namespace Atomix.Kernel_H.devices
 {
-    public class Partition : Storage
+    internal class Partition : Storage
     {
-        protected Storage aParent;
-        protected UInt32 aStartSector;
-        protected UInt32 aSectorCount;
+        protected Storage mParent;
+        protected uint mStartSector;
+        protected uint mSectorCount;
 
-        public Partition(Storage Disk, UInt32 StartSector, UInt32 SectorCount)
+        internal Partition(Storage aDisk, uint aStartSector, uint aSectorCount)
         {
-            this.aParent = Disk;
-            this.aStartSector = StartSector;
-            this.aSectorCount = SectorCount;
+            mParent = aDisk;
+            mStartSector = aStartSector;
+            mSectorCount = aSectorCount;
         }
 
-        public override bool Read(uint SectorNo, uint SectorCount, byte[] xData)
+        public override bool Read(uint aSectorNo, uint aSectorCount, byte[] aData)
         {
-            if (SectorNo + SectorCount > aSectorCount)
+            if (aSectorNo + aSectorCount > mSectorCount)
                 return false;
-            return aParent.Read(aStartSector + SectorNo, SectorCount, xData);
+            return mParent.Read(mStartSector + aSectorNo, aSectorCount, aData);
         }
 
-        public override bool Write(uint SectorNo, uint SectorCount, byte[] xData)
+        public override bool Write(uint aSectorNo, uint aSectorCount, byte[] aData)
         {
-            if (SectorNo + SectorCount > aSectorCount)
+            if (aSectorNo + aSectorCount > mSectorCount)
                 return false;
-            return aParent.Write(aStartSector + SectorNo, SectorCount, xData);
+            return mParent.Write(mStartSector + aSectorNo, aSectorCount, aData);
         }
 
         public override bool Eject()

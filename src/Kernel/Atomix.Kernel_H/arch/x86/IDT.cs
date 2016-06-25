@@ -21,15 +21,48 @@ using System.Runtime.InteropServices;
 
 namespace Atomix.Kernel_H.arch.x86
 {
-    public delegate void InterruptHandler(ref IRQContext state);
+    internal delegate void InterruptHandler(ref IRQContext state);
 
-    public static class IDT
+    [StructLayout(LayoutKind.Explicit, Size = 56)]
+    internal struct IRQContext
+    {
+        [FieldOffset(0)]
+        public uint MMX_Context;
+        [FieldOffset(4)]
+        public uint EDI;
+        [FieldOffset(8)]
+        public uint ESI;
+        [FieldOffset(12)]
+        public uint EBP;
+        [FieldOffset(16)]
+        public uint ESP;
+        [FieldOffset(20)]
+        public uint EBX;
+        [FieldOffset(24)]
+        public uint EDX;
+        [FieldOffset(28)]
+        public uint ECX;
+        [FieldOffset(32)]
+        public uint EAX;
+        [FieldOffset(36)]
+        public uint Interrupt;
+        [FieldOffset(40)]
+        public uint ErrorCode;
+        [FieldOffset(44)]
+        public uint EIP;
+        [FieldOffset(48)]
+        public uint CS;
+        [FieldOffset(52)]
+        public uint EFlags;
+    }
+
+    internal static class IDT
     {
         private static uint idt;
         private static uint idt_entries;
         private static InterruptHandler[] xINT;
 
-        public static void Setup()
+        internal static void Setup()
         {
             idt = Heap.kmalloc(2048 + 6);
             idt_entries = idt + 6;
@@ -65,7 +98,7 @@ namespace Atomix.Kernel_H.arch.x86
                 PIC.EndOfInterrupt(interrupt);
         }
 
-        public static void RegisterInterrupt(InterruptHandler xHandler, uint Interrupt)
+        internal static void RegisterInterrupt(InterruptHandler xHandler, uint Interrupt)
         {
             xINT[Interrupt] = xHandler;
             Debug.Write("Interrupt Handler Registered: %d\n", Interrupt);
@@ -136,39 +169,4 @@ namespace Atomix.Kernel_H.arch.x86
             Core.AssemblerCode.Add(new Literal("lidt [EAX]"));
         }
     }
-    #region Defines
-    [StructLayout(LayoutKind.Explicit, Size = 56)]
-    public struct IRQContext
-    {
-        [FieldOffset(0)]
-        public uint MMX_Context;
-        [FieldOffset(4)]
-        public uint EDI;
-        [FieldOffset(8)]
-        public uint ESI;
-        [FieldOffset(12)]
-        public uint EBP;
-        [FieldOffset(16)]
-        public uint ESP;
-        [FieldOffset(20)]
-        public uint EBX;
-        [FieldOffset(24)]
-        public uint EDX;
-        [FieldOffset(28)]
-        public uint ECX;
-        [FieldOffset(32)]
-        public uint EAX;
-        [FieldOffset(36)]
-        public uint Interrupt;
-        [FieldOffset(40)]
-        public uint ErrorCode;
-        [FieldOffset(44)]
-        public uint EIP;
-        [FieldOffset(48)]
-        public uint CS;
-        [FieldOffset(52)]
-        public uint EFlags;
-    }
-
-    #endregion
 }

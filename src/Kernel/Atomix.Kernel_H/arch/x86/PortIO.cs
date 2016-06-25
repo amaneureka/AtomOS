@@ -17,7 +17,7 @@ using Core = Atomix.Assembler.AssemblyHelper;
 
 namespace Atomix.Kernel_H.arch.x86
 {
-    public static class PortIO
+    internal static class PortIO
     {
         /// <summary>
         /// Read 8 bit from IO/Port
@@ -25,7 +25,7 @@ namespace Atomix.Kernel_H.arch.x86
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
         [Assembly(true)]
-        public static byte In8(uint aAddress)
+        internal static byte In8(uint aAddress)
         {
             // Load address into EDX
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
@@ -45,7 +45,7 @@ namespace Atomix.Kernel_H.arch.x86
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
         [Assembly(true)]
-        public static void Out8(uint aAddress, byte aValue)
+        internal static void Out8(uint aAddress, byte aValue)
         {
             // Load address into EDX
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDX, SourceReg = Registers.EBP, SourceDisplacement = 0xC, SourceIndirect = true });
@@ -61,7 +61,7 @@ namespace Atomix.Kernel_H.arch.x86
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
         [Assembly(true)]
-        public static ushort In16(uint aAddress)
+        internal static ushort In16(uint aAddress)
         {
             // Load address into EDX
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
@@ -81,7 +81,7 @@ namespace Atomix.Kernel_H.arch.x86
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
         [Assembly(true)]
-        public static void Out16(uint aAddress, ushort aValue)
+        internal static void Out16(uint aAddress, ushort aValue)
         {
             // Load address into EDX
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDX, SourceReg = Registers.EBP, SourceDisplacement = 0xC, SourceIndirect = true });
@@ -97,7 +97,7 @@ namespace Atomix.Kernel_H.arch.x86
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
         [Assembly(true)]
-        public static uint In32(uint aAddress)
+        internal static uint In32(uint aAddress)
         {
             // Load address into EDX
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
@@ -117,7 +117,7 @@ namespace Atomix.Kernel_H.arch.x86
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
         [Assembly(true)]
-        public static void Out32(uint aAddress, uint aValue)
+        internal static void Out32(uint aAddress, uint aValue)
         {
             // Load address into EDX
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDX, SourceReg = Registers.EBP, SourceDisplacement = 0xC, SourceIndirect = true });
@@ -127,7 +127,7 @@ namespace Atomix.Kernel_H.arch.x86
             Core.AssemblerCode.Add(new Out { DestinationReg = Registers.DX, SourceReg = Registers.EAX });
         }
 
-        public static void Read16(uint aAddress, UInt16[] xData)
+        internal static void Read16(uint aAddress, UInt16[] xData)
         {
             for (int i = 0; i < xData.Length; i++)
             {
@@ -135,7 +135,7 @@ namespace Atomix.Kernel_H.arch.x86
             }
         }
 
-        public static void Read16(uint aAddress, byte[] xData)
+        internal static void Read16(uint aAddress, byte[] xData)
         {
             for (int i = 0; i < xData.Length; i += 2)
             {
@@ -145,7 +145,7 @@ namespace Atomix.Kernel_H.arch.x86
             }
         }
 
-        public static void Read16(uint aAddress, byte[] xData, uint size)
+        internal static void Read16(uint aAddress, byte[] xData, uint size)
         {
             Read16(aAddress, xData);
 
@@ -153,7 +153,7 @@ namespace Atomix.Kernel_H.arch.x86
                 In16(aAddress);
         }
 
-        public static void Write16(uint aAddress, UInt16[] xData)
+        internal static void Write16(uint aAddress, UInt16[] xData)
         {
             for (int i = 0; i < xData.Length; i++)
             {
@@ -161,7 +161,7 @@ namespace Atomix.Kernel_H.arch.x86
             }
         }
 
-        public static void Write16(uint aAddress, byte[] xData)
+        internal static void Write16(uint aAddress, byte[] xData)
         {
             for (int i = 0; i < xData.Length; i += 2)
             {
@@ -169,7 +169,7 @@ namespace Atomix.Kernel_H.arch.x86
             }
         }
 
-        public static void Wait()
+        internal static void Wait()
         {
             Out8(0x80, 0x22);
         }

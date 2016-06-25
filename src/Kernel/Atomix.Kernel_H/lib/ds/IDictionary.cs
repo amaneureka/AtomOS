@@ -13,7 +13,7 @@ using Atomix.Kernel_H.core;
 
 namespace Atomix.Kernel_H.lib
 {
-    public class IDictionary<_key, _value>
+    internal class IDictionary<_key, _value>
     {
         const uint Capacity = (1 << 5);// Should be a power of 2
 
@@ -30,7 +30,7 @@ namespace Atomix.Kernel_H.lib
             public Bucket mNext;
         }
 
-        public IDictionary(HashFunction<_key> aFunction, EqualityFunction<_key> aEquality)
+        internal IDictionary(HashFunction<_key> aFunction, EqualityFunction<_key> aEquality)
         {
             mFunction = aFunction;
             mEquality = aEquality;
@@ -38,7 +38,7 @@ namespace Atomix.Kernel_H.lib
             mBuckets = new Bucket[Capacity];
         }
 
-        public _value this[_key aKey]
+        internal _value this[_key aKey]
         {
             get
             {
@@ -55,7 +55,7 @@ namespace Atomix.Kernel_H.lib
             }
         }
 
-        public _value GetValue(_key aKey, _value defaultValue)
+        internal _value GetValue(_key aKey, _value defaultValue)
         {
             uint Index = mFunction(aKey) & mModulo;
             Bucket Current = mBuckets[Index];
@@ -68,15 +68,15 @@ namespace Atomix.Kernel_H.lib
 
             return Current.mValue;
         }
-        
-        public void Add(_key aKey, _value aValue)
+
+        internal void Add(_key aKey, _value aValue)
         {
             if (SafeAdd(aKey, aValue))
                 return;
             throw new Exception("[IDictionary]: Key Already present!");
         }
 
-        public bool SafeAdd(_key aKey, _value aValue)
+        internal bool SafeAdd(_key aKey, _value aValue)
         {
             uint Index = mFunction(aKey) & mModulo;
             Bucket Current = mBuckets[Index];
@@ -103,8 +103,8 @@ namespace Atomix.Kernel_H.lib
             Current.mNext = NewBucket;
             return true;
         }
-        
-        public bool ContainsKey(_key aKey)
+
+        internal bool ContainsKey(_key aKey)
         {
             uint Index = mFunction(aKey) & mModulo;
             Bucket Current = mBuckets[Index];
@@ -118,7 +118,7 @@ namespace Atomix.Kernel_H.lib
             return true;
         }
 
-        public void RemoveKey(_key mKey)
+        internal void RemoveKey(_key mKey)
         {
             uint Index = mFunction(mKey) & mModulo;
             Bucket Current = mBuckets[Index];

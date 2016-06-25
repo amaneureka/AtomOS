@@ -17,25 +17,25 @@ using Atomix.Kernel_H.io.FileSystem.FAT.Find;
 
 namespace Atomix.Kernel_H.io.FileSystem
 {
-    public class FatFileSystem : GenericFileSystem
+    internal class FatFileSystem : GenericFileSystem
     {
         // They should be private set only, so take care of this later
-        public UInt32 BytePerSector;
-        public UInt32 SectorsPerCluster;
-        public UInt32 ReservedSector;
-        public UInt32 TotalFAT;
-        public UInt32 DirectoryEntry;
-        public UInt32 TotalSectors;
-        public UInt32 SectorsPerFAT;
-        public UInt32 DataSectorCount;
-        public UInt32 ClusterCount;
-        public UInt32 SerialNo;
-        public UInt32 RootCluster;
-        public UInt32 RootSector;
-        public UInt32 RootSectorCount;
-        public UInt32 DataSector;
-        public UInt32 EntriesPerSector;
-        public UInt32 fatEntries;
+        internal UInt32 BytePerSector;
+        internal UInt32 SectorsPerCluster;
+        internal UInt32 ReservedSector;
+        internal UInt32 TotalFAT;
+        internal UInt32 DirectoryEntry;
+        internal UInt32 TotalSectors;
+        internal UInt32 SectorsPerFAT;
+        internal UInt32 DataSectorCount;
+        internal UInt32 ClusterCount;
+        internal UInt32 SerialNo;
+        internal UInt32 RootCluster;
+        internal UInt32 RootSector;
+        internal UInt32 RootSectorCount;
+        internal UInt32 DataSector;
+        internal UInt32 EntriesPerSector;
+        internal UInt32 fatEntries;
 
         protected FatType FatType;
 
@@ -43,8 +43,8 @@ namespace Atomix.Kernel_H.io.FileSystem
 
         public FatFileSystem(Storage Device)
         {
-            this.IDevice = Device;
-            this.mIsValid = IsFAT();
+            IDevice = Device;
+            mIsValid = IsFAT();
         }
 
         private bool IsFAT()
@@ -133,7 +133,7 @@ namespace Atomix.Kernel_H.io.FileSystem
             EntriesPerSector = (UInt32)(BytePerSector / 32);
             DataSector = ReservedSector + (TotalFAT * SectorsPerFAT) + RootSectorCount;
 
-            this.mFSType = FileSystemType.FAT;
+            mFSType = FileSystemType.FAT;
 
             Heap.Free(BootSector);
             return true;
@@ -214,14 +214,14 @@ namespace Atomix.Kernel_H.io.FileSystem
             return null;
         }
 
-        public uint GetClusterEntryValue(uint cluster)
+        internal uint GetClusterEntryValue(uint cluster)
         {
             uint fatoffset = cluster<<2;
             uint sector = ReservedSector + (fatoffset / BytePerSector);
             int sectorOffset = (int)(fatoffset % BytePerSector);
             
             var aData = new byte[512];
-            this.IDevice.Read(sector, 1U, aData);
+            IDevice.Read(sector, 1U, aData);
             var xNextCluster = (BitConverter.ToUInt32(aData, sectorOffset) & 0x0FFFFFFF);
             Heap.Free(aData);
 
@@ -233,7 +233,7 @@ namespace Atomix.Kernel_H.io.FileSystem
             return DataSector + ((cluster - RootCluster) * SectorsPerCluster);
         }
 
-        public static uint GetClusterEntry(byte[] data, uint index, FatType type)
+        internal static uint GetClusterEntry(byte[] data, uint index, FatType type)
         {
             uint cluster = BitConverter.ToUInt16(data, (int)((uint)Entry.FirstCluster + (index * (uint)Entry.EntrySize)));
 
@@ -246,34 +246,34 @@ namespace Atomix.Kernel_H.io.FileSystem
             return cluster;
         }
 
-        public static bool IsClusterBad(uint Cluster)
+        internal static bool IsClusterBad(uint Cluster)
         {
             // Values are depend only on FAT 32 FS
             return (Cluster == 0x0FFFFFF7);
         }
 
-        public static bool IsClusterFree(uint Cluster)
+        internal static bool IsClusterFree(uint Cluster)
         {
             // Values are depend only on FAT 32 FS
             return (Cluster == 0x0);
         }
 
-        public static bool IsClusterReserved(uint Cluster)
+        internal static bool IsClusterReserved(uint Cluster)
         {
             // Values are depend only on FAT 32 FS
             return ((Cluster == 0x0) || (Cluster >= 0xFFF0) && (Cluster < 0x0FFFFFF7));
         }
 
-        public static bool IsClusterLast(uint Cluster)
+        internal static bool IsClusterLast(uint Cluster)
         {
             // Values are depend only on FAT 32 FS
             return (Cluster == 0x0FFFFFF8);
         }
 
-        public byte[] NewBlockArray
+        internal byte[] NewBlockArray
         { get { return new byte[SectorsPerCluster * BytePerSector]; } }
 
-        public void PrintDebugInfo()
+        internal void PrintDebugInfo()
         {
             Debug.Write("BytesPerSector\t\t:%d\n", BytePerSector);
             Debug.Write("SectorsPerCluster\t\t:%d\n", SectorsPerCluster);

@@ -12,7 +12,7 @@ using System.Runtime.InteropServices;
 namespace Atomix.Kernel_H.lib.graphic
 {
     [StructLayout(LayoutKind.Explicit, Size = 16)]
-    public struct Rectangle
+    internal struct Rectangle
     {
         [FieldOffset(0)]
         public int x;

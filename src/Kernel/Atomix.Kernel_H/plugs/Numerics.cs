@@ -13,18 +13,18 @@ using Atomix.CompilerExt.Attributes;
 
 namespace Atomix.Kernel_H.plugs
 {
-    public class Numerics
+    internal class Numerics
     {
         const string xDigits = "0123456789";
 
         [Plug("System_String_System_UInt32_ToString__")]
-        public static string ToString(ref uint aThis)
+        internal static string ToString(ref uint aThis)
         {
             return ToString32Bit(aThis, false);
         }
 
         [Plug("System_String_System_Int32_ToString__")]
-        public static string ToString(ref int aThis)
+        internal static string ToString(ref int aThis)
         {
             if (aThis >= 0)
                 return ToString32Bit((uint)aThis, false);
@@ -33,7 +33,7 @@ namespace Atomix.Kernel_H.plugs
         }
 
         [Plug("System_Int32_System_Int32_Parse_System_String_")]
-        public static int ParseInt32(string aStr)
+        internal static int ParseInt32(string aStr)
         {
             int xStart = 0;
 
@@ -60,7 +60,7 @@ namespace Atomix.Kernel_H.plugs
         }
 
         [Plug("System_UInt32_System_UInt32_Parse_System_String_")]
-        public static uint ParseUInt32(string aStr)
+        internal static uint ParseUInt32(string aStr)
         {
             uint value = 0;
             foreach (var aChar in aStr)
@@ -73,7 +73,7 @@ namespace Atomix.Kernel_H.plugs
             return value;
         }
 
-        public static string ToString32Bit(uint aNum, bool Signed)
+        internal static string ToString32Bit(uint aNum, bool Signed)
         {
             var xResult = new char[11];
             int xPos = 11;

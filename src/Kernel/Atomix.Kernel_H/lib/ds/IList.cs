@@ -13,20 +13,20 @@ using Atomix.Kernel_H.core;
 
 namespace Atomix.Kernel_H.lib
 {
-    public class IList<T>
+    internal class IList<T>
     {
         T[] _items;
         int _size;
         int _capacity;
 
-        public IList(int capacity = 1)
+        internal IList(int capacity = 1)
         {
             _items = new T[capacity];
             _size = 0;
             _capacity = capacity;
         }
 
-        public void Add(T item)
+        internal void Add(T item)
         {
             if (_capacity <= _size)
             {
@@ -39,7 +39,7 @@ namespace Atomix.Kernel_H.lib
             _items[_size++] = item;
         }
 
-        public void Refresh()
+        internal void Refresh()
         {
             int _l = 0;
             for (int i = 0; i < _size; i++)
@@ -52,7 +52,7 @@ namespace Atomix.Kernel_H.lib
             _size = _l;
         }
 
-        public T this[int index]
+        internal T this[int index]
         {
             get
             {
@@ -64,7 +64,7 @@ namespace Atomix.Kernel_H.lib
             }
         }
 
-        public int Count
+        internal int Count
         {
             get
             {
@@ -72,7 +72,7 @@ namespace Atomix.Kernel_H.lib
             }
         }
 
-        public void Clear()
+        internal void Clear()
         {
             _size = 0;
         }
@@ -80,7 +80,7 @@ namespace Atomix.Kernel_H.lib
         /// <summary>
         /// Free Internal Memory
         /// </summary>
-        public void Delete()
+        internal void Delete()
         {
             Heap.Free(_items);
         }

@@ -13,7 +13,7 @@ using Atomix.Kernel_H.core;
 
 namespace Atomix.Kernel_H.io.FileSystem.FAT
 {
-    public class FatStream : Stream
+    internal class FatStream : Stream
     {
         private FatFileSystem mFS;
 
@@ -26,21 +26,21 @@ namespace Atomix.Kernel_H.io.FileSystem.FAT
         
         private byte[] mBufferCluster;
 
-        public FatStream(FatFileSystem aFS, string aName, uint aFirstCluster, uint aSize)
+        internal FatStream(FatFileSystem aFS, string aName, uint aFirstCluster, uint aSize)
             :base(aName, aSize)
         {
-            this.mFS = aFS;
-            this.mFileName = aName;
-            this.mFileSize = aSize;
+            mFS = aFS;
+            mFileName = aName;
+            mFileSize = aSize;
 
-            this.mFirstCluster = aFirstCluster;
-            this.mCurrentCluster = aFirstCluster;
-            this.mPosition = 0;
+            mFirstCluster = aFirstCluster;
+            mCurrentCluster = aFirstCluster;
+            mPosition = 0;
                         
-            this.mBufferCluster = new byte[aFS.SectorsPerCluster * 512];
+            mBufferCluster = new byte[aFS.SectorsPerCluster * 512];
             LoadCluster(mFirstCluster);
         }
-        
+
         public override int Read(byte[] aBuffer, int aCount)
         {
             int BufferPosition = 0, RelativePosition = mPosition % mBufferCluster.Length, EffectiveBytesCopied = 0;

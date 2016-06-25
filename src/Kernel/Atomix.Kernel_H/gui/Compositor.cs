@@ -20,10 +20,10 @@ using Atomix.Kernel_H.drivers.input;
 
 namespace Atomix.Kernel_H.gui
 {
-    public static unsafe class Compositor
+    internal static unsafe class Compositor
     {
         #region DEFINATIONS
-        public static Pipe SERVER;
+        internal static Pipe SERVER;
 
         static uint MOUSE_INPUT_STACK;
         static uint COMPOSITOR_STACK;
@@ -39,9 +39,9 @@ namespace Atomix.Kernel_H.gui
         #endregion
 
         const uint PACKET_SIZE = 32;
-        public const uint MAGIC = 0xDEADCAFE;
+        internal const uint MAGIC = 0xDEADCAFE;
 
-        public static void Setup(Process parent)
+        internal static void Setup(Process parent)
         {
             Debug.Write("Compositor Setup\n");
             SERVER = new Pipe(PACKET_SIZE, 1000);
@@ -61,7 +61,7 @@ namespace Atomix.Kernel_H.gui
             new Thread(parent, pRender, RENDER_STACK + 0x1000, 0x1000).Start();
         }
 
-        public static int AddClient(Pipe aClient)
+        internal static int AddClient(Pipe aClient)
         {
             if (aClient == null)
                 return -1;
@@ -69,7 +69,7 @@ namespace Atomix.Kernel_H.gui
             return (Clients.Count - 1);
         }
 
-        public static byte[] RequestPacket(int aClientID)
+        internal static byte[] RequestPacket(int aClientID)
         {
             var Request = new byte[32];
             Request.SetUInt(0, MAGIC);
@@ -78,7 +78,7 @@ namespace Atomix.Kernel_H.gui
             return Request;
         }
 
-        public static bool ScreenUpdate = true;
+        internal static bool ScreenUpdate = true;
 
         private static uint pRender;
         private static void Render()

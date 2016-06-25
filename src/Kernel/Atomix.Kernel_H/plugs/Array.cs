@@ -17,10 +17,10 @@ using Core = Atomix.Assembler.AssemblyHelper;
 
 namespace Atomix.Kernel_H.plugs
 {
-    public static class ArrayImpl
+    internal static class ArrayImpl
     {
         [Assembly(true), Plug("System_Void_System_Runtime_CompilerServices_RuntimeHelpers_InitializeArray_System_Array__System_RuntimeFieldHandle_")]
-        public static void InitializeArray(Array aArray, RuntimeFieldHandle aHandler)
+        internal static void InitializeArray(Array aArray, RuntimeFieldHandle aHandler)
         {
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDI, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 0xC });
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ESI, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 0x8 });
@@ -46,19 +46,19 @@ namespace Atomix.Kernel_H.plugs
         /// Handles Array.Copy Function
         /// </summary>
         [Plug("System_Void_System_Array_Copy_System_Array__System_Array__System_Int32_")]
-        public static void CopyHelper(Array aSourceArray, Array aDestinationArray, int aLength)
+        internal static void CopyHelper(Array aSourceArray, Array aDestinationArray, int aLength)
         {
             Copy(aSourceArray, 0, aDestinationArray, 0, aLength, false);
         }
 
 		[Plug("System_Void_System_Array_Copy_System_Array__System_Int32__System_Array__System_Int32__System_Int32_")]
-        public static void CopyHelper(Array aSourceArray, int aSourceIndex, Array aDestinationArray, int aDestinationIndex, int aLength)
+        internal static void CopyHelper(Array aSourceArray, int aSourceIndex, Array aDestinationArray, int aDestinationIndex, int aLength)
         {
             Copy(aSourceArray, aSourceIndex, aDestinationArray, aDestinationIndex, aLength, false);
         }
 
         [Assembly(true), Plug("System_Void_System_Array_Copy_System_Array__System_Int32__System_Array__System_Int32__System_Int32__System_Boolean_")]
-        public static void Copy(Array aSourceArray, int aSourceIndex, Array aDestinationArray, int aDestinationIndex, int aLength, bool aReliable)
+        internal static void Copy(Array aSourceArray, int aSourceIndex, Array aDestinationArray, int aDestinationIndex, int aLength, bool aReliable)
         {
             // Destination
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x14, SourceIndirect = true });

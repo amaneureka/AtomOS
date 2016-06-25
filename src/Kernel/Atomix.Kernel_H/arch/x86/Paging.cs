@@ -20,13 +20,13 @@ using Core = Atomix.Assembler.AssemblyHelper;
 
 namespace Atomix.Kernel_H.arch.x86
 {
-    public static unsafe class Paging
+    internal static unsafe class Paging
     {
         public static UInt32* KernelDirectory;
         public static UInt32* CurrentDirectory;
         private static uint[] Frames;
-                
-        public static void Setup(uint aKernelDirectory)
+
+        internal static void Setup(uint aKernelDirectory)
         {
             KernelDirectory = (UInt32*)aKernelDirectory;
             Frames = new uint[Multiboot.RAM / 0x20000];
@@ -70,8 +70,8 @@ namespace Atomix.Kernel_H.arch.x86
             CurrentDirectory = KernelDirectory;
             Debug.Write("@Paging:: Directory: %d\n", (uint)CurrentDirectory);
         }
-        
-        public static uint AllocateMainBuffer(uint phybase)
+
+        internal static uint AllocateMainBuffer(uint phybase)
         {
             // 4MB * 1 => 4MB
             uint VirtLocation = 0xE0000000, VirtEnd = VirtLocation + 0x400000;
@@ -85,7 +85,7 @@ namespace Atomix.Kernel_H.arch.x86
             return 0xE0000000;
         }
 
-        public static uint AllocateSecondayBuffer()
+        internal static uint AllocateSecondayBuffer()
         {
             // 4MB * 1 => 4MB
             uint VirtLocation = 0xE0400000, VirtEnd = VirtLocation + 0x400000;
@@ -98,7 +98,7 @@ namespace Atomix.Kernel_H.arch.x86
             return 0xE0400000;
         }
 
-        public static void AllocateFrame(UInt32 Page, UInt32 PhyPage, bool Allocate, uint flags = 0x3)//Present, ReadWrite, Supervisor
+        internal static void AllocateFrame(UInt32 Page, UInt32 PhyPage, bool Allocate, uint flags = 0x3)//Present, ReadWrite, Supervisor
         {
             Page += 0xC0000000;
             var Add = *((UInt32*)Page);
@@ -113,7 +113,7 @@ namespace Atomix.Kernel_H.arch.x86
             }
         }
 
-        public static UInt32 FirstFreeFrame()
+        internal static UInt32 FirstFreeFrame()
         {
             int Length = Frames.Length;
             var MemoryFrames = Frames;
@@ -132,7 +132,7 @@ namespace Atomix.Kernel_H.arch.x86
             while (true) ;
         }
 
-        public static UInt32 GetPage(UInt32* Directory, UInt32 VirtAddress, bool Make, uint flags = 0x3)//Present, ReadWrite, Supervisor
+        internal static UInt32 GetPage(UInt32* Directory, UInt32 VirtAddress, bool Make, uint flags = 0x3)//Present, ReadWrite, Supervisor
         {
             VirtAddress /= 0x1000; // Align it to page
             uint index = VirtAddress / 1024;
@@ -151,7 +151,7 @@ namespace Atomix.Kernel_H.arch.x86
             return 0;
         }
 
-        public static UInt32* CloneKernelDirectory()
+        internal static UInt32* CloneKernelDirectory()
         {
             UInt32* NewDirectory = (UInt32*)(Heap.kmalloc(0x1000, true));
             for (uint Table = 768; Table < 1024; Table++)
@@ -161,7 +161,7 @@ namespace Atomix.Kernel_H.arch.x86
             return NewDirectory;
         }
 
-        public static void FreeDirectory(UInt32* Directory)
+        internal static void FreeDirectory(UInt32* Directory)
         {
             for (uint Table = 0; Table < 768; Table++)
             {
@@ -169,33 +169,33 @@ namespace Atomix.Kernel_H.arch.x86
             }
             ClearFrame((uint)Directory / 0x1000);
         }
-        
-        public static void SetFrame(UInt32 page)
+
+        internal static void SetFrame(UInt32 page)
         {
             Frames[(page >> 5)] |= (uint)(0x1 << ((int)page & 31));
         }
 
-        public static void ClearFrame(UInt32 page)
+        internal static void ClearFrame(UInt32 page)
         {
             Frames[(page >> 5)] &= ~(uint)(0x1 << ((int)page & 31));
         }
 
         [Assembly(true)]
-        public static void RefreshTLB()
+        internal static void RefreshTLB()
         {
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.CR3 });
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.CR3, SourceReg = Registers.EAX });
         }
 
         [Assembly(true)]
-        public static void InvalidatePageAt(uint xAddress)
+        internal static void InvalidatePageAt(uint xAddress)
         {
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
             Core.AssemblerCode.Add(new Literal("invlpg [EAX]"));
         }
 
         [Assembly(true)]
-        public static void SwitchDirectory(uint Directory)
+        internal static void SwitchDirectory(uint Directory)
         {            
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
             Core.AssemblerCode.Add(new Mov { DestinationRef = "static_Field__System_UInt32__Atomix_Kernel_H_arch_x86_Paging_CurrentDirectory", DestinationIndirect = true, SourceReg = Registers.EAX });

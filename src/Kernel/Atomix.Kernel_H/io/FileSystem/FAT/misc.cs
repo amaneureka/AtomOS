@@ -27,7 +27,7 @@ namespace Atomix.Kernel_H.io.FileSystem.FAT
         FAT32 = 32
     }
 
-    public enum Entry : int
+    internal enum Entry : int
     {
         DOSName = 0x00, // 8
         DOSExtension = 0x08,	// 3
@@ -45,7 +45,7 @@ namespace Atomix.Kernel_H.io.FileSystem.FAT
         EntrySize = 32,
     }
 
-    public enum FindEntry
+    internal enum FindEntry
     {
         Any = 0x1,
         ByCluster = 0x2,
@@ -53,7 +53,7 @@ namespace Atomix.Kernel_H.io.FileSystem.FAT
         WithName = 0x4,
     }
 
-    public enum FileNameAttribute : uint
+    internal enum FileNameAttribute : uint
     {
         LastEntry = 0x00,
         Escape = 0x05,	// special msdos hack where 0x05 really means 0xE5 (since 0xE5 was already used for delete)
@@ -61,7 +61,7 @@ namespace Atomix.Kernel_H.io.FileSystem.FAT
         Deleted = 0xE5,
     }
 
-    public enum FatFileAttributes : byte
+    internal enum FatFileAttributes : byte
     {
         /// <summary>
         /// Flag represents the file is read-only.

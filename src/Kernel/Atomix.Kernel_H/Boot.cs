@@ -23,12 +23,12 @@ using Atomix.Kernel_H.drivers.buses.ATA;
 
 namespace Atomix.Kernel_H
 {
-    public class Boot
+    internal class Boot
     {
-        public static int ClientID;
-        public static Pipe SystemClient;
+        internal static int ClientID;
+        internal static Pipe SystemClient;
 
-        public static void Init()
+        internal static void Init()
         {
             Debug.Write("Boot Init()\n");
 
@@ -70,9 +70,9 @@ namespace Atomix.Kernel_H
             Debug.Write("lol: %d\n", __main(0xac));*/
             while (true) ;
         }
-        
-        public static uint pBootAnimation;
-        public static unsafe void BootAnimation()
+
+        private static uint pBootAnimation;
+        internal static unsafe void BootAnimation()
         {
             VBE.Clear(0x6D6D6D);
             var BootImage = VirtualFileSystem.GetFile("disk0/boot.xmp");
@@ -112,7 +112,7 @@ namespace Atomix.Kernel_H
             Thread.Die();
         }
 
-        public static void LoadIDE(bool IsPrimary, bool IsMaster)
+        internal static void LoadIDE(bool IsPrimary, bool IsMaster)
         {
             var xIDE = new IDE(IsPrimary, IsMaster);
 

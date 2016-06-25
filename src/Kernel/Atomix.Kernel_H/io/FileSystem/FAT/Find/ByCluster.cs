@@ -9,12 +9,12 @@
 
 namespace Atomix.Kernel_H.io.FileSystem.FAT.Find
 {
-    public class ByCluster : Comparison
+    internal class ByCluster : Comparison
     {
-        public readonly uint Cluster;
-        public ByCluster(uint aCluster)
+        internal readonly uint Cluster;
+        internal ByCluster(uint aCluster)
         {
-            this.Cluster = aCluster;
+            Cluster = aCluster;
         }
 
         public override bool Compare(byte[] data, int offset, FatType type)

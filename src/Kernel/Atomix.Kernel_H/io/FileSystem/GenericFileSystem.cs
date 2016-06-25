@@ -13,14 +13,14 @@ namespace Atomix.Kernel_H.io.FileSystem
 {
     public abstract class GenericFileSystem
     {
-        public Storage IDevice;
+        internal Storage IDevice;
         protected bool mIsValid;
         protected FileSystemType mFSType;
 
-        public bool IsValid
+        internal bool IsValid
         { get { return mIsValid; } }
 
-        public FileSystemType FileSystem
+        internal FileSystemType FileSystem
         { get { return mFSType; } }
 
         public abstract Stream GetFile(string[] path, int pointer);
