@@ -104,6 +104,9 @@ namespace Atomix.Kernel_H.exec
             public ushort st_shndx;
         };
 
+		/* GOT symbol name */
+		const string GOT_MAGIC  = "_GLOBAL_OFFSET_TABLE_";
+
         /* Identification indexes for e_ident field in ELF header */
         const int EI_MAG0       = 0;         /* file ID byte 0 */
         const int EI_MAG1       = 1;         /* file ID byte 1 */
@@ -122,9 +125,18 @@ namespace Atomix.Kernel_H.exec
         const byte ELFMAG3      = (byte)'F';
 
         /* Relocation Type for i386 machine */
-        const byte R_386_NONE   = 0;
-        const byte R_386_32     = 1;
-        const byte R_386_PC32   = 2;
+        const byte R_386_NONE   	= 0;
+        const byte R_386_32     	= 1;	/* S + A */
+		const byte R_386_PC32   	= 2;	/* S + A - P */
+		const byte R_386_GOT32   	= 3;	/* G + A */
+		const byte R_386_PLT32   	= 4;	/* L + A - P */
+		const byte R_386_COPY   	= 5;
+		const byte R_386_GLOB_DAT   = 6;	/* S */
+		const byte R_386_JMP_SLOT   = 7;	/* S */
+		const byte R_386_RELATIVE   = 8;	/* B + A */
+		const byte R_386_GOTOFF   	= 9;	/* S + A - GOT */
+		const byte R_386_GOTPC   	= 10;	/* GOT + A - P */
+		const byte R_386_32PLT   	= 11;	/* L + A */
 
         /* File class (or capacity) in e_ident[4] of ELF header */
         const byte ELFCLASSNONE = 0;        /* invalid class */
@@ -229,6 +241,11 @@ namespace Atomix.Kernel_H.exec
                     LoadSection(BaseAddress, Shdr);
                 }
             }
+
+			// create GOT if it does not exist
+			// http://stackoverflow.com/questions/14352809/not-enough-got-space-for-local-got-entries
+			// create 128KB table
+			uint GOT = Heap.kmalloc(256 * 4); // 256 entries GOT table
             
             /* Iterate over all sections and perform relocations */
             Shdr = (Elf_Shdr*)(BaseAddress + Header->e_shoff);
@@ -238,13 +255,13 @@ namespace Atomix.Kernel_H.exec
                 {
                     case SHT_SYMTAB:
                         {
-                            RegisterSymbol(BaseAddress, Header, Shdr, aPath);
+                            RegisterSymbol(Header, Shdr, aPath);
                         }
                         break;
                     case SHT_REL:
                         {
                             Shdr->sh_addr = BaseAddress + Shdr->sh_offset;
-                            Relocate(BaseAddress, Header, Shdr);
+                            Relocate(Header, Shdr, GOT);
                         }
                         break;
                 }
@@ -256,32 +273,44 @@ namespace Atomix.Kernel_H.exec
             return LoadAddress;
         }
 
-        private static void Relocate(uint aBaseAddress, Elf_Header* aHeader, Elf_Shdr* aShdr)
+		private static void Relocate(Elf_Header* aHeader, Elf_Shdr* aShdr, uint GOT)
         {
+            uint BaseAddress = (uint)aHeader;
             Elf32_Rel* Reloc = (Elf32_Rel*)aShdr->sh_addr;
-            Elf_Shdr* TargetSection = (Elf_Shdr*)(aBaseAddress + aHeader->e_shoff) + aShdr->sh_info;
+            Elf_Shdr* TargetSection = (Elf_Shdr*)(BaseAddress + aHeader->e_shoff) + aShdr->sh_info;
             
             uint RelocCount = aShdr->sh_size / aShdr->sh_entsize;
 
-            uint SymIdx, SymVal;
+            uint SymIdx, SymVal, RelocType;
             for (int i = 0; i < RelocCount; i++, Reloc++)
             {
                 SymVal = 0;
                 SymIdx = (Reloc->r_info >> 8);
+				RelocType = Reloc->r_info & 0xFF;
 
                 if (SymIdx != SHN_UNDEF)
                 {
-                    SymVal = GetSymValue(aBaseAddress, aHeader, TargetSection->sh_link, SymIdx);
+					if (RelocType == R_386_GOTPC)
+						SymVal = GOT;
+					else if (RelocType == R_386_PLT32)
+						SymVal = 0;
+					else
+                    	SymVal = GetSymValue(aHeader, TargetSection->sh_link, SymIdx);
                 }
 
                 uint* add_ref = (uint*)(TargetSection->sh_addr + Reloc->r_offset);
-                switch(Reloc->r_info & 0xFF)
+				switch(RelocType)
                 {
                     case R_386_32:
-                        *add_ref = *add_ref + SymVal;
+						*add_ref = SymVal + *add_ref; // S + A
                         break;
-                    case R_386_PC32:
-                        *add_ref = *add_ref + SymVal - (uint)add_ref;
+					case R_386_GOTOFF:
+						*add_ref = SymVal + *add_ref - GOT;	// S + A - GOT
+						break;
+					case R_386_PLT32: 	// L + A - P
+					case R_386_PC32: 	// S + A - P
+					case R_386_GOTPC: 	// GOT + A - P
+						*add_ref = SymVal + *add_ref - (uint)add_ref;
                         break;
                     default:
                         throw new Exception("[ELF]: Unsupported Relocation type");
@@ -289,27 +318,28 @@ namespace Atomix.Kernel_H.exec
             }
         }
 
-        private static void RegisterSymbol(uint aBaseAddress, Elf_Header* aHeader, Elf_Shdr* aShdr, string aPath)
+        private static void RegisterSymbol(Elf_Header* aHeader, Elf_Shdr* aShdr, string aPath)
         {
+            uint BaseAddress = (uint)aHeader;
             Elf32_Sym* SymTab = (Elf32_Sym*)aShdr->sh_addr;
-            var StrTabAdd = ((Elf_Shdr*)(aBaseAddress + aHeader->e_shoff) + aShdr->sh_link)->sh_addr;
+            var StrTabAdd = ((Elf_Shdr*)(BaseAddress + aHeader->e_shoff) + aShdr->sh_link)->sh_addr;
 
             uint count = aShdr->sh_size / aShdr->sh_entsize;
             
             uint Address;
-            for (int i = 0; i < count; i++, SymTab++)
+            for (uint i = 0; i < count; i++, SymTab++)
             {
                 if ((SymTab->st_info >> 4) == STB_GLOBAL)
                 {
                     switch (SymTab->st_shndx)
                     {
-                        case SHN_UNDEF:
-                            throw new Exception("[ELF]: Extern Symbol not supported");
+						case SHN_UNDEF:
+							continue; // for now ignore UNDEF Symbols
                         case SHN_ABS:
                             Address = SymTab->st_value;
                             break;
                         default:
-                            var TargetSection = (Elf_Shdr*)(aBaseAddress + aHeader->e_shoff) + SymTab->st_shndx;
+                            var TargetSection = (Elf_Shdr*)(BaseAddress + aHeader->e_shoff) + SymTab->st_shndx;
                             Address = TargetSection->sh_addr + SymTab->st_value;
                             break;
                     }
@@ -323,19 +353,27 @@ namespace Atomix.Kernel_H.exec
             }
         }
 
-        private static uint GetSymValue(uint aBaseAddress, Elf_Header* aHeader, uint aTableIdx, uint aSymIdx)
+        private static uint GetSymValue(Elf_Header* aHeader, uint aTableIdx, uint aSymIdx)
         {
-            Elf_Shdr* SymSection = (Elf_Shdr*)(aBaseAddress + aHeader->e_shoff) + aTableIdx;
+            uint BaseAddress = (uint)aHeader;
+            Elf_Shdr* SymSection = (Elf_Shdr*)(BaseAddress + aHeader->e_shoff) + aTableIdx;
             Elf32_Sym* SymTab = (Elf32_Sym*)(SymSection->sh_addr) + aSymIdx;
 
             switch (SymTab->st_shndx)
             {
-                case SHN_UNDEF:
-                    throw new Exception("[ELF]: Extern Symbol not supported");
+				case SHN_UNDEF:
+					{
+						var StrTabAdd = ((Elf_Shdr*)(BaseAddress + aHeader->e_shoff) + SymSection->sh_link)->sh_addr;
+						string SymName = ASCII.GetString((byte*)(StrTabAdd + SymTab->st_name), 0, 0x0FFFFFFF);
+											
+						Debug.Write ("Undefined Symbol: %s\n", SymName);
+						Heap.Free (SymName);
+						throw new Exception ("[ELF]: Extern Symbol not supported");
+					}
                 case SHN_ABS:
                     return SymTab->st_value;
                 default:
-                    Elf_Shdr* TargetSection = (Elf_Shdr*)(aBaseAddress + aHeader->e_shoff) + SymTab->st_shndx;
+                    Elf_Shdr* TargetSection = (Elf_Shdr*)(BaseAddress + aHeader->e_shoff) + SymTab->st_shndx;
                     return TargetSection->sh_addr + SymTab->st_value;
             }
         }
