@@ -70,6 +70,7 @@ namespace Atomix
             Plugs = new Dictionary<MethodBase, string>();
             StringTable = new Dictionary<string, string>();
             Core.vStack = new VirtualStack();
+            Core.NasmHeaders = new List<string>();
             Core.DataMember = new List<AsmData>();
             Core.AssemblerCode = new List<Instruction>();
             MSIL = new Dictionary<ILCode, MSIL>();
@@ -195,16 +196,9 @@ namespace Atomix
                     {
                         if ((CPUArch)xAttr.ConstructorArguments[0].Value == cpu)
                         {
-                            switch (cpu)
-                            {
-                                case CPUArch.x86:
-                                    {
-                                        Core.DataMember.Add(new AsmData("use32", string.Empty));
-                                        Core.DataMember.Add(new AsmData("org", xAttr.ConstructorArguments[1].Value as string));
-                                    }
-                                    break;
-                                    // Need it to implement for other platforms too
-                            }
+                            Core.NasmHeaders.Add("global Kernel_Main");
+                            Core.NasmHeaders.Add("Kernel_Main equ (_Kernel_Main - 0xC0000000)");
+
                             return xType;
                         }
                     }
@@ -212,7 +206,6 @@ namespace Atomix
                     {
                         if ((CPUArch)xAttr.ConstructorArguments[0].Value == cpu)
                         {
-                            Core.DataMember.Add(new AsmData("SECTION", ".text"));
                             BuildingApplication = true;
                             return xType;
                         }
@@ -377,7 +370,7 @@ namespace Atomix
             if (Pointers.ContainsKey(aField))
             {
                 // As simple as that
-                Core.DataMember.Add(new AsmData(xName, "dd " + Pointers[aField]));
+                Core.InsertData(new AsmData(xName, "dd " + Pointers[aField]));
             }
             else
             {                
@@ -412,7 +405,7 @@ namespace Atomix
                     // Do nothing, if error...we won't care it
                 }
                 // Add it to data member
-                Core.DataMember.Add(new AsmData(xName, xData));
+                Core.InsertData(new AsmData(xName, xData));
             }
             // Add it build definations
             BuildDefinations.Add(aField);
@@ -622,9 +615,8 @@ namespace Atomix
         {
             ILCompiler.Logger.Write("@Processor", aMethod.FullName(), "Scanning Inline Assembly Method()");
             string xMethodLabel = aMethod.FullName();
-
-            if (aMethod.IsPublic && BuildingApplication)
-                Core.DataMember.Add(new AsmData("GLOBAL", xMethodLabel));
+            
+            TryToMakeGlobalSymbol(aMethod);
 
             Core.AssemblerCode.Add(new Label(xMethodLabel));
 
@@ -657,6 +649,13 @@ namespace Atomix
             ILCompiler.Logger.Write("Method Build Done()");
         }
 
+        private static string[] RestrictedAssembliesName = 
+            {
+                "mscorlib",
+                "System",
+                Assembly.GetExecutingAssembly().GetName().Name
+            };
+
         /// <summary>
         /// Scan the normal method and find inline calls of virtual or real method to add it into queue
         /// After that Process method and add its assembly to main Array
@@ -668,7 +667,7 @@ namespace Atomix
             var xBody = aMethod.GetMethodBody();
             
             var xAssemblyName  = aMethod.DeclaringType.Assembly.GetName().Name;
-            if ((xAssemblyName == "mscorlib" || xAssemblyName == "System") && Plugs.ContainsValue(aMethod.FullName()))
+            if (RestrictedAssembliesName.Contains(xAssemblyName) && Plugs.ContainsValue(aMethod.FullName()))
                 return;
             
             if (ILHelper.IsDelegate(aMethod.DeclaringType))
@@ -725,15 +724,14 @@ namespace Atomix
 
             /* Method begin */
             Core.AssemblerCode.Add(new Label(xMethodLabel));
-
-            if (aMethod.IsPublic && BuildingApplication)
-                Core.DataMember.Add(new AsmData("GLOBAL", xMethodLabel));
+            
+            TryToMakeGlobalSymbol(aMethod);
 
             Core.AssemblerCode.Add(new Comment(Worker.OPTIMIZATION_START_FLAG));
             if (aMethod.IsStatic && aMethod is ConstructorInfo)
             {
                 string aData = "cctor_" + xMethodLabel;
-                Core.DataMember.Add(new AsmData(aData, new byte[] { 0x00 }));
+                Core.InsertData(new AsmData(aData, new byte[] { 0x00 }));
                 Core.AssemblerCode.Add(new Cmp() { DestinationRef = aData, DestinationIndirect = true, SourceRef = "0x0", Size = 8 });
                 Core.AssemblerCode.Add(new Jmp() { Condition = ConditionalJumpEnum.JE, DestinationRef = Label.PrimaryLabel + ".Load" });
                 /* Footer of method */
@@ -908,6 +906,17 @@ namespace Atomix
             BuildDefinations.Add(aType);
         }
 
+        private void TryToMakeGlobalSymbol(MethodBase aMethod)
+        {
+            var xAssemblyName = aMethod.DeclaringType.Assembly.GetName().Name;
+            if (aMethod.IsPublic && 
+                aMethod.DeclaringType.IsVisible &&
+                !RestrictedAssembliesName.Contains(xAssemblyName))
+            {
+                Core.NasmHeaders.Add("global " + aMethod.FullName());
+            }
+        }
+
         private void VTableFlush()
         {
             uint xUID = 0;
@@ -1066,6 +1075,27 @@ namespace Atomix
             BuildDefinations.Add(xMethod);
         }
 
+        private static void BssSectionHeader(StreamWriter aSW)
+        {
+            aSW.WriteLine();
+            aSW.WriteLine("section .bss");
+            aSW.WriteLine("align 32");
+        }
+
+        private static void DataSectionHeader(StreamWriter aSW)
+        {
+            aSW.WriteLine();
+            aSW.WriteLine("section .data");
+            aSW.WriteLine("align 4");
+        }
+
+        private static void TextSectionHeader(StreamWriter aSW)
+        {
+            aSW.WriteLine();
+            aSW.WriteLine("section .text");
+            aSW.WriteLine("align 4");
+        }
+
         public void FlushAsmFile()
         {
             // Flush String Data table
@@ -1075,15 +1105,29 @@ namespace Atomix
             
             // Add a label of Kernel End, it is used by our heap to know from where it starts allocating memory
             Core.AssemblerCode.Add(new Label("Compiler_End"));
-            
+                        
             using (var xWriter = new StreamWriter(ILCompiler.OutputFile, false))
             {
-                // Firstly add datamember
-                foreach (var dm in Core.DataMember)
-                    dm.FlushText(xWriter);
+                foreach (var Header in Core.NasmHeaders)
+                    xWriter.WriteLine(Header);
 
-                // Leave a line because we want make it beautiful =P
-                xWriter.WriteLine("");
+                // if any BSS data is contained or not
+                if (Core.DataMemberBssSegmentIndex > 0)
+                    BssSectionHeader(xWriter);
+
+                // Firstly add datamember
+                bool IsFlagged = true;
+                foreach (var AsmData in Core.DataMember)
+                {
+                    if (AsmData.IsBssData == false && IsFlagged == true)
+                    {
+                        IsFlagged = false;
+                        DataSectionHeader(xWriter);
+                    }
+                    AsmData.FlushText(xWriter);
+                }
+
+                TextSectionHeader(xWriter);
 
                 if (DoOptimization)
                 {
@@ -1092,26 +1136,26 @@ namespace Atomix
                     catch (Exception e) { Console.WriteLine("Optimization-Exception:" + e.ToString()); }
                 }
 
-                foreach (var ac in Core.AssemblerCode)
+                foreach (var instruction in Core.AssemblerCode)
                 {
-                    if (ac is Label)
+                    if (instruction is Label)
                     {
                         xWriter.WriteLine();
-                        ac.FlushText(xWriter);                        
+                        instruction.FlushText(xWriter);
                     }
                     else
                     {
                         xWriter.Write("     ");
-                        if (ac is Call)
+                        if (instruction is Call)
                         {
-                            var InstCall = ac as Call;
+                            var InstCall = instruction as Call;
                             if (InstCall.FunctionLabel)
                             {
                                 Call.FlushText(xWriter, (Core.StaticLabels[InstCall.Address] as MethodBase).FullName());
                                 continue;
                             }
                         }
-                        ac.FlushText(xWriter);
+                        instruction.FlushText(xWriter);
                     }
                 }
             }

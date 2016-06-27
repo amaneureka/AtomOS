@@ -29,51 +29,43 @@ namespace Atomix.Kernel_H
     /// Startpoint for x86 CPU
     /// Kernel will be organised at 0x10000
     /// </summary>
-    [Kernel(CPUArch.x86, "0xC0100000")]
+    [Kernel(CPUArch.x86, "0xC0000000")]
     public static class Startx86
     {
-        [Assembly, Plug("Kernel_Main")]
+        [Assembly, Plug("_Kernel_Main")]
         public static void main()
         {
-            Core.DataMember.Add(new AsmData("[map all main.map]", string.Empty));
+            const uint MultibootMagic = 0x1BADB002;
+            const uint MultibootFlags = 0x10007;
+            const uint InitalStackSize = 0x50000;
+            const uint InitalHeapSize = 0x100000;
+            
+            Core.AssemblerCode.Add(new Literal("MultibootSignature dd {0}", MultibootMagic));
+            Core.AssemblerCode.Add(new Literal("MultibootFlags dd {0}", 65543));
+            Core.AssemblerCode.Add(new Literal("MultibootChecksum dd {0}", -(MultibootMagic + MultibootFlags)));
 
-            /* Multiboot Header */
-            Core.DataMember.Add(new AsmData("MultibootSignature", BitConverter.GetBytes(0x1BADB002)));
-            Core.DataMember.Add(new AsmData("MultibootFlags", BitConverter.GetBytes(65543)));
-            Core.DataMember.Add(new AsmData("MultibootChecksum", BitConverter.GetBytes(-464433161)));
-            Core.DataMember.Add(new AsmData("MultibootHeaderAddr", "dd (MultibootSignature - 0xC0000000)"));
-            Core.DataMember.Add(new AsmData("MultibootLoadAddr", "dd (MultibootSignature - 0xC0000000)"));
-            Core.DataMember.Add(new AsmData("MultibootLoadEndAddr", "dd (Compiler_End - 0xC0000000)"));
-            Core.DataMember.Add(new AsmData("MultibootBSSEndAddr", "dd (Compiler_End - 0xC0000000)"));
-            Core.DataMember.Add(new AsmData("MultibootEntryAddr", "dd (Kernel_Main - 0xC0000000)"));
-            Core.DataMember.Add(new AsmData("MultibootVesaMode", BitConverter.GetBytes(0)));
-            Core.DataMember.Add(new AsmData("MultibootVesaWidth", BitConverter.GetBytes(1024)));
-            Core.DataMember.Add(new AsmData("MultibootVesaHeight", BitConverter.GetBytes(768)));
-            Core.DataMember.Add(new AsmData("MultibootVesaDepth", BitConverter.GetBytes(32)));
-            Core.DataMember.Add(new AsmData("BeforeInitialStack:", "TIMES 327680 db 0"));
-            Core.DataMember.Add(new AsmData("InitialStack:", string.Empty));
-            Core.DataMember.Add(new AsmData("InitialHeap:", "TIMES 0x100000 db 0"));
+            Core.InsertData(new AsmData("InitialStack", InitalStackSize));
+            Core.InsertData(new AsmData("InitialHeap", InitalHeapSize));
 
             #region KernelPageDirectory
-            Core.DataMember.Add(new AsmData("align 0x1000", string.Empty));
-            Core.DataMember.Add(new AsmData("KernelPageDirectory:", "\ndd (KernelPageTable - 0xC0000000 + 0x3)\ntimes (0x300 - 1) dd 0\ndd (KernelPageTable - 0xC0000000 + 0x3)\ntimes (1024 - 0x300 - 1) dd 0"));
+            Core.InsertData(new AsmData("align 0x1000", string.Empty));
+            Core.InsertData(new AsmData("KernelPageDirectory:", "\ndd (KernelPageTable - 0xC0000000 + 0x3)\ntimes (0x300 - 1) dd 0\ndd (KernelPageTable - 0xC0000000 + 0x3)\ntimes (1024 - 0x300 - 1) dd 0"));
             var xPageTable = new string[1024];
             for (int i = 0; i < 1024; i++)
                 xPageTable[i] = ((i * 0x1000) | 0x3).ToString();
-            Core.DataMember.Add(new AsmData("KernelPageTable", xPageTable));
+            Core.InsertData(new AsmData("KernelPageTable", xPageTable));
             #endregion
-            #region Paging
-            //Load Page Directory Base Register.
+            
+            /* Load Page Directory Base Register. */
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "(KernelPageDirectory - 0xC0000000)" });
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.CR3, SourceReg = Registers.ECX });
 
-            //Set PG bit in CR0 to enable paging.
+            /* Set PG bit in CR0 to enable paging. */
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.CR0 });
             Core.AssemblerCode.Add(new Or { DestinationReg = Registers.ECX, SourceRef = "0x80000000" });
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.CR0, SourceReg = Registers.ECX });
-            #endregion
 
-            //Prepare for our quantum jump to Higher address
+            /* Prepare for our quantum jump to Higher address */
             Core.AssemblerCode.Add(new Lea { DestinationReg = Registers.ECX, SourceRef = "Higher_Half_Kernel", SourceIndirect = true });
             Core.AssemblerCode.Add(new Jmp { DestinationRef = "ECX" });
 
@@ -83,6 +75,9 @@ namespace Atomix.Kernel_H
 
             /* Setup Kernel stack */
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ESP, SourceRef = "InitialStack" });
+            Core.AssemblerCode.Add(new Add { DestinationReg = Registers.ESP, SourceRef = InitalStackSize.ToString() });
+
+            /* Push relevent data to the stack */
             Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });//Push Magic Number
             Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EBX });//Push Multiboot Address
             Core.AssemblerCode.Add(new Push { DestinationRef = "KernelPageDirectory" });
