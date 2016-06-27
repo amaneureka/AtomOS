@@ -17,6 +17,7 @@ SET ATOMIX_COMPILER=.\Bin\Atomixilc.exe
 SET ATOMIX_KERNEL=.\Bin\Atomix.Kernel_H.dll
 SET ATOMIX_ISO_DIR=.\ISO
 SET ATOMIX_RD=.\ramdisk
+SET ATOMIX_KERNEL_LINKER=.\linker.ld
 SET ATOMIX_LIB=.\Bin\Atomix.Core.dll
 SET ATOMIX_RamFS=.\Bin\Atomix.RamFS.exe
 
@@ -33,7 +34,9 @@ IF /I "%EXIT_CODE%" NEQ "0" GOTO BUILDER_EXIT
 REM BUILD KERNEL FIRST
 %ATOMIX_COMPILER% -cpu %BUILD_CPU% -i %ATOMIX_KERNEL% -o %OUTPUT_DIR%\Kernel.asm %ATOMIX_COMPILER_FLAGS%
 IF NOT EXIST %OUTPUT_DIR%\Kernel.asm GOTO BUILDER_EXIT
-nasm.exe -fbin %OUTPUT_DIR%\Kernel.asm -o %ATOMIX_ISO_DIR%\Kernel.bin
+nasm.exe -felf %OUTPUT_DIR%\Kernel.asm -o %ATOMIX_ISO_DIR%\Kernel.o
+ld --oformat=elf_i386 %ATOMIX_ISO_DIR%\Kernel.o -T %ATOMIX_KERNEL_LINKER% -o %ATOMIX_ISO_DIR%\Kernel.bin
+rm %ATOMIX_ISO_DIR%\Kernel.o
 
 REM BUILD APP ONE BY ONE
 FOR %%I IN (%ATOMIX_APPS%\*.dll) DO (
