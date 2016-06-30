@@ -71,7 +71,7 @@ namespace Kernel_alpha.Drivers
 
             for (int i = 19; i >= 16; i--)
             {
-                addr += (*((byte*)ptr + i));
+                addr += (*(ptr + i));
                 addr = (i == 16) ? addr : addr << 8;
             }
 
@@ -80,14 +80,14 @@ namespace Kernel_alpha.Drivers
 
             for (int i = 3; i >= 0; i--)
             {
-                addr += (*((byte*)ptr + i));
+                addr += (*(ptr + i));
                 addr = (i == 0) ? addr : addr << 8;
             }
 
             int length = addr;
             ptr -= 4;
 
-            if (ptr != null && misc.acpiCheckHeader((byte*)ptr, "RSDT") == 0)
+            if (ptr != null && misc.acpiCheckHeader(ptr, "RSDT") == 0)
             {
                 addr = 0;
                 int entrys = length;
@@ -99,12 +99,12 @@ namespace Kernel_alpha.Drivers
                 {
                     for (int i = 3; i >= 0; i--)
                     {
-                        addr += (*((byte*)ptr + i));
+                        addr += (*(ptr + i));
                         addr = (i == 0) ? addr : addr << 8;
                     }
 
                     yeuse = (byte*)addr;
-                    Facp = (byte*)yeuse;
+                    Facp = yeuse;
 
                     if (misc.Compare("FACP", Facp) == 0)
                     {
@@ -115,7 +115,7 @@ namespace Kernel_alpha.Drivers
 
                             while (0 < dsdtLength--)
                             {
-                                if (misc.Compare("_S5_", (byte*)S5Addr) == 0)
+                                if (misc.Compare("_S5_", S5Addr) == 0)
                                     break;
                                 S5Addr++;
                             }
@@ -185,11 +185,11 @@ namespace Kernel_alpha.Drivers
                     }
 
                     if (i < 300) return true;
-                    else return false;
+                    return false;
                 }
-                else return false;
+                return false;
             }
-            else return true;
+            return true;
         }
 
         // Disable ACPI
@@ -251,19 +251,32 @@ namespace Kernel_alpha.Drivers
         // FACP Table
         private byte facpbget (int number)
         {
-            if (number == 0) { return *(Facp + 52); }
-            else if (number == 1) { return *(Facp + 53); }
-            else if (number == 2) { return *(Facp + 89); }
-            else return 0;
+            switch (number) {
+            case 0:
+                return *(Facp + 52);
+            case 1:
+                return *(Facp + 53);
+            case 2:
+                return *(Facp + 89);
+            default:
+                return 0;
+            }
         }
 
         private int* facpget (int number)
         {
-            if (number == 0) { return (int*)*((int*)(Facp + 40)); }
-            else if (number == 1) { return (int*)*((int*)(Facp + 48)); }
-            else if (number == 2) { return (int*)*((int*)(Facp + 64)); }
-            else if (number == 3) { return (int*)*((int*)(Facp + 68)); }
-            else { return null; }
+            switch (number) {
+            case 0:
+                return (int*)*((int*)(Facp + 40));
+            case 1:
+                return (int*)*((int*)(Facp + 48));
+            case 2:
+                return (int*)*((int*)(Facp + 64));
+            case 3:
+                return (int*)*((int*)(Facp + 68));
+            default:
+                return null;
+            }
         }
     }
 }
