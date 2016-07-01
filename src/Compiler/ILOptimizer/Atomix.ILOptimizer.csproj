@@ -39,7 +39,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="optimization.cs" />
+    <Compile Include="OptimizationBase.cs" />
     <Compile Include="optimizations\ebppush.cs" />
     <Compile Include="optimizations\espadd.cs" />
     <Compile Include="optimizations\movzero.cs" />

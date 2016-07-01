@@ -32,22 +32,26 @@ namespace Atomix
     public class Compiler
     {
         /// <summary>
-        /// The Members which yet to be build
+        /// The Members which are yet to be build
         /// </summary>
         public Queue<_MemberInfo> QueuedMember;
+
         /// <summary>
         /// The Members which are already build
         /// </summary>
         private List<_MemberInfo> BuildDefinations;
+
         /// <summary>
         /// The Dictionary of Build Target method and its label --> Plug
         /// it can also take integer but the Dummy should present which contains that integer
         /// </summary>
         public Dictionary<MethodBase, string> Plugs;
+
         /// <summary>
         /// It contains all literal string datamember
         /// </summary>
         private Dictionary<string, string> StringTable;
+
         /// <summary>
         /// The list of implemented Microsoft IL's by our compiler
         /// </summary>

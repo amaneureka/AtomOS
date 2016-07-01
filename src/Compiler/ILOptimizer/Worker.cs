@@ -1,30 +1,71 @@
-﻿using System;
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is
+*                   strictly prohibited Proprietary and confidential.
+* PURPOSE:          Optimization worker
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
+
+using System;
 using System.Collections.Generic;
 
 using Atomix.Assembler;
-using Atomix.Assembler.x86;
 
-using Atomix.ILOptimizer.optimizations;
+using Atomix.ILOptimizer.Optimizations;
 
 namespace Atomix.ILOptimizer
 {
+
+    /// <summary>
+    /// Worker.
+    /// </summary>
     public class Worker
     {
-        private List<Instruction> Assembly;
-        private List<Instruction> OptimizedAssembly;
-        public const string OPTIMIZATION_START_FLAG = "__do_optimization__";
-        public const string OPTIMIAZTION_END_FLAG = "__do_end_optimization__";
-        public List<optimization> Algorithms;
 
-        public Worker(List<Instruction> mAssembly)
+        /// <summary>
+        /// The input instructions.
+        /// </summary>
+        private readonly List<Instruction> Assembly;
+
+        /// <summary>
+        /// The (optimized) output instructions.
+        /// </summary>
+        private readonly List<Instruction> OptimizedAssembly;
+
+        /// <summary>
+        /// The optimization start flag.
+        /// </summary>
+        public const string OPTIMIZATION_START_FLAG = "__do_optimization__";
+
+        /// <summary>
+        /// The optimiaztion end flag.
+        /// </summary>
+        public const string OPTIMIAZTION_END_FLAG = "__do_end_optimization__";
+
+        /// <summary>
+        /// The optimization algorithms.
+        /// </summary>
+        public List<OptimizationBase> Algorithms;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:Atomix.ILOptimizer.Worker"/> class.
+        /// </summary>
+        /// <param name="aAssembly">The instructions that make the assembly.</param>
+        public Worker(List<Instruction> aAssembly)
         {
-            this.Assembly = mAssembly;
-            this.OptimizedAssembly = new List<Instruction>();
-            this.Algorithms = new List<optimization>();
+            Assembly = aAssembly;
+            OptimizedAssembly = new List<Instruction>();
+            Algorithms = new List<OptimizationBase>();
+
+            // Load the algorithms
             LoadAlgorithms();
         }
 
-        
+        /// <summary>
+        /// Loads the algorithms.
+        /// </summary>
+        /// <returns>The algorithms.</returns>
         private void LoadAlgorithms()
         {
             Algorithms.Add(new pushpop());
@@ -34,29 +75,50 @@ namespace Atomix.ILOptimizer
             //Algorithms.Add(new movmov());
         }
 
+        /// <summary>
+        /// Optimizes code based on the loaded algorithms.
+        /// </summary>
         public List<Instruction> Start()
         {
             bool start_position = false;
             var Temporary = new List<Instruction>();
 
+            // Iterate over the opcodes
             for (int opcode = 0; opcode < Assembly.Count; opcode++)
             {
+
+                // Fetch the instruction
                 var instruction = Assembly[opcode];
+
+                // Test if the instruction is a comment
                 if (instruction is Comment)
                 {
+
+                    // Get the comment
                     var comment = ((Comment)instruction).Comments;
+
+                    // Test if the comment is the optimization start flag
                     if (comment == OPTIMIZATION_START_FLAG)
                     {
+
+                        // Clear temporaries
                         Temporary.Clear();
                         start_position = true;
                         continue;
                     }
-                    else if (comment == OPTIMIAZTION_END_FLAG)
+
+                    // Test if the comment is the optimization end flag
+                    if (comment == OPTIMIAZTION_END_FLAG)
                     {
+
+                        // Iterate over the algorithms
                         foreach (var algo in Algorithms)
                         {
-                            algo.Execute(Temporary);
-                            //Clean up!
+
+                            // Apply all optimizations on the temporaries
+                            algo.Apply(Temporary);
+
+                            // Clean up!
                             for (int index = 0; index < Temporary.Count; )
                             {
                                 if (Temporary[index] == null)
@@ -67,6 +129,8 @@ namespace Atomix.ILOptimizer
                                 index++;
                             }
                         }
+
+                        // Add the optimizations to the optimized assembly
                         OptimizedAssembly.Add(new Comment(OPTIMIZATION_START_FLAG));
                         OptimizedAssembly.AddRange(Temporary);
                         OptimizedAssembly.Add(new Comment(OPTIMIAZTION_END_FLAG));
@@ -80,6 +144,8 @@ namespace Atomix.ILOptimizer
                 else
                     Temporary.Add(instruction);
             }
+
+            // Return the optimized assembly
             return OptimizedAssembly;
         }
     }
