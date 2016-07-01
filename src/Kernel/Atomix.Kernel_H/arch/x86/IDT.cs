@@ -85,14 +85,14 @@ namespace Atomix.Kernel_H.arch.x86
         {
             var interrupt = xContext.Interrupt;
             var Handler = xINT[interrupt];
-            
+
             if (Handler != null)
                 Handler(ref xContext);
             else if (interrupt < 0x20)
                 Fault.Handle(ref xContext);
             else
                 Debug.Write("Unhandled Interrupt %d\n", interrupt);
-            
+
             // Send End of Interrupt for IRQs
             if (interrupt >= 0x20)
                 PIC.EndOfInterrupt(interrupt);
@@ -116,14 +116,14 @@ namespace Atomix.Kernel_H.arch.x86
 
                 var xHex = i.ToString("X2");
                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceRef = "__ISR_Handler_" + xHex });
-                Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = (i * 8) + 0, SourceReg = Registers.BL, Size = 8 });
-                Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = (i * 8) + 1, SourceReg = Registers.BH, Size = 8 });
+                Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = (i * 8) + 0, SourceReg = Registers.BX, Size = 16 });
 
                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = (i * 8) + 2, SourceRef = "0x8", Size = 8 });
                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = (i * 8) + 5, SourceRef = "0x8E", Size = 8 });
+
                 Core.AssemblerCode.Add(new ShiftRight { DestinationReg = Registers.EBX, SourceRef = "0x10" });
-                Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = (i * 8) + 6, SourceReg = Registers.BL, Size = 8 });
-                Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = (i * 8) + 7, SourceReg = Registers.BH, Size = 8 });
+
+                Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = (i * 8) + 6, SourceReg = Registers.BX, Size = 16 });
             }
             var xLabel = Label.PrimaryLabel + ".End";
             Core.AssemblerCode.Add(new Jmp { DestinationRef = xLabel });
@@ -151,7 +151,7 @@ namespace Atomix.Kernel_H.arch.x86
                 Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
                 Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
                 Core.AssemblerCode.Add(new Literal("jmp 8:__ISR_Handler_" + xHex + ".SetCS"));
-                
+
                 Core.AssemblerCode.Add(new Label("__ISR_Handler_" + xHex + ".SetCS"));
                 Core.AssemblerCode.Add(new Call("__Interrupt_Handler__", true));
                 Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
