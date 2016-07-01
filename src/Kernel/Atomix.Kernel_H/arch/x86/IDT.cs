@@ -23,6 +23,39 @@ namespace Atomix.Kernel_H.arch.x86
 {
     public delegate void InterruptHandler(ref IRQContext state);
 
+    [StructLayout(LayoutKind.Explicit, Size = 56)]
+    public struct IRQContext
+    {
+        [FieldOffset(0)]
+        public uint MMX_Context;
+        [FieldOffset(4)]
+        public uint EDI;
+        [FieldOffset(8)]
+        public uint ESI;
+        [FieldOffset(12)]
+        public uint EBP;
+        [FieldOffset(16)]
+        public uint ESP;
+        [FieldOffset(20)]
+        public uint EBX;
+        [FieldOffset(24)]
+        public uint EDX;
+        [FieldOffset(28)]
+        public uint ECX;
+        [FieldOffset(32)]
+        public uint EAX;
+        [FieldOffset(36)]
+        public uint Interrupt;
+        [FieldOffset(40)]
+        public uint ErrorCode;
+        [FieldOffset(44)]
+        public uint EIP;
+        [FieldOffset(48)]
+        public uint CS;
+        [FieldOffset(52)]
+        public uint EFlags;
+    };
+
     public static class IDT
     {
         private static uint idt;
@@ -83,14 +116,14 @@ namespace Atomix.Kernel_H.arch.x86
 
                 var xHex = i.ToString("X2");
                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceRef = "__ISR_Handler_" + xHex });
-                Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = (i * 8) + 0, SourceReg = Registers.BL, Size = 8 });
-                Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = (i * 8) + 1, SourceReg = Registers.BH, Size = 8 });
+                Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = (i * 8) + 0, SourceReg = Registers.BX, Size = 16 });
 
                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = (i * 8) + 2, SourceRef = "0x8", Size = 8 });
                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = (i * 8) + 5, SourceRef = "0x8E", Size = 8 });
+
                 Core.AssemblerCode.Add(new ShiftRight { DestinationReg = Registers.EBX, SourceRef = "0x10" });
-                Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = (i * 8) + 6, SourceReg = Registers.BL, Size = 8 });
-                Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = (i * 8) + 7, SourceReg = Registers.BH, Size = 8 });
+
+                Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = (i * 8) + 6, SourceReg = Registers.BX, Size = 16 });
             }
             var xLabel = Label.PrimaryLabel + ".End";
             Core.AssemblerCode.Add(new Jmp { DestinationRef = xLabel });
@@ -136,39 +169,4 @@ namespace Atomix.Kernel_H.arch.x86
             Core.AssemblerCode.Add(new Literal("lidt [EAX]"));
         }
     }
-    #region Defines
-    [StructLayout(LayoutKind.Explicit, Size = 56)]
-    public struct IRQContext
-    {
-        [FieldOffset(0)]
-        public uint MMX_Context;
-        [FieldOffset(4)]
-        public uint EDI;
-        [FieldOffset(8)]
-        public uint ESI;
-        [FieldOffset(12)]
-        public uint EBP;
-        [FieldOffset(16)]
-        public uint ESP;
-        [FieldOffset(20)]
-        public uint EBX;
-        [FieldOffset(24)]
-        public uint EDX;
-        [FieldOffset(28)]
-        public uint ECX;
-        [FieldOffset(32)]
-        public uint EAX;
-        [FieldOffset(36)]
-        public uint Interrupt;
-        [FieldOffset(40)]
-        public uint ErrorCode;
-        [FieldOffset(44)]
-        public uint EIP;
-        [FieldOffset(48)]
-        public uint CS;
-        [FieldOffset(52)]
-        public uint EFlags;
-    }
-
-    #endregion
 }

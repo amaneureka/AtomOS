@@ -248,18 +248,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Kernel\Atomix.Kernel_H\Atomix.Kernel_H.csproj">
-      <Project>{58a7e7a9-1dab-403b-a5fa-882987254ef0}</Project>
-      <Name>Atomix.Kernel_H</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Kernel\Atomix.mscorlib\Atomix.mscorlib.csproj">
-      <Project>{31896a26-f45d-46c2-af40-d6d409decbea}</Project>
-      <Name>Atomix.mscorlib</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Kernel\Kernel_alpha\Kernel_alpha.csproj">
-      <Project>{aea97938-d7f4-484f-8cf2-3f62bc2a11ec}</Project>
-      <Name>Kernel_alpha</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Tools\Atomix.RamFS\Atomix.RamFS.csproj">
       <Project>{2a356941-c071-4873-bce2-12bb24e33b0d}</Project>
       <Name>Atomix.RamFS</Name>
