@@ -9,12 +9,12 @@
 
 using System;
 
-using Atomix.Kernel_H.core;
+using Atomix.Kernel_H.Core;
 
 using Atomix.Kernel_H.devices;
-using Atomix.Kernel_H.lib.crypto;
+using Atomix.Kernel_H.Lib.Crypto;
 
-namespace Atomix.Kernel_H.gui
+namespace Atomix.Kernel_H.Gui
 {
     public class Window
     {

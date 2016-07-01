@@ -7,9 +7,9 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-using Atomix.Kernel_H.lib;
+using Atomix.Kernel_H.Lib;
 
-namespace Atomix.Kernel_H.core
+namespace Atomix.Kernel_H.Core
 {
     public static class Scheduler
     {

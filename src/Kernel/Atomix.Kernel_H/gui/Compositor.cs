@@ -9,16 +9,16 @@
 
 using System;
 
-using Atomix.Kernel_H.io;
-using Atomix.Kernel_H.lib;
-using Atomix.Kernel_H.core;
-using Atomix.Kernel_H.arch.x86;
-using Atomix.Kernel_H.lib.crypto;
-using Atomix.Kernel_H.lib.graphic;
-using Atomix.Kernel_H.drivers.video;
-using Atomix.Kernel_H.drivers.input;
+using Atomix.Kernel_H.IO;
+using Atomix.Kernel_H.Lib;
+using Atomix.Kernel_H.Lib.Crypto;
+using Atomix.Kernel_H.Core;
+using Atomix.Kernel_H.Arch.x86;
+using Atomix.Kernel_H.Lib.Graphic;
+using Atomix.Kernel_H.Drivers.Video;
+using Atomix.Kernel_H.Drivers.Input;
 
-namespace Atomix.Kernel_H.gui
+namespace Atomix.Kernel_H.Gui
 {
     public static unsafe class Compositor
     {
@@ -30,9 +30,9 @@ namespace Atomix.Kernel_H.gui
         static uint RENDER_STACK;
 
         static int Mouse_X, Mouse_Y;
-                        
+
         static IList<Pipe> Clients;
-        static IList<Window> WindowList;        
+        static IList<Window> WindowList;
         static IDictionary<string, Window> WindowMap;
 
         static Surface Canvas;
@@ -49,7 +49,7 @@ namespace Atomix.Kernel_H.gui
             WindowList = new IList<Window>(100);
             WindowMap = new IDictionary<string, Window>(sdbm.GetHashCode, string.Equals);
             Canvas = new Surface(VBE.SecondaryBuffer, VBE.Xres, VBE.Yres);
-                        
+
             // Threads stack memory allocation
             MOUSE_INPUT_STACK = Heap.kmalloc(0x1000);
             COMPOSITOR_STACK = Heap.kmalloc(0x1000);
@@ -86,10 +86,10 @@ namespace Atomix.Kernel_H.gui
             Debug.Write("[Compositor]: Render()\n");
 
             int old_mouse_X = 0, old_mouse_Y = 0, screen_width = VBE.Xres, screen_height = VBE.Yres;
-            var MouseBuffer = Helper.GetMouseBitamp();
+            var MouseBuffer = Helper.GetMouseBitmap();
 
             bool MouseUpdate = true;
-            while(true)
+            while (true)
             {
                 int tmp_mouse_X = Mouse_X;
                 int tmp_mouse_Y = Mouse_Y;
@@ -135,7 +135,7 @@ namespace Atomix.Kernel_H.gui
             Debug.Write("[Compositor]: Handle Request()\n");
             var compositor_packet = new byte[PACKET_SIZE];
 
-            while(true)
+            while (true)
             {
                 SERVER.Read(compositor_packet);
                 int ClientID = BitConverter.ToInt32(compositor_packet, 5);
@@ -153,100 +153,102 @@ namespace Atomix.Kernel_H.gui
                  * 4        5           Client ID
                  * 23       9           Function Arguments
                  */
-                switch((RequestHeader)compositor_packet[4])
+                switch ((RequestHeader)compositor_packet[4])
                 {
-                    case RequestHeader.CREATE_NEW_WINDOW:
+                case RequestHeader.CREATE_NEW_WINDOW:
+                    {
+                        /*
+                         * SIZE     OFFSET      DESCRIPTION
+                         * 4        9           Width
+                         * 4        13          Height
+                         */
+                        int WindowWidth = BitConverter.ToInt32(compositor_packet, 9);
+                        int WindowHeight = BitConverter.ToInt32(compositor_packet, 13);
+                        int WindowPosX = BitConverter.ToInt32(compositor_packet, 17);
+                        int WindowPosY = BitConverter.ToInt32(compositor_packet, 21);
+
+                        if (WindowWidth == -1)
+                            WindowWidth = VBE.Xres;
+
+                        if (WindowHeight == -1)
+                            WindowHeight = VBE.Yres;
+
+                        var xNewWindow = new Window(ClientID) { Width = WindowWidth, Height = WindowHeight, PositionX = WindowPosX, PositionY = WindowPosY };
+
+                        string HashString = xNewWindow.HashString;
+                        xNewWindow.Buffer = SHM.Obtain(HashString, (WindowHeight * WindowWidth * VBE.BytesPerPixel));
+
+                        // Yes! we overwrite this buffer because we have no further refernce to this
+                        Helper.CreateNewWindowMessage(compositor_packet, WindowWidth, WindowHeight, HashString);
+
+                        WindowMap.Add(HashString, xNewWindow);
+
+                        // Spin Lock WindowList because it is shared between compositor and render thread
+                        Monitor.AcquireLock(WindowList);
+                        WindowList.Add(xNewWindow);
+                        Monitor.ReleaseLock(WindowList);
+
+                        Clients[ClientID].Write(compositor_packet, false);
+                    }
+                    break;
+                case RequestHeader.WINDOW_REDRAW:
+                    {
+                        string HashCode = Lib.encoding.ASCII.GetString(compositor_packet, 9, 23);
+                        if (WindowMap.ContainsKey(HashCode))//We should give a response to client but leave for now!
                         {
-                            /*
-                             * SIZE     OFFSET      DESCRIPTION
-                             * 4        9           Width
-                             * 4        13          Height
-                             */
-                            int WindowWidth = BitConverter.ToInt32(compositor_packet, 9);
-                            int WindowHeight = BitConverter.ToInt32(compositor_packet, 13);
-                            int WindowPosX = BitConverter.ToInt32(compositor_packet, 17);
-                            int WindowPosY = BitConverter.ToInt32(compositor_packet, 21);
-
-                            if (WindowWidth == -1)
-                                WindowWidth = VBE.Xres;
-
-                            if (WindowHeight == -1)
-                                WindowHeight = VBE.Yres;
-
-                            var xNewWindow = new Window(ClientID) { Width = WindowWidth, Height = WindowHeight, PositionX = WindowPosX, PositionY = WindowPosY };
-
-                            string HashString = xNewWindow.HashString;
-                            xNewWindow.Buffer = SHM.Obtain(HashString, (WindowHeight * WindowWidth * VBE.BytesPerPixel));
-                            
-                            // Yes! we overwrite this buffer because we have no further refernce to this
-                            Helper.CreateNewWindowMessage(compositor_packet, WindowWidth, WindowHeight, HashString);
-
-                            WindowMap.Add(HashString, xNewWindow);
-
-                            // Spin Lock WindowList because it is shared between compositor and render thread
-                            Monitor.AcquireLock(WindowList);
-                            WindowList.Add(xNewWindow);
-                            Monitor.ReleaseLock(WindowList);
-
-                            Clients[ClientID].Write(compositor_packet, false);
+                            var Window = WindowMap[HashCode];
+                            MarkRectangle(Window.PositionX, Window.PositionY, Window.Width, Window.Height);
                         }
-                        break;
-                    case RequestHeader.WINDOW_REDRAW:
-                        {   
-                            string HashCode = lib.encoding.ASCII.GetString(compositor_packet, 9, 23);
-                            if (WindowMap.ContainsKey(HashCode))//We should give a response to client but leave for now!
-                            {
-                                var Window = WindowMap[HashCode];
-                                MarkRectangle(Window.PositionX, Window.PositionY, Window.Width, Window.Height);
-                            }
-                        }
-                        break;
-                    case RequestHeader.WINDOW_MOVE:
-                        {
+                    }
+                    break;
+                case RequestHeader.WINDOW_MOVE:
+                    {
 
-                        }
-                        break;
-                    case RequestHeader.INPUT_MOUSE_EVENT:
-                        {
-                            byte p1 = compositor_packet[5];
-                            byte p2 = compositor_packet[6];
-                            byte p3 = compositor_packet[7];
+                    }
+                    break;
+                case RequestHeader.INPUT_MOUSE_EVENT:
+                    {
+                        byte p1 = compositor_packet[5];
+                        byte p2 = compositor_packet[6];
+                        byte p3 = compositor_packet[7];
 
-                            if ((p1 & 0x10) == 0)
-                                Mouse_X += p2 << 1;
-                            else
-                                Mouse_X -= (p2 ^ 0xFF) << 1;
+                        if ((p1 & 0x10) == 0)
+                            Mouse_X += p2 << 1;
+                        else
+                            Mouse_X -= (p2 ^ 0xFF) << 1;
 
-                            if ((p1 & 0x20) == 0)
-                                Mouse_Y -= p3 << 1;
-                            else
-                                Mouse_Y += (p3 ^ 0xFF) << 1;
+                        if ((p1 & 0x20) == 0)
+                            Mouse_Y -= p3 << 1;
+                        else
+                            Mouse_Y += (p3 ^ 0xFF) << 1;
 
-                            if (Mouse_X < 0 || Mouse_X > VBE.Xres)
-                                Mouse_X = 0;
+                        if (Mouse_X < 0 || Mouse_X > VBE.Xres)
+                            Mouse_X = 0;
 
-                            if (Mouse_Y < 0 || Mouse_Y > VBE.Yres)
-                                Mouse_Y = 0;
-                        }
-                        break;
-                    default:
-                        Debug.Write("Invalid Request package: %d\n", compositor_packet[4]);
-                        break;
+                        if (Mouse_Y < 0 || Mouse_Y > VBE.Yres)
+                            Mouse_Y = 0;
+                    }
+                    break;
+                default:
+                    Debug.Write("Invalid Request package: %d\n", compositor_packet[4]);
+                    break;
                 }
             }
             Thread.Die();
         }
 
         private static uint pHandleMouse;
+#pragma warning disable RECS0135 // Function does not reach its end or a 'return' statement by any of possible execution paths
         private static void HandleMouse()
+#pragma warning restore RECS0135 // Function does not reach its end or a 'return' statement by any of possible execution paths
         {
             Debug.Write("[Compositor]: Handle Mouse()\n");
 
             var packet = new byte[4];
             var compositor_packet = new byte[PACKET_SIZE];
             compositor_packet.SetUInt(0, MAGIC);
-            
-            while(true)
+
+            while (true)
             {
                 Mouse.MousePipe.Read(packet);
                 if (packet[0] != Mouse.MOUSE_MAGIC)

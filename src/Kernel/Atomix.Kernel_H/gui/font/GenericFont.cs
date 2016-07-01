@@ -7,9 +7,9 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-using Atomix.Kernel_H.io;
+using Atomix.Kernel_H.IO;
 
-namespace Atomix.Kernel_H.gui.font
+namespace Atomix.Kernel_H.Gui.Font
 {
     public abstract class GenericFont
     {

@@ -16,11 +16,11 @@ using Atomix.Assembler;
 using Atomix.Assembler.x86;
 using Core = Atomix.Assembler.AssemblyHelper;
 
-using Atomix.Kernel_H.core;
+using Atomix.Kernel_H.Core;
 using Atomix.Kernel_H.devices;
-using Atomix.Kernel_H.arch.x86;
-using Atomix.Kernel_H.drivers.video;
-using Atomix.Kernel_H.io.FileSystem;
+using Atomix.Kernel_H.Arch.x86;
+using Atomix.Kernel_H.Drivers.Video;
+using Atomix.Kernel_H.IO.FileSystem;
 
 
 namespace Atomix.Kernel_H
@@ -35,78 +35,78 @@ namespace Atomix.Kernel_H
         [Assembly, Plug("Kernel_Main")]
         public static void main()
         {
-            Core.DataMember.Add(new AsmData("[map all main.map]", string.Empty));
+            AssemblyHelper.DataMember.Add(new AsmData ("[map all main.map]", string.Empty));
 
             /* Multiboot Header */
-            Core.DataMember.Add(new AsmData("MultibootSignature", BitConverter.GetBytes(0x1BADB002)));
-            Core.DataMember.Add(new AsmData("MultibootFlags", BitConverter.GetBytes(65543)));
-            Core.DataMember.Add(new AsmData("MultibootChecksum", BitConverter.GetBytes(-464433161)));
-            Core.DataMember.Add(new AsmData("MultibootHeaderAddr", "dd (MultibootSignature - 0xC0000000)"));
-            Core.DataMember.Add(new AsmData("MultibootLoadAddr", "dd (MultibootSignature - 0xC0000000)"));
-            Core.DataMember.Add(new AsmData("MultibootLoadEndAddr", "dd (Compiler_End - 0xC0000000)"));
-            Core.DataMember.Add(new AsmData("MultibootBSSEndAddr", "dd (Compiler_End - 0xC0000000)"));
-            Core.DataMember.Add(new AsmData("MultibootEntryAddr", "dd (Kernel_Main - 0xC0000000)"));
-            Core.DataMember.Add(new AsmData("MultibootVesaMode", BitConverter.GetBytes(0)));
-            Core.DataMember.Add(new AsmData("MultibootVesaWidth", BitConverter.GetBytes(1024)));
-            Core.DataMember.Add(new AsmData("MultibootVesaHeight", BitConverter.GetBytes(768)));
-            Core.DataMember.Add(new AsmData("MultibootVesaDepth", BitConverter.GetBytes(32)));
-            Core.DataMember.Add(new AsmData("BeforeInitialStack:", "TIMES 327680 db 0"));
-            Core.DataMember.Add(new AsmData("InitialStack:", string.Empty));
-            Core.DataMember.Add(new AsmData("InitialHeap:", "TIMES 0x100000 db 0"));
+            AssemblyHelper.DataMember.Add(new AsmData ("MultibootSignature", BitConverter.GetBytes(0x1BADB002)));
+            AssemblyHelper.DataMember.Add(new AsmData ("MultibootFlags", BitConverter.GetBytes(65543)));
+            AssemblyHelper.DataMember.Add(new AsmData ("MultibootChecksum", BitConverter.GetBytes(-464433161)));
+            AssemblyHelper.DataMember.Add(new AsmData ("MultibootHeaderAddr", "dd (MultibootSignature - 0xC0000000)"));
+            AssemblyHelper.DataMember.Add(new AsmData ("MultibootLoadAddr", "dd (MultibootSignature - 0xC0000000)"));
+            AssemblyHelper.DataMember.Add(new AsmData ("MultibootLoadEndAddr", "dd (Compiler_End - 0xC0000000)"));
+            AssemblyHelper.DataMember.Add(new AsmData ("MultibootBSSEndAddr", "dd (Compiler_End - 0xC0000000)"));
+            AssemblyHelper.DataMember.Add(new AsmData ("MultibootEntryAddr", "dd (Kernel_Main - 0xC0000000)"));
+            AssemblyHelper.DataMember.Add(new AsmData ("MultibootVesaMode", BitConverter.GetBytes(0)));
+            AssemblyHelper.DataMember.Add(new AsmData ("MultibootVesaWidth", BitConverter.GetBytes(1024)));
+            AssemblyHelper.DataMember.Add(new AsmData ("MultibootVesaHeight", BitConverter.GetBytes(768)));
+            AssemblyHelper.DataMember.Add(new AsmData ("MultibootVesaDepth", BitConverter.GetBytes(32)));
+            AssemblyHelper.DataMember.Add(new AsmData ("BeforeInitialStack:", "TIMES 327680 db 0"));
+            AssemblyHelper.DataMember.Add(new AsmData ("InitialStack:", string.Empty));
+            AssemblyHelper.DataMember.Add(new AsmData ("InitialHeap:", "TIMES 0x100000 db 0"));
 
             #region KernelPageDirectory
-            Core.DataMember.Add(new AsmData("align 0x1000", string.Empty));
-            Core.DataMember.Add(new AsmData("KernelPageDirectory:", "\ndd (KernelPageTable - 0xC0000000 + 0x3)\ntimes (0x300 - 1) dd 0\ndd (KernelPageTable - 0xC0000000 + 0x3)\ntimes (1024 - 0x300 - 1) dd 0"));
+            AssemblyHelper.DataMember.Add(new AsmData ("align 0x1000", string.Empty));
+            AssemblyHelper.DataMember.Add(new AsmData ("KernelPageDirectory:", "\ndd (KernelPageTable - 0xC0000000 + 0x3)\ntimes (0x300 - 1) dd 0\ndd (KernelPageTable - 0xC0000000 + 0x3)\ntimes (1024 - 0x300 - 1) dd 0"));
             var xPageTable = new string[1024];
             for (int i = 0; i < 1024; i++)
                 xPageTable[i] = ((i * 0x1000) | 0x3).ToString();
-            Core.DataMember.Add(new AsmData("KernelPageTable", xPageTable));
+            AssemblyHelper.DataMember.Add(new AsmData ("KernelPageTable", xPageTable));
             #endregion
             #region Paging
             //Load Page Directory Base Register.
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "(KernelPageDirectory - 0xC0000000)" });
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.CR3, SourceReg = Registers.ECX });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "(KernelPageDirectory - 0xC0000000)" });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.CR3, SourceReg = Registers.ECX });
 
             //Set PG bit in CR0 to enable paging.
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.CR0 });
-            Core.AssemblerCode.Add(new Or { DestinationReg = Registers.ECX, SourceRef = "0x80000000" });
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.CR0, SourceReg = Registers.ECX });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.CR0 });
+            AssemblyHelper.AssemblerCode.Add(new Or { DestinationReg = Registers.ECX, SourceRef = "0x80000000" });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.CR0, SourceReg = Registers.ECX });
             #endregion
 
             //Prepare for our quantum jump to Higher address
-            Core.AssemblerCode.Add(new Lea { DestinationReg = Registers.ECX, SourceRef = "Higher_Half_Kernel", SourceIndirect = true });
-            Core.AssemblerCode.Add(new Jmp { DestinationRef = "ECX" });
+            AssemblyHelper.AssemblerCode.Add(new Lea { DestinationReg = Registers.ECX, SourceRef = "Higher_Half_Kernel", SourceIndirect = true });
+            AssemblyHelper.AssemblerCode.Add(new Jmp { DestinationRef = "ECX" });
 
-            Core.AssemblerCode.Add(new Label("Higher_Half_Kernel"));
-            Core.AssemblerCode.Add(new Mov { DestinationRef = "KernelPageDirectory", DestinationIndirect = true, SourceRef = "0x0" });
-            Core.AssemblerCode.Add(new Literal("invlpg [0]"));
+            AssemblyHelper.AssemblerCode.Add(new Label ("Higher_Half_Kernel"));
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationRef = "KernelPageDirectory", DestinationIndirect = true, SourceRef = "0x0" });
+            AssemblyHelper.AssemblerCode.Add(new Literal ("invlpg [0]"));
 
             /* Setup Kernel stack */
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ESP, SourceRef = "InitialStack" });
-            Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });//Push Magic Number
-            Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EBX });//Push Multiboot Address
-            Core.AssemblerCode.Add(new Push { DestinationRef = "KernelPageDirectory" });
-            Core.AssemblerCode.Add(new Push { DestinationRef = "InitialHeap" });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.ESP, SourceRef = "InitialStack" });
+            AssemblyHelper.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });//Push Magic Number
+            AssemblyHelper.AssemblerCode.Add(new Push { DestinationReg = Registers.EBX });//Push Multiboot Address
+            AssemblyHelper.AssemblerCode.Add(new Push { DestinationRef = "KernelPageDirectory" });
+            AssemblyHelper.AssemblerCode.Add(new Push { DestinationRef = "InitialHeap" });
 
             /* Enable Floating Point Unit */
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.CR0 });
-            Core.AssemblerCode.Add(new And { DestinationReg = Registers.AX, SourceRef = "0xFFFD", Size = 16 });
-            Core.AssemblerCode.Add(new Or { DestinationReg = Registers.AX, SourceRef = "0x10", Size = 16 });
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.CR0, SourceReg = Registers.EAX });
-            Core.AssemblerCode.Add(new Literal("fninit"));
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.CR0 });
+            AssemblyHelper.AssemblerCode.Add(new And { DestinationReg = Registers.AX, SourceRef = "0xFFFD", Size = 16 });
+            AssemblyHelper.AssemblerCode.Add(new Or { DestinationReg = Registers.AX, SourceRef = "0x10", Size = 16 });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.CR0, SourceReg = Registers.EAX });
+            AssemblyHelper.AssemblerCode.Add(new Literal ("fninit"));
 
             /* Enable SSE */
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.CR0 });
-            Core.AssemblerCode.Add(new And { DestinationReg = Registers.AX, SourceRef = "0xFFFB", Size = 16 });
-            Core.AssemblerCode.Add(new Or { DestinationReg = Registers.AX, SourceRef = "0x2", Size = 16 });
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.CR0, SourceReg = Registers.EAX });
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.CR4 });
-            Core.AssemblerCode.Add(new Or { DestinationReg = Registers.EAX, SourceRef = "0x600" });
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.CR4, SourceReg = Registers.EAX });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.CR0 });
+            AssemblyHelper.AssemblerCode.Add(new And { DestinationReg = Registers.AX, SourceRef = "0xFFFB", Size = 16 });
+            AssemblyHelper.AssemblerCode.Add(new Or { DestinationReg = Registers.AX, SourceRef = "0x2", Size = 16 });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.CR0, SourceReg = Registers.EAX });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.CR4 });
+            AssemblyHelper.AssemblerCode.Add(new Or { DestinationReg = Registers.EAX, SourceRef = "0x600" });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.CR4, SourceReg = Registers.EAX });
 
             /* Call Kernel Start */
-            Core.AssemblerCode.Add(new Cli());
-            Core.AssemblerCode.Add(new Call("Kernel_Start", true));
+            AssemblyHelper.AssemblerCode.Add(new Cli ());
+            AssemblyHelper.AssemblerCode.Add(new Call ("Kernel_Start", true));
         }
 
         /// <summary>

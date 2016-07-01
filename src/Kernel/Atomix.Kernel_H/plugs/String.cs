@@ -9,7 +9,7 @@
 
 using Atomix.CompilerExt.Attributes;
 
-using Atomix.Kernel_H.core;
+using Atomix.Kernel_H.Core;
 
 namespace Atomix.Kernel_H.plugs
 {

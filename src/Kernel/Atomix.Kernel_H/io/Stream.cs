@@ -7,9 +7,9 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-using Atomix.Kernel_H.core;
+using Atomix.Kernel_H.Core;
 
-namespace Atomix.Kernel_H.io
+namespace Atomix.Kernel_H.IO
 {
     public abstract class Stream
     {
@@ -37,7 +37,7 @@ namespace Atomix.Kernel_H.io
         {
             var xData = new byte[FileSize];
             Read(xData, xData.Length);
-            var xResult = lib.encoding.ASCII.GetString(xData, 0, xData.Length);
+            var xResult = Lib.encoding.ASCII.GetString(xData, 0, xData.Length);
             Heap.Free(xData);
             return xResult;
         }

@@ -7,11 +7,11 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-using Atomix.Kernel_H.lib;
-using Atomix.Kernel_H.core;
-using Atomix.Kernel_H.lib.crypto;
+using Atomix.Kernel_H.Lib;
+using Atomix.Kernel_H.Core;
+using Atomix.Kernel_H.Lib.Crypto;
 
-namespace Atomix.Kernel_H.arch.x86
+namespace Atomix.Kernel_H.Arch.x86
 {
     public class shm_chunk
     {

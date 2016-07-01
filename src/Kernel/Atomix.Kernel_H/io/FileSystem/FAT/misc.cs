@@ -7,7 +7,7 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-namespace Atomix.Kernel_H.io.FileSystem.FAT
+namespace Atomix.Kernel_H.IO.FileSystem.FAT
 {
     public enum FatType : byte
     {

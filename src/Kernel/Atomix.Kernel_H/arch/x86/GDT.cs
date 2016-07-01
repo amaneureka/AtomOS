@@ -7,7 +7,7 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-using Atomix.Kernel_H.core;
+using Atomix.Kernel_H.Core;
 using Atomix.CompilerExt.Attributes;
 
 using Atomix.Assembler;
@@ -16,7 +16,7 @@ using Core = Atomix.Assembler.AssemblyHelper;
 
 using System.Runtime.InteropServices;
 
-namespace Atomix.Kernel_H.arch.x86
+namespace Atomix.Kernel_H.Arch.x86
 {
     public static unsafe class GDT
     {
@@ -60,16 +60,16 @@ namespace Atomix.Kernel_H.arch.x86
         [Assembly(true)]
         private static void SetupGDT(uint gdtpointer)
         {
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 0x8 });
-            Core.AssemblerCode.Add(new Literal("lgdt [EAX]"));            
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceRef = "0x10" });
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.DS, SourceReg = Registers.EAX, Size = 16 });
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ES, SourceReg = Registers.EAX, Size = 16 });
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.FS, SourceReg = Registers.EAX, Size = 16 });
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.GS, SourceReg = Registers.EAX, Size = 16 });
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.SS, SourceReg = Registers.EAX, Size = 16 });
-            Core.AssemblerCode.Add(new Literal("jmp 0x8:Far_Jumper.End"));
-            Core.AssemblerCode.Add(new Label("Far_Jumper.End"));
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 0x8 });
+            AssemblyHelper.AssemblerCode.Add(new Literal ("lgdt [EAX]"));
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceRef = "0x10" });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.DS, SourceReg = Registers.EAX, Size = 16 });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.ES, SourceReg = Registers.EAX, Size = 16 });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.FS, SourceReg = Registers.EAX, Size = 16 });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.GS, SourceReg = Registers.EAX, Size = 16 });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.SS, SourceReg = Registers.EAX, Size = 16 });
+            AssemblyHelper.AssemblerCode.Add(new Literal ("jmp 0x8:Far_Jumper.End"));
+            AssemblyHelper.AssemblerCode.Add(new Label ("Far_Jumper.End"));
         }
 
         [StructLayout(LayoutKind.Explicit, Size = 0x8)]

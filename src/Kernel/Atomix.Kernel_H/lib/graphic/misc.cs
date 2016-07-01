@@ -9,7 +9,7 @@
 
 using System.Runtime.InteropServices;
 
-namespace Atomix.Kernel_H.lib.graphic
+namespace Atomix.Kernel_H.Lib.Graphic
 {
     [StructLayout(LayoutKind.Explicit, Size = 16)]
     public struct Rectangle

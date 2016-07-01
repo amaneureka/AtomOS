@@ -7,14 +7,18 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-using Atomix.Kernel_H.core;
-using Atomix.Kernel_H.lib;
+using Atomix.Kernel_H.Core;
+using Atomix.Kernel_H.Lib;
 
-namespace Atomix.Kernel_H.gui
+namespace Atomix.Kernel_H.Gui
 {
+
+    /// <summary>
+    /// Helper functions.
+    /// </summary>
     public static class Helper
     {
-        public static unsafe byte* GetMouseBitamp()
+        public static unsafe byte* GetMouseBitmap()
         {
             var aBuffer = (byte*)Heap.kmalloc(32 * 32 * 4);
             
@@ -37,8 +41,8 @@ namespace Atomix.Kernel_H.gui
         public static unsafe byte* GetEmptyScreen()
         {
             var emptyscreen = (byte*)Heap.kmalloc(0x3C000A);
-            int xres = drivers.video.VBE.Xres;
-            int yres = drivers.video.VBE.Yres;
+            int xres = Drivers.Video.VBE.Xres;
+            int yres = Drivers.Video.VBE.Yres;
             for (int i = 0; i < xres; i++)
             {
                 for (int j = 0; j < yres; j++)

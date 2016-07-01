@@ -9,7 +9,7 @@
 
 using Atomix.Kernel_H.devices;
 
-namespace Atomix.Kernel_H.io.FileSystem
+namespace Atomix.Kernel_H.IO.FileSystem
 {
     public abstract class GenericFileSystem
     {

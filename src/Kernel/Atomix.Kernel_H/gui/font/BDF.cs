@@ -7,11 +7,11 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-using Atomix.Kernel_H.io;
-using Atomix.Kernel_H.lib;
-using Atomix.Kernel_H.core;
+using Atomix.Kernel_H.IO;
+using Atomix.Kernel_H.Lib;
+using Atomix.Kernel_H.Core;
 
-namespace Atomix.Kernel_H.gui.font
+namespace Atomix.Kernel_H.Gui.Font
 {
     public class BDF : GenericFont
     {

@@ -7,7 +7,7 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-namespace Atomix.Kernel_H.lib
+namespace Atomix.Kernel_H.Lib
 {
     public delegate uint HashFunction<_key>(_key athis);
     public delegate bool EqualityFunction<_key>(_key a, _key b);

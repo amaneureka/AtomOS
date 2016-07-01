@@ -7,10 +7,10 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-using Atomix.Kernel_H.core;
-using Atomix.Kernel_H.arch.x86;
+using Atomix.Kernel_H.Core;
+using Atomix.Kernel_H.Arch.x86;
 
-namespace Atomix.Kernel_H.drivers.input
+namespace Atomix.Kernel_H.Drivers.Input
 {
     public static class Keyboard
     {

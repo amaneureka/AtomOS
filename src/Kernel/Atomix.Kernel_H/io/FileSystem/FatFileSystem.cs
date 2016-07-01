@@ -9,13 +9,13 @@
 
 using System;
 
-using Atomix.Kernel_H.core;
+using Atomix.Kernel_H.Core;
 using Atomix.Kernel_H.devices;
-using Atomix.Kernel_H.lib.encoding;
-using Atomix.Kernel_H.io.FileSystem.FAT;
-using Atomix.Kernel_H.io.FileSystem.FAT.Find;
+using Atomix.Kernel_H.Lib.encoding;
+using Atomix.Kernel_H.IO.FileSystem.FAT;
+using Atomix.Kernel_H.IO.FileSystem.FAT.Find;
 
-namespace Atomix.Kernel_H.io.FileSystem
+namespace Atomix.Kernel_H.IO.FileSystem
 {
     public class FatFileSystem : GenericFileSystem
     {

@@ -7,7 +7,7 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-using Atomix.Kernel_H.arch.x86;
+using Atomix.Kernel_H.Arch.x86;
 
 using Atomix.CompilerExt;
 using Atomix.CompilerExt.Attributes;
@@ -16,7 +16,7 @@ using Atomix.Assembler;
 using Atomix.Assembler.x86;
 using Core = Atomix.Assembler.AssemblyHelper;
 
-namespace Atomix.Kernel_H.core
+namespace Atomix.Kernel_H.Core
 {
     public static unsafe class Heap
     {
@@ -261,13 +261,13 @@ namespace Atomix.Kernel_H.core
             var xEndlbl = Label.PrimaryLabel + ".End";
             var xLabel_Object = Label.PrimaryLabel + ".object";
 
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
-            Core.AssemblerCode.Add(new Xor { DestinationReg = Registers.EAX, SourceReg = Registers.EAX });
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.ECX, SourceDisplacement = 0x4, SourceIndirect = true });
-            Core.AssemblerCode.Add(new Cmp { DestinationReg = Registers.EBX, SourceRef = "0x1" });
-            Core.AssemblerCode.Add(new Jmp { Condition = ConditionalJumpEnum.JE, DestinationRef = xLabel_Object });
-            Core.AssemblerCode.Add(new Cmp { DestinationReg = Registers.EBX, SourceRef = "0x2" });
-            Core.AssemblerCode.Add(new Jmp { Condition = ConditionalJumpEnum.JNE, DestinationRef = xEndlbl });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
+            AssemblyHelper.AssemblerCode.Add(new Xor { DestinationReg = Registers.EAX, SourceReg = Registers.EAX });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.ECX, SourceDisplacement = 0x4, SourceIndirect = true });
+            AssemblyHelper.AssemblerCode.Add(new Cmp { DestinationReg = Registers.EBX, SourceRef = "0x1" });
+            AssemblyHelper.AssemblerCode.Add(new Jmp { Condition = ConditionalJumpEnum.JE, DestinationRef = xLabel_Object });
+            AssemblyHelper.AssemblerCode.Add(new Cmp { DestinationReg = Registers.EBX, SourceRef = "0x2" });
+            AssemblyHelper.AssemblerCode.Add(new Jmp { Condition = ConditionalJumpEnum.JNE, DestinationRef = xEndlbl });
             /* Array :-
              * According to compiler layout is:
              * 1) Type Signature
@@ -275,24 +275,24 @@ namespace Atomix.Kernel_H.core
              * 3) Number of elements -- 0x8
              * 4) Size of each element -- 0xC
              */
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.ECX, SourceDisplacement = 0x8, SourceIndirect = true });
-            Core.AssemblerCode.Add(new Multiply { DestinationReg = Registers.ECX, DestinationDisplacement = 0xC, DestinationIndirect = true });
-            Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EAX, SourceRef = "0x10" });//Header            
-            Core.AssemblerCode.Add(new Jmp { DestinationRef = xEndlbl });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.ECX, SourceDisplacement = 0x8, SourceIndirect = true });
+            AssemblyHelper.AssemblerCode.Add(new Multiply { DestinationReg = Registers.ECX, DestinationDisplacement = 0xC, DestinationIndirect = true });
+            AssemblyHelper.AssemblerCode.Add(new Add { DestinationReg = Registers.EAX, SourceRef = "0x10" });//Header            
+            AssemblyHelper.AssemblerCode.Add(new Jmp { DestinationRef = xEndlbl });
 
-            Core.AssemblerCode.Add(new Label(xLabel_Object));
+            AssemblyHelper.AssemblerCode.Add(new Label (xLabel_Object));
             /* Object :-
              * According to compiler layout is:
              * 1) Type Signature
              * 2) Magic 0x1 -- 0x4
              * 3) Total Size -- 0x8 (It includes header)
              */
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.ECX, SourceDisplacement = 0x8, SourceIndirect = true });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.ECX, SourceDisplacement = 0x8, SourceIndirect = true });
 
-            Core.AssemblerCode.Add(new Label(xEndlbl));
-            Core.AssemblerCode.Add(new Push { DestinationReg = Registers.ECX }); // Address
-            Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX }); // Length
-            Core.AssemblerCode.Add(new Call("__Heap_Free__", true));
+            AssemblyHelper.AssemblerCode.Add(new Label (xEndlbl));
+            AssemblyHelper.AssemblerCode.Add(new Push { DestinationReg = Registers.ECX }); // Address
+            AssemblyHelper.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX }); // Length
+            AssemblyHelper.AssemblerCode.Add(new Call ("__Heap_Free__", true));
         }
 
         [Label("__Heap_Free__")]

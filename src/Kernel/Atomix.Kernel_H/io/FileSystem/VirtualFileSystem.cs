@@ -9,11 +9,11 @@
 
 using System;
 
-using Atomix.Kernel_H.lib;
-using Atomix.Kernel_H.core;
-using Atomix.Kernel_H.lib.crypto;
+using Atomix.Kernel_H.Lib;
+using Atomix.Kernel_H.Core;
+using Atomix.Kernel_H.Lib.Crypto;
 
-namespace Atomix.Kernel_H.io.FileSystem
+namespace Atomix.Kernel_H.IO.FileSystem
 {
     public static class VirtualFileSystem
     {

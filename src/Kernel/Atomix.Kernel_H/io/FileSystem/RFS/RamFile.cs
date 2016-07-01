@@ -7,7 +7,7 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-namespace Atomix.Kernel_H.io.FileSystem.RFS
+namespace Atomix.Kernel_H.IO.FileSystem.RFS
 {
     public class RamFile
     {

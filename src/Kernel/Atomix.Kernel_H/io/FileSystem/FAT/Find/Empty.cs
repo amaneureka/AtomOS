@@ -7,7 +7,7 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-namespace Atomix.Kernel_H.io.FileSystem.FAT.Find
+namespace Atomix.Kernel_H.IO.FileSystem.FAT.Find
 {
     public class Empty : Comparison
     {

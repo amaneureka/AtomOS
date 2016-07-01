@@ -9,11 +9,11 @@
 
 using System;
 
-using Atomix.Kernel_H.core;
+using Atomix.Kernel_H.Core;
 
 using System.Runtime.InteropServices;
 
-namespace Atomix.Kernel_H.arch.x86
+namespace Atomix.Kernel_H.Arch.x86
 {
     public static unsafe class Multiboot
     {

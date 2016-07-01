@@ -9,10 +9,10 @@
 
 using System;
 
-using Atomix.Kernel_H.lib;
-using Atomix.Kernel_H.arch.x86;
+using Atomix.Kernel_H.Lib;
+using Atomix.Kernel_H.Arch.x86;
 
-namespace Atomix.Kernel_H.core
+namespace Atomix.Kernel_H.Core
 {
     public static class Syscall
     {

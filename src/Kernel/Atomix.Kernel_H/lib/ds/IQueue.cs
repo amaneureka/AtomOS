@@ -9,9 +9,9 @@
 
 using System;
 
-using Atomix.Kernel_H.core;
+using Atomix.Kernel_H.Core;
 
-namespace Atomix.Kernel_H.lib
+namespace Atomix.Kernel_H.Lib
 {
     public class IQueue<T>
     {

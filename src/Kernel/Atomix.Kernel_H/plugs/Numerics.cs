@@ -7,7 +7,7 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-using Atomix.Kernel_H.core;
+using Atomix.Kernel_H.Core;
 
 using Atomix.CompilerExt.Attributes;
 
