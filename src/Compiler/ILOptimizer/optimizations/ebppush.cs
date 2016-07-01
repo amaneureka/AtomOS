@@ -1,34 +1,53 @@
-﻿using System;
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is
+*                   strictly prohibited Proprietary and confidential.
+* PURPOSE:          Optimization
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
+
+using System;
 using System.Collections.Generic;
 
 using Atomix.Assembler;
 using Atomix.Assembler.x86;
 
-namespace Atomix.ILOptimizer.optimizations
+namespace Atomix.ILOptimizer.Optimizations
 {
-    public class ebppush : optimization
+    /// <summary>
+    /// EBP push optimization
+    /// Replaces realtive EBP 'push' instructions by equivalent 'mov' instructions.
+    /// </summary>
+    public class ebppush : OptimizationBase
     {
-        public override void Execute(List<Assembler.Instruction> Instructions)
+
+        /// <summary>
+        /// Apply the optimization.
+        /// </summary>
+        /// <param name="instructions">Instructions.</param>
+        public override void Apply(List<Assembler.Instruction> instructions)
         {
             //If a EBP relative push is done, then we can safely replace it by mov instruction
-            for (int index = 0; index < Instructions.Count; index++)
+            for (int index = 0; index < instructions.Count; index++)
             {
-                if (Instructions[index] is Push)
+                if (instructions[index] is Push)
                 {
-                    var Prev = Instructions[index] as Push;
+                    var Prev = instructions[index] as Push;
                     if (Prev.DestinationReg != Registers.EBP && Prev.DestinationReg.HasValue)
                         continue;
 
                     //Search for the pop instruction
                     int index2 = index + 1;
                     int StackLevel = 0;
-                    for (; index2 < Instructions.Count; index2++)
+                    for (; index2 < instructions.Count; index2++)
                     {
-                        var xNext = Instructions[index2];
+                        var xNext = instructions[index2];
+
                         #region We Can't Optimize these cases
                         if (xNext is Label || xNext is Jmp || xNext is Call)
                         {
-                            index2 = Instructions.Count;
+                            index2 = instructions.Count;
                             break;
                         }
                         if (xNext is OnlyDestination)
@@ -36,7 +55,7 @@ namespace Atomix.ILOptimizer.optimizations
                             var xtemp = xNext as OnlyDestination;
                             if (xtemp.DestinationReg == Registers.ESP)
                             {
-                                index2 = Instructions.Count;
+                                index2 = instructions.Count;
                                 break;
                             }
                         }
@@ -45,7 +64,7 @@ namespace Atomix.ILOptimizer.optimizations
                             var xtemp = xNext as DestinationSource;
                             if (xtemp.DestinationReg == Registers.ESP || xtemp.SourceReg == Registers.ESP)
                             {
-                                index2 = Instructions.Count;
+                                index2 = instructions.Count;
                                 break;
                             }
                         }
@@ -54,14 +73,15 @@ namespace Atomix.ILOptimizer.optimizations
                             var xtemp = xNext as DestinationSourceSize;
                             if (xtemp.DestinationReg == Registers.ESP || xtemp.SourceReg == Registers.ESP)
                             {
-                                index2 = Instructions.Count;
+                                index2 = instructions.Count;
                                 break;
                             }
                         }
                         #endregion
-                        if (Instructions[index2] is Push)
+
+                        if (instructions[index2] is Push)
                             StackLevel++;
-                        if (Instructions[index2] is Pop)
+                        if (instructions[index2] is Pop)
                         {
                             if (StackLevel == 0)
                                 break;
@@ -69,10 +89,10 @@ namespace Atomix.ILOptimizer.optimizations
                         }
                     }
 
-                    if (index2 == Instructions.Count)
-                        continue;//Nope, No way to optimize this
+                    if (index2 == instructions.Count)
+                        continue; // No way to optimize this
 
-                    var Next = Instructions[index2] as Pop;
+                    var Next = instructions[index2] as Pop;
 
                     var Optimized = new Mov();
                     if (Next.DestinationReg.HasValue)
@@ -95,8 +115,8 @@ namespace Atomix.ILOptimizer.optimizations
                     if (Prev.Size != Next.Size && Next.Size != 32)
                         Console.WriteLine("@push-pop: Warning");
 
-                    Instructions[index2] = Optimized;
-                    Instructions[index] = null;
+                    instructions[index2] = Optimized;
+                    instructions[index] = null;
                 }
             }
         }

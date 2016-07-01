@@ -1,27 +1,55 @@
-﻿using System;
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is
+*                   strictly prohibited Proprietary and confidential.
+* PURPOSE:          Optimization
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
+
+using System;
 using System.Collections.Generic;
 
 using Atomix.Assembler;
 using Atomix.Assembler.x86;
 
-namespace Atomix.ILOptimizer.optimizations
+namespace Atomix.ILOptimizer.Optimizations
 {
-    public class movzero : optimization
+
+    /// <summary>
+    /// MOV zero optimization.
+    /// Replaces 'MOV [register], 0' with the faster 'XOR [register], [register]' instruction.
+    /// </summary>
+    public class movzero : OptimizationBase
     {
-        public override void Execute(List<Assembler.Instruction> Instructions)
+
+        /// <summary>
+        /// Apply the optimization.
+        /// </summary>
+        /// <param name="instructions">Instructions.</param>
+        public override void Apply(List<Assembler.Instruction> instructions)
         {
-            for (int index = 0; index < Instructions.Count; index++)
+
+            // Iterate over the instructions
+            for (int index = 0; index < instructions.Count; index++)
             {
-                if (Instructions[index] is Mov)
-                {
-                    var xCurrent = Instructions[index] as Mov;
-                    if (xCurrent.DestinationReg.HasValue 
-                        && xCurrent.DestinationIndirect == false
-                        && xCurrent.SourceRef == "0x0")
-                    {
-                        //Mov REG, 0 -> Xor REG, REG
-                        Instructions[index] = new Xor { DestinationReg = xCurrent.DestinationReg, Size = xCurrent.Size, SourceReg = xCurrent.DestinationReg };
-                    }
+                var instr = instructions [index] as Mov;
+
+                // Continue if the instruction is not a 'MOV' instruction.
+                if (instr == null)
+                    continue;
+
+                // Test if all requirements are met
+                if (instr.DestinationReg.HasValue
+                    && !instr.DestinationIndirect
+                    && instr.SourceRef == "0x0") {
+
+                    // Replace 'MOV' by faster 'XOR'
+                    instructions [index] = new Xor {
+                        SourceReg = instr.DestinationReg,
+                        DestinationReg = instr.DestinationReg,
+                        Size = instr.Size
+                    };
                 }
             }
         }
