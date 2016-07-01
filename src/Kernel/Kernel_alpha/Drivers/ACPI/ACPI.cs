@@ -5,6 +5,10 @@ using misc = Kernel_alpha.Drivers.ACPI.misc;
 
 namespace Kernel_alpha.Drivers
 {
+
+    /// <summary>
+    /// Acpi.
+    /// </summary>
     public unsafe class acpi
     {
         // New Port I/O
@@ -251,7 +255,8 @@ namespace Kernel_alpha.Drivers
         // FACP Table
         private byte facpbget (int number)
         {
-            switch (number) {
+            switch (number)
+            {
             case 0:
                 return *(Facp + 52);
             case 1:
@@ -265,7 +270,8 @@ namespace Kernel_alpha.Drivers
 
         private int* facpget (int number)
         {
-            switch (number) {
+            switch (number)
+            {
             case 0:
                 return (int*)*((int*)(Facp + 40));
             case 1:

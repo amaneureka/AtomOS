@@ -1,23 +1,42 @@
-﻿using System;
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is
+*                   strictly prohibited Proprietary and confidential.
+* PURPOSE:          Optimization
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
+
+using System;
 using System.Collections.Generic;
 
 using Atomix.Assembler;
 using Atomix.Assembler.x86;
 
-namespace Atomix.ILOptimizer.optimizations
+namespace Atomix.ILOptimizer.Optimizations
 {
-    public class espadd : optimization
+
+    /// <summary>
+    /// ESP add optimization.
+    /// Removes superfluous 'add esp, 0x**' instructions.
+    /// </summary>
+    public class espadd : OptimizationBase
     {
-        public override void Execute(List<Assembler.Instruction> Instructions)
+
+        /// <summary>
+        /// Apply the optimizations.
+        /// </summary>
+        /// <param name="instructions">Instructions.</param>
+        public override void Apply(List<Assembler.Instruction> instructions)
         {
             /*
              * Remove multiple entries of add esp, 0x**
              */
-            for (int index = 0; index < Instructions.Count; index++)
+            for (int index = 0; index < instructions.Count; index++)
             {
-                if (Instructions[index] is Add)
+                if (instructions[index] is Add)
                 {
-                    var xCurrentInstruction = (Add)Instructions[index];
+                    var xCurrentInstruction = (Add)instructions[index];
                     int StackFlushCount = 0;
 
                     try { StackFlushCount = Convert.ToInt32(xCurrentInstruction.SourceRef, 16); }
@@ -26,12 +45,12 @@ namespace Atomix.ILOptimizer.optimizations
                     
                     if (ValidEntry(xCurrentInstruction))
                     {
-                        for (int index2 = index + 1; index2 < Instructions.Count; index2++)
+                        for (int index2 = index + 1; index2 < instructions.Count; index2++)
                         {
-                            if (ValidEntry(Instructions[index2] as Add))
+                            if (ValidEntry(instructions[index2] as Add))
                             {
-                                StackFlushCount += Convert.ToInt32(((Add)Instructions[index2]).SourceRef, 16);
-                                Instructions[index2] = null;
+                                StackFlushCount += Convert.ToInt32(((Add)instructions[index2]).SourceRef, 16);
+                                instructions[index2] = null;
                             }
                             else
                             {

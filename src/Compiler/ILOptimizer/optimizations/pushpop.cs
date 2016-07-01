@@ -1,23 +1,46 @@
-﻿using System;
+﻿/*
+* PROJECT:          Atomix Development
+* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
+*                   Unauthorized copying of this file, via any medium is
+*                   strictly prohibited Proprietary and confidential.
+* PURPOSE:          Optimization
+* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
+*/
+
+using System;
 using System.Collections.Generic;
 
 using Atomix.Assembler;
 using Atomix.Assembler.x86;
 
-namespace Atomix.ILOptimizer.optimizations
+namespace Atomix.ILOptimizer.Optimizations
 {
-    public class pushpop : optimization
+    /// <summary>
+    /// PUSP / POP optimization.
+    /// </summary>
+    public class pushpop : OptimizationBase
     {
-        public override void Execute(List<Assembler.Instruction> Instructions)
+
+        /// <summary>
+        /// Apply the optimization.
+        /// </summary>
+        /// <param name="instructions">Instructions.</param>
+        public override void Apply(List<Assembler.Instruction> instructions)
         {
-            for (int i = 1; i < Instructions.Count; i++)
+
+            // Iterate over the instructions
+            for (int i = 1; i < instructions.Count; i++)
             {   
-                if (Instructions[i] is Pop)
+
+                // Test if the current instruction is a 'POP' instruction
+                if (instructions[i] is Pop)
                 {
-                    if (Instructions[i - 1] is Push)
+
+                    // Test if the previous instruction is a 'PUSH' instruction
+                    if (instructions[i - 1] is Push)
                     {
-                        var Next = (Pop)Instructions[i];
-                        var Prev = (Push)Instructions[i - 1];
+                        var Next = (Pop)instructions[i];
+                        var Prev = (Push)instructions[i - 1];
                         
                         var Optimized = new Mov();
                         if (Next.DestinationReg.HasValue)
@@ -33,21 +56,21 @@ namespace Atomix.ILOptimizer.optimizations
                         else
                             Optimized.SourceRef = Prev.DestinationRef;
 
-                        //Inherit properties
+                        // Inherit properties
                         Optimized.SourceIndirect = Prev.DestinationIndirect;
                         Optimized.SourceDisplacement = Prev.DestinationDisplacement;
 
                         if (Prev.Size != Next.Size && Next.Size != 32)
                             Console.WriteLine("@push-pop: Warning");
                         
-                        Instructions[i - 1] = Optimized;
-                        Instructions[i] = null;
+                        instructions[i - 1] = Optimized;
+                        instructions[i] = null;
 
-                        //Case "Mov REG, REG" --> Remove this instruction then
+                        // Case "Mov REG, REG" --> Remove this instruction then
                         if (Optimized.DestinationReg == Optimized.SourceReg
                             && Optimized.SourceIndirect == Optimized.DestinationIndirect
                             && Optimized.SourceDisplacement == Optimized.DestinationDisplacement)
-                            Instructions[i - 1] = null;
+                            instructions[i - 1] = null;
                     }
                 }
             }
