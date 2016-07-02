@@ -54,7 +54,7 @@ namespace Atomix.Kernel_H.arch.x86
         public uint CS;
         [FieldOffset(52)]
         public uint EFlags;
-    }
+    };
 
     internal static class IDT
     {
