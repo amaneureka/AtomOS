@@ -40,9 +40,19 @@ namespace Atomix.Kernel_H
             const uint InitalStackSize = 0x50000;
             const uint InitalHeapSize = 0x100000;
 
+            /* Multiboot Config */
             Core.AssemblerCode.Add(new Literal("MultibootSignature dd {0}", MultibootMagic));
             Core.AssemblerCode.Add(new Literal("MultibootFlags dd {0}", 65543));
             Core.AssemblerCode.Add(new Literal("MultibootChecksum dd {0}", -(MultibootMagic + MultibootFlags)));
+            Core.AssemblerCode.Add(new Literal("MultibootHeaderAddr dd {0}", 0));
+            Core.AssemblerCode.Add(new Literal("MultibootLoadAddr dd {0}", 0));
+            Core.AssemblerCode.Add(new Literal("MultibootLoadEndAddr dd {0}", 0));
+            Core.AssemblerCode.Add(new Literal("MultibootBSSEndAddr dd {0}", 0));
+            Core.AssemblerCode.Add(new Literal("MultibootEntryAddr dd {0}", 0));
+            Core.AssemblerCode.Add(new Literal("MultibootVesaMode dd {0}", 0));
+            Core.AssemblerCode.Add(new Literal("MultibootVesaWidth dd {0}", 1024));
+            Core.AssemblerCode.Add(new Literal("MultibootVesaHeight dd {0}", 768));
+            Core.AssemblerCode.Add(new Literal("MultibootVesaDepth dd {0}", 32));
 
             Core.InsertData(new AsmData("InitialStack", InitalStackSize));
             Core.InsertData(new AsmData("InitialHeap", InitalHeapSize));
