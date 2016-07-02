@@ -60,6 +60,7 @@
   <ItemGroup>
     <Compile Include="Application.cs" />
     <Compile Include="mscorlib\Exception.cs" />
+    <Compile Include="mscorlib\Marshal.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
