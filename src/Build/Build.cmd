@@ -35,8 +35,9 @@ REM BUILD KERNEL FIRST
 %ATOMIX_COMPILER% -cpu %BUILD_CPU% -i %ATOMIX_KERNEL% -o %OUTPUT_DIR%\Kernel.asm %ATOMIX_COMPILER_FLAGS%
 IF NOT EXIST %OUTPUT_DIR%\Kernel.asm GOTO BUILDER_EXIT
 nasm.exe -felf %OUTPUT_DIR%\Kernel.asm -o %ATOMIX_ISO_DIR%\Kernel.o
-ld --oformat=elf_i386 %ATOMIX_ISO_DIR%\Kernel.o -T %ATOMIX_KERNEL_LINKER% -o %ATOMIX_ISO_DIR%\Kernel.bin
+i386-elf-ld %ATOMIX_ISO_DIR%\Kernel.o -T %ATOMIX_KERNEL_LINKER% -o %ATOMIX_ISO_DIR%\Kernel.bin
 rm %ATOMIX_ISO_DIR%\Kernel.o
+readelf --symbols %ATOMIX_ISO_DIR%\Kernel.bin > main.map
 
 REM BUILD APP ONE BY ONE
 FOR %%I IN (%ATOMIX_APPS%\*.dll) DO (
@@ -50,7 +51,7 @@ REM CREATE RAM DISK
 %ATOMIX_RamFS% %ATOMIX_RD% -o %ATOMIX_ISO_DIR%\Initrd.bin
 
 REM CREATE ISO IMAGE
-mkisofs.exe -o %OUTPUT_DIR%\%BUILD_NAME%.iso -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table %ATOMIX_ISO_DIR%
+genisoimage.exe -o %OUTPUT_DIR%\%BUILD_NAME%.iso -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table %ATOMIX_ISO_DIR%
 
 :BUILDER_EXIT
 IF /I "%EXIT_CODE%" NEQ "0" ECHO BUILD FAILED (%EXIT_CODE%)
