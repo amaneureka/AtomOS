@@ -32,20 +32,22 @@ namespace Atomix.Kernel_H
     [Kernel(CPUArch.x86, "0xC0000000")]
     public static class Startx86
     {
-        [Assembly, Plug("_Kernel_Main")]
+        [Assembly]
         public static void main()
         {
             const uint MultibootMagic = 0x1BADB002;
             const uint MultibootFlags = 0x10007;
             const uint InitalStackSize = 0x50000;
             const uint InitalHeapSize = 0x100000;
-            
+
             Core.AssemblerCode.Add(new Literal("MultibootSignature dd {0}", MultibootMagic));
             Core.AssemblerCode.Add(new Literal("MultibootFlags dd {0}", 65543));
             Core.AssemblerCode.Add(new Literal("MultibootChecksum dd {0}", -(MultibootMagic + MultibootFlags)));
 
             Core.InsertData(new AsmData("InitialStack", InitalStackSize));
             Core.InsertData(new AsmData("InitialHeap", InitalHeapSize));
+
+            Core.AssemblerCode.Add(new Label("_Kernel_Main"));
 
             #region KernelPageDirectory
             Core.InsertData(new AsmData("align 0x1000", string.Empty));
@@ -55,7 +57,7 @@ namespace Atomix.Kernel_H
                 xPageTable[i] = ((i * 0x1000) | 0x3).ToString();
             Core.InsertData(new AsmData("KernelPageTable", xPageTable));
             #endregion
-            
+
             /* Load Page Directory Base Register. */
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "(KernelPageDirectory - 0xC0000000)" });
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.CR3, SourceReg = Registers.ECX });
@@ -158,7 +160,7 @@ namespace Atomix.Kernel_H
             Syscall.Setup();
 
             /*
-             * Scheduler must be called before Timer because, 
+             * Scheduler must be called before Timer because,
              * just after calling timer, it will enable IRQ0 resulting in refrence call for switch task
              * Hence results in pagefault.
              */
