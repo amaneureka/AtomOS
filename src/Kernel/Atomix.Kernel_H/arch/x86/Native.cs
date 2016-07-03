@@ -13,7 +13,7 @@ using Atomix.Assembler;
 using Atomix.Assembler.x86;
 using Core = Atomix.Assembler.AssemblyHelper;
 
-namespace Atomix.Kernel_H.arch.x86
+namespace Atomix.Kernel_H.Arch.x86
 {
     internal static class Native
     {
@@ -23,7 +23,7 @@ namespace Atomix.Kernel_H.arch.x86
         [Assembly(true)]
         internal static void Cli()
         {
-            Core.AssemblerCode.Add(new Cli());
+            AssemblyHelper.AssemblerCode.Add(new Cli ());
         }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace Atomix.Kernel_H.arch.x86
         [Assembly(true)]
         internal static void Sti()
         {
-            Core.AssemblerCode.Add(new Sti());
+            AssemblyHelper.AssemblerCode.Add(new Sti ());
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace Atomix.Kernel_H.arch.x86
         [Assembly(true)]
         internal static void Hlt()
         {
-            Core.AssemblerCode.Add(new Literal("hlt"));
+            AssemblyHelper.AssemblerCode.Add(new Literal ("hlt"));
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace Atomix.Kernel_H.arch.x86
         internal static uint EndOfKernel()
         {
             // Just put Compiler_End location into return value
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBP, DestinationDisplacement = 0x8, DestinationIndirect = true, SourceRef = "Compiler_End" });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBP, DestinationDisplacement = 0x8, DestinationIndirect = true, SourceRef = "Compiler_End" });
 
             return 0; // just for c# error
         }
@@ -82,8 +82,8 @@ namespace Atomix.Kernel_H.arch.x86
         [Assembly(true)]
         internal static uint CR2Register()
         {
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.CR2 });
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBP, DestinationDisplacement = 0x8, DestinationIndirect = true, SourceReg = Registers.EAX });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.CR2 });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBP, DestinationDisplacement = 0x8, DestinationIndirect = true, SourceReg = Registers.EAX });
             return 0;
         }
     }

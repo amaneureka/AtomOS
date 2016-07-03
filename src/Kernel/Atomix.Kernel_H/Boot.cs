@@ -9,17 +9,17 @@
 
 using System;
 
-using Atomix.Kernel_H.io;
-using Atomix.Kernel_H.lib;
-using Atomix.Kernel_H.gui;
-using Atomix.Kernel_H.core;
+using Atomix.Kernel_H.IO;
+using Atomix.Kernel_H.Lib;
+using Atomix.Kernel_H.Gui;
+using Atomix.Kernel_H.Core;
 using Atomix.Kernel_H.devices;
-using Atomix.Kernel_H.arch.x86;
-using Atomix.Kernel_H.drivers.video;
-using Atomix.Kernel_H.io.FileSystem;
+using Atomix.Kernel_H.Arch.x86;
+using Atomix.Kernel_H.Drivers.Video;
+using Atomix.Kernel_H.IO.FileSystem;
 
-using Atomix.Kernel_H.drivers.input;
-using Atomix.Kernel_H.drivers.buses.ATA;
+using Atomix.Kernel_H.Drivers.Input;
+using Atomix.Kernel_H.Drivers.buses.ATA;
 
 namespace Atomix.Kernel_H
 {
@@ -87,7 +87,7 @@ namespace Atomix.Kernel_H
                 Compositor.SERVER.Write(Request);
                 SystemClient.Read(Request);
 
-                string HashCode = lib.encoding.ASCII.GetString(Request, 13, 19);
+                string HashCode = Lib.encoding.ASCII.GetString(Request, 13, 19);
                 var aBuffer = (byte*)SHM.Obtain(HashCode, -1);
                 
                 BootImage.Read(Request, 8);

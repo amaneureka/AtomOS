@@ -10,11 +10,11 @@
 using System;
 using System.Runtime.InteropServices;
 
-using Atomix.Kernel_H.io;
-using Atomix.Kernel_H.core;
-using Atomix.Kernel_H.arch.x86;
-using Atomix.Kernel_H.lib.encoding;
-using Atomix.Kernel_H.io.FileSystem;
+using Atomix.Kernel_H.IO;
+using Atomix.Kernel_H.Core;
+using Atomix.Kernel_H.Arch.x86;
+using Atomix.Kernel_H.Lib.encoding;
+using Atomix.Kernel_H.IO.FileSystem;
 
 namespace Atomix.Kernel_H.exec
 {

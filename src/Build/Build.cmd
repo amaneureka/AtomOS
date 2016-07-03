@@ -36,7 +36,7 @@ REM BUILD KERNEL FIRST
 IF NOT EXIST %OUTPUT_DIR%\Kernel.asm GOTO BUILDER_EXIT
 nasm.exe -felf %OUTPUT_DIR%\Kernel.asm -o %ATOMIX_ISO_DIR%\Kernel.o
 i386-elf-ld %ATOMIX_ISO_DIR%\Kernel.o -T %ATOMIX_KERNEL_LINKER% -o %ATOMIX_ISO_DIR%\Kernel.bin
-rm %ATOMIX_ISO_DIR%\Kernel.o
+del %ATOMIX_ISO_DIR%\Kernel.o
 readelf --symbols %ATOMIX_ISO_DIR%\Kernel.bin > main.map
 
 REM BUILD APP ONE BY ONE

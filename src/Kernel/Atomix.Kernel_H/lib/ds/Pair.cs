@@ -7,7 +7,7 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-namespace Atomix.Kernel_H.lib
+namespace Atomix.Kernel_H.Lib
 {
     internal class Pair<A, B>
     {

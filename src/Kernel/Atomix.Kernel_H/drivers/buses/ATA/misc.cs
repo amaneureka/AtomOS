@@ -9,7 +9,7 @@
 
 using System;
 
-namespace Atomix.Kernel_H.drivers.buses.ATA
+namespace Atomix.Kernel_H.Drivers.buses.ATA
 {
     public enum Channel : byte
     {

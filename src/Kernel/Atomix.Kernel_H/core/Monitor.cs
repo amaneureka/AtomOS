@@ -9,12 +9,12 @@
 
 using System;
 
-using Atomix.Kernel_H.lib;
-using Atomix.Kernel_H.arch.x86;
+using Atomix.Kernel_H.Lib;
+using Atomix.Kernel_H.Arch.x86;
 
 using Atomix.CompilerExt.Attributes;
 
-namespace Atomix.Kernel_H.core
+namespace Atomix.Kernel_H.Core
 {
     internal static class Monitor
     {
@@ -23,11 +23,7 @@ namespace Atomix.Kernel_H.core
 
         internal static void Setup()
         {
-            mLocks = new IDictionary<object, int>(delegate (object aObj)
-            {
-                // If two objects shares the same address
-                return Native.GetAddress(aObj);
-            }, object.Equals);
+            mLocks = new IDictionary<object, int>(Native.GetAddress, Equals);
         }
 
         internal static void AcquireLock(object aObj)

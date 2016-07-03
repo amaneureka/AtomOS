@@ -15,7 +15,7 @@ using Atomix.Assembler;
 using Atomix.Assembler.x86;
 using Core = Atomix.Assembler.AssemblyHelper;
 
-namespace Atomix.Kernel_H.arch.x86
+namespace Atomix.Kernel_H.Arch.x86
 {
     internal static class PortIO
     {
@@ -28,13 +28,13 @@ namespace Atomix.Kernel_H.arch.x86
         internal static byte In8(uint aAddress)
         {
             // Load address into EDX
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
             // Set EAX = 0x00000000
-            Core.AssemblerCode.Add(new Xor { DestinationReg = Registers.EAX, SourceReg = Registers.EAX });
+            AssemblyHelper.AssemblerCode.Add(new Xor { DestinationReg = Registers.EAX, SourceReg = Registers.EAX });
             // Read 8 byte And put result into EAX (AL)
-            Core.AssemblerCode.Add(new In { DestinationReg = Registers.AL, SourceReg = Registers.DX });
+            AssemblyHelper.AssemblerCode.Add(new In { DestinationReg = Registers.AL, SourceReg = Registers.DX });
             // Save value
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBP, SourceReg = Registers.EAX, DestinationDisplacement = 0x8, DestinationIndirect = true });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBP, SourceReg = Registers.EAX, DestinationDisplacement = 0x8, DestinationIndirect = true });
 
             return 0x0;
         }
@@ -48,11 +48,11 @@ namespace Atomix.Kernel_H.arch.x86
         internal static void Out8(uint aAddress, byte aValue)
         {
             // Load address into EDX
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDX, SourceReg = Registers.EBP, SourceDisplacement = 0xC, SourceIndirect = true });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDX, SourceReg = Registers.EBP, SourceDisplacement = 0xC, SourceIndirect = true });
             // Load value into EAX
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
             // Write 8 byte
-            Core.AssemblerCode.Add(new Out { DestinationReg = Registers.DX, SourceReg = Registers.AL });
+            AssemblyHelper.AssemblerCode.Add(new Out { DestinationReg = Registers.DX, SourceReg = Registers.AL });
         }
 
         /// <summary>
@@ -64,13 +64,13 @@ namespace Atomix.Kernel_H.arch.x86
         internal static ushort In16(uint aAddress)
         {
             // Load address into EDX
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
             // Set EAX = 0x00000000
-            Core.AssemblerCode.Add(new Xor { DestinationReg = Registers.EAX, SourceReg = Registers.EAX });
+            AssemblyHelper.AssemblerCode.Add(new Xor { DestinationReg = Registers.EAX, SourceReg = Registers.EAX });
             // Read 16 byte And put result into EAX (AX)
-            Core.AssemblerCode.Add(new In { DestinationReg = Registers.AX, SourceReg = Registers.DX });
+            AssemblyHelper.AssemblerCode.Add(new In { DestinationReg = Registers.AX, SourceReg = Registers.DX });
             // Save value
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBP, SourceReg = Registers.EAX, DestinationDisplacement = 0x8, DestinationIndirect = true });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBP, SourceReg = Registers.EAX, DestinationDisplacement = 0x8, DestinationIndirect = true });
 
             return 0x0;
         }
@@ -84,11 +84,11 @@ namespace Atomix.Kernel_H.arch.x86
         internal static void Out16(uint aAddress, ushort aValue)
         {
             // Load address into EDX
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDX, SourceReg = Registers.EBP, SourceDisplacement = 0xC, SourceIndirect = true });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDX, SourceReg = Registers.EBP, SourceDisplacement = 0xC, SourceIndirect = true });
             // Load value into EAX
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
             // Write 16 byte
-            Core.AssemblerCode.Add(new Out { DestinationReg = Registers.DX, SourceReg = Registers.AX });
+            AssemblyHelper.AssemblerCode.Add(new Out { DestinationReg = Registers.DX, SourceReg = Registers.AX });
         }
 
         /// <summary>
@@ -100,13 +100,13 @@ namespace Atomix.Kernel_H.arch.x86
         internal static uint In32(uint aAddress)
         {
             // Load address into EDX
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
             // Set EAX = 0x00000000
-            Core.AssemblerCode.Add(new Xor { DestinationReg = Registers.EAX, SourceReg = Registers.EAX });
+            AssemblyHelper.AssemblerCode.Add(new Xor { DestinationReg = Registers.EAX, SourceReg = Registers.EAX });
             // Read 16 byte And put result into EAX (AX)
-            Core.AssemblerCode.Add(new In { DestinationReg = Registers.EAX, SourceReg = Registers.DX });
+            AssemblyHelper.AssemblerCode.Add(new In { DestinationReg = Registers.EAX, SourceReg = Registers.DX });
             // Save value
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBP, SourceReg = Registers.EAX, DestinationDisplacement = 0x8, DestinationIndirect = true });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBP, SourceReg = Registers.EAX, DestinationDisplacement = 0x8, DestinationIndirect = true });
 
             return 0x0;
         }
@@ -120,11 +120,11 @@ namespace Atomix.Kernel_H.arch.x86
         internal static void Out32(uint aAddress, uint aValue)
         {
             // Load address into EDX
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDX, SourceReg = Registers.EBP, SourceDisplacement = 0xC, SourceIndirect = true });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDX, SourceReg = Registers.EBP, SourceDisplacement = 0xC, SourceIndirect = true });
             // Load value into EAX
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
             // Write 16 byte
-            Core.AssemblerCode.Add(new Out { DestinationReg = Registers.DX, SourceReg = Registers.EAX });
+            AssemblyHelper.AssemblerCode.Add(new Out { DestinationReg = Registers.DX, SourceReg = Registers.EAX });
         }
 
         internal static void Read16(uint aAddress, UInt16[] xData)

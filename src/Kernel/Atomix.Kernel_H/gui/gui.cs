@@ -7,7 +7,7 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-namespace Atomix.Kernel_H.gui
+namespace Atomix.Kernel_H.Gui
 {
     internal enum RequestHeader : byte
     {

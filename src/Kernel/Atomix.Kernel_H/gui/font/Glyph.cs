@@ -11,7 +11,7 @@ using System;
 
 using System.Runtime.InteropServices;
 
-namespace Atomix.Kernel_H.gui.font
+namespace Atomix.Kernel_H.Gui.Font
 {
     internal unsafe class Glyph
     {

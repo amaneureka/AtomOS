@@ -9,9 +9,9 @@
 
 using System;
 
-using Atomix.Kernel_H.core;
+using Atomix.Kernel_H.Core;
 
-namespace Atomix.Kernel_H.io.FileSystem.FAT
+namespace Atomix.Kernel_H.IO.FileSystem.FAT
 {
     internal class FatStream : Stream
     {

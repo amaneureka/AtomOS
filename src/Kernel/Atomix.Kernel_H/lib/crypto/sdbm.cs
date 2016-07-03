@@ -7,7 +7,7 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-namespace Atomix.Kernel_H.lib.crypto
+namespace Atomix.Kernel_H.Lib.Crypto
 {
     // Source: http://www.cse.yorku.ca/~oz/hash.html
     internal static class sdbm

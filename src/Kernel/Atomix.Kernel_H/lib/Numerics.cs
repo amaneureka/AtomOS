@@ -7,9 +7,11 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-namespace Atomix.Kernel_H.lib
+using System;
+
+namespace Atomix.Kernel_H.Lib
 {
-    internal class Numerics
+    class Numerics
     {
         internal static uint ParseHex(string str)
         {

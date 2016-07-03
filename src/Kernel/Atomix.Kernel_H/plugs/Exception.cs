@@ -9,7 +9,7 @@
 
 using System;
 
-using Atomix.Kernel_H.core;
+using Atomix.Kernel_H.Core;
 
 using Atomix.CompilerExt.Attributes;
 

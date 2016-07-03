@@ -9,7 +9,7 @@
 
 using System;
 
-namespace Atomix.Kernel_H.lib
+namespace Atomix.Kernel_H.Lib
 {
     internal static class BinaryFormat
     {

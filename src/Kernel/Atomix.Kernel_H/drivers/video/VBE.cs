@@ -10,8 +10,8 @@
 using System;
 using System.Runtime.InteropServices;
 
-using Atomix.Kernel_H.core;
-using Atomix.Kernel_H.arch.x86;
+using Atomix.Kernel_H.Core;
+using Atomix.Kernel_H.Arch.x86;
 
 using Atomix.CompilerExt.Attributes;
 
@@ -19,7 +19,7 @@ using Atomix.Assembler;
 using Atomix.Assembler.x86;
 using Core = Atomix.Assembler.AssemblyHelper;
 
-namespace Atomix.Kernel_H.drivers.video
+namespace Atomix.Kernel_H.Drivers.Video
 {
     internal static unsafe class VBE
     {
@@ -65,12 +65,12 @@ namespace Atomix.Kernel_H.drivers.video
         [Assembly(true)]
         internal static void Clear(uint color)
         {
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDI, SourceRef = "static_Field__System_Byte__Atomix_Kernel_H_drivers_video_VBE_SecondaryBuffer", SourceIndirect = true });
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "0x100000" });
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
-            Core.AssemblerCode.Add(new Cli());
-            Core.AssemblerCode.Add(new Literal("rep stosd"));
-            Core.AssemblerCode.Add(new Sti());
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDI, SourceRef = "static_Field__System_Byte__Atomix_Kernel_H_Drivers_Video_VBE_SecondaryBuffer", SourceIndirect = true });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "0x100000" });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
+            AssemblyHelper.AssemblerCode.Add(new Cli ());
+            AssemblyHelper.AssemblerCode.Add(new Literal ("rep stosd"));
+            AssemblyHelper.AssemblerCode.Add(new Sti ());
         }
 
         [Assembly(true)]
@@ -78,12 +78,12 @@ namespace Atomix.Kernel_H.drivers.video
         {
 #warning [VBE] : fixed size memory copy
             //Copy 4MB of data from Secondary Buffer to Virtual Frame Buffer            
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ESI, SourceRef = "static_Field__System_Byte__Atomix_Kernel_H_drivers_video_VBE_SecondaryBuffer", SourceIndirect = true });
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDI, SourceRef = "static_Field__System_Byte__Atomix_Kernel_H_drivers_video_VBE_VirtualFrameBuffer", SourceIndirect = true });
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "0x100000" });
-            Core.AssemblerCode.Add(new Cli());
-            Core.AssemblerCode.Add(new Literal("rep movsd"));
-            Core.AssemblerCode.Add(new Sti());
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.ESI, SourceRef = "static_Field__System_Byte__Atomix_Kernel_H_Drivers_Video_VBE_SecondaryBuffer", SourceIndirect = true });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDI, SourceRef = "static_Field__System_Byte__Atomix_Kernel_H_Drivers_Video_VBE_VirtualFrameBuffer", SourceIndirect = true });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "0x100000" });
+            AssemblyHelper.AssemblerCode.Add(new Cli ());
+            AssemblyHelper.AssemblerCode.Add(new Literal ("rep movsd"));
+            AssemblyHelper.AssemblerCode.Add(new Sti ());
         }
 
         [StructLayout(LayoutKind.Explicit, Size = 50)]

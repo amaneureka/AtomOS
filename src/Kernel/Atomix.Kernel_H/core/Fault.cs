@@ -7,9 +7,9 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-using Atomix.Kernel_H.arch.x86;
+using Atomix.Kernel_H.Arch.x86;
 
-namespace Atomix.Kernel_H.core
+namespace Atomix.Kernel_H.Core
 {
     internal static class Fault
     {

@@ -7,9 +7,9 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-using Atomix.Kernel_H.core;
+using Atomix.Kernel_H.Core;
 
-namespace Atomix.Kernel_H.io.FileSystem.RFS
+namespace Atomix.Kernel_H.IO.FileSystem.RFS
 {
     internal unsafe class FileStream : Stream
     {

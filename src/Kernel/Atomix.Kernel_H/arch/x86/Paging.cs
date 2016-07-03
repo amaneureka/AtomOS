@@ -10,7 +10,7 @@
 
 using System;
 
-using Atomix.Kernel_H.core;
+using Atomix.Kernel_H.Core;
 
 using Atomix.CompilerExt.Attributes;
 
@@ -18,7 +18,7 @@ using Atomix.Assembler;
 using Atomix.Assembler.x86;
 using Core = Atomix.Assembler.AssemblyHelper;
 
-namespace Atomix.Kernel_H.arch.x86
+namespace Atomix.Kernel_H.Arch.x86
 {
     internal static unsafe class Paging
     {
@@ -183,23 +183,23 @@ namespace Atomix.Kernel_H.arch.x86
         [Assembly(true)]
         internal static void RefreshTLB()
         {
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.CR3 });
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.CR3, SourceReg = Registers.EAX });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.CR3 });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.CR3, SourceReg = Registers.EAX });
         }
 
         [Assembly(true)]
         internal static void InvalidatePageAt(uint xAddress)
         {
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
-            Core.AssemblerCode.Add(new Literal("invlpg [EAX]"));
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
+            AssemblyHelper.AssemblerCode.Add(new Literal ("invlpg [EAX]"));
         }
 
         [Assembly(true)]
-        internal static void SwitchDirectory(uint Directory)
-        {            
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
-            Core.AssemblerCode.Add(new Mov { DestinationRef = "static_Field__System_UInt32__Atomix_Kernel_H_arch_x86_Paging_CurrentDirectory", DestinationIndirect = true, SourceReg = Registers.EAX });
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.CR3, SourceReg = Registers.EAX });
+        public static void SwitchDirectory(uint Directory)
+        {
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationRef = "static_Field__System_UInt32__Atomix_Kernel_H_Arch_x86_Paging_CurrentDirectory", DestinationIndirect = true, SourceReg = Registers.EAX });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.CR3, SourceReg = Registers.EAX });
         }
     }
 }

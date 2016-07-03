@@ -9,11 +9,11 @@
 
 using System;
 
-using Atomix.Kernel_H.io;
-using Atomix.Kernel_H.core;
-using Atomix.Kernel_H.arch.x86;
+using Atomix.Kernel_H.IO;
+using Atomix.Kernel_H.Core;
+using Atomix.Kernel_H.Arch.x86;
 
-namespace Atomix.Kernel_H.drivers.input
+namespace Atomix.Kernel_H.Drivers.Input
 {
     internal static class Mouse
     {

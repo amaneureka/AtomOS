@@ -7,13 +7,13 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-using Atomix.Kernel_H.lib;
-using Atomix.Kernel_H.lib.crypto;
-using Atomix.Kernel_H.io.FileSystem.RFS;
+using Atomix.Kernel_H.Lib;
+using Atomix.Kernel_H.Lib.Crypto;
+using Atomix.Kernel_H.IO.FileSystem.RFS;
 
 using System.Runtime.InteropServices;
 
-namespace Atomix.Kernel_H.io.FileSystem
+namespace Atomix.Kernel_H.IO.FileSystem
 {
     internal unsafe class RamFileSystem : GenericFileSystem
     {

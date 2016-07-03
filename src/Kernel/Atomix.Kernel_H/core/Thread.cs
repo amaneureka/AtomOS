@@ -9,7 +9,7 @@
 
 using System;
 
-namespace Atomix.Kernel_H.core
+namespace Atomix.Kernel_H.Core
 {
     internal class Thread
     {
