@@ -73,7 +73,7 @@ namespace Atomix.Kernel_H.Arch.x86
             Debug.Write("       Table Address::%d\n", idt);
             Debug.Write("       Entry Address::%d\n", idt_entries);
 
-            LoadIDT(idt);
+            LoadIDT(idt, idt_entries);
             Debug.Write("       IDT-Loaded\n");
 
             xINT = new InterruptHandler[256];
@@ -104,7 +104,7 @@ namespace Atomix.Kernel_H.Arch.x86
         }
 
         [Assembly(true)]
-        private static void LoadIDT(uint idt_table)
+        private static void LoadIDT(uint idt_table, uint idt_entries)
         {
             AssemblyHelper.AssemblerCode.Add(new Cli ());
             AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
