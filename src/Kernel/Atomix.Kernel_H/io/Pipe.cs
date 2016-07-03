@@ -11,7 +11,7 @@ using Atomix.Kernel_H.Core;
 
 namespace Atomix.Kernel_H.IO
 {
-    public unsafe class Pipe
+    internal unsafe class Pipe
     {
         private uint Buffer;
         private uint BufferSize;
@@ -22,18 +22,18 @@ namespace Atomix.Kernel_H.IO
         uint ReadingPointer;
         uint WritingPointer;
 
-        public Pipe(uint aPacketSize, uint aPacketsCount)
+        internal Pipe(uint aPacketSize, uint aPacketsCount)
         {
-            this.PacketsCount = aPacketsCount;
-            this.PacketSize = aPacketSize;
-            this.BufferSize = PacketsCount * PacketSize;
-            this.Buffer = Heap.kmalloc(BufferSize);
-            this.BufferStatus = new bool[PacketsCount];
+            PacketsCount = aPacketsCount;
+            PacketSize = aPacketSize;
+            BufferSize = PacketsCount * PacketSize;
+            Buffer = Heap.kmalloc(BufferSize);
+            BufferStatus = new bool[PacketsCount];
 
             ReadingPointer = WritingPointer = 0;
         }
 
-        public bool Write(byte[] aData, bool Hangup = true)
+        internal bool Write(byte[] aData, bool Hangup = true)
         {
             if (aData.Length != PacketSize)
                 return false;
@@ -54,7 +54,7 @@ namespace Atomix.Kernel_H.IO
             return true;
         }
 
-        public bool Read(byte[] aData)
+        internal bool Read(byte[] aData)
         {
             if (aData.Length != PacketSize)
                 return false;
@@ -72,7 +72,7 @@ namespace Atomix.Kernel_H.IO
             return true;
         }
 
-        public void Close()
+        internal void Close()
         {
             Heap.Free(Buffer, BufferSize);
             Heap.Free(BufferStatus);

@@ -15,13 +15,13 @@ using System.Runtime.InteropServices;
 
 namespace Atomix.Kernel_H.IO.FileSystem
 {
-    public unsafe class RamFileSystem : GenericFileSystem
+    internal unsafe class RamFileSystem : GenericFileSystem
     {
         uint DataAddress;
         uint DataLength;
         IDictionary<string, RamFile> Files;
 
-        public RamFileSystem(uint aAddress, uint aLength)
+        internal RamFileSystem(uint aAddress, uint aLength)
         {
             DataAddress = aAddress;
             DataLength = aLength;
@@ -55,7 +55,6 @@ namespace Atomix.Kernel_H.IO.FileSystem
             return false;
         }
 
-        #region Struct
         [StructLayout(LayoutKind.Explicit, Size = 32)]
         struct FileEntry
         {
@@ -68,6 +67,5 @@ namespace Atomix.Kernel_H.IO.FileSystem
             [FieldOffset(28)]
             public uint Length;
         }
-        #endregion
     }
 }

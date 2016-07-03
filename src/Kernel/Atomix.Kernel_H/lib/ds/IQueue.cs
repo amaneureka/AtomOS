@@ -13,20 +13,20 @@ using Atomix.Kernel_H.Core;
 
 namespace Atomix.Kernel_H.Lib
 {
-    public class IQueue<T>
+    internal class IQueue<T>
     {
         T[] _items;
         int _size;
         int _capacity;
 
-        public IQueue(int capacity = 1)
+        internal IQueue(int capacity = 1)
         {
             _items = new T[capacity];
             _size = 0;
             _capacity = capacity;
         }
 
-        public void Enqueue(T item)
+        internal void Enqueue(T item)
         {
             if (_capacity <= _size)
             {
@@ -39,7 +39,7 @@ namespace Atomix.Kernel_H.Lib
             _items[_size++] = item;
         }
 
-        public T Dequeue()
+        internal T Dequeue()
         {
             var res = _items[0];
             for (int i = 1; i < _size; i++)
@@ -48,7 +48,7 @@ namespace Atomix.Kernel_H.Lib
             return res;
         }
 
-        public int Count
+        internal int Count
         {
             get
             {
@@ -56,7 +56,7 @@ namespace Atomix.Kernel_H.Lib
             }
         }
 
-        public void Clear()
+        internal void Clear()
         {
             _size = 0;
         }
@@ -64,7 +64,7 @@ namespace Atomix.Kernel_H.Lib
         /// <summary>
         /// Free Internal Memory
         /// </summary>
-        public void Delete()
+        internal void Delete()
         {
             Heap.Free(_items);
         }

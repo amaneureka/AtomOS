@@ -21,6 +21,18 @@ namespace Atomix.Assembler
             Assembly = aAsm;
         }
 
+        public Literal(string aFormat, object aObj)
+            : base("Literal")
+        {
+            Assembly = string.Format(aFormat, aObj);
+        }
+
+        public Literal(string aFormat, params object[] aObjs)
+            : base("Literal")
+        {
+            Assembly = string.Format(aFormat, aObjs);
+        }
+
         public override void FlushText(StreamWriter aSW)
         {
             aSW.WriteLine(Assembly);

@@ -17,14 +17,14 @@ namespace Atomix.Kernel_H.Gui.Font
         protected Stream mStream;
         protected bool mIsValid;
 
-        public bool IsValid
+        internal bool IsValid
         { get { return mIsValid; } }
 
-        public GenericFont(string aFontName, Stream aStream)
+        internal GenericFont(string aFontName, Stream aStream)
         {
-            this.mFontName = aFontName;
-            this.mStream = aStream;
-            this.mIsValid = false;
+            mFontName = aFontName;
+            mStream = aStream;
+            mIsValid = false;
         }
     }
 }

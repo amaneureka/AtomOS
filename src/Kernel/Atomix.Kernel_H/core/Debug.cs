@@ -11,9 +11,9 @@ using Atomix.Kernel_H.Arch.x86;
 
 namespace Atomix.Kernel_H.Core
 {
-    public static class Debug
+    internal static class Debug
     {
-        public enum Port : uint
+        internal enum Port : uint
         {
             Com1 = 0x3F8,
             Com2 = 0x2F8,
@@ -21,7 +21,7 @@ namespace Atomix.Kernel_H.Core
             Com4 = 0x2F8
         };
 
-        public enum Cmd : uint
+        internal enum Cmd : uint
         {
             COM_Data = 0x00,
             COM_Interrupt = 0x01,
@@ -34,7 +34,7 @@ namespace Atomix.Kernel_H.Core
 
         static bool IsWriting;
 
-        public static void Init()
+        internal static void Init()
         {
             var PORT = Port.Com1;
             PortIO.Out8((ushort)(PORT + (ushort)Cmd.COM_Interrupt), 0x00);        // Disable all interrupts
@@ -54,8 +54,8 @@ namespace Atomix.Kernel_H.Core
         {
             while ((PortIO.In8((ushort)(Port.Com1 + (ushort)Cmd.COM_ModemStatus)) & 0x20) == 0x0) ;
         }
-        
-        public static void Write(string str, uint nums)
+
+        internal static void Write(string str, uint nums)
         {
             Lock();
 
@@ -76,7 +76,7 @@ namespace Atomix.Kernel_H.Core
             UnLock();
         }
 
-        public static void Write(string str, string arg0)
+        internal static void Write(string str, string arg0)
         {
             Lock();
 
@@ -97,7 +97,7 @@ namespace Atomix.Kernel_H.Core
             UnLock();
         }
 
-        public static void Write(string str)
+        internal static void Write(string str)
         {
             Lock();
             WriteAsync(str);

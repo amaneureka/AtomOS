@@ -16,24 +16,24 @@ using Atomix.Kernel_H.Lib.Crypto;
 
 namespace Atomix.Kernel_H.Gui
 {
-    public class Window
+    internal class Window
     {
-        public readonly int ClientID;
-        public readonly uint HashCode;
-        public readonly string HashString;
-        
-		public int Width;
-		public int Height;
-		public uint Buffer;
+        internal readonly int ClientID;
+        internal readonly uint HashCode;
+        internal readonly string HashString;
 
-		public int PositionX;
+        internal int Width;
+        internal int Height;
+        internal uint Buffer;
 
-		public int PositionY;
+        internal int PositionX;
+
+        internal int PositionY;
 
         public Window(int aClientID)
         {
-            this.ClientID = aClientID;
-            this.HashCode = ("Compositor").GetHashCode(Timer.TicksFromStart);
+            ClientID = aClientID;
+            HashCode = ("Compositor").GetHashCode(Timer.TicksFromStart);
             
 			var HashCodeString = Convert.ToString(HashCode);
             HashString = "win." + HashCodeString;

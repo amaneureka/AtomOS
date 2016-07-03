@@ -21,16 +21,16 @@ using Core = Atomix.Assembler.AssemblyHelper;
 
 namespace Atomix.Kernel_H.Drivers.Video
 {
-    public static unsafe class VBE
-    {   
-        public static int Xres;
-        public static int Yres;
-        public static int BytesPerPixel;
-        public static byte* SecondaryBuffer;
-        public static byte* VirtualFrameBuffer;
+    internal static unsafe class VBE
+    {
+        internal static int Xres;
+        internal static int Yres;
+        internal static int BytesPerPixel;
+        internal static byte* SecondaryBuffer;
+        internal static byte* VirtualFrameBuffer;
         private static VBE_Mode_Info* ModeInfoBlock;
 
-        public static void Init()
+        internal static void Init()
         {
             Debug.Write("VBE Init()\n");
             ModeInfoBlock = (VBE_Mode_Info*)(Multiboot.VBE_Mode_Info + 0xC0000000);
@@ -47,23 +47,23 @@ namespace Atomix.Kernel_H.Drivers.Video
             Debug.Write("%dx", (uint)Yres);
             Debug.Write("%d\n", (uint)BytesPerPixel);            
         }
-        
-        public static void SetPixel(int x, int y, uint c)
+
+        internal static void SetPixel(int x, int y, uint c)
         {
             byte *buffer = (byte*)(((x + (y * Xres)) * BytesPerPixel) + SecondaryBuffer);
             buffer[0] = (byte)(c >> 0);
             buffer[1] = (byte)(c >> 8);
             buffer[2] = (byte)(c >> 16);
         }
-        
-        public static uint GetPixel(int x, int y)
+
+        internal static uint GetPixel(int x, int y)
         {
             byte* buffer = (byte*)(((x + (y * Xres)) * BytesPerPixel) + SecondaryBuffer);
             return (uint)(buffer[2] << 16 | buffer[1] << 8 | buffer[0]);
         }
 
         [Assembly(true)]
-        public static void Clear(uint color)
+        internal static void Clear(uint color)
         {
             AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDI, SourceRef = "static_Field__System_Byte__Atomix_Kernel_H_Drivers_Video_VBE_SecondaryBuffer", SourceIndirect = true });
             AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "0x100000" });
@@ -74,7 +74,7 @@ namespace Atomix.Kernel_H.Drivers.Video
         }
 
         [Assembly(true)]
-        public static void Update()
+        internal static void Update()
         {
 #warning [VBE] : fixed size memory copy
             //Copy 4MB of data from Secondary Buffer to Virtual Frame Buffer            
@@ -86,7 +86,6 @@ namespace Atomix.Kernel_H.Drivers.Video
             AssemblyHelper.AssemblerCode.Add(new Sti ());
         }
 
-        #region Struct
         [StructLayout(LayoutKind.Explicit, Size = 50)]
         public unsafe struct VBE_Mode_Info
         {
@@ -155,6 +154,5 @@ namespace Atomix.Kernel_H.Drivers.Video
             [FieldOffset(48)]
             public UInt16 reserved2;
         }
-        #endregion
     }
 }

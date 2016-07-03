@@ -18,12 +18,12 @@ using System.Runtime.InteropServices;
 
 namespace Atomix.Kernel_H.Arch.x86
 {
-    public static unsafe class GDT
+    internal static unsafe class GDT
     {
         private static uint gdt;
         private static GDT_Entries* gdt_entries;
 
-        public static void Setup()
+        internal static void Setup()
         {
             gdt = Heap.kmalloc(46);
             gdt_entries = (GDT_Entries*)(gdt + 6);

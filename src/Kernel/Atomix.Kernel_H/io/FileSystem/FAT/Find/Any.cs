@@ -9,9 +9,9 @@
 
 namespace Atomix.Kernel_H.IO.FileSystem.FAT.Find
 {
-    public class Any : Comparison
+    internal class Any : Comparison
     {
-        public Any() { }
+        internal Any() { }
 
         public override bool Compare(byte[] data, int offset, FatType type)
         {

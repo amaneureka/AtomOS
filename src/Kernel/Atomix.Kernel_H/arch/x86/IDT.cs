@@ -20,10 +20,10 @@ using System.Runtime.InteropServices;
 
 namespace Atomix.Kernel_H.Arch.x86
 {
-    public delegate void InterruptHandler(ref IRQContext state);
+    internal delegate void InterruptHandler(ref IRQContext state);
 
     [StructLayout(LayoutKind.Explicit, Size = 56)]
-    public struct IRQContext
+    internal struct IRQContext
     {
         [FieldOffset(0)]
         public uint MMX_Context;
@@ -55,13 +55,13 @@ namespace Atomix.Kernel_H.Arch.x86
         public uint EFlags;
     };
 
-    public static class IDT
+    internal static class IDT
     {
         private static uint idt;
         private static uint idt_entries;
         private static InterruptHandler[] xINT;
 
-        public static void Setup()
+        internal static void Setup()
         {
             idt = Heap.kmalloc(2048 + 6);
             idt_entries = idt + 6;
@@ -73,7 +73,7 @@ namespace Atomix.Kernel_H.Arch.x86
             Debug.Write("       Table Address::%d\n", idt);
             Debug.Write("       Entry Address::%d\n", idt_entries);
 
-            LoadIDT(idt, idt_entries);
+            LoadIDT(idt);
             Debug.Write("       IDT-Loaded\n");
 
             xINT = new InterruptHandler[256];
@@ -84,27 +84,27 @@ namespace Atomix.Kernel_H.Arch.x86
         {
             var interrupt = xContext.Interrupt;
             var Handler = xINT[interrupt];
-            
+
             if (Handler != null)
                 Handler(ref xContext);
             else if (interrupt < 0x20)
                 Fault.Handle(ref xContext);
             else
                 Debug.Write("Unhandled Interrupt %d\n", interrupt);
-            
+
             // Send End of Interrupt for IRQs
             if (interrupt >= 0x20)
                 PIC.EndOfInterrupt(interrupt);
         }
 
-        public static void RegisterInterrupt(InterruptHandler xHandler, uint Interrupt)
+        internal static void RegisterInterrupt(InterruptHandler xHandler, uint Interrupt)
         {
             xINT[Interrupt] = xHandler;
             Debug.Write("Interrupt Handler Registered: %d\n", Interrupt);
         }
 
         [Assembly(true)]
-        private static void LoadIDT(uint idt_table, uint idt_entries)
+        private static void LoadIDT(uint idt_table)
         {
             AssemblyHelper.AssemblerCode.Add(new Cli ());
             AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
@@ -138,30 +138,33 @@ namespace Atomix.Kernel_H.Arch.x86
                 AssemblyHelper.AssemblerCode.Add(new Label ("__ISR_Handler_" + xHex));
 
                 AssemblyHelper.AssemblerCode.Add(new Cli ());
-                if (Array.IndexOf(xInterruptsWithParam, i) == -1)
+                if(Array.IndexOf(xInterruptsWithParam, i) == -1)
+                {
                     AssemblyHelper.AssemblerCode.Add(new Push { DestinationRef = "0x0" });
+                }
+
                 AssemblyHelper.AssemblerCode.Add(new Push { DestinationRef = "0x" + xHex });
-                AssemblyHelper.AssemblerCode.Add(new Pushad ());
+                AssemblyHelper.AssemblerCode.Add(new Pushad());
                 AssemblyHelper.AssemblerCode.Add(new Sub { DestinationReg = Registers.ESP, SourceRef = "0x4" });
                 AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.ESP });
                 AssemblyHelper.AssemblerCode.Add(new And { DestinationReg = Registers.ESP, SourceRef = "0xFFFFFFF0" });
                 AssemblyHelper.AssemblerCode.Add(new Sub { DestinationReg = Registers.ESP, SourceRef = "0x200" });
-                AssemblyHelper.AssemblerCode.Add(new Literal ("fxsave [ESP]"));
+                AssemblyHelper.AssemblerCode.Add(new Literal("fxsave [ESP]"));
                 AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.ESP, DestinationIndirect = true });
                 AssemblyHelper.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
                 AssemblyHelper.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
-                AssemblyHelper.AssemblerCode.Add(new Literal ("jmp 8:__ISR_Handler_" + xHex + ".SetCS"));
+                AssemblyHelper.AssemblerCode.Add(new Literal("jmp 8:__ISR_Handler_" + xHex + ".SetCS"));
 
-                AssemblyHelper.AssemblerCode.Add(new Label ("__ISR_Handler_" + xHex + ".SetCS"));
-                AssemblyHelper.AssemblerCode.Add(new Call ("__Interrupt_Handler__", true));
+                AssemblyHelper.AssemblerCode.Add(new Label("__ISR_Handler_" + xHex + ".SetCS"));
+                AssemblyHelper.AssemblerCode.Add(new Call("__Interrupt_Handler__", true));
                 AssemblyHelper.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
-                AssemblyHelper.AssemblerCode.Add(new Literal ("fxrstor [ESP]"));
+                AssemblyHelper.AssemblerCode.Add(new Literal("fxrstor [ESP]"));
                 AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.ESP, SourceReg = Registers.EAX });
                 AssemblyHelper.AssemblerCode.Add(new Add { DestinationReg = Registers.ESP, SourceRef = "0x4" });
-                AssemblyHelper.AssemblerCode.Add(new Popad ());
+                AssemblyHelper.AssemblerCode.Add(new Popad());
                 AssemblyHelper.AssemblerCode.Add(new Add { DestinationReg = Registers.ESP, SourceRef = "0x8" });
-                AssemblyHelper.AssemblerCode.Add(new Sti ());
-                AssemblyHelper.AssemblerCode.Add(new Iret ());
+                AssemblyHelper.AssemblerCode.Add(new Sti());
+                AssemblyHelper.AssemblerCode.Add(new Iret());
             }
 
             AssemblyHelper.AssemblerCode.Add(new Label (xLabel));

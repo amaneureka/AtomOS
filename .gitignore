@@ -5,6 +5,7 @@
 Output/
 *.map
 *.bin
+*.o
 
 # User-specific files
 *.suo

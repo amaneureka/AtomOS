@@ -14,9 +14,9 @@ using Atomix.Kernel_H.Arch.x86;
 
 namespace Atomix.Kernel_H.devices
 {
-    public static class Timer
+    internal static class Timer
     {
-        public static void Setup()
+        internal static void Setup()
         {
             Debug.Write("Initializing interval timer\n");
 
@@ -24,13 +24,13 @@ namespace Atomix.Kernel_H.devices
             SetFrequency(100);
         }
 
-        public static uint TicksFromStart
+        internal static uint TicksFromStart
         {
             get;
             private set;
         }
 
-        public static void Tick()
+        internal static void Tick()
         {
             // Tick Tok Tick Tok :P
             TicksFromStart++;

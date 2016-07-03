@@ -12,11 +12,11 @@ using Atomix.Kernel_H.Arch.x86;
 
 namespace Atomix.Kernel_H.Drivers.Input
 {
-    public static class Keyboard
+    internal static class Keyboard
     {
         const byte COMMAND = 0x60;
 
-        public static void Setup()
+        internal static void Setup()
         {
             Debug.Write("PS/2 Keyboard Controller Setup\n");
             IDT.RegisterInterrupt(HandleIRQ, 0x21);

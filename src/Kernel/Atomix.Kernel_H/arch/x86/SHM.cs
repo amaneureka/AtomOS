@@ -13,13 +13,13 @@ using Atomix.Kernel_H.Lib.Crypto;
 
 namespace Atomix.Kernel_H.Arch.x86
 {
-    public class shm_chunk
+    internal class shm_chunk
     {
         public uint RefCount;
         public uint[] Frames;
     }
 
-    public class SHM
+    internal class SHM
     {
         public const uint START = 0xB0000000;
 
@@ -27,13 +27,13 @@ namespace Atomix.Kernel_H.Arch.x86
         public const int LIMIT_TO_PROCESS = 0x10000 >> 5;
         
         static IDictionary<string, shm_chunk> Nodes;
-        
-        public static void Install()
+
+        internal static void Install()
         {
             Nodes = new IDictionary<string, shm_chunk>(sdbm.GetHashCode, string.Equals);
         }
 
-        public static unsafe uint Obtain(string aID, int aSize = -1)
+        internal static unsafe uint Obtain(string aID, int aSize = -1)
         {
             Monitor.AcquireLock(Nodes);
             

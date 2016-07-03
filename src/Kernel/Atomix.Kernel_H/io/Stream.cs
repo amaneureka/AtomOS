@@ -13,10 +13,10 @@ namespace Atomix.Kernel_H.IO
 {
     public abstract class Stream
     {
-        public readonly string FileName;
-        public readonly uint FileSize;
+        internal readonly string FileName;
+        internal readonly uint FileSize;
 
-        public Stream(string aFileName, uint aSize)
+        internal Stream(string aFileName, uint aSize)
         {
             FileName = aFileName;
             FileSize = aSize;
@@ -33,7 +33,7 @@ namespace Atomix.Kernel_H.IO
 
         public abstract bool Close();
 
-        public string ReadToEnd()
+        internal string ReadToEnd()
         {
             var xData = new byte[FileSize];
             Read(xData, xData.Length);

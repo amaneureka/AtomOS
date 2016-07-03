@@ -18,7 +18,7 @@ using Core = Atomix.Assembler.AssemblyHelper;
 
 namespace Atomix.Kernel_H.Core
 {
-    public static unsafe class Heap
+    internal static unsafe class Heap
     {
         static uint HeapStart;
         static uint HeapCurrent;
@@ -39,7 +39,7 @@ namespace Atomix.Kernel_H.Core
 
         static int LockStatus;
 
-        public static void Init(uint InitHeap)
+        internal static void Init(uint InitHeap)
         {
             HeapStart = InitHeap;
             HeapCurrent = InitHeap;
@@ -56,7 +56,7 @@ namespace Atomix.Kernel_H.Core
             BlockAddress = new uint[HeapManagerSize];
         }
 
-        public static void Setup(uint Start, uint End)
+        internal static void Setup(uint Start, uint End)
         {
             HeapStart = Start;
             HeapCurrent = Start;
@@ -75,7 +75,7 @@ namespace Atomix.Kernel_H.Core
         }
 
         [Label(Helper.lblHeap)]
-        public static uint kmalloc(uint len)
+        internal static uint kmalloc(uint len)
         {            
             if (!HeapManagerSetup)
             {
@@ -94,7 +94,7 @@ namespace Atomix.Kernel_H.Core
             }
         }
 
-        public static uint kmalloc(uint len, bool Aligned)
+        internal static uint kmalloc(uint len, bool Aligned)
         {
             // If Heap Manager is not setup then use our old heap alogrithm -- Basically paging is calling this
             if (Aligned && !HeapManagerSetup)
@@ -244,7 +244,7 @@ namespace Atomix.Kernel_H.Core
             return pos;
         }
 
-        public static void FreeArray(object[] objs)
+        internal static void FreeArray(object[] objs)
         {
             for (int i = 0; i < objs.Length; i++)
                 Free(objs[i]);
@@ -256,7 +256,7 @@ namespace Atomix.Kernel_H.Core
         /// </summary>
         /// <param name="obj"></param>
         [Assembly(true)]
-        public static unsafe void Free(object obj)
+        internal static unsafe void Free(object obj)
         {
             var xEndlbl = Label.PrimaryLabel + ".End";
             var xLabel_Object = Label.PrimaryLabel + ".object";
@@ -296,7 +296,7 @@ namespace Atomix.Kernel_H.Core
         }
 
         [Label("__Heap_Free__")]
-        public static void Free(uint Address, uint len)
+        internal static void Free(uint Address, uint len)
         {
             if (len == 0)
                 return;

@@ -13,7 +13,7 @@ using Atomix.Kernel_H.Core;
 
 namespace Atomix.Kernel_H.Lib
 {
-    public class ISet<_type>
+    internal class ISet<_type>
     {
         const uint Capacity = (1 << 5);// Should be a power of 2
 
@@ -29,7 +29,7 @@ namespace Atomix.Kernel_H.Lib
             public Bucket mNext;
         }
 
-        public ISet(HashFunction<_type> aFunction, EqualityFunction<_type> aEquality)
+        internal ISet(HashFunction<_type> aFunction, EqualityFunction<_type> aEquality)
         {
             mFunction = aFunction;
             mEquality = aEquality;
@@ -37,7 +37,7 @@ namespace Atomix.Kernel_H.Lib
             mBuckets = new Bucket[Capacity];
         }
 
-        public bool ContainsKey(_type mKey)
+        internal bool ContainsKey(_type mKey)
         {
             uint Index = mFunction(mKey) & mModulo;
             Bucket Current = mBuckets[Index];
@@ -47,8 +47,8 @@ namespace Atomix.Kernel_H.Lib
 
             return (Current != null);
         }
-        
-        public void RemoveKey(_type mKey)
+
+        internal void RemoveKey(_type mKey)
         {
             uint Index = mFunction(mKey) & mModulo;
             Bucket Current = mBuckets[Index];
