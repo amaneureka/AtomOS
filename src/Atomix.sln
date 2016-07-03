@@ -38,6 +38,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atomix.Core", "Apps\Atomix.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atomix.Shell", "Apps\Atomix.Shell\Atomix.Shell.csproj", "{C2AE9D7B-9FB4-4D3B-911B-039C3EF5C7BF}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{76AD42D5-A294-4E93-956D-E978914A9D17}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atomix.Graphics", "Atomix.Graphics\Atomix.Graphics.csproj", "{1FD1C350-7E4E-4BC5-A15D-2C7864311D9B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -134,6 +138,14 @@ Global
 		{C2AE9D7B-9FB4-4D3B-911B-039C3EF5C7BF}.Release|Any CPU.Build.0 = Release|x86
 		{C2AE9D7B-9FB4-4D3B-911B-039C3EF5C7BF}.Release|x86.ActiveCfg = Release|Any CPU
 		{C2AE9D7B-9FB4-4D3B-911B-039C3EF5C7BF}.Release|x86.Build.0 = Release|Any CPU
+		{1FD1C350-7E4E-4BC5-A15D-2C7864311D9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FD1C350-7E4E-4BC5-A15D-2C7864311D9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FD1C350-7E4E-4BC5-A15D-2C7864311D9B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1FD1C350-7E4E-4BC5-A15D-2C7864311D9B}.Debug|x86.Build.0 = Debug|Any CPU
+		{1FD1C350-7E4E-4BC5-A15D-2C7864311D9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FD1C350-7E4E-4BC5-A15D-2C7864311D9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FD1C350-7E4E-4BC5-A15D-2C7864311D9B}.Release|x86.ActiveCfg = Release|Any CPU
+		{1FD1C350-7E4E-4BC5-A15D-2C7864311D9B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -150,6 +162,7 @@ Global
 		{2A356941-C071-4873-BCE2-12BB24E33B0D} = {F6278EAD-5D78-4224-9484-518D17CF826F}
 		{A22414A7-E2BB-44F8-B04C-1BF0B7C12410} = {8815667D-CE68-4ADC-834B-9817807938E5}
 		{C2AE9D7B-9FB4-4D3B-911B-039C3EF5C7BF} = {8815667D-CE68-4ADC-834B-9817807938E5}
+		{1FD1C350-7E4E-4BC5-A15D-2C7864311D9B} = {76AD42D5-A294-4E93-956D-E978914A9D17}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0
