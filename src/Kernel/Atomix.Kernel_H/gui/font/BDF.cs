@@ -13,9 +13,9 @@ using Atomix.Kernel_H.Core;
 
 namespace Atomix.Kernel_H.Gui.Font
 {
-    public class BDF : GenericFont
+    internal class BDF : GenericFont
     {
-        public BDF(string aFontName, Stream aStream)
+        internal BDF(string aFontName, Stream aStream)
             :base(aFontName, aStream)
         {
             if (aStream != null)

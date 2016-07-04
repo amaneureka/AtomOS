@@ -15,7 +15,7 @@ using Atomix.Kernel_H.Arch.x86;
 
 namespace Atomix.Kernel_H.Drivers.buses.ATA
 {
-    public class IDE : Storage
+    internal class IDE : Storage
     {
         protected UInt16 DataReg;
         protected UInt16 FeatureReg;
@@ -49,7 +49,7 @@ namespace Atomix.Kernel_H.Drivers.buses.ATA
         
         protected bool IRQInvoked;
 
-        public IDE(bool IsPrimary, bool IsMaster = true)
+        internal IDE(bool IsPrimary, bool IsMaster = true)
         {
             UInt16 xBAR0 = (UInt16)(IsPrimary ? 0x01F0 : 0x0170);
             UInt16 xBAR1 = (UInt16)(IsPrimary ? 0x03F6 : 0x0376);
@@ -91,9 +91,9 @@ namespace Atomix.Kernel_H.Drivers.buses.ATA
             }
         }
 
-        public Device Device { get { return mDevice; } }
+        internal Device Device { get { return mDevice; } }
 
-        public bool IsValid
+        internal bool IsValid
         {
             get { return (mDevice != Device.IDE_None); }
         }

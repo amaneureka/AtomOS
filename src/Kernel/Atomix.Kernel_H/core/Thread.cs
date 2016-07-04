@@ -11,11 +11,11 @@ using System;
 
 namespace Atomix.Kernel_H.Core
 {
-    public class Thread
+    internal class Thread
     {
-        public readonly Process Process;
-        public readonly int ThreadID;
-        public Exception Exception;
+        internal readonly Process Process;
+        internal readonly int ThreadID;
+        internal Exception Exception;
 
         ThreadState State;
         uint Address;
@@ -25,26 +25,26 @@ namespace Atomix.Kernel_H.Core
 
         static int ThreadCounter = 0;
         
-        public Thread(Process Parent, uint xAddress, uint StackStart, uint StackLimit)
+        public Thread(Process aParent, uint aAddress, uint aStackStart, uint aStackLimit)
         {
-            this.Process = Parent;
-            this.Address = xAddress;
-            this.Process.Threads.Add(this);
-            this.State = ThreadState.NotActive;
-            this.StackTop = StackStart;
-            this.StackBottom = StackStart - StackLimit;
-            this.StackLimit = StackLimit;
-            this.ThreadID = ++ThreadCounter;
+            Process = aParent;
+            Address = aAddress;
+            Process.Threads.Add(this);
+            State = ThreadState.NotActive;
+            StackTop = aStackStart;
+            StackBottom = aStackStart - aStackLimit;
+            StackLimit = aStackLimit;
+            ThreadID = ++ThreadCounter;
 
-            if (StackStart != 0)
+            if (aStackStart != 0)
                 SetupInitialStack();
         }
 
-        public void Start()
+        internal void Start()
         {
-            if (this.State == ThreadState.NotActive)
+            if (State == ThreadState.NotActive)
             {
-                this.State = ThreadState.Running;
+                State = ThreadState.Running;
                 Debug.Write("[Thread]: Start()\n");
                 Scheduler.AddThread(this);
             }
@@ -72,22 +72,22 @@ namespace Atomix.Kernel_H.Core
             StackTop = (uint)Stack;
         }
 
-        public uint LoadStack()
+        internal uint LoadStack()
         {
             return StackTop;
         }
 
-        public void SaveStack(uint Stack)
+        internal void SaveStack(uint Stack)
         {
             this.StackTop = Stack;
         }
 
-        public void FreeStack()
+        internal void FreeStack()
         {
             Heap.Free(StackBottom, StackLimit);
         }
 
-        public static void Die()
+        internal static void Die()
         {
             var curr = Scheduler.RunningThread;
             if (curr == null)
@@ -95,13 +95,14 @@ namespace Atomix.Kernel_H.Core
             curr.State = ThreadState.Dead;
             while (true) ;// Hook up till the next time slice
         }
-                
-        public ThreadState Status
+
+        internal ThreadState Status
         {
             get { return State; }
         }
     }
-    public enum ThreadState : int
+
+    internal enum ThreadState : int
     {
         NotActive = 0,
         Running = 1,    // Thread is currently running

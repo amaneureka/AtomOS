@@ -11,12 +11,12 @@ using Atomix.Kernel_H.Lib;
 
 namespace Atomix.Kernel_H.Core
 {
-    public static class Scheduler
+    internal static class Scheduler
     {
         static Thread CurrentTask;
         static IQueue<Thread> ThreadQueue;
-        
-        public static Process RunningProcess
+
+        internal static Process RunningProcess
         {
             get
             {
@@ -26,10 +26,10 @@ namespace Atomix.Kernel_H.Core
             }
         }
 
-        public static Thread RunningThread
+        internal static Thread RunningThread
         { get { return CurrentTask; } }
 
-        public static int RunningThreadID
+        internal static int RunningThreadID
         { 
             get
             {
@@ -37,19 +37,19 @@ namespace Atomix.Kernel_H.Core
             }
         }
 
-        public static Process SystemProcess;
+        internal static Process SystemProcess;
 
-        public static void Init()
+        internal static void Init()
         {
             ThreadQueue = new IQueue<Thread>(100);
         }
-        
-        public static void AddThread(Thread th)
+
+        internal static void AddThread(Thread th)
         {
             ThreadQueue.Enqueue(th);
         }
-        
-        public static uint SwitchTask(uint aStack)
+
+        internal static uint SwitchTask(uint aStack)
         {
             var NextTask = InvokeNext();
 

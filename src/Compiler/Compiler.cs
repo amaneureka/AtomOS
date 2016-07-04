@@ -58,7 +58,7 @@ namespace Atomix
         public Dictionary<ILCode, MSIL> MSIL;
 
         private Dictionary<FieldInfo, string> Pointers;
-        
+
         private List<MethodInfo> Virtuals;
         private bool DoOptimization;
         /// <summary>
@@ -69,11 +69,12 @@ namespace Atomix
         public Compiler(bool aDoOptimization)
         {
             ILCompiler.Logger.Write("@Compiler", "Main Compilation Process", "Loading Non-Static Parameters and starting up Compilation Process...");
-            QueuedMember = new Queue<_MemberInfo>();            
+            QueuedMember = new Queue<_MemberInfo>();
             BuildDefinations = new List<_MemberInfo>();
             Plugs = new Dictionary<MethodBase, string>();
             StringTable = new Dictionary<string, string>();
             Core.vStack = new VirtualStack();
+            Core.NasmHeaders = new List<string>();
             Core.DataMember = new List<AsmData>();
             Core.AssemblerCode = new List<Instruction>();
             MSIL = new Dictionary<ILCode, MSIL>();
@@ -81,7 +82,7 @@ namespace Atomix
             Virtuals = new List<MethodInfo>();
             DoOptimization = aDoOptimization;
             Core.StaticLabels = new Dictionary<string, _MemberInfo>();
-                        
+
             ILHelper.Compiler = this;
             ILCompiler.Logger.Write("Parameters Initialized");
         }
@@ -89,10 +90,10 @@ namespace Atomix
         public void Start()
         {
             ILCompiler.Logger.Write("Compiler :: Start()");
-            
+
             // Load the type of Kernel Start, it depends on CPU Arch. we have choosed.
             var xType = LoadKernel(ILCompiler.CPUArchitecture);
-            
+
             ILCompiler.Logger.Write(string.Format("{0} Kernel Type Found :: {1}", ILCompiler.CPUArchitecture.ToString(), xType.ToString()));
             // Just find the start method, which is constant label method inside the kernel type
             var xStartup = xType.GetMethod(Helper.StartupMethod, BindingFlags.Static | BindingFlags.Public);
@@ -113,7 +114,7 @@ namespace Atomix
             BodyProcesser.Start();
             /*
              * From now onwards we enquque methods, but as you see we do first Enqueue of startup method
-             * it is because startup method contains some header code, 
+             * it is because startup method contains some header code,
              * if it will not be in assembly header than multiboot signature will be disturbed.
              * Just after this we scan plugs and enquque them
              */
@@ -127,7 +128,7 @@ namespace Atomix
 
             ILCompiler.Logger.Write("Enququed Start Method");
             while (QueuedMember.Count > 0)
-            {   
+            {
                 // Man we do scarifice to code, first come first process policy is our
                 var xMethod = QueuedMember.Dequeue();
                 /* Build Only when it is not yet processed mean not in build definations */
@@ -189,7 +190,7 @@ namespace Atomix
         private Type LoadKernel(CPUArch cpu)
         {
             var xAssembly = Assembly.LoadFile(ILCompiler.InputDll);
-            
+
             /* Search For Kernel Attribute */
             foreach (var xType in xAssembly.GetExportedTypes())
             {
@@ -199,16 +200,9 @@ namespace Atomix
                     {
                         if ((CPUArch)xAttr.ConstructorArguments[0].Value == cpu)
                         {
-                            switch (cpu)
-                            {
-                                case CPUArch.x86:
-                                    {
-                                        Core.DataMember.Add(new AsmData("use32", string.Empty));
-                                        Core.DataMember.Add(new AsmData("org", xAttr.ConstructorArguments[1].Value as string));
-                                    }
-                                    break;
-                                    // Need it to implement for other platforms too
-                            }
+                            Core.NasmHeaders.Add("global Kernel_Main");
+                            Core.NasmHeaders.Add("Kernel_Main equ (_Kernel_Main - 0xC0000000)");
+
                             return xType;
                         }
                     }
@@ -216,7 +210,6 @@ namespace Atomix
                     {
                         if ((CPUArch)xAttr.ConstructorArguments[0].Value == cpu)
                         {
-                            Core.DataMember.Add(new AsmData("SECTION", ".text"));
                             BuildingApplication = true;
                             return xType;
                         }
@@ -231,7 +224,7 @@ namespace Atomix
         /// and check for our attributes and add it to attribute list and Enqueue them all =P
         /// </summary>
         private void ScanPlugs()
-        {   
+        {
             var AssembliesLocation = ILCompiler.InputFiles;
             AssembliesLocation.Add(ILCompiler.InputDll);
 
@@ -258,7 +251,7 @@ namespace Atomix
                     xAssemblies.Add(xAss);
                     //For now i don't want this
                     //It is also because i got error...hehe =P
-                    /* 
+                    /*
                     foreach (var xRef in xAss.GetReferencedAssemblies())
                     {
                         var xRefAssembly = Assembly.Load(xRef);
@@ -279,14 +272,14 @@ namespace Atomix
             ILCompiler.Logger.Write("@Compiler", "Plug Scanner", "Scanning plug Initialized");
             foreach (var xAssembly in xAssemblies)
             {
-                // Firstly we scan types for label attribute, well if i tell seriously than it is of no use, but for future implementations 
+                // Firstly we scan types for label attribute, well if i tell seriously than it is of no use, but for future implementations
                 foreach (var xType in xAssembly.GetTypes())
                 {
                     foreach (var xAttr in xType.CustomAttributes)
                     {
                         if (xAttr.AttributeType == typeof(LabelAttribute))
                         {
-                            Core.StaticLabels.Add((string)xAttr.ConstructorArguments[0].Value, xType);                            
+                            Core.StaticLabels.Add((string)xAttr.ConstructorArguments[0].Value, xType);
                             QueuedMember.Enqueue(xType);
                             ILCompiler.Logger.Write(string.Format(
                                         "<b>Plug Found <u>LabelAttribute</u></b> :: {0}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=>{1}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=>{2}",
@@ -296,9 +289,9 @@ namespace Atomix
                         }
                     }
                     /*This is what we called real magic, well this i have done for finding pointer to any c# function
-                     * How it works? So it just scan if there is any static 
+                     * How it works? So it just scan if there is any static
                      * field inside a type which starts with p and of same name that of a function inside same type
-                     * I know bit crazy but really cool, than it just do a thing in field info implementation 
+                     * I know bit crazy but really cool, than it just do a thing in field info implementation
                      * and save the function pointer to that field info, just a hack as the varaible must be a 4 byte long =P
                      * For example the pointer address of a function named "test" will be saved in "ptest" =P
                      */
@@ -328,7 +321,7 @@ namespace Atomix
 
                         if (xFields.ContainsKey(pointer_lbl))
                         {
-                            // Add the vaild entry to list, rest we don't care 
+                            // Add the vaild entry to list, rest we don't care
                             Pointers.Add(xFields[pointer_lbl], xMethod.FullName());
                             // Well these pointers are used so we make sure the method is also build so we Enqueue it
                             QueuedMember.Enqueue(xMethod);
@@ -336,7 +329,7 @@ namespace Atomix
 
                         // TODO: review the below code
                         foreach (var xAttr in xMethod.CustomAttributes)
-                        {                            
+                        {
                             if (xAttr.AttributeType == typeof(PlugAttribute))
                             {
                                 if ((CPUArch)xAttr.ConstructorArguments[1].Value == ILCompiler.CPUArchitecture)
@@ -346,9 +339,9 @@ namespace Atomix
                                         Plugs.Add(xMethod, xLbl);
                                     QueuedMember.Enqueue(xMethod);
                                     ILCompiler.Logger.Write(string.Format(
-                                        "<b>Plug Found <u>PlugAttribute</u></b> :: {0}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=>{1}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=>{2}", 
-                                        xMethod.Name, 
-                                        xType.FullName, 
+                                        "<b>Plug Found <u>PlugAttribute</u></b> :: {0}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=>{1}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=>{2}",
+                                        xMethod.Name,
+                                        xType.FullName,
                                         xAssembly.FullName));
                                 }
                             }
@@ -364,8 +357,8 @@ namespace Atomix
                                         xType.FullName,
                                         xAssembly.FullName));
                             }
-                        }                        
-                    }                    
+                        }
+                    }
                 }
             }
         }
@@ -381,10 +374,10 @@ namespace Atomix
             if (Pointers.ContainsKey(aField))
             {
                 // As simple as that
-                Core.DataMember.Add(new AsmData(xName, "dd " + Pointers[aField]));
+                Core.InsertData(new AsmData(xName, "dd " + Pointers[aField]));
             }
             else
-            {                
+            {
                 int xTheSize = 4;
 
                 Type xFieldTypeDef = aField.FieldType;
@@ -416,7 +409,7 @@ namespace Atomix
                     // Do nothing, if error...we won't care it
                 }
                 // Add it to data member
-                Core.DataMember.Add(new AsmData(xName, xData));
+                Core.InsertData(new AsmData(xName, xData));
             }
             // Add it build definations
             BuildDefinations.Add(aField);
@@ -433,7 +426,7 @@ namespace Atomix
         private void ProcessExternalMethod(MethodBase aMethod)
         {
             ILCompiler.Logger.Write("@Processor", aMethod.FullName(), "Processing External Method");
-            
+
             if (!aMethod.IsStatic)
                 throw new Exception("Non-static extern fields not supported");
 
@@ -478,7 +471,7 @@ namespace Atomix
             #region _CALLI_HEADER_
             if (IsAtomixCompiled)
             {
-                
+
                 // push the arguments from left to right
                 for (int i = 0; i < xParms.Length; i++)
                 {
@@ -527,7 +520,7 @@ namespace Atomix
 
             // Call the function
             Core.AssemblerCode.Add(new Call("EAX"));
-            
+
             #region _CALLI_FOOTER_
             if (xReturnSize > 0)
             {
@@ -593,7 +586,7 @@ namespace Atomix
 
             return xLabel;
         }
-        
+
         public void FlushStringDataTable()
         {
             int CurrentLabel = 0;
@@ -619,7 +612,7 @@ namespace Atomix
 
         /// <summary>
         /// Build the Inline assembly method, how? quite simple just invoke that method
-        /// So, remember we want use parameters of an assembly method via c#, we have to be completely literal        
+        /// So, remember we want use parameters of an assembly method via c#, we have to be completely literal
         /// </summary>
         /// <param name="aMethod"></param>
         private void ExecutableMethod(MethodBase aMethod)
@@ -627,15 +620,14 @@ namespace Atomix
             ILCompiler.Logger.Write("@Processor", aMethod.FullName(), "Scanning Inline Assembly Method()");
             string xMethodLabel = aMethod.FullName();
 
-            if (aMethod.IsPublic && BuildingApplication)
-                Core.DataMember.Add(new AsmData("GLOBAL", xMethodLabel));
+            TryToMakeGlobalSymbol(aMethod);
 
             Core.AssemblerCode.Add(new Label(xMethodLabel));
 
             var Attribute = (AssemblyAttribute)aMethod.GetCustomAttribute(typeof(AssemblyAttribute));
             var NeedCalliHeader = Attribute.NeedCalliHeader;
 
-            /* Well we check if we assign any return size than it means we are lazy 
+            /* Well we check if we assign any return size than it means we are lazy
              * and we want compiler to add calli and return code.
              */
             if (NeedCalliHeader)
@@ -661,6 +653,13 @@ namespace Atomix
             ILCompiler.Logger.Write("Method Build Done()");
         }
 
+        private static string[] RestrictedAssembliesName =
+            {
+                "mscorlib",
+                "System",
+                Assembly.GetExecutingAssembly().GetName().Name
+            };
+
         /// <summary>
         /// Scan the normal method and find inline calls of virtual or real method to add it into queue
         /// After that Process method and add its assembly to main Array
@@ -670,11 +669,11 @@ namespace Atomix
         {
             // Just a basic patch to fix Null reference exception
             var xBody = aMethod.GetMethodBody();
-            
+
             var xAssemblyName  = aMethod.DeclaringType.Assembly.GetName().Name;
-            if ((xAssemblyName == "mscorlib" || xAssemblyName == "System") && Plugs.ContainsValue(aMethod.FullName()))
+            if (RestrictedAssembliesName.Contains(xAssemblyName) && Plugs.ContainsValue(aMethod.FullName()))
                 return;
-            
+
             if (ILHelper.IsDelegate(aMethod.DeclaringType))
             {
                 ProcessDelegate(aMethod);
@@ -701,7 +700,7 @@ namespace Atomix
                 xParamTypes[i] = xParams[i].ParameterType;
                 QueuedMember.Enqueue(xParamTypes[i]);
             }
-            
+
             bool DynamicMethod = (aMethod.DeclaringType == null);
 
             if (!DynamicMethod)
@@ -709,16 +708,16 @@ namespace Atomix
 
             if (aMethod is MethodInfo)
                 QueuedMember.Enqueue(((MethodInfo)aMethod).ReturnType);
-            
+
             if (!DynamicMethod && aMethod.IsVirtual)
             {
                 #warning Need to implement currently
             }
-            
+
             /* Process method and get out its IL's array */
             // @Newlabels:   New labels is the branches where we have to assign method
-            //               a label for branch/call IL's operations to perform. 
-            //               we make its array while making the IL's array so its make our task easier 
+            //               a label for branch/call IL's operations to perform.
+            //               we make its array while making the IL's array so its make our task easier
             List<int> NewLabels = new List<int>();
             var OpCodes = aMethod.Process(NewLabels);
 
@@ -730,14 +729,13 @@ namespace Atomix
             /* Method begin */
             Core.AssemblerCode.Add(new Label(xMethodLabel));
 
-            if (aMethod.IsPublic && BuildingApplication)
-                Core.DataMember.Add(new AsmData("GLOBAL", xMethodLabel));
+            TryToMakeGlobalSymbol(aMethod);
 
             Core.AssemblerCode.Add(new Comment(Worker.OPTIMIZATION_START_FLAG));
             if (aMethod.IsStatic && aMethod is ConstructorInfo)
             {
                 string aData = "cctor_" + xMethodLabel;
-                Core.DataMember.Add(new AsmData(aData, new byte[] { 0x00 }));
+                Core.InsertData(new AsmData(aData, new byte[] { 0x00 }));
                 Core.AssemblerCode.Add(new Cmp() { DestinationRef = aData, DestinationIndirect = true, SourceRef = "0x0", Size = 8 });
                 Core.AssemblerCode.Add(new Jmp() { Condition = ConditionalJumpEnum.JE, DestinationRef = Label.PrimaryLabel + ".Load" });
                 /* Footer of method */
@@ -768,7 +766,7 @@ namespace Atomix
             {
                 // Check if we need exception to push?
                 var xNeedsExceptionPush = (Op.Ehc != null) && (((Op.Ehc.HandlerOffset > 0 && Op.Ehc.HandlerOffset == Op.Position) || ((Op.Ehc.Flags & ExceptionHandlingClauseOptions.Filter) > 0 && Op.Ehc.FilterOffset > 0 && Op.Ehc.FilterOffset == Op.Position)) && (Op.Ehc.Flags == ExceptionHandlingClauseOptions.Clause));
-                                
+
                 ILCompiler.Logger.Write(Op.ToString() + "; Stack Count => " + Core.vStack.Count);
                 // Check if current position inside the list of label list, if yes than break label and make a new one
                 if (NewLabels.Contains(Op.Position))
@@ -845,7 +843,7 @@ namespace Atomix
             // Now below code save the return value to EBP varaible
             // And calculate size
             int ArgSize = ILHelper.GetArgumentsSize(aMethod);
-            
+
             int ReturnSize = ILHelper.GetReturnTypeSize(aMethod);
             if (ReturnSize > 0)
             {
@@ -886,15 +884,16 @@ namespace Atomix
         {
             if (aType.BaseType != null)
                 QueuedMember.Enqueue(aType.BaseType);
-                        
+
             foreach (var xCctor in aType.GetConstructors(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public))
             {
                 if (xCctor.DeclaringType == aType)
                     QueuedMember.Enqueue(xCctor);
             }
+
             foreach (var xAB in aType.GetMethods())
             {
-                /* For abstract methods conditions are :- 
+                /* For abstract methods conditions are :-
                  * 1) Its base defination type is not its declaring type
                  * 2) Its base defination should be Abstract
                  * 3) Its declaring type should not be abstract
@@ -909,6 +908,17 @@ namespace Atomix
                 }
             }
             BuildDefinations.Add(aType);
+        }
+
+        private void TryToMakeGlobalSymbol(MethodBase aMethod)
+        {
+            var xAssemblyName = aMethod.DeclaringType.Assembly.GetName().Name;
+            if (aMethod.IsPublic &&
+                aMethod.DeclaringType.IsVisible &&
+                !RestrictedAssembliesName.Contains(xAssemblyName))
+            {
+                Core.NasmHeaders.Add("global " + aMethod.FullName());
+            }
         }
 
         private void VTableFlush()
@@ -943,7 +953,7 @@ namespace Atomix
                 int xSize = 3 + (xItem.Value.Count * 2);
                 xVTableData.Add(xSize.ToString());
                 xVTableData.Add(xTypeID.ToString());
-                
+
                 foreach(var yItem in xItem.Value)
                 {
                     string xLabel = yItem.FullName();
@@ -956,7 +966,7 @@ namespace Atomix
             xVTableData.Add("0");
             Core.DataMember.Add(new AsmData("__VTable_Flush__", xVTableData.ToArray()));
         }
-        
+
         private void ProcessDelegate(MethodBase xMethod)
         {
             var lbl = xMethod.FullName();
@@ -984,7 +994,7 @@ namespace Atomix
                 Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
                 Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EBX, SourceRef = "0x4" });
                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, DestinationIndirect = true, SourceReg = Registers.EAX });
-                
+
                 // calli footer
                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "0x0" });
                 Core.AssemblerCode.Add(new Leave());
@@ -994,14 +1004,14 @@ namespace Atomix
             {
                 // Load Reference
                 ((Ldarg)MSIL[ILCode.Ldarg]).Execute2(0, xMethod);
-                
-                Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });                
+
+                Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
                 Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EAX, SourceRef = "0xC" });
 
                 // If it is a non static field than get its parent Type memory location
                 if (!xMethod.IsStatic)
                     Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX, DestinationDisplacement = 0x4, DestinationIndirect = true });
-                
+
                 var xParms = xMethod.GetParameters();
                 int xSize = ILHelper.GetArgumentsSize(xMethod);
 
@@ -1035,7 +1045,7 @@ namespace Atomix
                 // Check for anytype of exception
                 Core.AssemblerCode.Add(new Test { DestinationReg = Registers.ECX, SourceRef = "0x2" });
                 Core.AssemblerCode.Add(new Jmp { Condition = ConditionalJumpEnum.JNE, DestinationRef = lbl_exception });
-                
+
                 // calli footer
                 Core.AssemblerCode.Add(new Label(lbl_end));
                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "0x0" });
@@ -1069,24 +1079,56 @@ namespace Atomix
             BuildDefinations.Add(xMethod);
         }
 
+        private static void BssSectionHeader(StreamWriter aSW)
+        {
+            aSW.WriteLine();
+            aSW.WriteLine("section .bss");
+        }
+
+        private static void DataSectionHeader(StreamWriter aSW)
+        {
+            aSW.WriteLine();
+            aSW.WriteLine("section .data");
+        }
+
+        private static void TextSectionHeader(StreamWriter aSW)
+        {
+            aSW.WriteLine();
+            aSW.WriteLine("section .text");
+        }
+
         public void FlushAsmFile()
         {
             // Flush String Data table
             FlushStringDataTable();
 
             VTableFlush();
-            
+
             // Add a label of Kernel End, it is used by our heap to know from where it starts allocating memory
             Core.AssemblerCode.Add(new Label("Compiler_End"));
-            
+
             using (var xWriter = new StreamWriter(ILCompiler.OutputFile, false))
             {
-                // Firstly add datamember
-                foreach (var dm in Core.DataMember)
-                    dm.FlushText(xWriter);
+                foreach (var Header in Core.NasmHeaders)
+                    xWriter.WriteLine(Header);
 
-                // Leave a line because we want make it beautiful =P
-                xWriter.WriteLine("");
+                // if any BSS data is contained or not
+                if (Core.DataMemberBssSegmentIndex > 0)
+                    BssSectionHeader(xWriter);
+
+                // Firstly add datamember
+                bool IsFlagged = true;
+                foreach (var AsmData in Core.DataMember)
+                {
+                    if (AsmData.IsBssData == false && IsFlagged == true)
+                    {
+                        IsFlagged = false;
+                        DataSectionHeader(xWriter);
+                    }
+                    AsmData.FlushText(xWriter);
+                }
+
+                TextSectionHeader(xWriter);
 
                 if (DoOptimization)
                 {
@@ -1095,26 +1137,26 @@ namespace Atomix
                     catch (Exception e) { Console.WriteLine("Optimization-Exception:" + e.ToString()); }
                 }
 
-                foreach (var ac in Core.AssemblerCode)
+                foreach (var instruction in Core.AssemblerCode)
                 {
-                    if (ac is Label)
+                    if (instruction is Label)
                     {
                         xWriter.WriteLine();
-                        ac.FlushText(xWriter);                        
+                        instruction.FlushText(xWriter);
                     }
                     else
                     {
                         xWriter.Write("     ");
-                        if (ac is Call)
+                        if (instruction is Call)
                         {
-                            var InstCall = ac as Call;
+                            var InstCall = instruction as Call;
                             if (InstCall.FunctionLabel)
                             {
                                 Call.FlushText(xWriter, (Core.StaticLabels[InstCall.Address] as MethodBase).FullName());
                                 continue;
                             }
                         }
-                        ac.FlushText(xWriter);
+                        instruction.FlushText(xWriter);
                     }
                 }
             }

@@ -15,7 +15,7 @@ using Atomix.Kernel_H.Arch.x86;
 
 namespace Atomix.Kernel_H.Drivers.Input
 {
-    public static class Mouse
+    internal static class Mouse
     {
         const byte MOUSE_PORT = 0x60;
         const byte MOUSE_STATUS = 0x64;
@@ -31,9 +31,9 @@ namespace Atomix.Kernel_H.Drivers.Input
 
         public const byte MOUSE_MAGIC = 0xAC;
 
-        public static Pipe MousePipe;
+        internal static Pipe MousePipe;
 
-        public static void Setup()
+        internal static void Setup()
         {
             Debug.Write("PS/2 Mouse Controller Setup\n");
             MouseCycle = 0;

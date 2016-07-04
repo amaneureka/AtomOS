@@ -17,10 +17,10 @@ using Core = Atomix.Assembler.AssemblyHelper;
 
 namespace Atomix.Kernel_H.Core
 {
-    public static class Task
+    internal static class Task
     {
         [Label("__Switch_Task__")]
-        public static uint SwitchTask(uint oldStack)
+        internal static uint SwitchTask(uint oldStack)
         {
             // Increment System Timer
             Timer.Tick();

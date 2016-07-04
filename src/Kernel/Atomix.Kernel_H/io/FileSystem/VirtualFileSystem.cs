@@ -15,23 +15,23 @@ using Atomix.Kernel_H.Lib.Crypto;
 
 namespace Atomix.Kernel_H.IO.FileSystem
 {
-    public static class VirtualFileSystem
+    internal static class VirtualFileSystem
     {
         static IDictionary<string, GenericFileSystem> MountedFS;
 
-        public static void Setup()
+        internal static void Setup()
         {
             MountedFS = new IDictionary<string, GenericFileSystem>(sdbm.GetHashCode, string.Equals);
         }
 
-        public static GenericFileSystem GetFS(string aDevice)
+        internal static GenericFileSystem GetFS(string aDevice)
         {
             if (!MountedFS.ContainsKey(aDevice))
                 return null;
             return MountedFS[aDevice];
         }
 
-        public static Stream GetFile(string aPath)
+        internal static Stream GetFile(string aPath)
         {
             var paths = aPath.Split('/');
             var FileSystem = GetFS(paths[0]);
@@ -42,7 +42,7 @@ namespace Atomix.Kernel_H.IO.FileSystem
             return xStream;
         }
 
-        public static bool CreateFile(string aPath)
+        internal static bool CreateFile(string aPath)
         {
             var paths = aPath.Split('/');
             var FileSystem = GetFS(paths[0]);
@@ -53,7 +53,7 @@ namespace Atomix.Kernel_H.IO.FileSystem
             return xValue;
         }
 
-        public static bool MountDevice(string aDeviceName, GenericFileSystem aFS)
+        internal static bool MountDevice(string aDeviceName, GenericFileSystem aFS)
         {
             if (!aFS.IsValid)
                 return false;

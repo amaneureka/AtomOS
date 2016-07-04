@@ -7,30 +7,24 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-using Atomix.CompilerExt;
+using System;
+
 using Atomix.CompilerExt.Attributes;
-using Atomix.Core;
 
-namespace Atomix.Shell
+namespace Atomix.Core.mscorlib
 {
-    [Application(CPUArch.x86)]
-    public class Startx86
+    public class Marshal
     {
-        internal static int AddNums2(int a, int b)
+        [Plug("System_IntPtr_System_Runtime_InteropServices_Marshal_AllocHGlobal_System_Int32_")]
+        public static IntPtr AllocHGlobal()
         {
-            return (a + b);
+            return IntPtr.Zero;
         }
 
-        [Plug("lol")]
-        public static int AddNums(int a, int b)
+        [Plug("System_Void_System_Runtime_InteropServices_Marshal_FreeHGlobal_System_IntPtr_")]
+        public static void FreeHGlobal(IntPtr hglobal)
         {
-            return (a + b*2);
-        }
 
-        public static void main(char[] args)
-        {
-            AddNums(0, 0);
-            while (true) ;
         }
     }
 }

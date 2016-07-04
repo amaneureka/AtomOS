@@ -9,30 +9,30 @@
 
 namespace Atomix.Kernel_H.Arch.x86
 {
-    public static class PIC
+    internal static class PIC
     {
-        private const byte PIC1_Command = 0x20;
-        private const byte PIC2_Command = 0xA0;
+        const byte PIC1_Command = 0x20;
+        const byte PIC2_Command = 0xA0;
 
-        private const byte PIC1_Data = 0x21;
-        private const byte PIC2_Data = 0xA1;
+        const byte PIC1_Data = 0x21;
+        const byte PIC2_Data = 0xA1;
 
-        private const byte ICW1_ICW4 = 0x01;
-        private const byte ICW1_SingleCascadeMode = 0x02;
-        private const byte ICW1_Interval4 = 0x04;
-        private const byte ICW1_LevelTriggeredEdgeMode = 0x08;
-        private const byte ICW1_Initialization = 0x10;
-        private const byte ICW2_MasterOffset = 0x20;
-        private const byte ICW2_SlaveOffset = 0x28;
-        private const byte ICW4_8086 = 0x01;
-        private const byte ICW4_AutoEndOfInterrupt = 0x02;
-        private const byte ICW4_BufferedSlaveMode = 0x08;
-        private const byte ICW4_BufferedMasterMode = 0x0C;
-        private const byte ICW4_SpecialFullyNested = 0x10;
+        const byte ICW1_ICW4 = 0x01;
+        const byte ICW1_SingleCascadeMode = 0x02;
+        const byte ICW1_Interval4 = 0x04;
+        const byte ICW1_LevelTriggeredEdgeMode = 0x08;
+        const byte ICW1_Initialization = 0x10;
+        const byte ICW2_MasterOffset = 0x20;
+        const byte ICW2_SlaveOffset = 0x28;
+        const byte ICW4_8086 = 0x01;
+        const byte ICW4_AutoEndOfInterrupt = 0x02;
+        const byte ICW4_BufferedSlaveMode = 0x08;
+        const byte ICW4_BufferedMasterMode = 0x0C;
+        const byte ICW4_SpecialFullyNested = 0x10;
 
-        private const byte EOI = 0x20;
+        const byte EOI = 0x20;
 
-        public static void Setup()
+        internal static void Setup()
         {
             Remap(0x20, 0xF9, 0x28, 0xFF);
         }
@@ -66,7 +66,7 @@ namespace Atomix.Kernel_H.Arch.x86
             //PortIO.Wait();
         }
 
-        public static void EndOfInterrupt(uint irq)
+        internal static void EndOfInterrupt(uint irq)
         {
             if (irq >= 40) // or untranslated IRQ >= 8
                 PortIO.Out8(PIC2_Command, EOI);

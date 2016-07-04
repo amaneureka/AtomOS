@@ -14,18 +14,18 @@ using Atomix.Kernel_H.Core;
 
 namespace Atomix.Kernel_H.devices
 {
-    public class MBR
+    internal class MBR
     {
-        protected Storage aDisk;
-        protected IList<Partition> aPartitions;
+        protected Storage mDisk;
+        protected IList<Partition> mPartitions;
 
-        public IList<Partition> PartInfo
-        { get { return aPartitions; } }
+        internal IList<Partition> PartInfo
+        { get { return mPartitions; } }
 
-        public MBR(Storage mDisk)
+        internal MBR(Storage aDisk)
         {
-            this.aDisk = mDisk;
-            this.aPartitions = new IList<Partition>();
+            mDisk = aDisk;
+            mPartitions = new IList<Partition>();
 
             var aMBR = new byte[512];
             mDisk.Read(0U, 1U, aMBR);
@@ -51,13 +51,13 @@ namespace Atomix.Kernel_H.devices
             {
                 UInt32 xSectorCount = BitConverter.ToUInt32(aMBR, aLoc + 12);
                 UInt32 xStartSector = BitConverter.ToUInt32(aMBR, aLoc + 8);
-                aPartitions.Add(new Partition(this.aDisk, xStartSector, xSectorCount));
+                mPartitions.Add(new Partition(mDisk, xStartSector, xSectorCount));
             }
         }
 
-        public void Clean()
+        internal void Clean()
         {
-            Heap.Free(aPartitions);
+            Heap.Free(mPartitions);
             Heap.Free(this);
         }
     }

@@ -18,7 +18,7 @@ using Atomix.Kernel_H.IO.FileSystem;
 
 namespace Atomix.Kernel_H.exec
 {
-    public unsafe static class ELF
+    internal unsafe static class ELF
     {
         [StructLayout(LayoutKind.Explicit, Size = 52)]
         struct Elf_Header

@@ -16,7 +16,7 @@ using Atomix.CompilerExt.Attributes;
 
 namespace Atomix.Kernel_H.exec
 {
-    public static class Environment
+    internal static class Environment
     {
         const uint MAGIC = 0xEF00FE00;
 

@@ -7,6 +7,7 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
+using System;
 using System.IO;
 using System.Linq;
 
@@ -14,36 +15,47 @@ namespace Atomix.Assembler
 {
     public class AsmData
     {
-        private string mName;
-        private string mValue;
+        public readonly string Name;
+        public readonly string Value;
+        public readonly bool IsBssData;
         
         public AsmData(string aName, string aValue)
         {
-            mName = aName;
-            mValue = aValue;
+            Name = aName;
+            Value = aValue;
         }
-
-        public AsmData(string aName, uint aValue)
+        
+        public AsmData(string aName, uint aLength)
         {
-            mName = aName;
-            mValue = string.Format("dd {0}", aValue);
+            Name = aName;
+            Value = "resb " + aLength;
+            IsBssData = true;
         }
 
         public AsmData(string aName, byte[] aValue)
         {
-            mName = aName;
-            mValue = string.Format("db {0}", string.Join(", ", aValue.Select(a => a.ToString())));
+            Name = aName;
+            if (aValue.LastOrDefault(a => a != 0) == 0)
+            {
+                IsBssData = true;
+                Value = "resb " + aValue.Length;
+            }
+            else
+            {
+                Value = string.Format("db {0}", string.Join(", ", aValue.Select(a => a.ToString())));
+            }
         }
 
         public AsmData(string aName, string[] aValue)
         {
-            mName = aName;
-            mValue = string.Format("dd {0}", string.Join(", ", aValue.Select(a => a.ToString())));
+            Name = aName;
+            Value = string.Format("dd {0}", string.Join(", ", aValue.Select(a => a.ToString())));
+            IsBssData = false;
         }
         
         public void FlushText(StreamWriter aSW)
         {
-            aSW.WriteLine(string.Format("{0} {1}", mName, mValue));
+            aSW.WriteLine(string.Format("{0} {1}", Name, Value));
         }
     }
 }

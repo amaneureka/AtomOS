@@ -13,35 +13,35 @@ using System.Runtime.InteropServices;
 
 namespace Atomix.Kernel_H.Gui.Font
 {
-    public unsafe class Glyph
+    internal unsafe class Glyph
     {
         /// <summary>
         /// Real Width of font glyph bitamp
         /// </summary>
-        public uint Width;
+        internal uint Width;
         /// <summary>
         /// Real Height of font glyph bitamp
         /// </summary>
-        public uint Height;
+        internal uint Height;
         /// <summary>
         /// Left offset
         /// </summary>
-        public uint xOffset;
+        internal uint xOffset;
         /// <summary>
         /// Upward offset
         /// </summary>
-        public uint yOffset;
+        internal uint yOffset;
         /// <summary>
         /// Decimal value corresponding to this font glyph
         /// </summary>
-        public uint Unicode;
+        internal uint Unicode;
         /// <summary>
         /// Aparent width of font glyph bitamp
         /// </summary>
-        public uint DWidth;
+        internal uint DWidth;
         /// <summary>
         /// Glyph data
         /// </summary>
-        public uint* Bitmap;
+        internal uint* Bitmap;
     }
 }

@@ -16,29 +16,25 @@ using Atomix.CompilerExt.Attributes;
 
 namespace Atomix.Kernel_H.Core
 {
-    public static class Monitor
+    internal static class Monitor
     {
         // Holds Object which are locked and thread id which has acquired the lock
         static IDictionary<object, int> mLocks;
 
-        public static void Setup()
+        internal static void Setup()
         {
-            mLocks = new IDictionary<object, int>(delegate (object aObj)
-            {
-                // If two objects shares the same address
-                return Native.GetAddress(aObj);
-            }, object.Equals);
+            mLocks = new IDictionary<object, int>(Native.GetAddress, Equals);
         }
 
-        public static void AcquireLock(object aObj)
+        internal static void AcquireLock(object aObj)
         {
             bool Lock = false;
             AcquireLock(aObj, ref Lock);
         }
 
         [Label("AcquireLock")]
-        //https://msdn.microsoft.com/en-us/library/dd289498(v=vs.110).aspx
-        public static void AcquireLock(object aObj, ref bool aLockTaken)
+        // https://msdn.microsoft.com/en-us/library/dd289498(v=vs.110).aspx
+        internal static void AcquireLock(object aObj, ref bool aLockTaken)
         {
             aLockTaken = false;
             
@@ -60,8 +56,8 @@ namespace Atomix.Kernel_H.Core
         }
 
         [Label("ReleaseLock")]
-        //https://msdn.microsoft.com/en-in/library/system.threading.monitor.exit(v=vs.110).aspx
-        public static void ReleaseLock(object aObj)
+        // https://msdn.microsoft.com/en-in/library/system.threading.monitor.exit(v=vs.110).aspx
+        internal static void ReleaseLock(object aObj)
         {
             int ThreadID = Scheduler.RunningThreadID;
             int ID = mLocks.GetValue(aObj, -1);

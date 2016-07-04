@@ -11,12 +11,12 @@ using Atomix.Kernel_H.Core;
 
 namespace Atomix.Kernel_H.IO.FileSystem.RFS
 {
-    public unsafe class FileStream : Stream
+    internal unsafe class FileStream : Stream
     {
-        public readonly RamFile RamFile;
-        private int mPosition;
-        
-        public FileStream(RamFile aRamFile)
+        internal readonly RamFile RamFile;
+        int mPosition;
+
+        internal FileStream(RamFile aRamFile)
             :base(aRamFile.Name, aRamFile.Length)
         {
             RamFile = aRamFile;

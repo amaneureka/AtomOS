@@ -10,14 +10,14 @@
 namespace Atomix.Kernel_H.Lib.Crypto
 {
     // Source: http://www.cse.yorku.ca/~oz/hash.html
-    public static class sdbm
+    internal static class sdbm
     {
-        public static uint GetHashCode(this string aData)
+        internal static uint GetHashCode(this string aData)
         {
             return GetHashCode(aData, 0);
         }
 
-        public static uint GetHashCode(this string aData, uint aSeed)
+        internal static uint GetHashCode(this string aData, uint aSeed)
         {
             uint Hash = aSeed;
 
@@ -27,7 +27,7 @@ namespace Atomix.Kernel_H.Lib.Crypto
             return Hash;
         }
 
-        public static uint GetHashCode(this char[] aData)
+        internal static uint GetHashCode(this char[] aData)
         {
             uint Hash = 0;
 
@@ -37,7 +37,7 @@ namespace Atomix.Kernel_H.Lib.Crypto
             return Hash;
         }
 
-        public static uint GetHashCode(this byte[] aData)
+        internal static uint GetHashCode(this byte[] aData)
         {
             uint Hash = 0;
 

@@ -9,7 +9,7 @@
 
 namespace Atomix.Kernel_H.Gui
 {
-    public enum RequestHeader : byte
+    internal enum RequestHeader : byte
     {
         CREATE_NEW_WINDOW = 0xCC,
         INPUT_MOUSE_EVENT = 0xAC,

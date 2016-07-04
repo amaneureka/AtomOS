@@ -9,21 +9,21 @@
 
 namespace Atomix.Kernel_H.Lib
 {
-    public class Pair<A, B>
+    internal class Pair<A, B>
     {
         A aItem;
         B bItem;
 
-        public Pair(A item1, B item2)
+        internal Pair(A item1, B item2)
         {
-            this.aItem = item1;
-            this.bItem = item2;
+            aItem = item1;
+            bItem = item2;
         }
 
-        public A First
+        internal A First
         { get { return aItem; } }
 
-        public B Second
+        internal B Second
         { get { return bItem; } }
     }
 }
