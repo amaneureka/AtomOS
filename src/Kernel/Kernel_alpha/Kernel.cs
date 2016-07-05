@@ -8,46 +8,50 @@ using Atomix.Assembler;
 using Atomix.Assembler.x86;
 using Kernel_alpha.x86;
 using Kernel_alpha.x86.Intrinsic;
-using Core = Atomix.Assembler.AssemblyHelper;
+using AssemblyHelper = Atomix.Assembler.AssemblyHelper;
 
 namespace Kernel_alpha
 {
     [Kernel(CPUArch.x86, "0x100000")]//Fixed Entrypoint, if you change it than i kill you :)
     public static class Kernel_x86
     {
-        [Assembly, Plug("Kernel_Main")]
+        [Assembly]
         public static void main()
         {
-            /* Will do some assembly, because it can't be managed via C# :(
-             * So, first task is to set Multiboot header
-             */
-            Core.DataMember.Add(new AsmData("MultibootSignature", BitConverter.GetBytes(0x1BADB002))); //0x100000
-            //Bit 2 -> Video Mode
-            Core.DataMember.Add(new AsmData("MultibootFlags", BitConverter.GetBytes(65543)));//0x100004
-            //Checksum + MultibootSignature + MultibootFlags == 0
-            //-_- I don't know who the hell made this rule =/
-            Core.DataMember.Add(new AsmData("MultibootChecksum", BitConverter.GetBytes(-464433161)));//0x100008
-            Core.DataMember.Add(new AsmData("MultibootHeaderAddr", "dd MultibootSignature"));//0x10000C
-            Core.DataMember.Add(new AsmData("MultibootLoadAddr", "dd MultibootSignature"));//0x100010
-            Core.DataMember.Add(new AsmData("MultibootLoadEndAddr", "dd Compiler_End"));//0x100014
-            Core.DataMember.Add(new AsmData("MultibootBSSEndAddr", "dd Compiler_End"));//0x100018
-            Core.DataMember.Add(new AsmData("MultibootEntryAddr", "dd Kernel_Main")); //0x10001C
-            Core.DataMember.Add(new AsmData("MultibootVesaMode", BitConverter.GetBytes(1)));//0x100020
-            Core.DataMember.Add(new AsmData("MultibootVesaWidth", BitConverter.GetBytes(1024)));//0x100024
-            Core.DataMember.Add(new AsmData("MultibootVesaHeight", BitConverter.GetBytes(768)));//0x100028
-            Core.DataMember.Add(new AsmData("MultibootVesaDepth", BitConverter.GetBytes(32)));//0x10002C
-            Core.DataMember.Add(new AsmData("GDT_And_IDT_Content:", "TIMES 3000 db 0"));//0x100030 --> First IDT than GDT
-            Core.DataMember.Add(new AsmData("Before_Kernel_Stack:", "TIMES 0x5000 db 0"));
-            Core.DataMember.Add(new AsmData("Stack_Entrypoint:", string.Empty));
+            const uint MultibootMagic = 0x1BADB002;
+            const uint MultibootFlags = 0x10007;
+            const uint InitalStackSize = 0x50000;
+
+            /* Multiboot Config */
+            AssemblyHelper.AssemblerCode.Add(new Literal("MultibootSignature dd {0}", MultibootMagic));
+            AssemblyHelper.AssemblerCode.Add(new Literal("MultibootFlags dd {0}", 65543));
+            AssemblyHelper.AssemblerCode.Add(new Literal("MultibootChecksum dd {0}", -(MultibootMagic + MultibootFlags)));
+            AssemblyHelper.AssemblerCode.Add(new Literal("MultibootHeaderAddr dd {0}", 0));
+            AssemblyHelper.AssemblerCode.Add(new Literal("MultibootLoadAddr dd {0}", 0));
+            AssemblyHelper.AssemblerCode.Add(new Literal("MultibootLoadEndAddr dd {0}", 0));
+            AssemblyHelper.AssemblerCode.Add(new Literal("MultibootBSSEndAddr dd {0}", 0));
+            AssemblyHelper.AssemblerCode.Add(new Literal("MultibootEntryAddr dd {0}", 0));
+            AssemblyHelper.AssemblerCode.Add(new Literal("MultibootVesaMode dd {0}", 0));
+            AssemblyHelper.AssemblerCode.Add(new Literal("MultibootVesaWidth dd {0}", 1024));
+            AssemblyHelper.AssemblerCode.Add(new Literal("MultibootVesaHeight dd {0}", 768));
+            AssemblyHelper.AssemblerCode.Add(new Literal("MultibootVesaDepth dd {0}", 32));
+
+            AssemblyHelper.InsertData(new AsmData("GDT_And_IDT_Content:", "TIMES 3000 db 0"));
+
+            AssemblyHelper.InsertData(new AsmData("InitialStack", InitalStackSize));
+
+            AssemblyHelper.AssemblerCode.Add(new Label("_Kernel_Main"));
 
             /* Here is Entrypoint Method */
-            Core.AssemblerCode.Add(new Cli()); //Clear interrupts first !!
+            AssemblyHelper.AssemblerCode.Add(new Cli()); //Clear interrupts first !!
 
             //Setup Stack pointer, We do rest things later (i.e. Another method) because they are managed :)
-            Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ESP, SourceRef = "Stack_Entrypoint" });
-            Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
-            Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EBX });//Push Multiboot Header Info Address
-            Core.AssemblerCode.Add(new Call ("Kernel_Start"));
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.ESP, SourceRef = "InitialStack" });
+            AssemblyHelper.AssemblerCode.Add(new Add { DestinationReg = Registers.ESP, SourceRef = InitalStackSize.ToString() });
+
+            AssemblyHelper.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
+            AssemblyHelper.AssemblerCode.Add(new Push { DestinationReg = Registers.EBX });//Push Multiboot Header Info Address
+            AssemblyHelper.AssemblerCode.Add(new Call ("Kernel_Start"));
         }
 
         [Plug("Kernel_Start")]
@@ -64,13 +68,13 @@ namespace Kernel_alpha
 
             /* Setup PIC */
             PIC.Setup();
-            
+
             /* Setup GDT & Enter into protected mode */
             GDT.Setup();
-            
+
             /* Setup IDT */
             IDT.Setup();
-            
+
             /* Enable Interrupts */
             Native.SetInterrupt();
 
@@ -78,9 +82,9 @@ namespace Kernel_alpha
             Paging.Setup(Multiboot.RAM);
 
             /* Setup Multitasking */
-            Multitasking.CreateTask(0, true); //This is System Update thread            
+            Multitasking.CreateTask(0, true); //This is System Update thread
             Multitasking.Init();//Start Multitasking
-            
+
             /* Call our kernel instance now */
             try
             {
