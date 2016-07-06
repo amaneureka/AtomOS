@@ -16,8 +16,8 @@ namespace Kernel_alpha.x86
 {
     public static class IDT
     {
-        private static uint _idtTable = 0x100030;
-        private static uint _idtEntries = 0x100030 + 6;
+        private static uint _idtTable;
+        private static uint _idtEntries;
 
         public enum Offset
         {
@@ -31,6 +31,9 @@ namespace Kernel_alpha.x86
 
         public static void Setup()
         {
+            _idtTable = Heap.kmalloc(2048 + 6);
+            _idtEntries = _idtTable + 6;
+
             Memory.Clear(_idtTable, 6);
 
             Native.Write16(_idtTable, ((byte)Offset.TotalSize * 256) - 1);
@@ -115,7 +118,7 @@ namespace Kernel_alpha.x86
                     xAddress[56] = (byte)xHex[(int)(xContext.Param & 0xF)];
                     xAddress[57] = 0x0C;
                 }
-                #endregion                
+                #endregion
                 while (true) ;
             }
             else if (INT >= 0x20 && INT < 0x30) //[32, 48) --> Hardware Interrupts
@@ -125,7 +128,7 @@ namespace Kernel_alpha.x86
             }
             Native.SetInterrupt();
         }
-        
+
         [Assembly(true)]
         private static void UpdateIDT()
         {

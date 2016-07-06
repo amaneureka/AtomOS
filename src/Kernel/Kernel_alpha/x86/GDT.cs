@@ -14,9 +14,9 @@ namespace Kernel_alpha.x86
 {
     public static class GDT
     {
-        private static uint _gdtTable = 0x10083C; //0x200020 + 2048 (IDT Content) + 6 (IDT Pointer) + <Some space unused>
-        private static uint _gdtEntries = 0x10083C + 6;
-        
+        private static uint _gdtTable;
+        private static uint _gdtEntries;
+
         public enum Offset : byte
         {
             LimitLow = 0x00,
@@ -27,9 +27,12 @@ namespace Kernel_alpha.x86
             BaseHigh = 0x07,
             TotalSize = 0x08
         };
-        
+
         public static void Setup()
         {
+            _gdtTable = Heap.kmalloc(46);
+            _gdtEntries = _gdtTable + 6;
+
             Memory.Clear(_gdtTable, 6);
             Native.Write16(_gdtTable, ((byte)Offset.TotalSize * 5) - 1);
             Native.Write32(_gdtTable + 2, _gdtEntries);
@@ -41,7 +44,7 @@ namespace Kernel_alpha.x86
             Set_GDT_Gate(4, 0, 0xFFFFFFFF, 0xF2, 0xCF); // User mode data segment
 
             Native.Lgdt(_gdtTable);
-                        
+
             FlushGDT();
         }
 
@@ -55,7 +58,7 @@ namespace Kernel_alpha.x86
             Native.Write8(entry + (byte)Offset.Granularity, (byte)(((byte)(limit >> 16) & 0x0F) | (granularity & 0xF0)));
             Native.Write8(entry + (byte)Offset.Access, access);
         }
-        
+
         [Assembly(true)]
         private static void FlushGDT()
         {

@@ -201,7 +201,7 @@ namespace Atomix
                         if ((CPUArch)xAttr.ConstructorArguments[0].Value == cpu)
                         {
                             Core.NasmHeaders.Add("global Kernel_Main");
-                            Core.NasmHeaders.Add("Kernel_Main equ (_Kernel_Main - 0xC0000000)");
+                            Core.NasmHeaders.Add(string.Format("Kernel_Main equ (_Kernel_Main - {0})", xAttr.ConstructorArguments[1].Value));
 
                             return xType;
                         }

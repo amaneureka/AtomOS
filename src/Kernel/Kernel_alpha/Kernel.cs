@@ -12,7 +12,7 @@ using AssemblyHelper = Atomix.Assembler.AssemblyHelper;
 
 namespace Kernel_alpha
 {
-    [Kernel(CPUArch.x86, "0x100000")]//Fixed Entrypoint, if you change it than i kill you :)
+    [Kernel(CPUArch.x86, "0x000000")]//Fixed Entrypoint, if you change it than i kill you :)
     public static class Kernel_x86
     {
         [Assembly]
@@ -31,12 +31,6 @@ namespace Kernel_alpha
             AssemblyHelper.AssemblerCode.Add(new Literal("MultibootLoadEndAddr dd {0}", 0));
             AssemblyHelper.AssemblerCode.Add(new Literal("MultibootBSSEndAddr dd {0}", 0));
             AssemblyHelper.AssemblerCode.Add(new Literal("MultibootEntryAddr dd {0}", 0));
-            AssemblyHelper.AssemblerCode.Add(new Literal("MultibootVesaMode dd {0}", 0));
-            AssemblyHelper.AssemblerCode.Add(new Literal("MultibootVesaWidth dd {0}", 1024));
-            AssemblyHelper.AssemblerCode.Add(new Literal("MultibootVesaHeight dd {0}", 768));
-            AssemblyHelper.AssemblerCode.Add(new Literal("MultibootVesaDepth dd {0}", 32));
-
-            AssemblyHelper.InsertData(new AsmData("GDT_And_IDT_Content:", "TIMES 3000 db 0"));
 
             AssemblyHelper.InsertData(new AsmData("InitialStack", InitalStackSize));
 
