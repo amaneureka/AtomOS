@@ -108,10 +108,10 @@ namespace Atomix.Kernel_H.Lib
         {
             uint Index = mFunction(aKey) & mModulo;
             Bucket Current = mBuckets[Index];
-                        
+
             while (Current != null && !mEquality(Current.mKey, aKey))
                 Current = Current.mNext;
-            
+
             if (Current == null)
                 return false;
 

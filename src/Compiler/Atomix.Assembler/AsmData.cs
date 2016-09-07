@@ -18,13 +18,13 @@ namespace Atomix.Assembler
         public readonly string Name;
         public readonly string Value;
         public readonly bool IsBssData;
-        
+
         public AsmData(string aName, string aValue)
         {
             Name = aName;
             Value = aValue;
         }
-        
+
         public AsmData(string aName, uint aLength)
         {
             Name = aName;
@@ -52,7 +52,7 @@ namespace Atomix.Assembler
             Value = string.Format("dd {0}", string.Join(", ", aValue.Select(a => a.ToString())));
             IsBssData = false;
         }
-        
+
         public void FlushText(StreamWriter aSW)
         {
             aSW.WriteLine(string.Format("{0} {1}", Name, Value));

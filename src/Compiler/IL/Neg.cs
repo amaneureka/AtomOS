@@ -26,7 +26,7 @@ namespace Atomix.IL
         public override void Execute(ILOpCode instr, MethodBase aMethod)
         {
             var xItem = Core.vStack.Peek();
-            
+
             switch (ILCompiler.CPUArchitecture)
             {
                 #region _x86_
@@ -49,14 +49,14 @@ namespace Atomix.IL
                 #region _x64_
                 case CPUArch.x64:
                     {
-                        
+
                     }
                     break;
                 #endregion
                 #region _ARM_
                 case CPUArch.ARM:
                     {
-                        
+
                     }
                     break;
                 #endregion

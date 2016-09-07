@@ -9,7 +9,6 @@ namespace Kernel_alpha.x86.smbios
         public MainBoardInfo(SMBIOS.SMBIOSHeader* Header)
             : base(Header)
         {
-            
             var strings = GetAllStrings(6);
         }
     }

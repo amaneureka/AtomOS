@@ -14,7 +14,6 @@ namespace Kernel_alpha.x86.smbios
         public ProcessorInfo(SMBIOS.SMBIOSHeader* Header)
             : base(Header)
         {
-            
             var strings = GetAllStrings(3);
             mVersion = strings[0];
             mSocket = strings[1];

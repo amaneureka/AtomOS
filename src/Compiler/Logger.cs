@@ -15,7 +15,7 @@ using Atomix.CompilerExt;
 namespace Atomix
 {
     public class Logger
-    {        
+    {
         private string LoggerPath;
         private Stopwatch Timer;
         private bool IsLogging;
@@ -53,7 +53,6 @@ namespace Atomix
         {
             if (!IsLogging)
                 return;
-            
             if (aSub)
                 Details[Details.Count - 1] = string.Format("{0}<li>{1}</li>", Details[Details.Count - 1], aAppend);
             else

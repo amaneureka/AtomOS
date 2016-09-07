@@ -42,7 +42,7 @@ namespace Atomix.ILOptimizer.Optimizations
                     try { StackFlushCount = Convert.ToInt32(xCurrentInstruction.SourceRef, 16); }
                     //Not a number, So move on
                     catch {  continue; }
-                    
+
                     if (ValidEntry(xCurrentInstruction))
                     {
                         for (int index2 = index + 1; index2 < instructions.Count; index2++)
@@ -69,7 +69,7 @@ namespace Atomix.ILOptimizer.Optimizations
             if (xCurrentInstruction == null)
                 return false;
 
-            if (xCurrentInstruction.DestinationReg == Registers.ESP 
+            if (xCurrentInstruction.DestinationReg == Registers.ESP
                         && xCurrentInstruction.DestinationIndirect == false)
             {
                 return true;

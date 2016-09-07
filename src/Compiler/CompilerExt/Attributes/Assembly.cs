@@ -16,7 +16,7 @@ namespace Atomix.CompilerExt.Attributes
     {
         public readonly bool NeedCalliHeader;
 
-        public AssemblyAttribute(bool aNeedCalliHeader = false) 
+        public AssemblyAttribute(bool aNeedCalliHeader = false)
         {
             NeedCalliHeader = aNeedCalliHeader;
         }

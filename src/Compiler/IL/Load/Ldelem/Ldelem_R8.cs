@@ -19,7 +19,6 @@ namespace Atomix.IL
         public Ldelem_R8(Compiler Cmp)
             : base("ldelemr8", Cmp) { }
 
-        
         public override void Execute(ILOpCode instr, MethodBase aMethod)
         {
             switch (ILCompiler.CPUArchitecture)

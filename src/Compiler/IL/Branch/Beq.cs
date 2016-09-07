@@ -27,7 +27,7 @@ namespace Atomix.IL
         public override void Execute(ILOpCode instr, MethodBase aMethod)
         {
             //This is branch type IL
-            var xOffset = ((OpBranch)instr).Value;            
+            var xOffset = ((OpBranch)instr).Value;
             var xSize = Core.vStack.Pop().Size;
             var xTrueLabel = ILHelper.GetLabel(aMethod, xOffset);
             var xFalseLabel = ILHelper.GetLabel(aMethod, instr.Position) + "._beq_false";
@@ -37,7 +37,7 @@ namespace Atomix.IL
             /*
                 value1 is pushed onto the stack.
                 value2 is pushed onto the stack.
-                value2 and value1 are popped from the stack; 
+                value2 and value1 are popped from the stack;
                 if value1 is equal to value2, the branch operation is performed. --> value1 = value2
             */
 
@@ -65,7 +65,7 @@ namespace Atomix.IL
                             //3) Xor low values and check if zero than continue else if not than jump to Not Equal
                             //4) Xor high values and check if zero than jump to Branch else continue
 
-                            //Value 2 EBX:EAX                            
+                            //Value 2 EBX:EAX
                             Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });//low
                             Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EBX });//high
 
@@ -100,7 +100,7 @@ namespace Atomix.IL
                     }
                     break;
                 #endregion
-            }            
+            }
         }
     }
 }

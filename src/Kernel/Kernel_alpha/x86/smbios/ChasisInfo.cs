@@ -8,7 +8,7 @@ namespace Kernel_alpha.x86.smbios
     {
         public ChasisInfo(SMBIOS.SMBIOSHeader* Header)
             : base(Header)
-        {            
+        {
             var strings = GetAllStrings(5);
         }
     }

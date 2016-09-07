@@ -51,7 +51,7 @@ namespace Atomix.IL
                     }
                     break;
                 #endregion
-            }            
+            }
         }
     }
 }

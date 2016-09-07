@@ -6,7 +6,7 @@ namespace Kernel_alpha.FileSystem
     public static class VirtualFileSystem
     {
         private static List<GenericFileSystem> FileSystem;
-        
+
         public static void Init()
         {
             FileSystem = new List<GenericFileSystem>();
@@ -18,7 +18,7 @@ namespace Kernel_alpha.FileSystem
             FileSystem.Add(FS);
             return true;
         }
-        
+
         public static GenericFileSystem GetFSNode(int index)
         {
             if (index >= FileSystem.Count)

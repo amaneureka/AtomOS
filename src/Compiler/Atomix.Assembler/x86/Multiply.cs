@@ -12,6 +12,6 @@ namespace Atomix.Assembler.x86
     public class Multiply : OnlyDestination
     {
         public Multiply()
-            : base("mul") { }        
+            : base("mul") { }
     }
 }

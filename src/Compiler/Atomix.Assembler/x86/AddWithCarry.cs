@@ -12,6 +12,6 @@ namespace Atomix.Assembler.x86
     public class AddWithCarry : DestinationSourceSize
     {
         public AddWithCarry()
-            : base("adc") { }        
+            : base("adc") { }
     }
 }

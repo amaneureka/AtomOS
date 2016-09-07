@@ -12,6 +12,6 @@ namespace Atomix.Assembler.x86
     public class ShiftLeft : DestinationSourceSize
     {
         public ShiftLeft()
-            : base("shl") { }        
+            : base("shl") { }
     }
 }

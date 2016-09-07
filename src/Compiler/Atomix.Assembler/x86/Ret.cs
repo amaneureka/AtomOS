@@ -12,6 +12,6 @@ namespace Atomix.Assembler.x86
     public class Ret : OnlySize
     {
         public Ret()
-            : base("ret") { }        
+            : base("ret") { }
     }
 }

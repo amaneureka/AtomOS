@@ -19,7 +19,6 @@ namespace Atomix.IL
         public Ldelem_U2(Compiler Cmp)
             : base("ldelemu2", Cmp) { }
 
-        
         public override void Execute(ILOpCode instr, MethodBase aMethod)
         {
             switch (ILCompiler.CPUArchitecture)

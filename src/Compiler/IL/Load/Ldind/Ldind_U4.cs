@@ -25,7 +25,7 @@ namespace Atomix.IL
         public override void Execute(ILOpCode instr, MethodBase aMethod)
         {
             /*
-            Situation is an address of a 32 bit value is on the stack, we have to push that onto the stack 
+            Situation is an address of a 32 bit value is on the stack, we have to push that onto the stack
             */
             switch (ILCompiler.CPUArchitecture)
             {

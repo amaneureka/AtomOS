@@ -79,13 +79,13 @@ namespace Atomix.IL
                                 {
                                     Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
                                     Core.AssemblerCode.Add(
-                                        new Mov 
-                                        { 
-                                            DestinationRef = xFieldEntry, 
-                                            DestinationIndirect = true, 
-                                            DestinationDisplacement = ((int)(xSize/4))*4, 
-                                            SourceReg = Registers.AL, 
-                                            Size = 8 
+                                        new Mov
+                                        {
+                                            DestinationRef = xFieldEntry,
+                                            DestinationIndirect = true,
+                                            DestinationDisplacement = ((int)(xSize/4))*4,
+                                            SourceReg = Registers.AL,
+                                            Size = 8
                                         });
                                 }
                                 break;
@@ -102,7 +102,7 @@ namespace Atomix.IL
                                             Size = 16
                                         });
                                 }
-                                break;                            
+                                break;
                             default:
                                     throw new Exception("Unknown Size");
                         }

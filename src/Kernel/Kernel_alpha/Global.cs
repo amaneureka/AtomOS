@@ -46,16 +46,16 @@ namespace Kernel_alpha
             //Console.Write ("Setting up PS/2 Mouse... ");
             Mouse = new PS2Mouse();
             //Console.WriteLine ("OK");
-            
+
             //Loading ATA
             Console.Write ("Loading ATA/SATA SubSystem... ");
             LoadATA();
             Console.WriteLine("OK");
-            
+
             //Load Parts
             Console.Write ("Loading Partitions... ");
             if (PrimaryIDE != null && PrimaryIDE.DriveInfo.Device == Device.IDE_ATA)
-            {   
+            {
                 var xMBR = new Drivers.PartInfo.MBR(PrimaryIDE);
                 for (int i = 0; i < xMBR.PartInfo.Count; i++)
                     Devices.Add(xMBR.PartInfo[i]);
@@ -88,7 +88,7 @@ namespace Kernel_alpha
             xDevice = PCI.GetDeviceClass(0x1, 0x6);//Media Storage - SATA
             if (xDevice != null)
             {
-                
+
             }*/
         }
     }

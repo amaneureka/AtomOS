@@ -21,11 +21,11 @@ namespace Atomix.IL
     {
         public Ldstr(Compiler Cmp)
             : base("ldstr", Cmp) { }
-        
+
         public override void Execute(ILOpCode instr, MethodBase aMethod)
         {
             var xStr = ((OpString)instr).Value;
-            
+
             switch (ILCompiler.CPUArchitecture)
             {
                 #region _x86_

@@ -17,7 +17,7 @@ using Core = Atomix.Assembler.AssemblyHelper;
 
 namespace Atomix.IL
 {
-    [ILOp(ILCode.Conv_I4)]    
+    [ILOp(ILCode.Conv_I4)]
     public class Conv_I4 : MSIL
     {
         public Conv_I4(Compiler Cmp)
@@ -67,7 +67,7 @@ namespace Atomix.IL
                                 break;
                             default:
                                 throw new Exception("Not Yet Implemented Conv_I4 : Size" + xSource.Size);
-                        }   
+                        }
                     }
                     break;
                 #endregion

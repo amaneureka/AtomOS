@@ -38,8 +38,8 @@ namespace Atomix.IL
             /*
                 value1 is pushed onto the stack.
                 value2 is pushed onto the stack.
-                value2 and value1 are popped from the stack; 
-                if value1 is less than or equals to value2, the branch operation is performed. --> value1 ≤ value2 
+                value2 and value1 are popped from the stack;
+                if value1 is less than or equals to value2, the branch operation is performed. --> value1 ≤ value2
             */
             switch (ILCompiler.CPUArchitecture)
             {
@@ -65,21 +65,21 @@ namespace Atomix.IL
                             //3) Compare High parts of value 1 and value 2, if less than false  else if greator than jump true
                             //4) Compare Low parts of value 1 and value 2, if greator than jump true else continue
 
-                            //Value 2 EBX:EAX                            
+                            //Value 2 EBX:EAX
                             Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });//Low
                             Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EBX });//High
-                            
+
                             //Value 1 EDX:ECX
                             Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.ECX });//Low
                             Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EDX });//High
 
-                            Core.AssemblerCode.Add(new Cmp { DestinationReg = Registers.EDX, SourceReg = Registers.EBX });//value1_HI - value2_HI                            
+                            Core.AssemblerCode.Add(new Cmp { DestinationReg = Registers.EDX, SourceReg = Registers.EBX });//value1_HI - value2_HI
                             Core.AssemblerCode.Add(new Jmp { Condition = ConditionalJumpEnum.JG, DestinationRef = xFalseLabel });
                             Core.AssemblerCode.Add(new Jmp { Condition = ConditionalJumpEnum.JL, DestinationRef = xTrueLabel });
                             Core.AssemblerCode.Add(new Cmp { DestinationReg = Registers.ECX, SourceReg = Registers.EAX });//value1_LO - value2_LO
                             Core.AssemblerCode.Add(new Jmp { Condition = ConditionalJumpEnum.JLE, DestinationRef = xTrueLabel });
 
-                            Core.AssemblerCode.Add(new Label(xFalseLabel));                            
+                            Core.AssemblerCode.Add(new Label(xFalseLabel));
                         }
                         else
                             //Not called usually

@@ -24,6 +24,6 @@ namespace Atomix
             Position = aPosition;
             NextPosition = aNextPosition;
             Ehc = aEhc;
-        }       
-    }    
+        }
+    }
 }

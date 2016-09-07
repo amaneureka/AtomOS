@@ -39,7 +39,7 @@ namespace Kernel_alpha
             mCurrentTask = 0;
             PIC.ClearMask(0);
         }
-        
+
         [Plug("__Task_Switcher__")]
         public static uint TaskSwitcher(uint context)
         {
@@ -51,13 +51,13 @@ namespace Kernel_alpha
 
             //Get Task to Run
             mCurrentTask = GetTaskToRun();
-            
+
             // Return new task's context.
-            return mTasks[mCurrentTask].Stack;         
+            return mTasks[mCurrentTask].Stack;
         }
 
         public static int GetTaskToRun()
-        {            
+        {
             var xState = mTasks[mCurrentTask].state;
             switch ((State)xState)
             {
@@ -68,7 +68,7 @@ namespace Kernel_alpha
                 case State.None:
                     break;
             }
-            
+
             return RunningTasks.Dequeue();
         }
 
@@ -125,7 +125,7 @@ namespace Kernel_alpha
             task->Stack = (uint)stack;
             task->Address = (uint*)xLoc;
             task->state = (byte)(isRunning ? State.Alive : State.None);
-            
+
             mTasks[Counter++] = *task;
 
             if (isRunning)
@@ -134,7 +134,7 @@ namespace Kernel_alpha
             Native.SetInterrupt();
             return new Thread(Counter - 1);
         }
-        
+
         [Assembly, Plug("__ISR_Handler_20")]
         private static void SetupIRQ0()
         {

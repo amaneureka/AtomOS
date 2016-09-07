@@ -261,20 +261,20 @@ namespace Atomix
         /// <summary>
         /// The array of assembly Illegal chars, if we won't remove it than we have to face a big legal action ^^
         /// </summary>
-        private static HashSet<char> IllegalChars = new HashSet<char> 
-        { ':', '.', '[', ']', 
-          '(', ')', '<', '>', 
-          '|', '/', '=', '+', 
-          '-', '*', '{', '}', 
-          '&', '%', '$', '#', 
+        private static HashSet<char> IllegalChars = new HashSet<char>
+        { ':', '.', '[', ']',
+          '(', ')', '<', '>',
+          '|', '/', '=', '+',
+          '-', '*', '{', '}',
+          '&', '%', '$', '#',
           '@', '!', '~', '`', '?', ' ', ','};
 
         /*
-         * Well the concept of saved labels 
+         * Well the concept of saved labels
          * i adopt just to make compiler fast by wating it time in making the labels which it already done in past
          * By saving the labels in memory and if this label is called again than we just point it to memory
          */
-                
+
         private static Dictionary<MethodBase, string> CachedMethodLabel = new Dictionary<MethodBase, string>();
         private static Dictionary<FieldInfo, string> CachedFieldLabel = new Dictionary<FieldInfo, string>();
 
@@ -329,7 +329,7 @@ namespace Atomix
 
             if (CachedMethodLabel.ContainsKey(aMethod))
                 return CachedMethodLabel[aMethod];
-            
+
             // Check if this method has any plug attribute
             string xLabel = null;
             Compiler.Plugs.TryGetValue(aMethod, out xLabel);
@@ -356,11 +356,11 @@ namespace Atomix
             {
                 if (CachedFieldLabel.ContainsKey(aField))
                     return CachedFieldLabel[aField];
-                
+
                 var xLabel = aField.FullName(false).RemoveIllegalCharacters();
                 SaveLabel(aField, xLabel);
 
-                return xLabel;                
+                return xLabel;
             }
             else
                 return string.Format("static_Field__{2}.{1}.{0}", aField.Name, aField.DeclaringType, aField.FieldType.FullName);
@@ -413,7 +413,7 @@ namespace Atomix
         /// <param name="aType"></param>
         /// <returns></returns>
         public static int SizeOf(this Type aType)
-        {   
+        {
             if (aType.FullName == "System.Void")
                 return 0;
             else if ((!aType.IsValueType && aType.IsClass) || aType.IsInterface)
@@ -507,7 +507,7 @@ namespace Atomix
             }
             throw new Exception("Variable Not found");
         }
-                
+
         /// <summary>
         /// Get size of whole type or struc
         /// </summary>
@@ -519,8 +519,8 @@ namespace Atomix
             // but we want last offset or just sum of sizes
 
             int xOffset = 0; // This is another way of calculation offset we just add the size of each field
-            
-            
+
+
             var xFields = (from item in aDeclaringType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
                            orderby item.Name, item.DeclaringType.ToString()
                            select item).ToList();
@@ -541,7 +541,7 @@ namespace Atomix
 
                 xOffset += xField.FieldType.SizeOf();
             }
-            
+
             return xOffset;
         }
 
@@ -554,7 +554,7 @@ namespace Atomix
         /// <returns></returns>
         public static int GetFieldOffset(Type aDeclaringType, string aFieldId, out FieldInfo aFieldInfo)
         {
-            /* 
+            /*
              * So what we do is get all fields of structure, than check the which field has
              * same field is as given and than we check the offset attribute ==> This is very necessary that
              * the field has an offset attribute
@@ -571,7 +571,7 @@ namespace Atomix
 
             /* Because the array is from bottom to top */
             xFields.Reverse();
-                        
+
             for (int i = 0; i < xFields.Count; i++)
             {
                 var xField = xFields[i];
@@ -594,7 +594,7 @@ namespace Atomix
             }
 
             // If not found it should throw an error
-            throw new Exception("FieldId Not found: " + aDeclaringType + ", " + aFieldId ); 
+            throw new Exception("FieldId Not found: " + aDeclaringType + ", " + aFieldId );
         }
 
         /// <summary>
@@ -640,7 +640,7 @@ namespace Atomix
                 TypeIDLabel.Add(xResult2, TypeIdCounter);
                 TypeIdCounter++;
             }
-            
+
             return xResult2;
         }
 
@@ -691,7 +691,7 @@ namespace Atomix
         {
             if (aMethod is MethodInfo)
                 return ((MethodInfo)aMethod).ReturnType.SizeOf().Align();
-            
+
             // constructors -- no return type
             return 0;
         }

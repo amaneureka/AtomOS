@@ -27,10 +27,10 @@ namespace Atomix.Kernel_H.Gui.Font
             string xData = mStream.ReadToEnd();
             var Lines = xData.Split('\n');
             Heap.Free(xData);
-            
+
             int GlyphLine = 0;
             bool ReadingCharProperties = false, ReadingGlyphTable = false;
-            
+
             Glyph xGlyph = null;
             foreach (var line in Lines)
             {
@@ -57,7 +57,7 @@ namespace Atomix.Kernel_H.Gui.Font
                     {
                         var prop = line.Split(' ');
                         var key = prop[0];
-                        
+
                         if (key == "ENCODING")
                             xGlyph.Unicode = uint.Parse(prop[1]);
                         else if (key == "DWIDTH")

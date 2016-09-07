@@ -86,7 +86,7 @@ namespace Kernel_alpha.Drivers.Input
             SendCommand (MouseCommandSet.SetSampleRate);
             SendCommand (SampleRate);
         }
-        
+
         public void HandleIRQ ()
         {
             var xRead = Read();

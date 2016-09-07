@@ -10,10 +10,10 @@ namespace Atomix.mscorlib
     {
         public const string xDigits = "0123456789";
         public static string ToString8Bit(uint aNum, bool IsSigned)
-        {            
+        {
             if (aNum == 0)
                 return "0";
-            
+
             char[] xResult = new char[3];//0-255
 
             int c = 2;

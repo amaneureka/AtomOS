@@ -34,7 +34,7 @@ namespace Kernel_alpha.FileSystem
 
     public abstract class ACompare
     {
-        public abstract bool Compare(byte[] data, uint offset, FatType type);       
+        public abstract bool Compare(byte[] data, uint offset, FatType type);
     }
 
     public enum FileSystemType : int

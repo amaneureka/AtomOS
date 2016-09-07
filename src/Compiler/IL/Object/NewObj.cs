@@ -24,7 +24,7 @@ namespace Atomix.IL
     {
         public NewObj(Compiler Cmp)
             : base("newobj", Cmp) { }
-        
+
         public override void Execute(ILOpCode instr, MethodBase aMethod)
         {
             var xOperand = ((OpMethod)instr);
@@ -112,7 +112,6 @@ namespace Atomix.IL
 
                                 if (xParams.Length == 1 && xParams[0].ParameterType.ToString() == "System.Char[]")
                                 {
-                                    
                                     Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.ESP, SourceIndirect = true });
                                     Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EAX, SourceIndirect = true, SourceDisplacement = 8 });
                                     Core.AssemblerCode.Add(new ShiftLeft { DestinationReg = Registers.EAX, SourceRef = "0x1" });
@@ -186,14 +185,14 @@ namespace Atomix.IL
                                 PushAlignedParameterSize(xTargetMethod);
                                 // an exception occurred, we need to cleanup the stack, and jump to the exit
                                 Core.AssemblerCode.Add(new Add { DestinationReg = Registers.ESP, SourceRef = "0x4" });
-                                
+
                                 int xESPOffset = 0;
                                 foreach (var xParam in xParams)
                                 {
                                     xESPOffset += xParam.ParameterType.SizeOf().Align();
                                 }
                                 Core.AssemblerCode.Add(new Add { DestinationReg = Registers.ESP, SourceRef = "0x" + xESPOffset.ToString("X") });
-                                
+
                                 Core.AssemblerCode.Add(new Jmp { DestinationRef = aMethod.FullName() + ".Error" });
                                 Core.AssemblerCode.Add(new Label(xNoErrorLabel));
                             }

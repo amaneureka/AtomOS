@@ -12,6 +12,6 @@ namespace Atomix.Assembler.x86
     public class Mulss : DestinationSource
     {
         public Mulss()
-            : base("mulss") { }        
+            : base("mulss") { }
     }
 }

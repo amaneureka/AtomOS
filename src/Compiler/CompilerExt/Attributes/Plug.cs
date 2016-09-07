@@ -16,7 +16,7 @@ namespace Atomix.CompilerExt.Attributes
     {
         protected CPUArch CPUArch;
         protected string TargetString;
-        
+
         public PlugAttribute(string aTargetSymbol, CPUArch aCpuArch = CPUArch.x86)
         {
             TargetString = aTargetSymbol;

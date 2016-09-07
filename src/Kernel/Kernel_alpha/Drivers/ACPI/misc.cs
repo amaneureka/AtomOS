@@ -31,7 +31,7 @@ namespace Kernel_alpha.Drivers.ACPI
                 sum += *(check++);
 
             return (sum == 0);
-        }        
+        }
     }
 
     /// <summary>

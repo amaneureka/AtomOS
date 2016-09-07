@@ -15,10 +15,10 @@ namespace Kernel_alpha
         #region Constructors
         public int ProcessID
         { get { return aProcessid; } }
-        
+
         public State State
         {
-            get 
+            get
             {
                 return (State)MT.Tasks[aProcessid].state;
             }

@@ -22,7 +22,7 @@ namespace Kernel_alpha.Drivers.Buses.ATA
         private IOPort LBA2;
 
         private IOPort DeviceSelect;
-        
+
         private UInt16 xBAR0;
         private UInt16 xBAR1;
 
@@ -84,7 +84,7 @@ namespace Kernel_alpha.Drivers.Buses.ATA
 
             if (StatusReg.Byte == 0)
                 return; //No Device
-            
+
             while (true)
             {
                 xStatus = (Status)StatusReg.Byte;
@@ -122,10 +122,10 @@ namespace Kernel_alpha.Drivers.Buses.ATA
                 CommandReg.Byte = (byte)Cmd.ATA_CMD_IDENTIFY_PACKET;
                 Wait();
             }
-            
-            var xBuff = new ushort[256];            
+
+            var xBuff = new ushort[256];
             DataReg.Read16(xBuff);
-            
+
             //ATA/ATAPI COnfig
             DriveInfo.IsRemovable       = (xBuff[(int)Identify.ATA_IDENT_DEVICETYPE] & (1 << 7)) > 0;
 
@@ -138,14 +138,14 @@ namespace Kernel_alpha.Drivers.Buses.ATA
             ushort xFieldValid = xBuff[(int)Identify.ATA_IDENT_FIELDVALID];
             //1st bit determine weather it support LBA or not
             DriveInfo.LBASupport = (bool)((xFieldValid & 1) == 1);
-            
+
             if ((DriveInfo.CommandSet & (1 << 26)) != 0)
                 // Device uses 48-Bit Addressing:
                 DriveInfo.Size = xBuff.ToUInt48((int)Identify.ATA_IDENT_MAX_LBA_EXT);
             else
                 // Device uses CHS or 28-bit Addressing:
                 DriveInfo.Size = xBuff.ToUInt32((int)Identify.ATA_IDENT_MAX_LBA);
-            
+
             //Read Model, Firmware, SerialNo.
             DriveInfo.Model = xBuff.GetString((int)Identify.ATA_IDENT_MODEL, 40);
             DriveInfo.SerialNo = xBuff.GetString((int)Identify.ATA_IDENT_SERIAL, 20);
@@ -195,7 +195,7 @@ namespace Kernel_alpha.Drivers.Buses.ATA
 
                     //Tell constroller the size of each buffer
                     LBA1.Byte = (byte)((DriveInfo.BufferSize) & 0xFF);// Lower Byte of Sector Size. ATA_LBA_MID_PORT
-                    LBA2.Byte = (byte)((DriveInfo.BufferSize >> 8) & 0xFF);// Upper Byte of Sector Size. ATA_LBA_HI_PORT          
+                    LBA2.Byte = (byte)((DriveInfo.BufferSize >> 8) & 0xFF);// Upper Byte of Sector Size. ATA_LBA_HI_PORT
 
                     //Send Packet command
                     Send_SCSI_Package();
@@ -314,7 +314,7 @@ namespace Kernel_alpha.Drivers.Buses.ATA
                 }
             }
         }
-        
+
         public void Eject()
         {
             if (DriveInfo.Device == Device.IDE_ATAPI)
@@ -332,8 +332,8 @@ namespace Kernel_alpha.Drivers.Buses.ATA
                 xATAPI_Packet[9] = 0x00;
                 xATAPI_Packet[10] = 0x00;
                 xATAPI_Packet[11] = 0x00;
-                
-                //Enable IRQ; Currently IRQ is not working...so we ignore it but very important                
+
+                //Enable IRQ; Currently IRQ is not working...so we ignore it but very important
                 IRQInvoked = false;
                 ControlReg.Byte = 0x0;
 
@@ -381,7 +381,7 @@ namespace Kernel_alpha.Drivers.Buses.ATA
                     throw new Exception("ATA Error");
 
                 // (IV) Check If Device fault:
-                // -------------------------------------------------                
+                // -------------------------------------------------
                 if ((xState & Status.ATA_SR_DF) != 0)
                     throw new Exception("ATA Device Fault");
 
@@ -427,5 +427,5 @@ namespace Kernel_alpha.Drivers.Buses.ATA
             while (!IRQInvoked) ;
             IRQInvoked = false;
         }
-    }    
+    }
 }

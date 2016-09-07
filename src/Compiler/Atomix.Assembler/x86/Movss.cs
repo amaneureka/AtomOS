@@ -12,6 +12,6 @@ namespace Atomix.Assembler.x86
     public class Movss : DestinationSource
     {
         public Movss()
-            : base("movss") { }        
+            : base("movss") { }
     }
 }

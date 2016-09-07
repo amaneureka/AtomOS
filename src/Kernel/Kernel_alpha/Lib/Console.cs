@@ -46,7 +46,7 @@ namespace Kernel_alpha.Lib
 
         [Plug("System_Void_System_Console_Write_System_Char_", CPUArch.x86)]
         public static void Write_x86(char chr)
-        {                        
+        {
             if (Pointer >= (25 * 80))
             {
                 ScrollUP();
@@ -92,7 +92,7 @@ namespace Kernel_alpha.Lib
                     break;
 
                 switch (current.Code)
-                {                    
+                {
                     case KeyCode.Backspace:
                         {
                             if (CurrentCount > 0)
@@ -110,7 +110,7 @@ namespace Kernel_alpha.Lib
                         break;
                     default:
                         {
-                            xResult[xResultPointer++] = cc;                            
+                            xResult[xResultPointer++] = cc;
                             Console.Write(cc);
                             CurrentCount++;
                         }
@@ -147,7 +147,7 @@ namespace Kernel_alpha.Lib
         {
             if (!ShowCursor)
             {
-                // Cursor low byte to VGA index register                
+                // Cursor low byte to VGA index register
                 Native.Out8(0x03D4, 0x0F);
                 Native.Out8(0x03D5, (byte)(0xFF1 & 0xFF));
                 // Cursor high byte to VGA index register

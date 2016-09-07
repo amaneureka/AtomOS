@@ -21,6 +21,6 @@ namespace Atomix.CompilerExt.Attributes
         {
             CPUArch = aCpuArch;
             Organize = aOrganize;
-        }        
+        }
     }
 }

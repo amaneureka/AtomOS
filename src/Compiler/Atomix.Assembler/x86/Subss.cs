@@ -12,6 +12,6 @@ namespace Atomix.Assembler.x86
     public class Subss : DestinationSource
     {
         public Subss()
-            : base("subss") { }        
+            : base("subss") { }
     }
 }

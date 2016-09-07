@@ -36,7 +36,7 @@ namespace Atomix.IL
             /*
                 value1 is pushed onto the stack.
                 value2 is pushed onto the stack.
-                value2 and value1 are popped from the stack; 
+                value2 and value1 are popped from the stack;
                 value2 is subtracted from value1.
                 The result is pushed onto the stack.
             */
@@ -54,7 +54,7 @@ namespace Atomix.IL
                                 //1) Copy ESP value 2 to XMM0 register
                                 //2) Add ESP by 4 to move stack pointer
                                 //3) Copy ESP value 1 to XMM1
-                                //4) Sub both values are take result to XMM1 --> XMM1 = XMM1 - XMM2 
+                                //4) Sub both values are take result to XMM1 --> XMM1 = XMM1 - XMM2
                                 //5) Copy the value to memory at ESP --> Just like push
                                 Core.AssemblerCode.Add(new Movss { DestinationReg = Registers.XMM0, SourceReg = Registers.ESP, SourceIndirect = true });//1st value
                                 Core.AssemblerCode.Add(new Add { DestinationReg = Registers.ESP, SourceRef = "0x4" });
@@ -80,7 +80,7 @@ namespace Atomix.IL
                             if (xItem.IsFloat)
                             {
                                 //***What we are going to do is***
-                                //1) Load the 64 bit memory at ESP + 0x8 into FLD stack                                
+                                //1) Load the 64 bit memory at ESP + 0x8 into FLD stack
                                 //2) Use Float Sub to add value in float stack to 64 bit memory at ESP, And store result in float stack
                                 //3) Add ESP by 0x8 --> To shift pointer
                                 //4) Just like Pop, we pop the iteam from float stack and put it into 64 bit memory at ESP
@@ -108,14 +108,14 @@ namespace Atomix.IL
                 #region _x64_
                 case CPUArch.x64:
                     {
-                        
+
                     }
                     break;
                 #endregion
                 #region _ARM_
                 case CPUArch.ARM:
                     {
-                        
+
                     }
                     break;
                 #endregion

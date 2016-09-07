@@ -92,7 +92,7 @@ namespace Atomix.IL
                                     Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.AX, SourceRef = xFieldEntry, SourceIndirect = true, Size = 16 });
                                     Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
                                 }
-                                break;                            
+                                break;
                             default:
                                     throw new Exception("Unknown Size");
                         }

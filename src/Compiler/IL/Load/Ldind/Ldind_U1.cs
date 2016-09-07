@@ -25,7 +25,7 @@ namespace Atomix.IL
         public override void Execute(ILOpCode instr, MethodBase aMethod)
         {
             /*
-            Situation is an address of a 8 bit value is on the stack, we have to push that onto the stack 
+            Situation is an address of a 8 bit value is on the stack, we have to push that onto the stack
             */
             switch (ILCompiler.CPUArchitecture)
             {
@@ -34,12 +34,12 @@ namespace Atomix.IL
                     {
                         Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EBX });
                         Core.AssemblerCode.Add(
-                            new Movzx 
-                            { 
-                                DestinationReg = Registers.EAX, 
-                                Size = 8, 
-                                SourceReg = Registers.EBX, 
-                                SourceIndirect = true 
+                            new Movzx
+                            {
+                                DestinationReg = Registers.EAX,
+                                Size = 8,
+                                SourceReg = Registers.EBX,
+                                SourceIndirect = true
                             });
                         Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
                     }

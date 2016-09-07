@@ -24,7 +24,7 @@ namespace Atomix.Kernel_H.Core
         uint StackLimit;
 
         static int ThreadCounter = 0;
-        
+
         public Thread(Process aParent, uint aAddress, uint aStackStart, uint aStackLimit)
         {
             Process = aParent;

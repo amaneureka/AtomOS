@@ -12,7 +12,7 @@ namespace Atomix.RamFS
         public string FileName { get; private set; }
         public Stream FileData { get; private set; }
         public byte[] RawData { get; private set; }
-        
+
         public FileEntry(string aName, Stream aData)
         {
             this.FileName = aName;

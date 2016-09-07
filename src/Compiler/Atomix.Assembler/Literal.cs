@@ -11,8 +11,8 @@ using System.IO;
 
 namespace Atomix.Assembler
 {
-    public class Literal : Instruction        
-    {        
+    public class Literal : Instruction
+    {
         public readonly string Assembly;
 
         public Literal(string aAsm)

@@ -12,6 +12,6 @@ namespace Atomix.Assembler.x86
     public class Out : DestinationSource
     {
         public Out()
-            : base("out") { }        
+            : base("out") { }
     }
 }

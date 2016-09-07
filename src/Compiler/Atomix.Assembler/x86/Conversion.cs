@@ -11,7 +11,7 @@ using System;
 using System.IO;
 
 namespace Atomix.Assembler.x86
-{   
+{
     public class Conversion : Instruction
     {
         // Based on: http://docs.oracle.com/cd/E19455-01/806-3773/6jct9o0an/index.html
@@ -40,7 +40,7 @@ namespace Atomix.Assembler.x86
                 case ConversionCode.SignedDWord_2_SignedQWord:
                     sw.WriteLine("cdq");
                     break;
-            }            
-        }             
+            }
+        }
     }
 }

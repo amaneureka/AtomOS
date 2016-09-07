@@ -30,7 +30,7 @@ namespace Atomix.ILOptimizer.Optimizations
 
             // Iterate over the instructions
             for (int i = 1; i < instructions.Count; i++)
-            {   
+            {
 
                 // Test if the current instruction is a 'POP' instruction
                 if (instructions[i] is Pop)
@@ -41,7 +41,7 @@ namespace Atomix.ILOptimizer.Optimizations
                     {
                         var Next = (Pop)instructions[i];
                         var Prev = (Push)instructions[i - 1];
-                        
+
                         var Optimized = new Mov();
                         if (Next.DestinationReg.HasValue)
                             Optimized.DestinationReg = Next.DestinationReg;
@@ -62,7 +62,7 @@ namespace Atomix.ILOptimizer.Optimizations
 
                         if (Prev.Size != Next.Size && Next.Size != 32)
                             Console.WriteLine("@push-pop: Warning");
-                        
+
                         instructions[i - 1] = Optimized;
                         instructions[i] = null;
 

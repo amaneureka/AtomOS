@@ -225,7 +225,7 @@ namespace Kernel_alpha.Drivers
         {
             string sig = "RSD PTR ";
             RSDPtr* rsdp = (RSDPtr*)ptr;
-            
+
             byte* bptr;
             byte check = 0;
             int i;

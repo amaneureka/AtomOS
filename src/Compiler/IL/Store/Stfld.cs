@@ -25,7 +25,7 @@ namespace Atomix.IL
             : base("stfld", Cmp) { }
 
         public override void Execute(ILOpCode instr, MethodBase aMethod)
-        {            
+        {
             var xF = ((OpField)instr).Value;
             var aDeclaringType = xF.DeclaringType;
             var xFieldId = xF.FullName();
@@ -47,10 +47,10 @@ namespace Atomix.IL
                 #region _x86_
                 case CPUArch.x86:
                     {
-                        
+
                         Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.ESP, SourceIndirect = true, SourceDisplacement = (int)xRoundedSize });
                         Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EBX, SourceRef = "0x" + xOffset.ToString("X") });
-                        
+
                         for (int i = 0; i < (xSize / 4); i++)
                         {
                             Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
@@ -86,7 +86,7 @@ namespace Atomix.IL
                             default:
                                 throw new Exception("@Stfld: Remainder size " + (xSize % 4) + " not supported!");
                         }
-                        
+
                         Core.AssemblerCode.Add(new Add { DestinationReg = Registers.ESP, SourceRef = "0x4" });
                     }
                     break;

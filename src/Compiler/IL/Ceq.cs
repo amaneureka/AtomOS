@@ -71,7 +71,7 @@ namespace Atomix.IL
                                         Core.AssemblerCode.Add(new Assembler.x86.Add { DestinationReg = Registers.ESP, SourceRef = "0x4" });
                                         Core.AssemblerCode.Add(new Push { DestinationRef = "0x1" });
                                         Core.AssemblerCode.Add(new Jmp { DestinationRef = xFinalLabel });
-                                        Core.AssemblerCode.Add(new Label(xFinalLabel)); 
+                                        Core.AssemblerCode.Add(new Label(xFinalLabel));
                                     }
                                 }
                                 break;
@@ -88,7 +88,7 @@ namespace Atomix.IL
                                         Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
                                         Core.AssemblerCode.Add(new Jmp { Condition = ConditionalJumpEnum.JNE, DestinationRef = xCurrentLabel + ".false" });
 
-                                        //Check Low part                                        
+                                        //Check Low part
                                         Core.AssemblerCode.Add(new Xor { DestinationReg = Registers.EAX, SourceReg = Registers.ESP, SourceIndirect = true, SourceDisplacement = 0x4 });
                                         Core.AssemblerCode.Add(new Jmp { Condition = ConditionalJumpEnum.JNZ, DestinationRef = xCurrentLabel + ".false" });
 

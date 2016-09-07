@@ -16,7 +16,7 @@ namespace Atomix.Assembler.x86
         public Registers? DestinationReg;
         public string DestinationRef;
         public bool DestinationIndirect;
-        public int? DestinationDisplacement;        
+        public int? DestinationDisplacement;
         public byte Size;
 
         public OnlyDestination(string aMnemonic)

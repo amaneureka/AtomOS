@@ -37,7 +37,7 @@ namespace Atomix.Kernel_H.IO.FileSystem.FAT.Find
             int dot = Name.IndexOf('.');
             if (dot == -1)
                 dot = Name.Length;
-            
+
             if (dot != index)
                 return false;
 

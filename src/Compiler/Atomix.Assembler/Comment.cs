@@ -11,7 +11,7 @@ using System.IO;
 
 namespace Atomix.Assembler
 {
-    public class Comment : Instruction        
+    public class Comment : Instruction
     {
         public readonly string Comments;
 

@@ -246,7 +246,7 @@ namespace Atomix.Kernel_H.exec
 			// http://stackoverflow.com/questions/14352809/not-enough-got-space-for-local-got-entries
 			// create 128KB table
 			uint GOT = Heap.kmalloc(256 * 4); // 256 entries GOT table
-            
+
             /* Iterate over all sections and perform relocations */
             Shdr = (Elf_Shdr*)(BaseAddress + Header->e_shoff);
             for (int i = 0; i < Header->e_shnum; i++, Shdr++)
@@ -278,7 +278,7 @@ namespace Atomix.Kernel_H.exec
             uint BaseAddress = (uint)aHeader;
             Elf32_Rel* Reloc = (Elf32_Rel*)aShdr->sh_addr;
             Elf_Shdr* TargetSection = (Elf_Shdr*)(BaseAddress + aHeader->e_shoff) + aShdr->sh_info;
-            
+
             uint RelocCount = aShdr->sh_size / aShdr->sh_entsize;
 
             uint SymIdx, SymVal, RelocType;
@@ -325,7 +325,7 @@ namespace Atomix.Kernel_H.exec
             var StrTabAdd = ((Elf_Shdr*)(BaseAddress + aHeader->e_shoff) + aShdr->sh_link)->sh_addr;
 
             uint count = aShdr->sh_size / aShdr->sh_entsize;
-            
+
             uint Address;
             for (uint i = 0; i < count; i++, SymTab++)
             {
@@ -365,7 +365,7 @@ namespace Atomix.Kernel_H.exec
 					{
 						var StrTabAdd = ((Elf_Shdr*)(BaseAddress + aHeader->e_shoff) + SymSection->sh_link)->sh_addr;
 						string SymName = ASCII.GetString((byte*)(StrTabAdd + SymTab->st_name), 0, 0x0FFFFFFF);
-											
+
 						Debug.Write ("Undefined Symbol: %s\n", SymName);
 						Heap.Free (SymName);
 						throw new Exception ("[ELF]: Extern Symbol not supported");

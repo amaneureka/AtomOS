@@ -99,7 +99,7 @@ namespace Atomix.IL
                             // save remainder to stack
                             Core.AssemblerCode.Add(new Push { DestinationRef = "0x0" });
                             Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EDX });
-                            
+
                             Core.AssemblerCode.Add(new Jmp { DestinationRef = LabelEnd });
 
                             Core.AssemblerCode.Add(new Label(LabelNoLoop));

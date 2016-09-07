@@ -43,7 +43,7 @@ namespace Atomix.Kernel_H.plugs
             char* chars = (char*)(aFirstChar + 0x10);
             for (i = 0; i < Length; i++)
                 chars[i] = aChar[i + Start];
-            
+
             *((int*)(aFirstChar + 0xC)) = i;
         }
 
@@ -52,7 +52,7 @@ namespace Atomix.Kernel_H.plugs
         {
             if (aIndex < 0 || aIndex >= getLength(aThis))
                 return '\0';
-            
+
             var xCharIdx = (char*)(aThis + 0x10);
             return xCharIdx[aIndex];
         }
@@ -74,7 +74,7 @@ namespace Atomix.Kernel_H.plugs
             }
             return length;
         }
-        
+
         [Plug("System_String___System_String_Split_System_Char___")]
         internal static string[] Split(string str, params char[] delimiters)
         {

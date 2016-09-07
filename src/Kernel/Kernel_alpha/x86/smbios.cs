@@ -30,7 +30,7 @@ namespace Kernel_alpha.x86
             byte checksum;
             while ((uint)Memory < 0x100000)
             {
-                if (Memory[0] == (byte)'_' && 
+                if (Memory[0] == (byte)'_' &&
                     Memory[1] == (byte)'S' &&
                     Memory[2] == (byte)'M' &&
                     Memory[3] == (byte)'_')

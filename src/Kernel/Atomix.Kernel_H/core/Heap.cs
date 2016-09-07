@@ -76,7 +76,7 @@ namespace Atomix.Kernel_H.Core
 
         [Label(Helper.lblHeap)]
         internal static uint kmalloc(uint len)
-        {            
+        {
             if (!HeapManagerSetup)
             {
                 if (HeapCurrent + len > HeapEnd)
@@ -105,7 +105,7 @@ namespace Atomix.Kernel_H.Core
                 }
                 return kmalloc(len);
             }
-            
+
             HeapLock();
 
             // Find a suitable hole
@@ -130,7 +130,7 @@ namespace Atomix.Kernel_H.Core
                 else if (BlockSize[iterator] >= len)
                     break; // Yes :)
             }
-            
+
             if (iterator == HeapManagerPosition || HeapManagerPosition == HeapManagerSize) //No block to allocate :(
             {
                 Debug.Write("Memory out of run :(\n");
@@ -174,7 +174,7 @@ namespace Atomix.Kernel_H.Core
                     BlockAddress[iterator - 1] = BlockAddress[iterator];
                     BlockSize[iterator - 1] = BlockSize[iterator];
                 }
-                HeapManagerPosition--; // Reduce size of array, no need to clear last empty because we never read it                    
+                HeapManagerPosition--; // Reduce size of array, no need to clear last empty because we never read it
             }
             HeapUnLock();
             Memory.FastClear(Address, len); // Clear the memory and return
@@ -185,7 +185,7 @@ namespace Atomix.Kernel_H.Core
         {
             uint Address = BlockAddress[iterator];
             uint Size = BlockSize[iterator];
-            
+
             uint pos = Address;
             if ((Address & 0xFFFFF000) != Address)
             {
@@ -210,7 +210,7 @@ namespace Atomix.Kernel_H.Core
                     }
                 }
             }
-            
+
             NewSize = Size - len - NewSize; // End block
             Address = pos + len;
             if (NewSize != 0) // Free up end part of this too
@@ -277,7 +277,7 @@ namespace Atomix.Kernel_H.Core
              */
             AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.ECX, SourceDisplacement = 0x8, SourceIndirect = true });
             AssemblyHelper.AssemblerCode.Add(new Multiply { DestinationReg = Registers.ECX, DestinationDisplacement = 0xC, DestinationIndirect = true });
-            AssemblyHelper.AssemblerCode.Add(new Add { DestinationReg = Registers.EAX, SourceRef = "0x10" });//Header            
+            AssemblyHelper.AssemblerCode.Add(new Add { DestinationReg = Registers.EAX, SourceRef = "0x10" });//Header
             AssemblyHelper.AssemblerCode.Add(new Jmp { DestinationRef = xEndlbl });
 
             AssemblyHelper.AssemblerCode.Add(new Label (xLabel_Object));
@@ -308,7 +308,7 @@ namespace Atomix.Kernel_H.Core
             for (iterator = 0; iterator < HeapManagerPosition; iterator++)
             {
                 uint Add = BlockAddress[iterator];
-                uint Size = BlockSize[iterator];                
+                uint Size = BlockSize[iterator];
                 if (Add + Size == Address)
                 {
                     left = iterator;
@@ -332,7 +332,7 @@ namespace Atomix.Kernel_H.Core
             {
                 NewSize += BlockSize[right];
             }
-                        
+
             // Remove left and right blocks
             int lastempty = 0;
             for (iterator = 0; iterator < HeapManagerPosition; iterator++)
@@ -373,7 +373,7 @@ namespace Atomix.Kernel_H.Core
             }
             HeapUnLock();
         }
-        
+
         /// <summary>
         /// Monitor class uses memory allocation for maintaing the list of acquired locks so we can't use it for
         /// Heap lock

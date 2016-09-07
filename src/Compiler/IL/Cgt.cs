@@ -30,7 +30,7 @@ namespace Atomix.IL
             var SecondStackItem = Core.vStack.Pop();
 
             //Here Math.Max is not necessary because they should have same size to compare, but i'm not removing this
-            var xSize = Math.Max(FirstStackItem.Size, SecondStackItem.Size); 
+            var xSize = Math.Max(FirstStackItem.Size, SecondStackItem.Size);
             var xCurrentLabel = ILHelper.GetLabel(aMethod, instr.Position);
             var xFinalLabel = ILHelper.GetLabel(aMethod, instr.NextPosition);
 
@@ -70,7 +70,7 @@ namespace Atomix.IL
                                         Core.AssemblerCode.Add(new Assembler.x86.Add { DestinationReg = Registers.ESP, SourceRef = "0x4" });
                                         Core.AssemblerCode.Add(new Push { DestinationRef = "0x0" });
                                         Core.AssemblerCode.Add(new Jmp { DestinationRef = xFinalLabel });
-                                        Core.AssemblerCode.Add(new Label(xFinalLabel)); 
+                                        Core.AssemblerCode.Add(new Label(xFinalLabel));
                                     }
                                 }
                                 break;

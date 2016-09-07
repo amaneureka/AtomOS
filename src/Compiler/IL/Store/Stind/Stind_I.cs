@@ -29,7 +29,7 @@ namespace Atomix.IL
              * So, Situation is we have two items on stack,
              * Last one is value and before that is its address where it should be saved
              * Stind_I -> The Size of item is native int => CPU == x86 ? 4 : 8
-             * 
+             *
              */
             if (ILCompiler.CPUArchitecture == CompilerExt.CPUArch.x86)
                 Stind_All(4);
@@ -47,10 +47,10 @@ namespace Atomix.IL
                 case CPUArch.x86:
                     {
                         Core.AssemblerCode.Add(
-                            new Mov { 
-                                DestinationReg = Registers.EBX, 
-                                SourceReg = Registers.ESP, 
-                                SourceIndirect = true, 
+                            new Mov {
+                                DestinationReg = Registers.EBX,
+                                SourceReg = Registers.ESP,
+                                SourceIndirect = true,
                                 SourceDisplacement = ValueStackCount });
 
                         for (int i = 0; i < xSize/4; i++)
@@ -64,12 +64,12 @@ namespace Atomix.IL
                                 SourceDisplacement = i * 4
                             });
                             Core.AssemblerCode.Add(
-                            new Mov 
-                            { 
+                            new Mov
+                            {
                                 DestinationReg = Registers.EBX,
                                 DestinationIndirect = true,
                                 DestinationDisplacement = i * 4,
-                                SourceReg = Registers.EAX 
+                                SourceReg = Registers.EAX
                             });
                         }
 
@@ -88,8 +88,8 @@ namespace Atomix.IL
                                             SourceDisplacement = (int)(xSize / 4) * 4
                                         });
                                     Core.AssemblerCode.Add(
-                                        new Mov 
-                                        { 
+                                        new Mov
+                                        {
                                             DestinationReg = Registers.EBX,
                                             DestinationIndirect = true,
                                             SourceDisplacement = (int)(xSize / 4) * 4,

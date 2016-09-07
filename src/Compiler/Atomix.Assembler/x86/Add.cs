@@ -12,6 +12,6 @@ namespace Atomix.Assembler.x86
     public class Add : DestinationSourceSize
     {
         public Add()
-            : base("add") { }        
+            : base("add") { }
     }
 }

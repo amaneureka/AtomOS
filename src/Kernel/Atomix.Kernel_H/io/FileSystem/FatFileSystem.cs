@@ -50,7 +50,7 @@ namespace Atomix.Kernel_H.IO.FileSystem
         private bool IsFAT()
         {
             var BootSector = new byte[512];
-            
+
             if (!IDevice.Read(0U, 1U, BootSector))
             {
                 Heap.Free(BootSector);
@@ -115,7 +115,7 @@ namespace Atomix.Kernel_H.IO.FileSystem
             if (FatType == FatType.FAT32)
             {
                 SerialNo = BitConverter.ToUInt32(BootSector, 39);
-                VolumeLabel = ASCII.GetString(BootSector, 71, 11);   // for checking              
+                VolumeLabel = ASCII.GetString(BootSector, 71, 11);   // for checking
                 RootCluster = BitConverter.ToUInt32(BootSector, 44);
                 RootSector = 0;
                 RootSectorCount = 0;
@@ -165,7 +165,7 @@ namespace Atomix.Kernel_H.IO.FileSystem
             FatFileLocation location = null;
             while (pointer < path.Length)
             {
-                Compare.Name = path[pointer];                
+                Compare.Name = path[pointer];
                 location = FindEntry(Compare, CurrentCluster);
                 if (location == null)
                 {
@@ -219,7 +219,7 @@ namespace Atomix.Kernel_H.IO.FileSystem
             uint fatoffset = cluster<<2;
             uint sector = ReservedSector + (fatoffset / BytePerSector);
             int sectorOffset = (int)(fatoffset % BytePerSector);
-            
+
             var aData = new byte[512];
             IDevice.Read(sector, 1U, aData);
             var xNextCluster = (BitConverter.ToUInt32(aData, sectorOffset) & 0x0FFFFFFF);

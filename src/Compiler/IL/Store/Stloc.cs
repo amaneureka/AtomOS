@@ -31,8 +31,8 @@ namespace Atomix.IL
             //save it as local variable into memory (EBP-X)
             var xField = xBody.LocalVariables[xVar];
             //No. of stack count = xField.SizeOf().Align()/4;
-            //POP each stack into eax and mov it to memory, then do same for other stack value, 
-            //till all xField stack is not popped up and stores in memory 
+            //POP each stack into eax and mov it to memory, then do same for other stack value,
+            //till all xField stack is not popped up and stores in memory
             //EBP Offset => 0 - (4 + size of each variable before this)
             var StackCount = xField.LocalType.SizeOf().Align() / 4;
             var EBPOffset = ILHelper.MemoryOffset(xBody, xVar);

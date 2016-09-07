@@ -37,7 +37,7 @@ namespace Atomix.Kernel_H.Core
         internal static void AcquireLock(object aObj, ref bool aLockTaken)
         {
             aLockTaken = false;
-            
+
             int ThreadID = Scheduler.RunningThreadID;
             int ID = mLocks.GetValue(aObj, -1);
 
@@ -51,7 +51,7 @@ namespace Atomix.Kernel_H.Core
 #warning Add thread sleep
             }
             while (ID != ThreadID);// Make sure we have owned the lock
-            
+
             aLockTaken = true;
         }
 

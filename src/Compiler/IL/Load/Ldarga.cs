@@ -27,7 +27,7 @@ namespace Atomix.IL
         {
             var aParam = ((OpVar)instr).Value;
             var xDisplacement = ILHelper.GetArgumentDisplacement(aMethod, aParam);
-            
+
             switch (ILCompiler.CPUArchitecture)
             {
                 #region _x86_

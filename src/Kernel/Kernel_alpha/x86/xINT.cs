@@ -18,7 +18,7 @@ namespace Kernel_alpha.x86
 
         public static void InvokeHandler(uint aINTNo)
         {
-            var xCaller = mINT_Handlers[aINTNo];            
+            var xCaller = mINT_Handlers[aINTNo];
             if (xCaller != null)
             {
                 xCaller();

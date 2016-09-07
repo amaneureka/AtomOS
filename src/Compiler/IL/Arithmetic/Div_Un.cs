@@ -31,7 +31,7 @@ namespace Atomix.IL
             /*
                 value1 is pushed onto the stack.
                 value2 is pushed onto the stack.
-                value2 and value1 are popped from the stack; 
+                value2 and value1 are popped from the stack;
                 value1 is divided by value2.
                 The result is pushed onto the stack.
             */
@@ -98,7 +98,7 @@ namespace Atomix.IL
                                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.ESI, SourceReg = Registers.ESP, SourceIndirect = true });
                                 //high
                                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDI, SourceReg = Registers.ESP, SourceIndirect = true, SourceDisplacement = 4 });
-                                                                
+
                                 //dividend
                                 // low
                                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.ESP, SourceIndirect = true, SourceDisplacement = 8 });
@@ -179,14 +179,14 @@ namespace Atomix.IL
                 #region _x64_
                 case CPUArch.x64:
                     {
-                        
+
                     }
                     break;
                 #endregion
                 #region _ARM_
                 case CPUArch.ARM:
                     {
-                        
+
                     }
                     break;
                 #endregion

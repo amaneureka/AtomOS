@@ -24,7 +24,7 @@ namespace Atomix.IL
             : base("stelem_ref", Cmp) { }
 
         public override void Execute(ILOpCode instr, MethodBase aMethod)
-        {            
+        {
             switch (ILCompiler.CPUArchitecture)
             {
                 #region _x86_
@@ -54,7 +54,7 @@ namespace Atomix.IL
         public static void Stelem_x86(Compiler cmp, ILOpCode instr, MethodBase aMethod, int aElementSize)
         {
             int xStackSize = aElementSize.Align();
-            
+
             Core.vStack.Pop();
             Core.vStack.Pop();
             Core.vStack.Pop();

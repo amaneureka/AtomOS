@@ -14,7 +14,7 @@ namespace Atomix.Assembler.x86
     public abstract class DestinationSourceSize : Instruction
     {
         public Registers? DestinationReg;
-        public string DestinationRef;       
+        public string DestinationRef;
         public bool DestinationIndirect;
         public int? DestinationDisplacement;
 

@@ -15,11 +15,11 @@ namespace Kernel_alpha.Drivers.Video.VBE
 
         public static void Setup()
         {
-            ModeInfo = (VBE_Mode_Info*)Multiboot.VBE_Mode_Info;            
+            ModeInfo = (VBE_Mode_Info*)Multiboot.VBE_Mode_Info;
             LinearFrameBuffer = (UInt32*)ModeInfo->physbase;
             Xres = ModeInfo->Xres;
             Yres = ModeInfo->Yres;
-            
+
             /*
             for (uint i = ModeInfo->physbase; i <= ModeInfo->physbase + 0xFF0000; i+= 0x1000)
             {

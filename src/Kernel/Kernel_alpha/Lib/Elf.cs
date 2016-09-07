@@ -66,7 +66,7 @@ namespace Kernel_alpha
             sectionHeader sh = new sectionHeader();
             temp = 0;
             for (int i = 0; i < el.shnum; i++)
-            {   
+            {
                 sh.sh_name = BitConverter.ToUInt16(xData, (int)el.sphoff + (el.shentsize * i));
                 sh.sh_type = BitConverter.ToUInt16(xData, (int)el.sphoff + 4 + (el.shentsize * i));
                 sh.sh_flags = BitConverter.ToUInt16(xData, (int)el.sphoff + 8 + (el.shentsize * i));
@@ -112,7 +112,7 @@ namespace Kernel_alpha
             el.type = BitConverter.ToUInt16(xData, 16);
             // instruction set architecture
             el.machine = BitConverter.ToUInt16(xData, 18);
-            // version 
+            // version
             el.version = BitConverter.ToUInt32(xData, 20);
             // memory address entry  point
             el.entry = BitConverter.ToUInt32(xData, 24);

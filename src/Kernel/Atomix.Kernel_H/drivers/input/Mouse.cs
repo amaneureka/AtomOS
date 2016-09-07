@@ -41,7 +41,7 @@ namespace Atomix.Kernel_H.Drivers.Input
             MouseData[0] = MOUSE_MAGIC;
             MousePipe = new Pipe(4, 1024);
             IDT.RegisterInterrupt(HandleIRQ, 0x2C);
-            
+
             Wait(true);
             PortIO.Out8(MOUSE_STATUS, 0xA8);
             Wait(true);
@@ -88,7 +88,7 @@ namespace Atomix.Kernel_H.Drivers.Input
                         MouseCycle = 0;
                         /*
                          * http://wiki.osdev.org/Mouse_Input
-                         * The top two bits of the first byte (values 0x80 and 0x40) supposedly show Y and X overflows, 
+                         * The top two bits of the first byte (values 0x80 and 0x40) supposedly show Y and X overflows,
                          * respectively. They are not useful. If they are set, you should probably just discard the entire packet.
                          */
                         //if ((MouseData[1] & 0x40) != 0)//X Overflow

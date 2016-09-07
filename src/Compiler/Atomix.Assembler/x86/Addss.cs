@@ -12,6 +12,6 @@ namespace Atomix.Assembler.x86
     public class Addss : DestinationSource
     {
         public Addss()
-            : base("addss") { }        
+            : base("addss") { }
     }
 }

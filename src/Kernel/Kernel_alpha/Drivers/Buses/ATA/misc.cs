@@ -138,8 +138,8 @@ namespace Kernel_alpha.Drivers.Buses.ATA
         }
 
         public static string GetString(this ushort[] xBuff, int loc, int length)
-        {  
-            char[] xResult = new char[40];            
+        {
+            char[] xResult = new char[40];
             for (int k = 0; k < (length / 2); k++)
             {
                 xResult[k * 2] = (char)((xBuff[loc + k] >> 8) & 0xFF);

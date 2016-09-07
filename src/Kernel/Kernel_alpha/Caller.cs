@@ -26,13 +26,13 @@ namespace Kernel_alpha
             Console.WriteLine ("                                         ");
 
             // Load System Elements
-            Global.Init();            
+            Global.Init();
             Console.WriteLine ("Welcome to AtomixOS!");
             Console.WriteLine ();
 
             Console.WriteLine ("Shutdown: Ctrl+S");
             Console.WriteLine ("Reboot: Ctrl+R");
-            
+
             // Just for mouse testing
             Multitasking.CreateTask(pTask1, true);
             Multitasking.CreateTask(pTask2, true);
@@ -52,7 +52,7 @@ namespace Kernel_alpha
             //Screen.Setup();
             //Screen.Clear(0xFFBB977E);
         }
-         
+
         private static uint pIdleTask;
         private static void IdleTask()
         {
@@ -166,7 +166,7 @@ namespace Kernel_alpha
                 else if (s.Code == KeyCode.B)
                 {
                     var bochs = new Drivers.Video.VBE.Bochslfb();
-                    bochs.SetMode(1024, 768, 24);                    
+                    bochs.SetMode(1024, 768, 24);
                     for (uint i = 0; i < 1024; i++)
                     {
                         for (uint j = 0; j < 768; j++)
@@ -188,11 +188,11 @@ namespace Kernel_alpha
         {
             do
             {
-                WriteScreen("X:", 6);                
+                WriteScreen("X:", 6);
                 //var s = ((uint)Global.Mouse.X).ToString();
                 //var J = ((uint)Global.Mouse.Y).ToString();
-                WriteScreen("Y:", 24);                
-                
+                WriteScreen("Y:", 24);
+
                 switch (Global.Mouse.Button)
                 {
                     case MouseButtons.Left:
@@ -334,8 +334,8 @@ namespace Kernel_alpha
                                             *  mov dword [EAX + 0x2], 0x0A41
                                             *  leave
                                             *  ret 0x0
-                                            *  
-                                            * ; Command Line 
+                                            *
+                                            * ; Command Line
                                             * nasm -fbin test.asm -o test.atm
                                             */
                                             var len = xData.Length;
@@ -373,7 +373,7 @@ namespace Kernel_alpha
         private static void CallExecutableFile(uint pos)
         {
             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
-            Core.AssemblerCode.Add(new Call("EAX"));        
+            Core.AssemblerCode.Add(new Call("EAX"));
         }
     }
 }

@@ -23,7 +23,6 @@ namespace Atomix.IL
         public Ldtoken(Compiler Cmp)
             : base("ldtoken", Cmp) { }
 
-        
         public override void Execute(ILOpCode instr, MethodBase aMethod)
         {
             var xToken = (OpToken)instr;
@@ -31,12 +30,12 @@ namespace Atomix.IL
 
             if (xToken.ValueIsType)
             {
-                xTokenAddress = ILHelper.GetTypeIDLabel(xToken.ValueType);                
+                xTokenAddress = ILHelper.GetTypeIDLabel(xToken.ValueType);
             }
 
             if (xToken.ValueIsField)
             {
-                xTokenAddress = xToken.ValueField.FullName();                
+                xTokenAddress = xToken.ValueField.FullName();
             }
 
             if (String.IsNullOrEmpty(xTokenAddress))

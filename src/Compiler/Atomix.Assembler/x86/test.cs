@@ -12,6 +12,6 @@ namespace Atomix.Assembler.x86
     public class Test : DestinationSourceSize
     {
         public Test()
-            : base("test") { }        
+            : base("test") { }
     }
 }

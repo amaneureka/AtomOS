@@ -12,6 +12,6 @@ namespace Atomix.Assembler.x86
     public class Xorps : DestinationSourceSize
     {
         public Xorps()
-            : base("xorps") { }        
+            : base("xorps") { }
     }
 }

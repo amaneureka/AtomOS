@@ -40,7 +40,7 @@ namespace Atomix
         /// This logs our every step
         /// </summary>
         public static Logger Logger;
-        
+
         public static void Main(string[] args)
         {
             InputFiles = new List<string>();
@@ -86,7 +86,7 @@ namespace Atomix
                             var xInput = args[i + 1].Split(';');
 
                             InputDll = xInput[0];
-                            
+
                             if (!File.Exists(InputDll))
                                 throw new Exception("Kernel Assembly not found");
 
@@ -98,7 +98,7 @@ namespace Atomix
                                 if (!Path.IsPathRooted(InputDll))
                                     InputFiles.Add(Path.Combine(Environment.CurrentDirectory, xInput[j]));
                                 else
-                                    InputFiles.Add(xInput[j]);                                
+                                    InputFiles.Add(xInput[j]);
                             }
                             i++;
                         }
@@ -107,7 +107,7 @@ namespace Atomix
                             DoOptimization = true;
                         }
                     }
-                
+
                 }
                 else
                 {
@@ -122,7 +122,7 @@ namespace Atomix
                     throw new Exception("No input kernel assembly");
                 else if (!Path.IsPathRooted(InputDll))
                     InputDll = Path.Combine(Environment.CurrentDirectory, InputDll);
-                                
+
                 if (OutputFile == string.Empty || OutputFile == null)
                     OutputFile = Environment.CurrentDirectory;
                 else
@@ -137,7 +137,7 @@ namespace Atomix
                 Logger.Write("Architecture     : " + CPUArchitecture);
                 Logger.Write("Output Directory : " + OutputFile);
                 Logger.Write("Input Assembly   : " + InputDll);
-                Compiler xCompiler = new Compiler(DoOptimization); 
+                Compiler xCompiler = new Compiler(DoOptimization);
                 try
                 {
                     xCompiler.Start();
@@ -153,7 +153,7 @@ namespace Atomix
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
-            }            
+            }
         }
     }
 }

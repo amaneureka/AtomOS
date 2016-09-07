@@ -33,16 +33,16 @@ namespace Atomix.Kernel_H.Arch.x86
 
             Debug.Write("GDT Setup!!\n");
             Debug.Write("       Base Address::%d\n", gdt);
-            
+
             Set_GDT_Gate(0, 0, 0, 0, 0);                // Null segment
             Set_GDT_Gate(1, 0, 0xFFFFFFFF, 0x9A, 0xCF); // Code segment
             Set_GDT_Gate(2, 0, 0xFFFFFFFF, 0x92, 0xCF); // Data segment
             Set_GDT_Gate(3, 0, 0xFFFFFFFF, 0xFA, 0xCF); // User mode code segment
             Set_GDT_Gate(4, 0, 0xFFFFFFFF, 0xF2, 0xCF); // User mode data segment
-            
+
             SetupGDT(gdt);
         }
-        
+
         private static void Set_GDT_Gate(uint index, uint address, uint limit, byte access, byte granularity)
         {
             gdt_entries[index].BaseLow = (ushort)(address & 0xFFFF);
@@ -56,7 +56,7 @@ namespace Atomix.Kernel_H.Arch.x86
             gdt_entries[index].Access = access;
             Debug.Write("       Gate-%d Present\n", index);
         }
-        
+
         [Assembly(true)]
         private static void SetupGDT(uint gdtpointer)
         {

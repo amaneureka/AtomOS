@@ -23,7 +23,6 @@ namespace Atomix.IL
         public Ldelema(Compiler Cmp)
             : base("ldelema", Cmp) { }
 
-        
         public override void Execute(ILOpCode instr, MethodBase aMethod)
         {
             var xOperand = ((OpType)instr).Value;
@@ -35,7 +34,7 @@ namespace Atomix.IL
             /*
                 An object reference array is pushed onto the stack.
                 An index value index is pushed onto the stack.
-                index and array are popped from the stack; 
+                index and array are popped from the stack;
                 the address stored at position index in array is looked up.
                 The address is pushed onto the stack.
             */

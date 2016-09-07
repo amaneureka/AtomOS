@@ -11,7 +11,7 @@ namespace Kernel_alpha
         [FieldOffset(0)]
         public int Pid;
         [FieldOffset(4)]
-        public uint Stack;        
+        public uint Stack;
         [FieldOffset(8)]
         public uint* Address;
         [FieldOffset(12)]

@@ -46,7 +46,7 @@ namespace Atomix.Kernel_H.Drivers.buses.ATA
         protected bool mIsRemovable;
         protected int mBufferSize;
         protected byte[] mATAPI_Packet;
-        
+
         protected bool IRQInvoked;
 
         internal IDE(bool IsPrimary, bool IsMaster = true)
@@ -83,10 +83,10 @@ namespace Atomix.Kernel_H.Drivers.buses.ATA
 
                 // Register Interrupt Handler :-)
                 IDT.RegisterInterrupt(
-                    delegate(ref IRQContext xContext) 
-                    { 
-                        IRQInvoked = true; 
-                    }, 
+                    delegate(ref IRQContext xContext)
+                    {
+                        IRQInvoked = true;
+                    },
                     (uint)(IsPrimary ? 0x2E : 0x2F));
             }
         }
@@ -158,7 +158,7 @@ namespace Atomix.Kernel_H.Drivers.buses.ATA
                 Wait();
             }
 
-            var xBuff = new ushort[256];            
+            var xBuff = new ushort[256];
             PortIO.Read16(DataReg, xBuff);
 
             // ATA/ATAPI COnfig
@@ -184,7 +184,7 @@ namespace Atomix.Kernel_H.Drivers.buses.ATA
             // Read Model, Firmware, SerialNo.
             mModel      = xBuff.GetString((int)Identify.ATA_IDENT_MODEL, 40);
             mSerialNo   = xBuff.GetString((int)Identify.ATA_IDENT_SERIAL, 20);
-            
+
             Heap.Free(xBuff);
         }
 
@@ -234,7 +234,7 @@ namespace Atomix.Kernel_H.Drivers.buses.ATA
 
                     // Tell constroller the size of each buffer
                     PortIO.Out8(LBA1, (byte)((mBufferSize) & 0xFF));// Lower Byte of Sector Size. ATA_LBA_MID_PORT
-                    PortIO.Out8(LBA2, (byte)((mBufferSize >> 8) & 0xFF));// Upper Byte of Sector Size. ATA_LBA_HI_PORT          
+                    PortIO.Out8(LBA2, (byte)((mBufferSize >> 8) & 0xFF));// Upper Byte of Sector Size. ATA_LBA_HI_PORT
 
                     // Send Packet command
                     Send_SCSI_Package();
@@ -390,7 +390,7 @@ namespace Atomix.Kernel_H.Drivers.buses.ATA
                 mATAPI_Packet[10] = 0x00;
                 mATAPI_Packet[11] = 0x00;
 
-                // Enable IRQ; Currently IRQ is not working...so we ignore it but very important                
+                // Enable IRQ; Currently IRQ is not working...so we ignore it but very important
                 IRQInvoked = false;
                 PortIO.Out8(ControlReg, 0x0);
 
@@ -402,7 +402,7 @@ namespace Atomix.Kernel_H.Drivers.buses.ATA
 
             return false;
         }
-        
+
         private void Send_SCSI_Package()
         {
             // Tell Controller that we are sending package
@@ -441,7 +441,7 @@ namespace Atomix.Kernel_H.Drivers.buses.ATA
                     throw new Exception("ATA Error");
 
                 // (IV) Check If Device fault:
-                // -------------------------------------------------                
+                // -------------------------------------------------
                 if ((xState & Status.ATA_SR_DF) != 0)
                     throw new Exception("ATA Device Fault");
 
@@ -473,7 +473,7 @@ namespace Atomix.Kernel_H.Drivers.buses.ATA
             PortIO.In8(StatusReg);
             PortIO.In8(StatusReg);
         }
-                
+
         private void WaitIRQ()
         {
             while (!IRQInvoked) ;

@@ -35,7 +35,7 @@ namespace Atomix.IL
 
             /*
                 value is pushed onto the stack by a previous operation.
-                value is popped from the stack; 
+                value is popped from the stack;
                 if value is false, branch to target.
             */
 

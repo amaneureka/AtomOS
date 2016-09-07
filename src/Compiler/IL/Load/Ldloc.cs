@@ -31,7 +31,7 @@ namespace Atomix.IL
             var xSize = xField.LocalType.SizeOf();
             var StackCount = xSize.Align() / 4;
             var EBPOffset = ILHelper.MemoryOffset(xBody, xVar);
-                        
+
             switch (ILCompiler.CPUArchitecture)
             {
                 #region _x86_

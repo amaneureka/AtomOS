@@ -9,7 +9,7 @@ namespace Kernel_alpha.Drivers.Video
     public unsafe class VGAScreen
     {
         #region IO Ports
-        private readonly IOPort AttributeController_Index;        
+        private readonly IOPort AttributeController_Index;
         private readonly IOPort AttributeController_Read;
         private readonly IOPort AttributeController_Write;
 
@@ -70,7 +70,7 @@ namespace Kernel_alpha.Drivers.Video
             WriteRegister(modes.g_640x480x16);
             width = 640;
             height = 480;
-            
+
             byte[] xHex = new byte[] { 0x00, 0x33, 0x66, 0x99, 0xCC, 0xFF };
             int c = 0;
             for (byte i = 0; i < 6; i++)
@@ -81,7 +81,7 @@ namespace Kernel_alpha.Drivers.Video
                         c++;
                     }
         }
-        
+
         private void WriteRegister(byte[] registers)
         {
             int xIdx = 0;

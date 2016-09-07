@@ -34,7 +34,7 @@ namespace Atomix.Kernel_H.Gui
         {
             ClientID = aClientID;
             HashCode = ("Compositor").GetHashCode(Timer.TicksFromStart);
-            
+
 			var HashCodeString = Convert.ToString(HashCode);
             HashString = "win." + HashCodeString;
             Heap.Free(HashCodeString);

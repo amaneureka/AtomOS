@@ -12,7 +12,7 @@ using System.IO;
 namespace Atomix.Assembler.x86
 {
     public abstract class OnlySize : Instruction
-    {       
+    {
         public byte Address;
 
         public OnlySize(string aMnemonic)

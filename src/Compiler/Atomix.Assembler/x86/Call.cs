@@ -11,7 +11,7 @@ using System.IO;
 
 namespace Atomix.Assembler.x86
 {
-    public class Call : Instruction        
+    public class Call : Instruction
     {
         public readonly string Address;
         public readonly bool FunctionLabel;

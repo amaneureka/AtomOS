@@ -66,12 +66,12 @@ namespace Kernel_alpha.Drivers.Input
             KeyCode.None,           KeyCode.NumDivide,      KeyCode.None,           KeyCode.None,           //0x34
             KeyCode.RAlt,           KeyCode.None,           KeyCode.None,           KeyCode.None,           //0x38
             KeyCode.None,           KeyCode.None,           KeyCode.None,           KeyCode.None,           //0x3C
-            KeyCode.None,           KeyCode.None,           KeyCode.None,           KeyCode.None,           //0x40            
+            KeyCode.None,           KeyCode.None,           KeyCode.None,           KeyCode.None,           //0x40
             KeyCode.None,           KeyCode.None,           KeyCode.None,           KeyCode.Home,           //0x44
             KeyCode.CursorUp,       KeyCode.PageUP,         KeyCode.NumSubtract,    KeyCode.CursorLeft,     //0x48
             KeyCode.None,           KeyCode.CursorRight,    KeyCode.NumAdd,         KeyCode.End,            //0x4C
             KeyCode.CursorDown,     KeyCode.PageDown,       KeyCode.Insert,         KeyCode.Delete,         //0x50
-            KeyCode.None,           KeyCode.None,           KeyCode.None,           KeyCode.None,           //0x54   
+            KeyCode.None,           KeyCode.None,           KeyCode.None,           KeyCode.None,           //0x54
             KeyCode.None,           KeyCode.None,           KeyCode.None,           KeyCode.LGUI,           //0x58
             KeyCode.RGUI,           KeyCode.Apps,           KeyCode.None,           KeyCode.None,           //0x5C
             KeyCode.None,           KeyCode.None,           KeyCode.None,           KeyCode.None,           //0x60
@@ -85,12 +85,12 @@ namespace Kernel_alpha.Drivers.Input
             /* Set Buffer size and init buffer */
             MaxBuffer = 100;
             Buffer = new Queue<Keys>(MaxBuffer);
-            
+
             /* Set LEDs */
             //UpdateLEDs();
             xINT.RegisterHandler(HandleIRQ, 0x21);
         }
-        
+
         private bool IsExtended = false;
         public void HandleIRQ()
         {
@@ -172,7 +172,7 @@ namespace Kernel_alpha.Drivers.Input
                                 (byte)(ScrollLock ? 0x1 : 0x0));
             misc.PS2_Cmd(Cmd.Key_LEDs, Value);
         }
-        
+
         private char GetKeyChar(KeyCode aKey)
         {
             bool Case = (CapsLock && !Shift) ? true : ((!CapsLock && Shift) ? true : false);

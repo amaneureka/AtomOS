@@ -12,6 +12,6 @@ namespace Atomix.Assembler.x86
     public class Sub : DestinationSourceSize
     {
         public Sub()
-            : base("sub") { }        
+            : base("sub") { }
     }
 }

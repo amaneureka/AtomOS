@@ -34,7 +34,7 @@ namespace Atomix.IL
             var xFieldId = xF.FullName();
 
             FieldInfo xFieldInfo = null;
-            
+
             //Now we have to calculate the offset of object, and also give us that field
             int xOffset = ILHelper.GetFieldOffset(aDeclaringType, xFieldId, out xFieldInfo);
             bool xNeedsGC = aDeclaringType.IsClass && !aDeclaringType.IsValueType;

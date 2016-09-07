@@ -12,7 +12,7 @@ using Core = Atomix.Assembler.AssemblyHelper;
 namespace Kernel_alpha.x86
 {
     public static class Memory
-    {        
+    {
         public static unsafe void Clear(uint Address, uint ByteCount)
         {
             uint* xAddress = (uint*)Address;

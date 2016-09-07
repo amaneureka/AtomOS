@@ -12,6 +12,6 @@ namespace Atomix.Assembler.x86
     public class MovD : DestinationSourceSize
     {
         public MovD()
-            : base("movd") { }        
+            : base("movd") { }
     }
 }

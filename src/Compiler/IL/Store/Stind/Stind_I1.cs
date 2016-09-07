@@ -19,7 +19,6 @@ namespace Atomix.IL
 
         public override void Execute(ILOpCode instr, MethodBase aMethod)
         {
-
             Stind_I.Stind_All(1);
         }
     }

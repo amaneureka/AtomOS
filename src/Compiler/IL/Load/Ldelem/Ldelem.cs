@@ -20,7 +20,6 @@ namespace Atomix.IL
         public Ldelem(Compiler Cmp)
             : base("ldelem", Cmp) { }
 
-        
         public override void Execute(ILOpCode instr, MethodBase aMethod)
         {
             var xOperand = ((OpType)instr).Value;

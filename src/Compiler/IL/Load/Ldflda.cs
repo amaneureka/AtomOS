@@ -33,7 +33,7 @@ namespace Atomix.IL
             var xFieldId = xF.FullName();
 
             FieldInfo xFieldInfo = null;
-            
+
             //Now we have to calculate the offset of object, and also give us that field
             int xOffset = ILHelper.GetFieldOffset(aDeclaringType, xFieldId, out xFieldInfo);
             bool xNeedsGC = aDeclaringType.IsClass && !aDeclaringType.IsValueType;
@@ -42,7 +42,7 @@ namespace Atomix.IL
 
             //As we are sure xFieldInfo should contain value as if not than it throws error in GetFieldOffset
             var xSize = xFieldInfo.FieldType.SizeOf();
-            
+
             switch (ILCompiler.CPUArchitecture)
             {
                 #region _x86_

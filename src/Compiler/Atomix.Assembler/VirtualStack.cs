@@ -71,7 +71,7 @@ namespace Atomix.Assembler
                 || aType == typeof(uint)
                 || aType == typeof(long)
                 || aType == typeof(ulong));
-            IsFloat = (aType == typeof(float) 
+            IsFloat = (aType == typeof(float)
                 || aType == typeof(double)
                 || aType == typeof(decimal));
             IsSigned = (aType == typeof(sbyte)

@@ -12,6 +12,6 @@ namespace Atomix.Assembler.x86
     public class Cvttss2si : DestinationSourceSize
     {
         public Cvttss2si()
-            : base("cvttss2si") { }        
+            : base("cvttss2si") { }
     }
 }

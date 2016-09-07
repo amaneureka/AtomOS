@@ -30,7 +30,7 @@ namespace Atomix.Kernel_H.Core
         { get { return CurrentTask; } }
 
         internal static int RunningThreadID
-        { 
+        {
             get
             {
                 return (CurrentTask != null ? CurrentTask.ThreadID : 0);
@@ -58,17 +58,17 @@ namespace Atomix.Kernel_H.Core
                 CurrentTask = NextTask;
                 return aStack;
             }
-            
+
             if ((CurrentTask == NextTask) || (NextTask == null))
                 return aStack;
-            
-            CurrentTask.SaveStack(aStack);            
+
+            CurrentTask.SaveStack(aStack);
             if (NextTask.Process != CurrentTask.Process)
                 NextTask.Process.SetEnvironment();
             CurrentTask = NextTask;
             return NextTask.LoadStack();
         }
-                
+
         private static Thread InvokeNext()
         {
             if (ThreadQueue.Count == 0)

@@ -35,7 +35,7 @@ namespace Kernel_alpha.x86.smbios
             {
                 if ((xTemp[t++] = (char)Mem[p++]) == 0)
                 {
-                    aTotalLength += t;                    
+                    aTotalLength += t;
                     count--;
                     t = 0;
                     xResult.Add(new string(xTemp).Trim('\0'));

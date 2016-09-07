@@ -15,7 +15,7 @@ namespace Atomix.Kernel_H.plugs
 {
     internal static class BitConverter
     {
-        /* 
+        /*
          * Based on the assumption that we are on arch. which supports Little Endian.
          */
 

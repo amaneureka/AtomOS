@@ -132,14 +132,14 @@ namespace Atomix.IL
                 #region _x64_
                 case CPUArch.x64:
                     {
-                        
+
                     }
                     break;
                 #endregion
                 #region _ARM_
                 case CPUArch.ARM:
                     {
-                        
+
                     }
                     break;
                 #endregion

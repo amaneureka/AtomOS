@@ -12,6 +12,6 @@ namespace Atomix.Assembler.x86
     public class Cmp : DestinationSourceSize
     {
         public Cmp()
-            : base("cmp") { }        
+            : base("cmp") { }
     }
 }

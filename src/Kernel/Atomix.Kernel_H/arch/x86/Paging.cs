@@ -30,7 +30,7 @@ namespace Atomix.Kernel_H.Arch.x86
         {
             KernelDirectory = (UInt32*)aKernelDirectory;
             Frames = new uint[Multiboot.RAM / 0x20000];
-            
+
             // Tell Frame Allocator that we have already used first 4MB
             uint i = 0;
             while (i < 32)
@@ -54,17 +54,17 @@ namespace Atomix.Kernel_H.Arch.x86
                 virt += 0x1000;
                 phy += 0x1000;
             }
-            
+
             // Lets Map the new Heap; Just to the end of kernel
             uint HeapSize = 0x2000000, HeapStart = virt;//32MB
             end = virt + HeapSize;
-            
+
             while (virt < end)
             {
                 AllocateFrame(GetPage(KernelDirectory, virt, true), 0, true);
                 virt += 0x1000;
             }
-            
+
             // Setup our New Heap
             Heap.Setup(HeapStart, end);
             CurrentDirectory = KernelDirectory;
@@ -105,7 +105,7 @@ namespace Atomix.Kernel_H.Arch.x86
             if (Add != 0)
                 return; // We don't want to overwrite anything
             else
-            {                
+            {
                 if (Allocate)
                     PhyPage = FirstFreeFrame() * 0x1000;
                 *((UInt32*)Page) = PhyPage | flags;

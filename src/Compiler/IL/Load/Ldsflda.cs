@@ -30,7 +30,7 @@ namespace Atomix.IL
             var xOperand = ((OpField)instr);
             var xTargetField = xOperand.Value;
             var xTargetType = xTargetField.DeclaringType;
-            
+
             var xFieldEntry =  xTargetField.FullName();
 
             var xEndException = aMethod.FullName() + ".Error";

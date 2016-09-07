@@ -12,6 +12,6 @@ namespace Atomix.Assembler.x86
     public class And : DestinationSourceSize
     {
         public And()
-            : base("and") { }        
+            : base("and") { }
     }
 }

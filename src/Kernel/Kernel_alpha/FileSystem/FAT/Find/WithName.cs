@@ -13,7 +13,7 @@ namespace Kernel_alpha.FileSystem.Find
 	public class WithName : ACompare
 	{
 		protected string name;
-		
+
 		public WithName(string name)
 		{
 			this.name = name;
@@ -34,7 +34,6 @@ namespace Kernel_alpha.FileSystem.Find
             if (first == FileNameAttribute.Escape)
                 return false;
 
-            
             string entryname = ASCII.GetString(data, (int)offset, 8).Trim();
             string entryExt = ASCII.GetString(data, (int)(offset + 8), 3).Trim();
 
@@ -51,7 +50,7 @@ namespace Kernel_alpha.FileSystem.Find
             {
                 return true;
             }
-               
+
 			return false;
 		}
 	}

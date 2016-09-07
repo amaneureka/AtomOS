@@ -23,7 +23,7 @@ namespace Atomix.Kernel_H.IO.FileSystem.FAT
         private uint mFirstCluster;
         private uint mCurrentCluster;
         private int mPosition;
-        
+
         private byte[] mBufferCluster;
 
         internal FatStream(FatFileSystem aFS, string aName, uint aFirstCluster, uint aSize)
@@ -36,7 +36,7 @@ namespace Atomix.Kernel_H.IO.FileSystem.FAT
             mFirstCluster = aFirstCluster;
             mCurrentCluster = aFirstCluster;
             mPosition = 0;
-                        
+
             mBufferCluster = new byte[aFS.SectorsPerCluster * 512];
             LoadCluster(mFirstCluster);
         }
@@ -81,8 +81,8 @@ namespace Atomix.Kernel_H.IO.FileSystem.FAT
             if (FatFileSystem.IsClusterLast(xNextCluster))
                 return false;
 
-            if (FatFileSystem.IsClusterFree(xNextCluster) 
-                || FatFileSystem.IsClusterBad(xNextCluster) 
+            if (FatFileSystem.IsClusterFree(xNextCluster)
+                || FatFileSystem.IsClusterBad(xNextCluster)
                 || FatFileSystem.IsClusterReserved(xNextCluster))
                 return false;
 

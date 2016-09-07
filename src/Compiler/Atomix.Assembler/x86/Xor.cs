@@ -12,6 +12,6 @@ namespace Atomix.Assembler.x86
     public class Xor : DestinationSourceSize
     {
         public Xor()
-            : base("xor") { }        
+            : base("xor") { }
     }
 }

@@ -11,7 +11,7 @@ using System.IO;
 
 namespace Atomix.Assembler
 {
-    public class Label : Instruction        
+    public class Label : Instruction
     {
         public static string PrimaryLabel;
         public readonly string Name;

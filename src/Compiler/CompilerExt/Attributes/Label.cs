@@ -15,7 +15,7 @@ namespace Atomix.CompilerExt.Attributes
     public class LabelAttribute : Attribute
     {
         public readonly string Label;
-        
+
         public LabelAttribute(string aLabel)
         {
             Label = aLabel;

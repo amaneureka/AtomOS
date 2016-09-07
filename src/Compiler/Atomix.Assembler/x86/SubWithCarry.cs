@@ -12,6 +12,6 @@ namespace Atomix.Assembler.x86
     public class SubWithCarry : DestinationSourceSize
     {
         public SubWithCarry()
-            : base("sbb") { }        
+            : base("sbb") { }
     }
 }

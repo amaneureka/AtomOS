@@ -133,7 +133,7 @@ namespace Kernel_alpha.x86
         #region IO Port
         protected byte ReadRegister8(byte aRegister)
         {
-            UInt32 xAddr = GetAddressBase(Bus, Slot, Function) | ((UInt32)(aRegister & 0xFC));            
+            UInt32 xAddr = GetAddressBase(Bus, Slot, Function) | ((UInt32)(aRegister & 0xFC));
             Native.Out32(ConfigAddressPort, xAddr);
             return (byte)(Native.In32(ConfigDataPort) >> ((aRegister % 4) * 8) & 0xFF);
         }
@@ -155,7 +155,7 @@ namespace Kernel_alpha.x86
         protected void WriteRegister16(byte aRegister, ushort value)
         {
             UInt32 xAddr = GetAddressBase(Bus, Slot, Function) | ((UInt32)(aRegister & 0xFC));
-            Native.Out32(ConfigAddressPort, xAddr);            
+            Native.Out32(ConfigAddressPort, xAddr);
             Native.Out16(ConfigDataPort, value);
         }
 

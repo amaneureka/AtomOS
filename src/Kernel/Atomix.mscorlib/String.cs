@@ -170,7 +170,6 @@ namespace Atomix.mscorlib
                 return aThis;
 
             char[] xResult = new char[TotalWidth];
-            
             if (Direction)
             {
                 //Padding Right

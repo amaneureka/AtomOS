@@ -24,7 +24,6 @@ namespace Atomix.Kernel_H.Core
         {
             // Increment System Timer
             Timer.Tick();
-            
             return Scheduler.SwitchTask(oldStack);
         }
 

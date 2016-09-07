@@ -23,13 +23,12 @@ namespace Atomix.IL
     {
         public Initobj(Compiler Cmp)
             : base("initobj", Cmp) { }
-        
+
         public override void Execute(ILOpCode instr, MethodBase aMethod)
         {
-            var mType = ((OpType)instr).Value;            
+            var mType = ((OpType)instr).Value;
             int mObjSize = mType.SizeOf();
 
-                
             switch (ILCompiler.CPUArchitecture)
             {
                 #region _x86_
@@ -59,7 +58,7 @@ namespace Atomix.IL
                                     Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = (int)((mObjSize / 4) * 4), SourceRef = "0x0", Size = 8 });
                                     Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = (int)(((mObjSize / 4) * 4) + 1), SourceRef = "0x0", Size = 16 });
                                     break;
-                                }                            
+                                }
                             default:
                                     throw new NotImplementedException("@InitObj: Remainder size " + mObjSize % 4 + " not supported yet! (Type = '" + mType.FullName + "')");
                         }

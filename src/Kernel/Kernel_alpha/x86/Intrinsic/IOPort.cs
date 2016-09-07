@@ -124,9 +124,9 @@ namespace Kernel_alpha.x86.Intrinsic
         {
             for (int i = 0; i < xData.Length; i+=2)
             {
-                var aData  = this.Inw();                
+                var aData  = this.Inw();
                 xData[i] = (byte)(aData & 0xFF);
-                xData[i + 1] = (byte)(aData >> 8);                
+                xData[i + 1] = (byte)(aData >> 8);
             }
         }
 

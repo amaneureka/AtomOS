@@ -12,6 +12,6 @@ namespace Atomix.Assembler.x86
     public class ShiftRight : DestinationSourceSize
     {
         public ShiftRight()
-            : base("shr") { }        
+            : base("shr") { }
     }
 }

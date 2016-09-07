@@ -70,7 +70,7 @@ namespace Atomix.IL
                                 break;
                             default:
                                 throw new Exception("Not Yet Implemented Conv_I8 : Size" + xSource.Size);
-                        }   
+                        }
                     }
                     break;
                 #endregion

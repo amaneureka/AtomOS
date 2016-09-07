@@ -12,6 +12,6 @@ namespace Atomix.Assembler.x86
     public class Or : DestinationSourceSize
     {
         public Or()
-            : base("or") { }        
+            : base("or") { }
     }
 }

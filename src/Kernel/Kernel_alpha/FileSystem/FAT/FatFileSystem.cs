@@ -2,10 +2,10 @@
  *  Unauthorized copying of this file, via any medium is strictly prohibited
  *  Proprietary and confidential
  *  Written by SANDEEP ILIGER <sandeep.iliger@gmail.com>, 07-2014
- *  
+ *
  *  History
  *      AMAN PRIYADARSHU <aman.eureka@gmail.com>, 09-2014
- * 
+ *
  */
 
 using System;
@@ -44,7 +44,7 @@ namespace Kernel_alpha.FileSystem
         public FatFileSystem(BlockDevice aDevice)
         {
             this.IDevice = aDevice;
-            this.mIsValid = IsFAT();            
+            this.mIsValid = IsFAT();
         }
 
         private bool IsFAT()
@@ -111,7 +111,7 @@ namespace Kernel_alpha.FileSystem
             if (FatType == FatType.FAT32)
             {
                 SerialNo = BitConverter.ToUInt32(BootSector, 39);
-                VolumeLabel = ASCII.GetString(BootSector, 71, 11);   // for checking              
+                VolumeLabel = ASCII.GetString(BootSector, 71, 11);   // for checking
                 RootCluster = BitConverter.ToUInt32(BootSector, 44);
                 RootSector = 0;
                 RootSectorCount = 0;
@@ -148,13 +148,13 @@ namespace Kernel_alpha.FileSystem
 
             throw new Exception("Directory Not Found!");
         }
-        
+
         public override List<VFS.Entry.Base> ReadDirectory(string DirName = null)
         {
             ChangeDirectory(DirName);
 
             var xResult = new List<VFS.Entry.Base>();
-            
+
             byte[] aData = new byte[(UInt32)(512 * SectorsPerCluster)];
 
             UInt32 xSector = DataSector + ((FatCurrentDirectoryEntry - RootCluster) * SectorsPerCluster);
@@ -278,7 +278,7 @@ namespace Kernel_alpha.FileSystem
         {
             //TODO: Same Entry Exist exception.
             FatFileLocation location = FindEntry(new FileSystem.Find.Empty(), FatCurrentDirectoryEntry);
-            
+
             uint FirstCluster = AllocateFirstCluster();
 
             var xdata = new byte[512 * SectorsPerCluster];
@@ -334,7 +334,7 @@ namespace Kernel_alpha.FileSystem
         public override byte[] ReadFile(string FileName)
         {
             byte[] xFileData = new byte[(UInt32)SectorsPerCluster * 512];
-            
+
             var location = FindEntry(new FileSystem.Find.WithName(FileName), FatCurrentDirectoryEntry);
             if (location == null)
                 throw new Exception("File Not Found!");
@@ -345,7 +345,7 @@ namespace Kernel_alpha.FileSystem
             Array.Copy(xFileData, 0, xReturnData, 0, location.Size);
             return xReturnData;
         }
-      
+
         public uint GetSectorByCluster(uint cluster)
         {
             return DataSector + ((cluster - RootCluster) * SectorsPerCluster);
@@ -392,7 +392,7 @@ namespace Kernel_alpha.FileSystem
             this.IDevice.Read(sector, nbrSectors, xData);
             BinaryFormat fat = new BinaryFormat(xData);
 
-            
+
             fat.SetUInt(sectorOffset, nextcluster);
 
             this.IDevice.Write(sector, nbrSectors, fat.Data);
@@ -458,7 +458,7 @@ namespace Kernel_alpha.FileSystem
         {
             uint fatoffset = 0;
 
-            
+
             fatoffset = cluster * 4;
 
             uint sector = ReservedSector + (fatoffset / BytePerSector);
@@ -486,7 +486,7 @@ namespace Kernel_alpha.FileSystem
 
             if (startCluster == 0)
                 activeSector = (FatType == FatType.FAT32) ? GetSectorByCluster(RootCluster) : RootSector;
-                        
+
             byte[] aData = new byte[512 * SectorsPerCluster];
             this.IDevice.Read(activeSector, SectorsPerCluster, aData);
 
@@ -505,12 +505,12 @@ namespace Kernel_alpha.FileSystem
             }
             return null;
         }
-        
+
         public void FlushDetails()
         {
             if (IsValid)
             {
-                Console.WriteLine("FAT Version:" + ((FatType == FatType.FAT32) ? "FAT32" : "FAT16/12"));                
+                Console.WriteLine("FAT Version:" + ((FatType == FatType.FAT32) ? "FAT32" : "FAT16/12"));
                 Console.WriteLine("Disk Volume:" + (VolumeLabel == "NO NAME" ? VolumeLabel + "<Extended>" : VolumeLabel));
                 Console.WriteLine("Bytes Per Sector:" + BytePerSector.ToString());
                 Console.WriteLine("Sectors Per Cluster:" + SectorsPerCluster.ToString());

@@ -28,13 +28,13 @@ namespace Atomix.Kernel_H.plugs
         {
             *(uint*)(aAddress + 0xC) = Message;
         }
-        
+
         [Plug("System_String_System_Exception_get_Message__")]
         internal static unsafe uint GetMessage(byte* aAddress)
         {
             return *(uint*)(aAddress + 0xC);
         }
-        
+
         [Label(CompilerExt.Helper.lblSetException)]
         internal static void SetException(Exception aException)
         {

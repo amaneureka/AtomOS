@@ -44,9 +44,9 @@ namespace Atomix.IL
                         for (int i = xStackCount; i > 0; i--)
                         {
                             Core.AssemblerCode.Add(
-                                new Assembler.x86.Push { 
-                                    DestinationReg = Registers.ESP, 
-                                    DestinationIndirect = true, 
+                                new Assembler.x86.Push {
+                                    DestinationReg = Registers.ESP,
+                                    DestinationIndirect = true,
                                     DestinationDisplacement = (int)((xStackCount - 1) * 4) });
                         }
                     }

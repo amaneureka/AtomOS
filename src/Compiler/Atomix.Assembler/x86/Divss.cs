@@ -12,6 +12,6 @@ namespace Atomix.Assembler.x86
     public class Divss : DestinationSourceSize
     {
         public Divss()
-            : base("divss") { }        
+            : base("divss") { }
     }
 }

@@ -15,7 +15,7 @@ namespace Kernel_alpha.x86.Intrinsic
         /// <summary>
         /// Clear Interrupt Flag
         /// </summary>
-        [Assembly(true)]        
+        [Assembly(true)]
         public static void ClearInterrupt()
         {
             Core.AssemblerCode.Add(new Cli());
@@ -276,7 +276,7 @@ namespace Kernel_alpha.x86.Intrinsic
             //Use Lidt
             Core.AssemblerCode.Add(new Literal("lidt [EAX]"));
         }
-        
+
         /// <summary>
         /// End of kernel offset
         /// </summary>

@@ -29,7 +29,7 @@ namespace Atomix.IL
             ILCompiler.Logger.Write(aMnemonic + "...Loaded");
         }
 
-        public virtual void Execute(ILOpCode instr, MethodBase aMethod) 
+        public virtual void Execute(ILOpCode instr, MethodBase aMethod)
         {
             Core.AssemblerCode.Add(new Literal(IL));
         }

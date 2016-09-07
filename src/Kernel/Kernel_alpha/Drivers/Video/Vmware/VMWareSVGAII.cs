@@ -36,11 +36,11 @@ namespace Kernel_alpha.Drivers.Video
             var IOBase = Device.BaseAddressBar[0].BaseAddress;
             IndexPort = new IOPort((ushort)(IOBase + (ushort)IOPortOffset.Index));
             ValuePort = new IOPort((ushort)(IOBase + (ushort)IOPortOffset.Value));
-            
+
             //Memory Block
             FB_Memory = new MemoryBlock32(Device.BaseAddressBar[1].BaseAddress);
             FIFO_Memory = new MemoryBlock32(Device.BaseAddressBar[2].BaseAddress);
-            
+
            //Version Check
             VersionID = (UInt32)Versions.SVGA_ID_2;
             do
@@ -52,15 +52,15 @@ namespace Kernel_alpha.Drivers.Video
                     VersionID--;
             }
             while (VersionID >= (UInt32)Versions.SVGA_ID_0);
-            
+
             if (VersionID < (UInt32)Versions.SVGA_ID_0)
                 throw new Exception("Error negotiating SVGA device version.");
-            
+
             //Memory Block Length
             FB_Memory.Length = ReadRegister(Registers.SVGA_REG_FB_SIZE);
             FIFO_Memory.Length = ReadRegister(Registers.SVGA_REG_MEM_SIZE);
-            
-            //Memory Block Length Check 
+
+            //Memory Block Length Check
             if (FB_Memory.Length < 0x100000)
                 throw new Exception("FB size very small, probably incorrect.");
 
@@ -191,7 +191,7 @@ namespace Kernel_alpha.Drivers.Video
             IndexPort.DWord = Index;
             ValuePort.DWord = Value;
         }
-        
+
         private void WriteRegister(Registers Index, UInt32 Value)
         {
             IndexPort.DWord = (UInt32)Index;

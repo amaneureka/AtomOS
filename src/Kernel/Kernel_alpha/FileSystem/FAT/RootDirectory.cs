@@ -15,7 +15,7 @@ namespace Kernel_alpha.FileSystem.FAT
         private List<Lists.Base> Entries;
         private UInt64 DirectorySectory;
         private FatFileSystem FileSystem;
-        
+
         public RootDirectory(FatFileSystem FS, UInt64 DirSector)
         {
             FileSystem = FS;
@@ -27,7 +27,7 @@ namespace Kernel_alpha.FileSystem.FAT
         {
             Entries.Add(Entry);
         }
-        
+
         public List<Lists.Base> GetEntries
         { get { return this.Entries; } }
     }

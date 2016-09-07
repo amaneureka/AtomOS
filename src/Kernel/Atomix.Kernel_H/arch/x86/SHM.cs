@@ -25,7 +25,7 @@ namespace Atomix.Kernel_H.Arch.x86
 
         // Maximum of 0x10000 frames starting from SHM_Start to any process
         public const int LIMIT_TO_PROCESS = 0x10000 >> 5;
-        
+
         static IDictionary<string, shm_chunk> Nodes;
 
         internal static void Install()
@@ -36,7 +36,7 @@ namespace Atomix.Kernel_H.Arch.x86
         internal static unsafe uint Obtain(string aID, int aSize = -1)
         {
             Monitor.AcquireLock(Nodes);
-            
+
             if (!Nodes.ContainsKey(aID))
             {
                 if (aSize == -1)
@@ -70,13 +70,13 @@ namespace Atomix.Kernel_H.Arch.x86
                             uint xReturnAddress = xVirtualAddress;
                             var CurrentDirectory = Paging.CurrentDirectory;
                             var Frames = Current.Frames;
-                            
+
                             int Index = 0;
                             while (Index < FramesRequired)
                             {
                                 Paging.AllocateFrame(Paging.GetPage(CurrentDirectory, xVirtualAddress, true), (Frames[Index] << 12), false);
                                 Paging.InvalidatePageAt(xVirtualAddress);
-                                
+
                                 // Also Mark in shm_mapping
                                 shm_mapping[(xOffset >> 5)] |= (uint)(0x1 << (xOffset & 31));
 
@@ -97,7 +97,7 @@ namespace Atomix.Kernel_H.Arch.x86
 
             Monitor.ReleaseLock(Nodes);
             Debug.Write("shm_mapping failed, Process id:=%d ", ParentProcess.pid);
-            Debug.Write("shm_id := %s\n", aID);            
+            Debug.Write("shm_id := %s\n", aID);
             return 0;
         }
 
@@ -108,7 +108,7 @@ namespace Atomix.Kernel_H.Arch.x86
             var NewChunk = new shm_chunk();
             NewChunk.RefCount = 0;
             NewChunk.Frames = new uint[NumberOfFrames];
-            
+
             for (int index = 0; index < NumberOfFrames; index++)
             {
                 // Allocate New Frame to this guy!

@@ -35,7 +35,7 @@ namespace Atomix.IL
 
             /*
                 value is pushed onto the stack by a previous operation.
-                value is popped from the stack; 
+                value is popped from the stack;
                 if value is true, branch to target.
             */
 
@@ -64,7 +64,7 @@ namespace Atomix.IL
                                 {
                                     Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
                                     Core.AssemblerCode.Add(new Cmp { DestinationReg = Registers.EAX, SourceRef = "0x0" });
-                                    
+
                                     Core.AssemblerCode.Add(new Jmp { Condition = ConditionalJumpEnum.JNE, DestinationRef = xTrueLabel });
                                     Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
                                     Core.AssemblerCode.Add(new Cmp { DestinationReg = Registers.EAX, SourceRef = "0x0" });

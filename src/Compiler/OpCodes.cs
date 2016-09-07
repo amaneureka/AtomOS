@@ -13,7 +13,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 
 namespace Atomix
-{ 
+{
     public static class BodyProcesser
     {
         /// <summary>
@@ -46,7 +46,7 @@ namespace Atomix
 
         /// <summary>
         /// This method just process method and output MSIL List
-        /// Here is one more thing i.e. LabelTarget, 
+        /// Here is one more thing i.e. LabelTarget,
         /// Well it is just a list of il position where we have to break and create one more label with give position
         /// This is used when we have to make branch or jump operation to an IL
         /// </summary>
@@ -77,7 +77,7 @@ namespace Atomix
              */
 
             // Set current position of IL as zero
-            int xPos = 0;                        
+            int xPos = 0;
             while (xPos < msIL.Length)
             {
                 /* Calculate Exception handling label for current IL
@@ -173,7 +173,7 @@ namespace Atomix
                 // And we also add the labels breakpoints here, so take that in mind before merging IL
                 // As we don't want waste labels =)
                 switch (xOpCode.OperandType)
-                {                        
+                {
                     #region Inline None
                     case OperandType.InlineNone:
                         {
@@ -322,7 +322,7 @@ namespace Atomix
                             int xTarget = xPos + 4 + (Int32)BitConverter.ToInt32(msIL, xPos);
                             LabelTarget.Add(xTarget);
                             xILOpCode = new ILOpCodes.OpBranch(xOpCodeVal, xOpPos, xPos + 4, xTarget, xCurrentHandler);
-                            xPos = xPos + 4;                            
+                            xPos = xPos + 4;
                         }
                         break;
                     case OperandType.ShortInlineI:
@@ -460,5 +460,5 @@ namespace Atomix
             // Return the magic code result and be happy =)
             return xResult;
         }
-    }    
+    }
 }

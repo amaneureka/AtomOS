@@ -17,7 +17,7 @@ namespace Kernel_alpha.x86
         public const uint kHeap_Initial_Size = 0x500000;
 
         public static uint PlacementAddress = 0;
-        
+
         [Label(Helper.lblHeap)]
         public static uint kmalloc(uint aLength)
         {

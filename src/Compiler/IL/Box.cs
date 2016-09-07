@@ -29,7 +29,7 @@ namespace Atomix.IL
             var xOpType = ((OpType)instr).Value;
             var xSize = xOpType.SizeOf().Align();
             var xTypeID = ILHelper.GetTypeID(xOpType);
-            
+
             /*
                 A value type is pushed onto the stack.
                 The value type is popped from the stack; the box operation is performed.
@@ -60,7 +60,7 @@ namespace Atomix.IL
                             Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EDX });
                             Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = (0xC + (i * 4)), SourceReg = Registers.EDX });
                         }
-                        Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });                        
+                        Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
                     }
                     break;
                 #endregion

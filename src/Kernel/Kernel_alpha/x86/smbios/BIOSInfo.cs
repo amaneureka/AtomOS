@@ -17,7 +17,7 @@ namespace Kernel_alpha.x86.smbios
              * db 0 ; Indicates BIOS Structure Type            |
              * db 13h ; Length of information in bytes         | HEADER
              * dw ? ; Reserved for handle                      |
-             * 
+             *
              * db 01h ; String 1 is the Vendor Name            |
              * db 02h ; String 2 is the BIOS version           |
              * dw 0E800h ; BIOS Starting Address               |
@@ -25,11 +25,11 @@ namespace Kernel_alpha.x86.smbios
              * db 1 ; Size of BIOS ROM is 128K (64K * (1 + 1)) |
              * dq BIOS_Char ; BIOS Characteristics             |
              * db 0 ; BIOS Characteristics Extension Byte 1    |
-             * 
+             *
              * db ‘System BIOS Vendor Name’,0 ;                |
              * db ‘4.04’,0 ;                                   | STRINGS
              * db ‘00/00/0000’,0 ;                             |
-             * 
+             *
              * db 0 ; End of structure
              */
 

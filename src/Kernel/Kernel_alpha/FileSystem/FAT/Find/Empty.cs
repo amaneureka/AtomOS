@@ -11,7 +11,6 @@ namespace Kernel_alpha.FileSystem.Find
 {
 	public class Empty : ACompare
 	{
-	
 		protected uint cluster;
 
 		public Empty()

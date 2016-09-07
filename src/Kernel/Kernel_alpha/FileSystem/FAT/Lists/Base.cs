@@ -25,4 +25,4 @@ namespace Kernel_alpha.FileSystem.FAT.Lists
             this.Details = aDetail;
         }
     }
-} 
+}

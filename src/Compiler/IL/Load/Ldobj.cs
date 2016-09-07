@@ -24,7 +24,6 @@ namespace Atomix.IL
         public Ldobj(Compiler Cmp)
             : base("ldobj", Cmp) { }
 
-        
         public override void Execute(ILOpCode instr, MethodBase aMethod)
         {
             var xType = ((OpType)instr).Value;

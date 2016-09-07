@@ -32,9 +32,9 @@ namespace Kernel_alpha.Drivers.PartInfo
             if (xSystemID == 0x5 || xSystemID == 0xF || xSystemID == 0x85)
             {
                 //Extended Partition Detected
-                //DOS only knows about 05, Windows 95 introduced 0F, Linux introduced 85 
+                //DOS only knows about 05, Windows 95 introduced 0F, Linux introduced 85
                 //Search for logical volumes
-                //http://thestarman.pcministry.com/asm/mbr/PartTables2.htm          
+                //http://thestarman.pcministry.com/asm/mbr/PartTables2.htm
             }
             else if (xSystemID != 0)
             {
