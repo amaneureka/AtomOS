@@ -57,8 +57,6 @@ namespace Atomix
         /// </summary>
         public Dictionary<ILCode, MSIL> MSIL;
 
-        private Dictionary<FieldInfo, string> Pointers;
-
         private List<MethodInfo> Virtuals;
         private bool DoOptimization;
         /// <summary>
@@ -78,7 +76,6 @@ namespace Atomix
             Core.DataMember = new List<AsmData>();
             Core.AssemblerCode = new List<Instruction>();
             MSIL = new Dictionary<ILCode, MSIL>();
-            Pointers = new Dictionary<FieldInfo, string>();
             Virtuals = new List<MethodInfo>();
             DoOptimization = aDoOptimization;
             Core.StaticLabels = new Dictionary<string, _MemberInfo>();
@@ -239,9 +236,7 @@ namespace Atomix
 
             var xAssemblies = new List<Assembly>();
             ILCompiler.Logger.Write("@Compiler", "Reference Scanner", "Scanning References Assemblies");
-            // This Dictionary just take the list of all the fieldInfo in current type
-            // This is used for making pointers list
-            Dictionary<string, FieldInfo> xFields = null;
+
             foreach (var xLoc in AssembliesLocation)
             {
                 // Load the assembly which we want and add it to assemblies list
@@ -275,58 +270,8 @@ namespace Atomix
                 // Firstly we scan types for label attribute, well if i tell seriously than it is of no use, but for future implementations
                 foreach (var xType in xAssembly.GetTypes())
                 {
-                    foreach (var xAttr in xType.CustomAttributes)
-                    {
-                        if (xAttr.AttributeType == typeof(LabelAttribute))
-                        {
-                            Core.StaticLabels.Add((string)xAttr.ConstructorArguments[0].Value, xType);
-                            QueuedMember.Enqueue(xType);
-                            ILCompiler.Logger.Write(string.Format(
-                                        "<b>Plug Found <u>LabelAttribute</u></b> :: {0}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=>{1}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=>{2}",
-                                        xType.Name,
-                                        xType.FullName,
-                                        xAssembly.FullName));
-                        }
-                    }
-                    /*This is what we called real magic, well this i have done for finding pointer to any c# function
-                     * How it works? So it just scan if there is any static
-                     * field inside a type which starts with p and of same name that of a function inside same type
-                     * I know bit crazy but really cool, than it just do a thing in field info implementation
-                     * and save the function pointer to that field info, just a hack as the varaible must be a 4 byte long =P
-                     * For example the pointer address of a function named "test" will be saved in "ptest" =P
-                     */
-                    xFields = new Dictionary<string, FieldInfo>();
-                    foreach (var xField in xType.GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static))
-                    {
-                        // Add each field to list
-                        xFields.Add(xField.Name, xField);
-                        foreach (var xAttr in xField.CustomAttributes)
-                        {
-                            if (xAttr.AttributeType == typeof(LabelAttribute))
-                            {
-                                Core.StaticLabels.Add((string)xAttr.ConstructorArguments[0].Value, xField);
-                                QueuedMember.Enqueue(xField);
-                                ILCompiler.Logger.Write(string.Format(
-                                        "<b>Plug Found <u>LabelAttribute</u></b> :: {0}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=>{1}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=>{2}",
-                                        xField.Name,
-                                        xField.Name,
-                                        xAssembly.FullName));
-                            }
-                        }
-                    }
                     foreach (var xMethod in xType.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static))
                     {
-                        // Now we check is same name is present for any void, if yes than we save pointer else not
-                        string pointer_lbl = "p" + xMethod.Name;
-
-                        if (xFields.ContainsKey(pointer_lbl))
-                        {
-                            // Add the vaild entry to list, rest we don't care
-                            Pointers.Add(xFields[pointer_lbl], xMethod.FullName());
-                            // Well these pointers are used so we make sure the method is also build so we Enqueue it
-                            QueuedMember.Enqueue(xMethod);
-                        }
-
                         // TODO: review the below code
                         foreach (var xAttr in xMethod.CustomAttributes)
                         {
@@ -370,47 +315,39 @@ namespace Atomix
         private void ProcessField(FieldInfo aField)
         {
             var xName = aField.FullName();
-            // If this is in the pointer list, mean we just add the pointer instead of empty bytes
-            if (Pointers.ContainsKey(aField))
-            {
-                // As simple as that
-                Core.InsertData(new AsmData(xName, "dd " + Pointers[aField]));
-            }
-            else
-            {
-                int xTheSize = 4;
+            int xTheSize = 4;
 
-                Type xFieldTypeDef = aField.FieldType;
-                if (!xFieldTypeDef.IsClass || xFieldTypeDef.IsValueType)
-                    xTheSize = aField.FieldType.SizeOf();
+            Type xFieldTypeDef = aField.FieldType;
+            if (!xFieldTypeDef.IsClass || xFieldTypeDef.IsValueType)
+                xTheSize = aField.FieldType.SizeOf();
 
-                // We use marshal and read c# assembly memory to get the value of static field
-                byte[] xData = new byte[xTheSize];
-                try
+            // We use marshal and read c# assembly memory to get the value of static field
+            byte[] xData = new byte[xTheSize];
+            try
+            {
+                object xValue = aField.GetValue(null);
+                if (xValue != null)
                 {
-                    object xValue = aField.GetValue(null);
-                    if (xValue != null)
+                    try
                     {
-                        try
-                        {
-                            xData = new byte[xTheSize];
-                            if (xValue.GetType().IsValueType)
-                                for (int x = 0; x < xTheSize; x++)
-                                    xData[x] = Marshal.ReadByte(xValue, x);
-                        }
-                        catch
-                        {
-                            // Do nothing, if error...we won't care it
-                        }
+                        xData = new byte[xTheSize];
+                        if (xValue.GetType().IsValueType)
+                            for (int x = 0; x < xTheSize; x++)
+                                xData[x] = Marshal.ReadByte(xValue, x);
+                    }
+                    catch
+                    {
+                        // Do nothing, if error...we won't care it
                     }
                 }
-                catch
-                {
-                    // Do nothing, if error...we won't care it
-                }
-                // Add it to data member
-                Core.InsertData(new AsmData(xName, xData));
             }
+            catch
+            {
+                // Do nothing, if error...we won't care it
+            }
+            // Add it to data member
+            Core.InsertData(new AsmData(xName, xData));
+
             // Add it build definations
             BuildDefinations.Add(aField);
         }
@@ -986,8 +923,8 @@ namespace Atomix
                 Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EBX });
 
                 ((Ldarg)MSIL[ILCode.Ldarg]).Execute2(2, xMethod); // The pointer
-                Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EBX, SourceRef = "0xC" });
                 Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
+                Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EBX, SourceRef = "0xC" });
                 Core.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, DestinationIndirect = true, SourceReg = Registers.EAX });
 
                 ((Ldarg)MSIL[ILCode.Ldarg]).Execute2(1, xMethod); // The Object
@@ -1008,7 +945,7 @@ namespace Atomix
                 Core.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
                 Core.AssemblerCode.Add(new Add { DestinationReg = Registers.EAX, SourceRef = "0xC" });
 
-                // If it is a non static field than get its parent Type memory location
+                // If it is a non static field than get its parent Type memory location (object in constructor)
                 if (!xMethod.IsStatic)
                     Core.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX, DestinationDisplacement = 0x4, DestinationIndirect = true });
 

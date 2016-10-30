@@ -114,6 +114,7 @@
     <Compile Include="io\Stream.cs" />
     <Compile Include="lib\BinaryFormat.cs" />
     <Compile Include="lib\crypto\sdbm.cs" />
+    <Compile Include="lib\Delegates.cs" />
     <Compile Include="lib\ds\IDictionary.cs" />
     <Compile Include="lib\ds\IList.cs" />
     <Compile Include="lib\ds\IQueue.cs" />

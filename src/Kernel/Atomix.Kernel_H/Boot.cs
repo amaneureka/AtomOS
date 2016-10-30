@@ -54,7 +54,7 @@ namespace Atomix.Kernel_H
             ClientID = Compositor.AddClient(SystemClient);
 
             var xTempStack = Heap.kmalloc(0x1000);
-            new Thread(Scheduler.SystemProcess, pBootAnimation, xTempStack + 0x1000, 0x1000).Start();
+            new Thread(Scheduler.SystemProcess, BootAnimation, xTempStack + 0x1000, 0x1000).Start();
             #endregion
             #region IDE Devices
             LoadIDE(true, true);
@@ -71,7 +71,6 @@ namespace Atomix.Kernel_H
             while (true) ;
         }
 
-        private static uint pBootAnimation;
         internal static unsafe void BootAnimation()
         {
             VBE.Clear(0x6D6D6D);

@@ -11,7 +11,7 @@ using System;
 
 namespace Atomix.CompilerExt.Attributes
 {
-    [AttributeUsage(AttributeTargets.All , AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Method , AllowMultiple = false)]
     public class LabelAttribute : Attribute
     {
         public readonly string Label;

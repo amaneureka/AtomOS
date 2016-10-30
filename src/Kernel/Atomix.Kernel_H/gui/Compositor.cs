@@ -56,9 +56,9 @@ namespace Atomix.Kernel_H.Gui
             RENDER_STACK = Heap.kmalloc(0x1000);
 
             Debug.Write("Spawning Threads\n");
-            new Thread(parent, pHandleMouse, MOUSE_INPUT_STACK + 0x1000, 0x1000).Start();
-            new Thread(parent, pHandleRequest, COMPOSITOR_STACK + 0x1000, 0x1000).Start();
-            new Thread(parent, pRender, RENDER_STACK + 0x1000, 0x1000).Start();
+            new Thread(parent, HandleMouse, MOUSE_INPUT_STACK + 0x1000, 0x1000).Start();
+            new Thread(parent, HandleRequest, COMPOSITOR_STACK + 0x1000, 0x1000).Start();
+            new Thread(parent, Render, RENDER_STACK + 0x1000, 0x1000).Start();
         }
 
         internal static int AddClient(Pipe aClient)
@@ -80,7 +80,6 @@ namespace Atomix.Kernel_H.Gui
 
         internal static bool ScreenUpdate = true;
 
-        private static uint pRender;
         private static void Render()
         {
             Debug.Write("[Compositor]: Render()\n");
@@ -129,7 +128,6 @@ namespace Atomix.Kernel_H.Gui
             Thread.Die();
         }
 
-        private static uint pHandleRequest;
         private static void HandleRequest()
         {
             Debug.Write("[Compositor]: Handle Request()\n");
@@ -237,10 +235,7 @@ namespace Atomix.Kernel_H.Gui
             Thread.Die();
         }
 
-        private static uint pHandleMouse;
-#pragma warning disable RECS0135 // Function does not reach its end or a 'return' statement by any of possible execution paths
         private static void HandleMouse()
-#pragma warning restore RECS0135 // Function does not reach its end or a 'return' statement by any of possible execution paths
         {
             Debug.Write("[Compositor]: Handle Mouse()\n");
 
