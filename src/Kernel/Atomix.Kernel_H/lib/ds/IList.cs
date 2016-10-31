@@ -30,11 +30,11 @@ namespace Atomix.Kernel_H.Lib
         {
             if (_capacity <= _size)
             {
-                var _new = new T[_size + 1];
+                var _new = new T[_size + _size];
                 Array.Copy(_items, _new, _size);
                 Heap.Free(_items);
                 _items = _new;
-                _capacity++;
+                _capacity += _size;
             }
             _items[_size++] = item;
         }

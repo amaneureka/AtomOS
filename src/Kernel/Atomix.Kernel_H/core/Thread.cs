@@ -9,7 +9,7 @@
 
 using System;
 
-using Atomix.Kernel_H.Lib;
+using Atomix.Kernel_H.Arch.x86;
 
 namespace Atomix.Kernel_H.Core
 {
@@ -28,7 +28,7 @@ namespace Atomix.Kernel_H.Core
         static int ThreadCounter = 0;
 
         public Thread(Process aParent, Action aMethod, uint aStackStart, uint aStackLimit)
-            :this(aParent, aMethod.GetAddress(), aStackStart, aStackLimit)
+            :this(aParent, aMethod.InvokableAddress(), aStackStart, aStackLimit)
         {
             return;
         }

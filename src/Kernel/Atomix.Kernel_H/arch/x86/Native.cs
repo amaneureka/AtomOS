@@ -7,11 +7,12 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-using Atomix.CompilerExt.Attributes;
+using System;
 
 using Atomix.Assembler;
 using Atomix.Assembler.x86;
-using Core = Atomix.Assembler.AssemblyHelper;
+
+using Atomix.CompilerExt.Attributes;
 
 namespace Atomix.Kernel_H.Arch.x86
 {
@@ -64,6 +65,32 @@ namespace Atomix.Kernel_H.Arch.x86
         {
             // 0x10 bytes are reserved for compiler specific work
             return (GetAddress(aObj) + 0x10);
+        }
+
+        /// <summary>
+        /// Get Invokable method address from Action Delegate
+        /// </summary>
+        /// <param name="aDelegate"></param>
+        /// <returns></returns>
+        [Assembly(true)]
+        internal static uint InvokableAddress(this Delegate aDelegate)
+        {
+            // Compiler.cs : ProcessDelegate(MethodBase xMethod);
+            // [aDelegate + 0xC] := Address Field
+            AssemblyHelper.AssemblerCode.Add(new Mov
+            {
+                DestinationReg = Registers.EBX,
+                SourceReg = Registers.EBP,
+                SourceDisplacement = 0x8,
+                SourceIndirect = true
+            });
+
+            // EAX := [Address Field]
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBX, SourceDisplacement = 0xC, SourceIndirect = true });
+            // Return : [EBP + 0x8] = EAX
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBP, SourceReg = Registers.EAX, DestinationDisplacement = 0x8, DestinationIndirect = true });
+
+            return 0;
         }
 
         /// <summary>
