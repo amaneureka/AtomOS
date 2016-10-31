@@ -10,7 +10,7 @@
 using System;
 
 using Atomix.Kernel_H.Core;
-using Atomix.Kernel_H.devices;
+using Atomix.Kernel_H.Devices;
 using Atomix.Kernel_H.Arch.x86;
 
 namespace Atomix.Kernel_H.Drivers.buses.ATA

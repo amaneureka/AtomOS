@@ -7,7 +7,7 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-using Atomix.Kernel_H.devices;
+using Atomix.Kernel_H.Devices;
 
 namespace Atomix.Kernel_H.IO.FileSystem
 {

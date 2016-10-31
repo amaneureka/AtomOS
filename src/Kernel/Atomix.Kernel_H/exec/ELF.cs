@@ -16,7 +16,7 @@ using Atomix.Kernel_H.Arch.x86;
 using Atomix.Kernel_H.Lib.encoding;
 using Atomix.Kernel_H.IO.FileSystem;
 
-namespace Atomix.Kernel_H.exec
+namespace Atomix.Kernel_H.Exec
 {
     internal unsafe static class ELF
     {

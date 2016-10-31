@@ -7,13 +7,14 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-using Atomix.Kernel_H.devices;
-
-using Atomix.CompilerExt.Attributes;
+using System;
 
 using Atomix.Assembler;
 using Atomix.Assembler.x86;
-using Core = Atomix.Assembler.AssemblyHelper;
+
+using Atomix.Kernel_H.Devices;
+
+using Atomix.CompilerExt.Attributes;
 
 namespace Atomix.Kernel_H.Core
 {

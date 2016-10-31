@@ -14,7 +14,7 @@ using Atomix.Kernel_H.Core;
 using Atomix.CompilerExt;
 using Atomix.CompilerExt.Attributes;
 
-namespace Atomix.Kernel_H.exec
+namespace Atomix.Kernel_H.Exec
 {
     internal static class Environment
     {

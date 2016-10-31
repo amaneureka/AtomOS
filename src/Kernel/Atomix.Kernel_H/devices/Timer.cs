@@ -12,7 +12,7 @@ using System;
 using Atomix.Kernel_H.Core;
 using Atomix.Kernel_H.Arch.x86;
 
-namespace Atomix.Kernel_H.devices
+namespace Atomix.Kernel_H.Devices
 {
     internal static class Timer
     {

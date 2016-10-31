@@ -9,7 +9,7 @@
 
 using System;
 
-namespace Atomix.Kernel_H.devices
+namespace Atomix.Kernel_H.Devices
 {
     internal class Partition : Storage
     {

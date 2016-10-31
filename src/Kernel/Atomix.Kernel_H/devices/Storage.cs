@@ -7,7 +7,7 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-namespace Atomix.Kernel_H.devices
+namespace Atomix.Kernel_H.Devices
 {
     public abstract class Storage
     {

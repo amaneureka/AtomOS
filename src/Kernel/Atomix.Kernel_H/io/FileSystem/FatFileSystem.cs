@@ -10,7 +10,7 @@
 using System;
 
 using Atomix.Kernel_H.Core;
-using Atomix.Kernel_H.devices;
+using Atomix.Kernel_H.Devices;
 using Atomix.Kernel_H.Lib.encoding;
 using Atomix.Kernel_H.IO.FileSystem.FAT;
 using Atomix.Kernel_H.IO.FileSystem.FAT.Find;

@@ -12,7 +12,7 @@ using System;
 using Atomix.Kernel_H.Lib;
 using Atomix.Kernel_H.Core;
 
-namespace Atomix.Kernel_H.devices
+namespace Atomix.Kernel_H.Devices
 {
     internal class MBR
     {

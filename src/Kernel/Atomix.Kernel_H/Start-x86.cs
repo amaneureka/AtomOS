@@ -16,7 +16,7 @@ using Atomix.Assembler;
 using Atomix.Assembler.x86;
 
 using Atomix.Kernel_H.Core;
-using Atomix.Kernel_H.devices;
+using Atomix.Kernel_H.Devices;
 using Atomix.Kernel_H.Arch.x86;
 using Atomix.Kernel_H.Drivers.Video;
 using Atomix.Kernel_H.IO.FileSystem;
