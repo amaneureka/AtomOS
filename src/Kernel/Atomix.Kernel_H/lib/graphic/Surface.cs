@@ -229,7 +229,7 @@ namespace Atomix.Kernel_H.Lib.Graphic
             AssemblyHelper.AssemblerCode.Add(new Literal ("rep stosd"));
             AssemblyHelper.AssemblerCode.Add(new And { DestinationReg = Registers.EBX, SourceRef = "0x3" });
             AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.EBX });
-            AssemblyHelper.AssemblerCode.Add(new Literal ("rep stosd"));
+            AssemblyHelper.AssemblerCode.Add(new Literal ("rep stosb"));
         }
     }
 }

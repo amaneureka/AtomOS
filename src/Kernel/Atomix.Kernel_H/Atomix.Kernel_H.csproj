@@ -80,6 +80,7 @@
     <Compile Include="drivers\buses\ATA\misc.cs" />
     <Compile Include="drivers\input\Keyboard.cs" />
     <Compile Include="drivers\input\Mouse.cs" />
+    <Compile Include="gui\Bitmap.cs" />
     <Compile Include="gui\Compositor.cs" />
     <Compile Include="core\Debug.cs" />
     <Compile Include="core\Fault.cs" />

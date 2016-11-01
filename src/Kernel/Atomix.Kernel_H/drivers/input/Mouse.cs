@@ -118,7 +118,7 @@ namespace Atomix.Kernel_H.Drivers.Input
 
         private static void Wait(bool type)
         {
-            UInt32 timeout = 100000;
+            int timeout = 100000;
             if (!type)
             {
                 while (--timeout > 0)
