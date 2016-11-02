@@ -448,6 +448,7 @@ namespace Atomix
                 {
                     case ILCode.Call:
                     case ILCode.Callvirt:
+                    case ILCode.Newobj:
                         LabelTarget.Add(xILOpCode.NextPosition);
                         break;
                     default:
