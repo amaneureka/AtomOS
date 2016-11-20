@@ -8,19 +8,21 @@
 */
 
 using Atomix.Kernel_H.Core;
+using Atomix.Kernel_H.Arch.x86;
 
 namespace Atomix.Kernel_H.IO
 {
     internal unsafe class Pipe
     {
-        private uint Buffer;
-        private uint BufferSize;
-        private uint PacketSize;
-        private uint PacketsCount;
-        private bool[] BufferStatus;
+        uint Buffer;
+        uint BufferSize;
+        bool[] BufferStatus;
 
         uint ReadingPointer;
         uint WritingPointer;
+
+        internal readonly uint PacketSize;
+        internal readonly uint PacketsCount;
 
         internal Pipe(uint aPacketSize, uint aPacketsCount)
         {
@@ -43,13 +45,10 @@ namespace Atomix.Kernel_H.IO
             if (BufferStatus[WritingPointer])
                 return false;
 
-            var xAdd = (byte*)(Buffer + WritingPointer * PacketSize);
-            for (int i = 0; i < PacketSize; i++)
-                xAdd[i] = aData[i];
+            Memory.FastCopy(Buffer + WritingPointer * PacketSize, Native.GetContentAddress(aData), PacketSize);
             BufferStatus[WritingPointer] = true;
 
-            WritingPointer++;
-            if (WritingPointer >= PacketsCount)
+            WritingPointer = (WritingPointer + 1) % PacketsCount;
                 WritingPointer = 0;
             return true;
         }
@@ -61,14 +60,10 @@ namespace Atomix.Kernel_H.IO
 
             while (!BufferStatus[ReadingPointer]) ;
 
-            var xAdd = (byte*)(Buffer + ReadingPointer * PacketSize);
-            for (int i = 0; i < PacketSize; i++)
-                aData[i] = xAdd[i];
+            Memory.FastCopy(Native.GetContentAddress(aData), Buffer + ReadingPointer * PacketSize, PacketSize);
             BufferStatus[ReadingPointer] = false;
 
-            ReadingPointer++;
-            if (ReadingPointer >= PacketsCount)
-                ReadingPointer = 0;
+            ReadingPointer = (ReadingPointer + 1) % PacketsCount;
             return true;
         }
 
