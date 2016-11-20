@@ -64,7 +64,7 @@ namespace Atomix.Kernel_H.Drivers.Video
         [Assembly(true)]
         internal static void Clear(uint color)
         {
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDI, SourceRef = "static_Field__System_Byte__Atomix_Kernel_H_Drivers_Video_VBE_SecondaryBuffer", SourceIndirect = true });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDI, SourceRef = "static_Field__System_UInt32_Atomix_Kernel_H_Drivers_Video_VBE_SecondaryBuffer", SourceIndirect = true });
             AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "0x100000" });
             AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
             AssemblyHelper.AssemblerCode.Add(new Cli ());
@@ -77,8 +77,8 @@ namespace Atomix.Kernel_H.Drivers.Video
         {
 #warning [VBE] : fixed size memory copy
             //Copy 4MB of data from Secondary Buffer to Virtual Frame Buffer
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.ESI, SourceRef = "static_Field__System_Byte__Atomix_Kernel_H_Drivers_Video_VBE_SecondaryBuffer", SourceIndirect = true });
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDI, SourceRef = "static_Field__System_Byte__Atomix_Kernel_H_Drivers_Video_VBE_VirtualFrameBuffer", SourceIndirect = true });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.ESI, SourceRef = "static_Field__System_UInt32_Atomix_Kernel_H_Drivers_Video_VBE_SecondaryBuffer", SourceIndirect = true });
+            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDI, SourceRef = "static_Field__System_UInt32_Atomix_Kernel_H_Drivers_Video_VBE_VirtualFrameBuffer", SourceIndirect = true });
             AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "0x100000" });
             AssemblyHelper.AssemblerCode.Add(new Cli ());
             AssemblyHelper.AssemblerCode.Add(new Literal ("rep movsd"));

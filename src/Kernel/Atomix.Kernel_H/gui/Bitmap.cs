@@ -52,8 +52,8 @@ namespace Atomix.Kernel_H.Gui
             uint width = aImage.Width;
             uint height = aImage.Height;
 
-            width = Math.Min(aImage.Width - aXpos, width);
-            height = Math.Min(aImage.Height - aYpos, height);
+            width = Math.Min(mWidth - aXpos, width);
+            height = Math.Min(mHeight - aYpos, height);
 
             Draw(aImage, aXpos, aYpos, width, height);
         }

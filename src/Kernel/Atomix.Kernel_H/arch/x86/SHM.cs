@@ -39,7 +39,7 @@ namespace Atomix.Kernel_H.Arch.x86
 
             if (!Nodes.ContainsKey(aID))
             {
-                if (aDoAllocate)
+                if (!aDoAllocate)
                 {
                     Monitor.ReleaseLock(Nodes);
                     return 0;
@@ -60,7 +60,7 @@ namespace Atomix.Kernel_H.Arch.x86
             {
                 for (int j = 0; j < 32; j++)
                 {
-                    if ((uint)(shm_mapping[i] & (0x1 << j)) == 0)
+                    if ((shm_mapping[i] & (0x1 << j)) == 0)
                     {
                         CurrentFrameCount++;
                         if (CurrentFrameCount == FramesRequired)
@@ -97,7 +97,8 @@ namespace Atomix.Kernel_H.Arch.x86
 
             Monitor.ReleaseLock(Nodes);
             Debug.Write("shm_mapping failed, Process id:=%d ", ParentProcess.pid);
-            Debug.Write("shm_id := %s\n", aID);
+            Debug.Write("shm_id := %s ", aID);
+            Debug.Write("FramesRequired: %d\n", (uint)FramesRequired);
             return 0;
         }
 

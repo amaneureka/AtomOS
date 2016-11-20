@@ -49,12 +49,11 @@ namespace Atomix.Kernel_H
             Mouse.Setup();
             #endregion
             #region Compositor
-            SystemClient = new Pipe(32, 100);
+            SystemClient = new Pipe(Compositor.PACKET_SIZE, 100);
             Compositor.Setup(Scheduler.SystemProcess);
-            //ClientID = Compositor.AddClient(SystemClient);
+            ClientID = Compositor.CreateConnection(SystemClient);
 
-            //var xTempStack = Heap.kmalloc(0x1000);
-            //new Thread(Scheduler.SystemProcess, BootAnimation, xTempStack + 0x1000, 0x1000).Start();
+            new Thread(Scheduler.SystemProcess, BootAnimation, Heap.kmalloc(0x1000) + 0x1000, 0x1000).Start();
             #endregion
             #region IDE Devices
             LoadIDE(true, true);
@@ -73,46 +72,45 @@ namespace Atomix.Kernel_H
             Debug.Write("lol: %d\n", __main(0xac));*/
             while (true) ;
         }
-        /*
+
         internal static unsafe void BootAnimation()
         {
             VBE.Clear(0x6D6D6D);
             var BootImage = VirtualFileSystem.GetFile("disk0/boot.xmp");
             if (BootImage != null)
             {
-                var Request = Compositor.RequestPacket(ClientID);
-                Request.SetByte(4, 0xCC);
-                Request.SetInt(9, 256);
-                Request.SetInt(13, 256);
-                Request.SetInt(17, 512);
-                Request.SetInt(21, 150);
-                Compositor.SERVER.Write(Request);
-                SystemClient.Read(Request);
+                var xData = new byte[Compositor.PACKET_SIZE];
+                var Request = (GuiRequest*)Native.GetContentAddress(xData);
+                Request->ClientID = ClientID;
+                Request->Type = RequestType.NewWindow;
 
-                string HashCode = Lib.encoding.ASCII.GetString(Request, 13, 19);
-                var aBuffer = (byte*)SHM.Obtain(HashCode, -1);
+                var Request2 = (NewWindow*)Request;
+                Request2->X = 512;
+                Request2->Y = 150;
+                Request2->Width = 256;
+                Request2->Height = 256;
+                Compositor.Server.Write(xData);
+                SystemClient.Read(xData);
 
-                BootImage.Read(Request, 8);
-                int c = 0;
-                while((c = BootImage.Read(Request, 32)) != 0)
+                string HashCode = new string(Request2->Hash);
+                Debug.Write("WinHash: %s\n", HashCode);
+                var aBuffer = SHM.Obtain(HashCode, 0, false);
+
+                BootImage.Read(xData, 8);
+                uint c = 0;
+                uint index = 0;
+                while ((c = (uint)BootImage.Read(xData, 32)) > 0)
                 {
-                    for (int i = 0; i < c; i++, aBuffer++)
-                        *aBuffer = Request[i];
+                    Memory.FastCopy(aBuffer + index, (uint)Request, c);
+                    index += c;
                 }
-
-                Heap.Free(Request);
-                Request = Compositor.RequestPacket(ClientID);
-                Request.SetByte(4, 0xDA);
-                Request.SetStringASCII(9, HashCode);
-                Request.SetByte((uint)(HashCode.Length + 9), 0x0);
-                Compositor.SERVER.Write(Request);
-
-                Heap.Free(Request);
+                Heap.Free(xData);
+                Debug.Write("Ticks: %d\n", Timer.TicksFromStart);
             }
             else
                 Debug.Write("Boot Image not found!\n");
             Thread.Die();
-        }*/
+        }
 
         internal static void LoadIDE(bool IsPrimary, bool IsMaster)
         {

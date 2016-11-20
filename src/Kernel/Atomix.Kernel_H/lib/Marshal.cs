@@ -15,11 +15,11 @@ namespace Atomix.Kernel_H.Lib
 {
     internal class Marshal
     {
-        internal static unsafe void Copy(string aDes, char* aSrc, uint aLen)
+        internal static unsafe void Copy(char* aDes, string aSrc, uint aLen)
         {
-            uint des = Native.GetContentAddress(aDes);
-            Memory.FastCopy(des, (uint)aSrc, aLen);
-            aSrc[aLen] = '\0';
+            uint src = Native.GetContentAddress(aSrc);
+            Memory.FastCopy((uint)aDes, src, aLen * sizeof(char));
+            aDes[aLen] = '\0';
         }
     }
 }

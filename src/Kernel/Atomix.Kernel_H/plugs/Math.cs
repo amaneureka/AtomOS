@@ -19,8 +19,20 @@ namespace Atomix.Kernel_H.plugs
             return a >= b ? a : b;
         }
 
+        [Plug("System_UInt32_System_Math_Max_System_UInt32__System_UInt32_")]
+        internal static uint Max(uint a, uint b)
+        {
+            return a >= b ? a : b;
+        }
+
         [Plug("System_Int32_System_Math_Min_System_Int32__System_Int32_")]
         internal static int Min(int a, int b)
+        {
+            return a >= b ? b : a;
+        }
+
+        [Plug("System_UInt32_System_Math_Min_System_UInt32__System_UInt32_")]
+        internal static uint Min(uint a, uint b)
         {
             return a >= b ? b : a;
         }
