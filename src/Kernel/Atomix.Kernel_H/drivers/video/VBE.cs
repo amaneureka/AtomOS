@@ -17,17 +17,16 @@ using Atomix.CompilerExt.Attributes;
 
 using Atomix.Assembler;
 using Atomix.Assembler.x86;
-using Core = Atomix.Assembler.AssemblyHelper;
 
 namespace Atomix.Kernel_H.Drivers.Video
 {
     internal static unsafe class VBE
     {
-        internal static int Xres;
-        internal static int Yres;
-        internal static int BytesPerPixel;
-        internal static byte* SecondaryBuffer;
-        internal static byte* VirtualFrameBuffer;
+        internal static uint Xres;
+        internal static uint Yres;
+        internal static uint BytesPerPixel;
+        internal static uint SecondaryBuffer;
+        internal static uint VirtualFrameBuffer;
         private static VBE_Mode_Info* ModeInfoBlock;
 
         internal static void Init()
@@ -36,16 +35,16 @@ namespace Atomix.Kernel_H.Drivers.Video
             ModeInfoBlock = (VBE_Mode_Info*)(Multiboot.VBE_Mode_Info + 0xC0000000);
             Xres = ModeInfoBlock->Xres;
             Yres = ModeInfoBlock->Yres;
-            BytesPerPixel = (int)(ModeInfoBlock->bpp / 8);
-            VirtualFrameBuffer = (byte*)Paging.AllocateMainBuffer(ModeInfoBlock->physbase);
-            SecondaryBuffer = (byte*)Paging.AllocateSecondayBuffer();
+            BytesPerPixel = (uint)ModeInfoBlock->bpp / 8;
+            SecondaryBuffer = Paging.AllocateSecondayBuffer();
+            VirtualFrameBuffer = Paging.AllocateMainBuffer(ModeInfoBlock->physbase);
 
             /* Print Debug Info */
-            Debug.Write("Virtual Frame Buffer: %d\n", (uint)VirtualFrameBuffer);
-            Debug.Write("Secondary Frame Buffer: %d\n", (uint)SecondaryBuffer);
-            Debug.Write("Resolution: %dx", (uint)Xres);
-            Debug.Write("%dx", (uint)Yres);
-            Debug.Write("%d\n", (uint)BytesPerPixel);
+            Debug.Write("Virtual Frame Buffer: %d\n", VirtualFrameBuffer);
+            Debug.Write("Secondary Frame Buffer: %d\n", SecondaryBuffer);
+            Debug.Write("Resolution: %dx", Xres);
+            Debug.Write("%dx", Yres);
+            Debug.Write("%d\n", BytesPerPixel);
         }
 
         internal static void SetPixel(int x, int y, uint c)
@@ -108,9 +107,9 @@ namespace Atomix.Kernel_H.Drivers.Video
             [FieldOffset(16)]
             public UInt16 pitch;
             [FieldOffset(18)]
-            public Int16 Xres;
+            public UInt16 Xres;
             [FieldOffset(20)]
-            public Int16 Yres;
+            public UInt16 Yres;
             [FieldOffset(22)]
             public byte Wchar;
             [FieldOffset(23)]

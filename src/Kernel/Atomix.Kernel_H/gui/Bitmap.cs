@@ -31,6 +31,10 @@ namespace Atomix.Kernel_H.Gui
         internal uint Buffer
         { get { return mBuffer; } }
 
+        internal Bitmap(string aID, uint aWidth, uint aHeight, uint aBpp = 4)
+            :this(SHM.Obtain(aID, aWidth * aHeight * aBpp, true), aWidth, aHeight, aBpp)
+        { }
+
         internal Bitmap(uint aWidth, uint aHeight, uint aBpp = 4)
             :this(Heap.kmalloc(aWidth * aHeight * aBpp), aWidth, aHeight, aBpp)
         { }

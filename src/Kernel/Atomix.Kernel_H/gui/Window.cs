@@ -3,42 +3,55 @@
 * LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
 *                   Unauthorized copying of this file, via any medium is
 *                   strictly prohibited Proprietary and confidential.
-* PURPOSE:          Compositor Window Class
+* PURPOSE:          Window Class
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
 using System;
 
 using Atomix.Kernel_H.Core;
-
 using Atomix.Kernel_H.Devices;
-using Atomix.Kernel_H.Lib.Crypto;
+using Atomix.Kernel_H.Arch.x86;
 
 namespace Atomix.Kernel_H.Gui
 {
     internal class Window
     {
-        internal readonly int ClientID;
-        internal readonly uint HashCode;
-        internal readonly string HashString;
+        Bitmap mBuffer;
+        string mHashID;
 
-        internal int Width;
-        internal int Height;
-        internal uint Buffer;
+        internal uint ClientID;
 
-        internal int PositionX;
+        internal uint X;
+        internal uint Y;
+        internal uint Z;
 
-        internal int PositionY;
+        internal Bitmap Buffer
+        { get { return mBuffer; } }
 
-        public Window(int aClientID)
+        internal string HashID
+        { get { return mHashID; } }
+
+        internal Window(uint aClientID, uint aXpos, uint aYpos, uint aWidth, uint aHeight)
         {
             ClientID = aClientID;
-            HashCode = ("Compositor").GetHashCode(Timer.TicksFromStart);
+            X = aXpos;
+            Y = aYpos;
+            Z = 0;
 
-			var HashCodeString = Convert.ToString(HashCode);
-            HashString = "win." + HashCodeString;
-            Heap.Free(HashCodeString);
-            Debug.Write("[Window]: Window Created `%s`\n", HashString);
+            mHashID = GenerateNewHashID();
+            mBuffer = new Bitmap(mHashID, aWidth, aHeight);
+        }
+
+        internal static string GenerateNewHashID()
+        {
+            // TODO: memory get more and more fragmented this way
+            // come up with better idea
+            string tid = Timer.TicksFromStart.ToString();
+            string xid = "win." + tid;
+
+            Heap.Free(tid);
+            return xid;
         }
     }
 }

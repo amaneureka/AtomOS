@@ -33,13 +33,13 @@ namespace Atomix.Kernel_H.Arch.x86
             Nodes = new IDictionary<string, shm_chunk>(sdbm.GetHashCode, string.Equals);
         }
 
-        internal static unsafe uint Obtain(string aID, int aSize = -1)
+        internal static unsafe uint Obtain(string aID, uint aSize, bool aDoAllocate = false)
         {
             Monitor.AcquireLock(Nodes);
 
             if (!Nodes.ContainsKey(aID))
             {
-                if (aSize == -1)
+                if (aDoAllocate)
                 {
                     Monitor.ReleaseLock(Nodes);
                     return 0;
@@ -101,15 +101,16 @@ namespace Atomix.Kernel_H.Arch.x86
             return 0;
         }
 
-        private static void CreateNew(string aID, int Size)
+        private static void CreateNew(string aID, uint Size)
         {
-            int NumberOfFrames = (Size / 0x1000) + (Size % 0x1000 == 0 ? 0 : 1);
+            uint NumberOfFrames = Size / 0x1000;
+            if ((Size % 0x1000) != 0) NumberOfFrames++;
 
             var NewChunk = new shm_chunk();
             NewChunk.RefCount = 0;
             NewChunk.Frames = new uint[NumberOfFrames];
 
-            for (int index = 0; index < NumberOfFrames; index++)
+            for (uint index = 0; index < NumberOfFrames; index++)
             {
                 // Allocate New Frame to this guy!
                 uint NewFrame = Paging.FirstFreeFrame();

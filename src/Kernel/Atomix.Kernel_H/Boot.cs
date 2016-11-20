@@ -51,15 +51,18 @@ namespace Atomix.Kernel_H
             #region Compositor
             SystemClient = new Pipe(32, 100);
             Compositor.Setup(Scheduler.SystemProcess);
-            ClientID = Compositor.AddClient(SystemClient);
+            //ClientID = Compositor.AddClient(SystemClient);
 
-            var xTempStack = Heap.kmalloc(0x1000);
-            new Thread(Scheduler.SystemProcess, BootAnimation, xTempStack + 0x1000, 0x1000).Start();
+            //var xTempStack = Heap.kmalloc(0x1000);
+            //new Thread(Scheduler.SystemProcess, BootAnimation, xTempStack + 0x1000, 0x1000).Start();
             #endregion
             #region IDE Devices
             LoadIDE(true, true);
             LoadIDE(false, true);
             #endregion
+
+            // pp = IntPtr.Add(IntPtr.Zero, 100);
+            //Debug.Write("Test1234: %d\n", (uint)pp.ToInt32());
 
             //FILE READING TEST
             /*var stream = VirtualFileSystem.GetFile("disk0/gohu-11.bdf");
@@ -70,7 +73,7 @@ namespace Atomix.Kernel_H
             Debug.Write("lol: %d\n", __main(0xac));*/
             while (true) ;
         }
-
+        /*
         internal static unsafe void BootAnimation()
         {
             VBE.Clear(0x6D6D6D);
@@ -109,7 +112,7 @@ namespace Atomix.Kernel_H
             else
                 Debug.Write("Boot Image not found!\n");
             Thread.Die();
-        }
+        }*/
 
         internal static void LoadIDE(bool IsPrimary, bool IsMaster)
         {

@@ -18,10 +18,20 @@ namespace Atomix.Kernel_H.Lib
             aData[aOffset] = aValue;
         }
 
+        internal static byte GetByte(this byte[] aData, uint aOffset)
+        {
+            return aData[aOffset];
+        }
+
         internal static void SetUShort(this byte[] aData, uint aOffset, ushort aValue)
         {
             aData[aOffset + 0] = (byte)(aValue >> 0);
             aData[aOffset + 1] = (byte)(aValue >> 8);
+        }
+
+        internal static ushort GetUShort(this byte[] aData, uint aOffset)
+        {
+            return (ushort)((aData[aOffset + 1] << 8) | (aData[aOffset + 0] << 0));
         }
 
         internal static void SetUInt(this byte[] aData, uint aOffset, uint aValue)
@@ -30,6 +40,15 @@ namespace Atomix.Kernel_H.Lib
             aData[aOffset + 1] = (byte)(aValue >> 8);
             aData[aOffset + 2] = (byte)(aValue >> 16);
             aData[aOffset + 3] = (byte)(aValue >> 24);
+        }
+
+        internal static uint GetUInt(this byte[] aData, uint aOffset)
+        {
+            uint data = aData[aOffset + 3];
+            data = (data << 8) | aData[aOffset + 2];
+            data = (data << 8) | aData[aOffset + 1];
+            data = (data << 8) | aData[aOffset + 0];
+            return data;
         }
 
         internal static void SetInt(this byte[] aData, uint aOffset, int aValue)

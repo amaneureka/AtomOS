@@ -94,8 +94,7 @@
     <Compile Include="gui\font\BDF.cs" />
     <Compile Include="gui\font\GenericFont.cs" />
     <Compile Include="gui\font\Glyph.cs" />
-    <Compile Include="gui\gui.cs" />
-    <Compile Include="gui\Helper.cs" />
+    <Compile Include="gui\GuiRequest.cs" />
     <Compile Include="gui\Window.cs" />
     <Compile Include="io\FileSystem\FatFileSystem.cs" />
     <Compile Include="io\FileSystem\FAT\FatStream.cs" />
@@ -124,6 +123,7 @@
     <Compile Include="lib\encoding\ASCII.cs" />
     <Compile Include="lib\graphic\misc.cs" />
     <Compile Include="lib\graphic\Surface.cs" />
+    <Compile Include="lib\Marshal.cs" />
     <Compile Include="lib\Numerics.cs" />
     <Compile Include="plugs\Array.cs" />
     <Compile Include="plugs\BitConverter.cs" />
