@@ -20,7 +20,7 @@ namespace Atomix.Kernel_H.Gui
         Bitmap mBuffer;
         string mHashID;
 
-        internal uint ClientID;
+        internal int ClientID;
 
         internal uint X;
         internal uint Y;
@@ -32,7 +32,7 @@ namespace Atomix.Kernel_H.Gui
         internal string HashID
         { get { return mHashID; } }
 
-        internal Window(uint aClientID, uint aXpos, uint aYpos, uint aWidth, uint aHeight)
+        internal Window(int aClientID, uint aXpos, uint aYpos, uint aWidth, uint aHeight)
         {
             ClientID = aClientID;
             X = aXpos;

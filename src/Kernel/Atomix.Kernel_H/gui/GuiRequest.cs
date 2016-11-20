@@ -18,12 +18,12 @@ namespace Atomix.Kernel_H.Gui
         [FieldOffset(0)]
         internal uint HashID;
         [FieldOffset(4)]
-        internal uint ClientID;
+        internal int ClientID;
         [FieldOffset(8)]
         internal RequestType Type;
     };
 
-    [StructLayout(LayoutKind.Explicit, Size = 28)]
+    [StructLayout(LayoutKind.Explicit, Size = 48)]
     internal unsafe struct NewWindow
     {
         [FieldOffset(12)]
@@ -35,7 +35,9 @@ namespace Atomix.Kernel_H.Gui
         [FieldOffset(24)]
         internal uint Height;
         [FieldOffset(28)]
-        internal fixed char Hash[16];
+        internal ErrorType Error;
+        [FieldOffset(32)]
+        internal fixed char Hash[8];
     };
 
     internal enum RequestType : uint
@@ -46,5 +48,11 @@ namespace Atomix.Kernel_H.Gui
         WindowMove = 3,
         MouseEvent = 4,
         KeyboardEvent = 5
+    }
+
+    internal enum ErrorType : uint
+    {
+        None = 0,
+        InvalidParameters = 1,
     }
 }
