@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Linq;
+using System.Runtime.InteropServices;
 
 using Atomixilc.IL;
+using Atomixilc.Machine;
 using Atomixilc.Attributes;
 
 namespace Atomixilc
@@ -29,7 +30,7 @@ namespace Atomixilc
 
         internal void PrepareEnvironment()
         {
-            var ExecutingAssembly = Assembly.GetExecutingAssembly();
+            var ExecutingAssembly = System.Reflection.Assembly.GetExecutingAssembly();
 
             ILCodes = new Dictionary<ILCode, MSIL>();
             Plugs = new Dictionary<MethodBase, string>();
@@ -76,6 +77,7 @@ namespace Atomixilc
                 var method = ScanObject as MethodBase;
                 if (method != null)
                 {
+                    ScanMethod(method);
                     continue;
                 }
 
@@ -98,7 +100,7 @@ namespace Atomixilc
 
         internal void ScanInputAssembly(out Type Entrypoint)
         {
-            var InputAssembly = Assembly.LoadFile(Config.InputFiles[0]);
+            var InputAssembly = System.Reflection.Assembly.LoadFile(Config.InputFiles[0]);
 
             var types = InputAssembly.GetTypes();
 
@@ -163,6 +165,107 @@ namespace Atomixilc
 
                 Virtual.Add(method);
                 ScanQ.Enqueue(method);
+            }
+
+            FinishedQ.Add(type);
+        }
+
+        internal void ScanMethod(MethodBase method)
+        {
+            if (method.GetCustomAttribute<AssemblyAttribute>() != null)
+                ProcessAssemblyMethod(method);
+            else if (method.GetCustomAttribute<DllImportAttribute>() != null)
+                ProcessExternMethod(method);
+            else
+                ProcessMethod(method);
+
+            FinishedQ.Add(method);
+        }
+
+        internal void ProcessAssemblyMethod(MethodBase method)
+        {
+            var attrib = method.GetCustomAttribute<AssemblyAttribute>();
+            if (attrib == null)
+                throw new Exception("Invalid call to ProcessAssemblyMethod");
+
+            var block = new FunctionalBlock(method.FullName(), Config.TargetPlatform, CallingConvention.StdCall);
+
+            Instruction.Block = block;
+
+            if (attrib.CalliHeader)
+                EmitHeader(block, method);
+
+            try
+            {
+                method.Invoke(null, new object[method.GetParameters().Length]);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(string.Format("Exception occured while invoking assembly function '{0}' => {1}", method.FullName(), e.Message));
+            }
+
+            if (attrib.CalliHeader)
+                EmitFooter(block, method);
+
+            Instruction.Block = null;
+        }
+
+        internal void ProcessExternMethod(MethodBase method)
+        {
+            var attrib = method.GetCustomAttribute<DllImportAttribute>();
+            if (attrib == null)
+                throw new Exception("Invalid call to ProcessExternMethod");
+
+        }
+
+        internal void ProcessMethod(MethodBase method)
+        {
+
+        }
+
+        internal void EmitHeader(FunctionalBlock block, MethodBase method)
+        {
+            switch(block.CallingConvention)
+            {
+                case CallingConvention.StdCall:
+                    {
+                        switch(block.Platform)
+                        {
+                            case Architecture.x86:
+                                {
+
+                                }
+                                break;
+                            default:
+                                throw new Exception(string.Format("Unsupported Platform method '{0}'", method.FullName()));
+                        }
+                    }
+                    break;
+                default:
+                    throw new Exception(string.Format("Unsupported CallingConvention used in method '{0}'", method.FullName()));
+            }
+        }
+
+        internal void EmitFooter(FunctionalBlock block, MethodBase method)
+        {
+            switch (block.CallingConvention)
+            {
+                case CallingConvention.StdCall:
+                    {
+                        switch (block.Platform)
+                        {
+                            case Architecture.x86:
+                                {
+
+                                }
+                                break;
+                            default:
+                                throw new Exception(string.Format("Unsupported Platform method '{0}'", method.FullName()));
+                        }
+                    }
+                    break;
+                default:
+                    throw new Exception(string.Format("Unsupported CallingConvention used in method '{0}'", method.FullName()));
             }
         }
     }

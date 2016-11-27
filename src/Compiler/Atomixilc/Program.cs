@@ -18,7 +18,7 @@ namespace Atomixilc
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Verbose.Error(e.Message);
             }
         }
 

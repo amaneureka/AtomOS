@@ -7,7 +7,7 @@ using Atomixilc.Attributes;
 namespace Atomixilc.IL
 {
     [ILImpl(ILCode.Add)]
-    internal class Add : MSIL
+    internal class Add_il : MSIL
     {
     }
 }
