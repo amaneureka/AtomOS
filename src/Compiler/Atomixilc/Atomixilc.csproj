@@ -44,20 +44,35 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Architecture.cs" />
+    <Compile Include="Attributes\Assembly.cs" />
     <Compile Include="Attributes\Entrypoint.cs" />
     <Compile Include="Attributes\ILImpl.cs" />
     <Compile Include="Attributes\Label.cs" />
     <Compile Include="Attributes\Plug.cs" />
     <Compile Include="Compiler.cs" />
+    <Compile Include="FunctionalBlock.cs" />
+    <Compile Include="Helper.cs" />
     <Compile Include="ILCode.cs" />
     <Compile Include="IL\Add.cs" />
     <Compile Include="IL\MSIL.cs" />
+    <Compile Include="Machine\Instruction.cs" />
+    <Compile Include="Machine\Register.cs" />
+    <Compile Include="Machine\x86\DestinationSource.cs" />
+    <Compile Include="Machine\x86\DestinationSourceSize.cs" />
+    <Compile Include="Machine\x86\Helper.cs" />
+    <Compile Include="Machine\x86\OnlyDestination.cs" />
+    <Compile Include="Machine\x86\OnlySize.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Verbose.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Machine\ARM\" />
+    <Folder Include="Machine\x64\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
