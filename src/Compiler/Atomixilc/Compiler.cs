@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using Atomixilc.IL;
 using Atomixilc.Machine;
 using Atomixilc.Attributes;
+using Atomixilc.Machine.x86;
 
 namespace Atomixilc
 {
@@ -30,7 +31,7 @@ namespace Atomixilc
 
         internal void PrepareEnvironment()
         {
-            var ExecutingAssembly = System.Reflection.Assembly.GetExecutingAssembly();
+            var ExecutingAssembly = Assembly.GetExecutingAssembly();
 
             ILCodes = new Dictionary<ILCode, MSIL>();
             Plugs = new Dictionary<MethodBase, string>();
@@ -233,7 +234,8 @@ namespace Atomixilc
                         {
                             case Architecture.x86:
                                 {
-
+                                    new Push { DestinationReg = Register.EBP };
+                                    new Mov { DestinationReg = Register.EBP, SourceReg = Register.ESP };
                                 }
                                 break;
                             default:
