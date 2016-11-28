@@ -21,7 +21,7 @@ namespace Atomixilc.Machine.x86
         public DestinationSourceSize(string aMnemonic)
             :base(aMnemonic)
         {
-
+            Size = 32;
         }
 
         public override string ToString()

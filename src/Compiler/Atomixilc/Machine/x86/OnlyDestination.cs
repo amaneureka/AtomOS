@@ -16,7 +16,7 @@ namespace Atomixilc.Machine.x86
         public OnlyDestination(string aMnemonic)
             :base(aMnemonic)
         {
-
+            Size = 32;
         }
 
         public override string ToString()
