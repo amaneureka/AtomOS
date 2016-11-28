@@ -243,7 +243,7 @@ namespace Atomixilc
             var parameters = method.GetParameters();
             foreach(var param in parameters)
             {
-                ScanQ.Enqueue(param);
+                ScanQ.Enqueue(param.ParameterType);
             }
 
             var localvars = Body.LocalVariables;
@@ -270,6 +270,9 @@ namespace Atomixilc
 
             EmitFooter(block, method);
             Instruction.Block = null;
+
+            foreach (var inst in block.Body)
+                Console.WriteLine(inst);
         }
 
         internal void EmitHeader(FunctionalBlock block, MethodBase method, int stackspace)
