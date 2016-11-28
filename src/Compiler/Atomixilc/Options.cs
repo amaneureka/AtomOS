@@ -49,7 +49,7 @@ namespace Atomixilc
 
         public void Normalize()
         {
-            if (mInputsDlls.Count == 0)
+            if (InputFiles.Count == 0)
                 throw new Exception("No Input File");
 
             if (string.IsNullOrEmpty(mOutputFile))
@@ -58,14 +58,14 @@ namespace Atomixilc
             if (TargetPlatform == Architecture.None)
                 throw new Exception("No target platform selected");
 
-            for (int i = 0; i < mInputsDlls.Count; i++)
+            for (int i = 0; i < InputFiles.Count; i++)
             {
-                string InputFile = mInputsDlls[i];
+                string InputFile = InputFiles[i];
                 if (!Path.IsPathRooted(InputFile))
                     InputFile = Path.Combine(Environment.CurrentDirectory, InputFile);
                 if (!File.Exists(InputFile))
                     throw new Exception(string.Format("Input file: '{0}' Does not exist", InputFile));
-                mInputsDlls[i] = InputFile;
+                InputFiles[i] = InputFile;
             }
         }
     }

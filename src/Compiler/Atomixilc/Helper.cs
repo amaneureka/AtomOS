@@ -15,5 +15,10 @@ namespace Atomixilc
         {
             return string.Empty;
         }
+
+        internal static string ConstructorKey(this MethodBase method)
+        {
+            return string.Empty;
+        }
     }
 }
