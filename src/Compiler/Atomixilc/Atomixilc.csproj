@@ -34,13 +34,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Architecture.cs" />
@@ -56,10 +49,14 @@
     <Compile Include="IL\Add.cs" />
     <Compile Include="IL\MSIL.cs" />
     <Compile Include="Machine\Instruction.cs" />
+    <Compile Include="Machine\Label.cs" />
     <Compile Include="Machine\Register.cs" />
+    <Compile Include="Machine\x86\Add.cs" />
+    <Compile Include="Machine\x86\ConditionalJump.cs" />
     <Compile Include="Machine\x86\DestinationSource.cs" />
     <Compile Include="Machine\x86\DestinationSourceSize.cs" />
     <Compile Include="Machine\x86\Helper.cs" />
+    <Compile Include="Machine\x86\Jmp.cs" />
     <Compile Include="Machine\x86\Leave.cs" />
     <Compile Include="Machine\x86\Mov.cs" />
     <Compile Include="Machine\x86\OnlyDestination.cs" />
@@ -67,6 +64,8 @@
     <Compile Include="Machine\x86\Pop.cs" />
     <Compile Include="Machine\x86\Push.cs" />
     <Compile Include="Machine\x86\Ret.cs" />
+    <Compile Include="Machine\x86\Sub.cs" />
+    <Compile Include="Machine\x86\Test.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

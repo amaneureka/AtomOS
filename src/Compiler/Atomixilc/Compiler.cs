@@ -23,6 +23,9 @@ namespace Atomixilc
         HashSet<object> FinishedQ;
         HashSet<MethodBase> Virtual;
 
+        Dictionary<string, int> ZeroSegment;
+        Dictionary<string, byte[]> DataSegment;
+
         internal Compiler(Options aCompilerOptions)
         {
             Config = aCompilerOptions;
@@ -40,6 +43,9 @@ namespace Atomixilc
             ScanQ = new Queue<object>();
             FinishedQ = new HashSet<object>();
             Virtual = new HashSet<MethodBase>();
+
+            ZeroSegment = new Dictionary<string, int>();
+            DataSegment = new Dictionary<string, byte[]>();
 
             var types = ExecutingAssembly.GetTypes();
             foreach (var type in types)
@@ -67,6 +73,8 @@ namespace Atomixilc
             ScanQ.Clear();
             Virtual.Clear();
             FinishedQ.Clear();
+            ZeroSegment.Clear();
+            DataSegment.Clear();
 
             ScanQ.Enqueue(main);
             while(ScanQ.Count != 0)
@@ -194,8 +202,10 @@ namespace Atomixilc
 
             Instruction.Block = block;
 
+            new Label(method.FullName());
+
             if (attrib.CalliHeader)
-                EmitHeader(block, method);
+                EmitHeader(block, method, 0);
 
             try
             {
@@ -222,10 +232,47 @@ namespace Atomixilc
 
         internal void ProcessMethod(MethodBase method)
         {
+            var Body = method.GetMethodBody();
+            if (Body == null)
+                return;
 
+            var MethodName = method.FullName();
+            if (Plugs.ContainsValue(MethodName))
+                return;
+
+            var parameters = method.GetParameters();
+            foreach(var param in parameters)
+            {
+                ScanQ.Enqueue(param);
+            }
+
+            var localvars = Body.LocalVariables;
+
+            int bodySize = 0;
+            foreach(var localvar in localvars)
+            {
+                bodySize += GetTypeSize(localvar.LocalType);
+                ScanQ.Enqueue(localvar.LocalType);
+            }
+
+            var block = new FunctionalBlock(MethodName, Config.TargetPlatform, CallingConvention.StdCall);
+
+            Instruction.Block = block;
+
+            new Label(method.FullName());
+
+            if (method.IsStatic && method is ConstructorInfo)
+            {
+                EmitConstructor(block, method);
+            }
+
+            EmitHeader(block, method, bodySize);
+
+            EmitFooter(block, method);
+            Instruction.Block = null;
         }
 
-        internal void EmitHeader(FunctionalBlock block, MethodBase method)
+        internal void EmitHeader(FunctionalBlock block, MethodBase method, int stackspace)
         {
             switch(block.CallingConvention)
             {
@@ -237,6 +284,8 @@ namespace Atomixilc
                                 {
                                     new Push { DestinationReg = Register.EBP };
                                     new Mov { DestinationReg = Register.EBP, SourceReg = Register.ESP };
+                                    if (stackspace > 0)
+                                        new Sub { DestinationReg = Register.ESP, SourceRef = "0x" + stackspace.ToString("X") };
                                 }
                                 break;
                             default:
@@ -246,6 +295,30 @@ namespace Atomixilc
                     break;
                 default:
                     throw new Exception(string.Format("Unsupported CallingConvention used in method '{0}'", method.FullName()));
+            }
+        }
+
+        internal void EmitConstructor(FunctionalBlock block, MethodBase method)
+        {
+            if ((method is ConstructorInfo) == false)
+                throw new Exception(string.Format("Illegal call to EmitConstructor by '{0}'", method.FullName()));
+
+            switch (block.Platform)
+            {
+                case Architecture.x86:
+                    {
+                        var key = method.ConstructorKey();
+                        if (!ZeroSegment.ContainsKey(key))
+                            ZeroSegment.Add(key, 1);
+
+                        new Test { DestinationRef = key, DestinationIndirect = true, SourceRef = "0x1" };
+                        new Jmp { Condition = ConditionalJump.JZ, DestinationRef = ".Load" };
+                        new Ret { };
+                        new Label(".Load");
+                    }
+                    break;
+                default:
+                    throw new Exception(string.Format("Unsupported Platform method '{0}'", method.FullName()));
             }
         }
 
@@ -277,8 +350,15 @@ namespace Atomixilc
             }
         }
 
-        internal int GetTypeSize(Type type)
+        internal int GetTypeSize(Type type, bool aligned = false)
         {
+            if (aligned)
+            {
+                int size = GetTypeSize(type, false);
+                int alignment = GetTypeSize(typeof(IntPtr));
+                return ((size / alignment) + ((size % alignment) != 0 ? 1 : 0)) * alignment;
+            }
+
             if (type == typeof(void))
                 return 0;
 

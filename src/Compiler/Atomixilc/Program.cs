@@ -18,7 +18,7 @@ namespace Atomixilc
             }
             catch (Exception e)
             {
-                Verbose.Error(e.Message);
+                Verbose.Error(e.ToString());
             }
         }
 
@@ -33,6 +33,21 @@ namespace Atomixilc
 
                 if (flag == "-v") Options.Verbose = true;
                 else if (flag == "-optimize") Options.Optimize = true;
+                else if (flag == "-cpu")
+                {
+                    index++;
+                    if (index >= args.Length)
+                        throw new Exception("Invalid platform parameter");
+
+                    flag = args[index];
+                    switch(flag)
+                    {
+                        case "x86": Options.TargetPlatform = Architecture.x86; break;
+                        case "x64": Options.TargetPlatform = Architecture.x64; break;
+                        case "ARM": Options.TargetPlatform = Architecture.ARM; break;
+                        default: throw new Exception("Invalid target platform");
+                    }
+                }
                 else if (flag == "-i")
                 {
                     index++;
