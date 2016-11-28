@@ -18,5 +18,10 @@ namespace Atomixilc.Machine
             }
             Block.Body.Add(this);
         }
+
+        public override string ToString()
+        {
+            return Mnemonic.ToString();
+        }
     }
 }
