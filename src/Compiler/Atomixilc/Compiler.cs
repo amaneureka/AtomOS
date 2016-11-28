@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 using Atomixilc.IL;
@@ -19,8 +20,8 @@ namespace Atomixilc
         Dictionary<string, MethodBase> Labels;
 
         Queue<object> ScanQ;
-        HashSet<MethodBase> Virtual;
         HashSet<object> FinishedQ;
+        HashSet<MethodBase> Virtual;
 
         internal Compiler(Options aCompilerOptions)
         {
@@ -101,7 +102,7 @@ namespace Atomixilc
 
         internal void ScanInputAssembly(out Type Entrypoint)
         {
-            var InputAssembly = System.Reflection.Assembly.LoadFile(Config.InputFiles[0]);
+            var InputAssembly = Assembly.LoadFile(Config.InputFiles[0]);
 
             var types = InputAssembly.GetTypes();
 
@@ -250,6 +251,10 @@ namespace Atomixilc
 
         internal void EmitFooter(FunctionalBlock block, MethodBase method)
         {
+            var paramsSize = method.GetParameters().Sum(arg => GetTypeSize(arg.ParameterType));
+
+            if (paramsSize > 255) throw new Exception(string.Format("Too large stack frame for parameters '{0}'", method.FullName()));
+
             switch (block.CallingConvention)
             {
                 case CallingConvention.StdCall:
@@ -258,7 +263,8 @@ namespace Atomixilc
                         {
                             case Architecture.x86:
                                 {
-
+                                    new Leave { };
+                                    new Ret { Offset = (byte)paramsSize };
                                 }
                                 break;
                             default:
@@ -269,6 +275,66 @@ namespace Atomixilc
                 default:
                     throw new Exception(string.Format("Unsupported CallingConvention used in method '{0}'", method.FullName()));
             }
+        }
+
+        internal int GetTypeSize(Type type)
+        {
+            if (type == typeof(void))
+                return 0;
+
+            if ((type == typeof(byte))
+                || (type == typeof(sbyte))
+                || (type == typeof(bool)))
+                return 1;
+
+            if ((type == typeof(char))
+                || (type == typeof(short))
+                || (type == typeof(ushort)))
+                return 2;
+
+            if ((type == typeof(int))
+                || (type == typeof(uint))
+                || (type == typeof(float)))
+                return 4;
+
+            if ((type == typeof(long))
+                || (type == typeof(ulong))
+                || (type == typeof(double)))
+                return 8;
+
+            if (type == typeof(decimal))
+                return 16;
+
+            if ((type == typeof(IntPtr))
+                || (type == typeof(UIntPtr))
+                || (type.IsByRef)
+                || (!type.IsValueType && type.IsClass)
+                || (!string.IsNullOrEmpty(type.FullName) && type.FullName.EndsWith("*")))
+            {
+                switch(Config.TargetPlatform)
+                {
+                    case Architecture.x86: return 4;
+                    case Architecture.x64: return 8;
+                    default: throw new Exception(string.Format("GetTypeSize Unknown Platform '{0}'", Config.TargetPlatform));
+                }
+            }
+
+            if (type.IsEnum)
+                return GetTypeSize(type.GetField("value__").FieldType);
+
+            if (type.IsValueType)
+            {
+                var size = type.GetFields().Sum(field => GetTypeSize(field.FieldType));
+                var attrib = type.StructLayoutAttribute;
+                if (attrib != null && size != attrib.Size)
+                {
+                    size = Math.Max(size, attrib.Size);
+                    Verbose.Warning("GetTypeSize of type '{0}' mismatch. taking size: '{1}'", type, size);
+                }
+                return size;
+            }
+
+            throw new Exception(string.Format("GetTypeSize of Unhandled type '{0}'", type));
         }
     }
 }
