@@ -9,6 +9,7 @@ using Atomixilc.IL;
 using Atomixilc.Machine;
 using Atomixilc.Attributes;
 using Atomixilc.Machine.x86;
+using Atomixilc.IL.CodeType;
 
 namespace Atomixilc
 {
@@ -360,7 +361,7 @@ namespace Atomixilc
             }
         }
 
-        internal void EmitOpCodes(MethodBase method)
+        internal List<OpCodeType> EmitOpCodes(MethodBase method)
         {
             var body = method.GetMethodBody();
             if (body == null)
@@ -370,6 +371,7 @@ namespace Atomixilc
 
             Type[] genericTypeArgs = null;
             Type[] genericMethodArgs = null;
+            var EmittedOpCodes = new List<OpCodeType>();
 
             if (method.DeclaringType.IsGenericType)
                 genericTypeArgs = method.DeclaringType.GetGenericArguments();
@@ -377,11 +379,15 @@ namespace Atomixilc
             if (method.IsGenericMethod)
                 genericMethodArgs = method.GetGenericArguments();
 
-            int index = 0;
-
+            ILCode xOpCodeVal;
             Emit.OpCode xOpCode;
+            OpCodeType xOpCodeType;
+            ExceptionHandlingClause xCurrentHandler;
+
+            int index = 0;
             while (index < byteCode.Length)
             {
+                int position = index;
                 if (byteCode[index] == 0xFE)
                 {
                     xOpCode = OpCode[BitConverter.ToInt16(byteCode, index)];
@@ -393,8 +399,264 @@ namespace Atomixilc
                     index++;
                 }
 
+                xOpCodeVal = (ILCode)xOpCode.Value;
 
+                // TODO::
+                xCurrentHandler = null;
+
+                switch (xOpCode.OperandType)
+                {
+                    case Emit.OperandType.InlineNone:
+                        {
+                            switch (xOpCodeVal)
+                            {
+                                case ILCode.Ldarg_0:
+                                    xOpCodeType = new OpVar(ILCode.Ldarg, position, index, 0, xCurrentHandler);
+                                    break;
+                                case ILCode.Ldarg_1:
+                                    xOpCodeType = new OpVar(ILCode.Ldarg, position, index, 1, xCurrentHandler);
+                                    break;
+                                case ILCode.Ldarg_2:
+                                    xOpCodeType = new OpVar(ILCode.Ldarg, position, index, 2, xCurrentHandler);
+                                    break;
+                                case ILCode.Ldarg_3:
+                                    xOpCodeType = new OpVar(ILCode.Ldarg, position, index, 3, xCurrentHandler);
+                                    break;
+                                case ILCode.Ldc_I4_0:
+                                    xOpCodeType = new OpInt(ILCode.Ldc_I4, position, index, 0, xCurrentHandler);
+                                    break;
+                                case ILCode.Ldc_I4_1:
+                                    xOpCodeType = new OpInt(ILCode.Ldc_I4, position, index, 1, xCurrentHandler);
+                                    break;
+                                case ILCode.Ldc_I4_2:
+                                    xOpCodeType = new OpInt(ILCode.Ldc_I4, position, index, 2, xCurrentHandler);
+                                    break;
+                                case ILCode.Ldc_I4_3:
+                                    xOpCodeType = new OpInt(ILCode.Ldc_I4, position, index, 3, xCurrentHandler);
+                                    break;
+                                case ILCode.Ldc_I4_4:
+                                    xOpCodeType = new OpInt(ILCode.Ldc_I4, position, index, 4, xCurrentHandler);
+                                    break;
+                                case ILCode.Ldc_I4_5:
+                                    xOpCodeType = new OpInt(ILCode.Ldc_I4, position, index, 5, xCurrentHandler);
+                                    break;
+                                case ILCode.Ldc_I4_6:
+                                    xOpCodeType = new OpInt(ILCode.Ldc_I4, position, index, 6, xCurrentHandler);
+                                    break;
+                                case ILCode.Ldc_I4_7:
+                                    xOpCodeType = new OpInt(ILCode.Ldc_I4, position, index, 7, xCurrentHandler);
+                                    break;
+                                case ILCode.Ldc_I4_8:
+                                    xOpCodeType = new OpInt(ILCode.Ldc_I4, position, index, 8, xCurrentHandler);
+                                    break;
+                                case ILCode.Ldc_I4_M1:
+                                    xOpCodeType = new OpInt(ILCode.Ldc_I4, position, index, -1, xCurrentHandler);
+                                    break;
+                                case ILCode.Ldloc_0:
+                                    xOpCodeType = new OpVar(ILCode.Ldloc, position, index, 0, xCurrentHandler);
+                                    break;
+                                case ILCode.Ldloc_1:
+                                    xOpCodeType = new OpVar(ILCode.Ldloc, position, index, 1, xCurrentHandler);
+                                    break;
+                                case ILCode.Ldloc_2:
+                                    xOpCodeType = new OpVar(ILCode.Ldloc, position, index, 2, xCurrentHandler);
+                                    break;
+                                case ILCode.Ldloc_3:
+                                    xOpCodeType = new OpVar(ILCode.Ldloc, position, index, 3, xCurrentHandler);
+                                    break;
+                                case ILCode.Stloc_0:
+                                    xOpCodeType = new OpVar(ILCode.Stloc, position, index, 0, xCurrentHandler);
+                                    break;
+                                case ILCode.Stloc_1:
+                                    xOpCodeType = new OpVar(ILCode.Stloc, position, index, 1, xCurrentHandler);
+                                    break;
+                                case ILCode.Stloc_2:
+                                    xOpCodeType = new OpVar(ILCode.Stloc, position, index, 2, xCurrentHandler);
+                                    break;
+                                case ILCode.Stloc_3:
+                                    xOpCodeType = new OpVar(ILCode.Stloc, position, index, 3, xCurrentHandler);
+                                    break;
+                                default:
+                                    xOpCodeType = new OpNone(xOpCodeVal, position, index, xCurrentHandler);
+                                    break;
+                            }
+                        }
+                        break;
+                    case Emit.OperandType.ShortInlineBrTarget:
+                        {
+                            int xTarget = index + 1 + (sbyte)byteCode[index];
+
+                            index++;
+                            switch (xOpCodeVal)
+                            {
+                                case ILCode.Beq_S:
+                                    xOpCodeType = new OpBranch(ILCode.Beq, position, index, xTarget, xCurrentHandler);
+                                    break;
+                                case ILCode.Bge_S:
+                                    xOpCodeType = new OpBranch(ILCode.Bge, position, index, xTarget, xCurrentHandler);
+                                    break;
+                                case ILCode.Bge_Un_S:
+                                    xOpCodeType = new OpBranch(ILCode.Bge_Un, position, index, xTarget, xCurrentHandler);
+                                    break;
+                                case ILCode.Bgt_S:
+                                    xOpCodeType = new OpBranch(ILCode.Bgt, position, index, xTarget, xCurrentHandler);
+                                    break;
+                                case ILCode.Bgt_Un_S:
+                                    xOpCodeType = new OpBranch(ILCode.Bgt_Un, position, index, xTarget, xCurrentHandler);
+                                    break;
+                                case ILCode.Ble_S:
+                                    xOpCodeType = new OpBranch(ILCode.Ble, position, index, xTarget, xCurrentHandler);
+                                    break;
+                                case ILCode.Ble_Un_S:
+                                    xOpCodeType = new OpBranch(ILCode.Ble_Un, position, index, xTarget, xCurrentHandler);
+                                    break;
+                                case ILCode.Blt_S:
+                                    xOpCodeType = new OpBranch(ILCode.Blt, position, index, xTarget, xCurrentHandler);
+                                    break;
+                                case ILCode.Blt_Un_S:
+                                    xOpCodeType = new OpBranch(ILCode.Blt_Un, position, index, xTarget, xCurrentHandler);
+                                    break;
+                                case ILCode.Bne_Un_S:
+                                    xOpCodeType = new OpBranch(ILCode.Bne_Un, position, index, xTarget, xCurrentHandler);
+                                    break;
+                                case ILCode.Br_S:
+                                    xOpCodeType = new OpBranch(ILCode.Br, position, index, xTarget, xCurrentHandler);
+                                    break;
+                                case ILCode.Brfalse_S:
+                                    xOpCodeType = new OpBranch(ILCode.Brfalse, position, index, xTarget, xCurrentHandler);
+                                    break;
+                                case ILCode.Brtrue_S:
+                                    xOpCodeType = new OpBranch(ILCode.Brtrue, position, index, xTarget, xCurrentHandler);
+                                    break;
+                                case ILCode.Leave_S:
+                                    xOpCodeType = new OpBranch(ILCode.Leave, position, index, xTarget, xCurrentHandler);
+                                    break;
+                                default:
+                                    xOpCodeType = new OpBranch(xOpCodeVal, position, index, xTarget, xCurrentHandler);
+                                    break;
+                            }
+                        }
+                        break;
+                    case Emit.OperandType.InlineBrTarget:
+                        {
+                            int xTarget = index + 4 + BitConverter.ToInt32(byteCode, index);
+                            index += 4;
+                            xOpCodeType = new OpBranch(xOpCodeVal, position, index, xTarget, xCurrentHandler);
+                        }
+                        break;
+                    case Emit.OperandType.ShortInlineI:
+                        {
+                            switch (xOpCodeVal)
+                            {
+                                case ILCode.Ldc_I4_S:
+                                    xOpCodeType = new OpInt(ILCode.Ldc_I4, position, index + 1, ((sbyte)byteCode[index]), xCurrentHandler);
+                                    break;
+                                default:
+                                    xOpCodeType = new OpInt(xOpCodeVal, position, index + 1, ((sbyte)byteCode[index]), xCurrentHandler);
+                                    break;
+                            }
+                            index++;
+                        }
+                        break;
+                    case Emit.OperandType.InlineI:
+                        xOpCodeType = new OpInt(xOpCodeVal, position, index + 4, BitConverter.ToInt32(byteCode, index), xCurrentHandler);
+                        index += 4;
+                        break;
+                    case Emit.OperandType.InlineI8:
+                        xOpCodeType = new OpInt64(xOpCodeVal, position, index + 8, BitConverter.ToInt64(byteCode, index), xCurrentHandler);
+                        index += 8;
+                        break;
+                    case Emit.OperandType.ShortInlineR:
+                        xOpCodeType = new OpSingle(xOpCodeVal, position, index + 4, BitConverter.ToSingle(byteCode, index), xCurrentHandler);
+                        index += 4;
+                        break;
+                    case Emit.OperandType.InlineR:
+                        xOpCodeType = new OpDouble(xOpCodeVal, position, index + 8, BitConverter.ToDouble(byteCode, index), xCurrentHandler);
+                        index += 8;
+                        break;
+                    case Emit.OperandType.InlineField:
+                        {
+                            var xValue = method.Module.ResolveField(BitConverter.ToInt32(byteCode, index), genericTypeArgs, genericMethodArgs);
+                            xOpCodeType = new OpField(xOpCodeVal, position, index + 4, xValue, xCurrentHandler);
+                            index += 4;
+                        }
+                        break;
+                    case Emit.OperandType.InlineMethod:
+                        {
+                            var xValue = method.Module.ResolveMethod(BitConverter.ToInt32(byteCode, index), genericTypeArgs, genericMethodArgs);
+                            xOpCodeType = new OpMethod(xOpCodeVal, position, index + 4, xValue, xCurrentHandler);
+                            index += 4;
+                        }
+                        break;
+                    case Emit.OperandType.InlineSig:
+                        xOpCodeType = new OpSig(xOpCodeVal, position, index + 4, BitConverter.ToInt32(byteCode, index), xCurrentHandler);
+                        index += 4;
+                        break;
+                    case Emit.OperandType.InlineString:
+                        xOpCodeType = new OpString(xOpCodeVal, position, index + 4, method.Module.ResolveString((int)BitConverter.ToInt32(byteCode, index)), xCurrentHandler);
+                        index += 4;
+                        break;
+                    case Emit.OperandType.InlineSwitch:
+                        {
+                            int xCount = BitConverter.ToInt32(byteCode, index);
+                            index += 4;
+                            int xNextOpPos = index + xCount * 4;
+                            int[] xBranchLocations = new int[xCount];
+                            for (int i = 0; i < xCount; i++)
+                                xBranchLocations[i] = xNextOpPos + BitConverter.ToInt32(byteCode, index + i * 4);
+                            xOpCodeType = new OpSwitch(xOpCodeVal, position, xNextOpPos, xBranchLocations, xCurrentHandler);
+                            index = xNextOpPos;
+                        }
+                        break;
+                    case Emit.OperandType.InlineTok:
+                        xOpCodeType = new OpToken(xOpCodeVal, position, index + 4, BitConverter.ToInt32(byteCode, index), method.Module, genericTypeArgs, genericMethodArgs, xCurrentHandler);
+                        index += 4;
+                        break;
+                    case Emit.OperandType.InlineType:
+                        {
+                            var xValue = method.Module.ResolveType(BitConverter.ToInt32(byteCode, index), genericTypeArgs, genericMethodArgs);
+                            xOpCodeType = new OpType(xOpCodeVal, position, index + 4, xValue, xCurrentHandler);
+                            index += 4;
+                        }
+                        break;
+                    case Emit.OperandType.ShortInlineVar:
+                        switch (xOpCodeVal)
+                        {
+                            case ILCode.Ldloc_S:
+                                xOpCodeType = new OpVar(ILCode.Ldloc, position, index + 1, byteCode[index], xCurrentHandler);
+                                break;
+                            case ILCode.Ldloca_S:
+                                xOpCodeType = new OpVar(ILCode.Ldloca, position, index + 1, byteCode[index], xCurrentHandler);
+                                break;
+                            case ILCode.Ldarg_S:
+                                xOpCodeType = new OpVar(ILCode.Ldarg, position, index + 1, byteCode[index], xCurrentHandler);
+                                break;
+                            case ILCode.Ldarga_S:
+                                xOpCodeType = new OpVar(ILCode.Ldarga, position, index + 1, byteCode[index], xCurrentHandler);
+                                break;
+                            case ILCode.Starg_S:
+                                xOpCodeType = new OpVar(ILCode.Starg, position, index + 1, byteCode[index], xCurrentHandler);
+                                break;
+                            case ILCode.Stloc_S:
+                                xOpCodeType = new OpVar(ILCode.Stloc, position, index + 1, byteCode[index], xCurrentHandler);
+                                break;
+                            default:
+                                xOpCodeType = new OpVar(xOpCodeVal, position, index + 1, byteCode[index], xCurrentHandler);
+                                break;
+                        }
+                        index++;
+                        break;
+                    case Emit.OperandType.InlineVar:
+                        xOpCodeType = new OpVar(xOpCodeVal, position, index + 2, BitConverter.ToUInt16(byteCode, index), xCurrentHandler);
+                        index += 2;
+                        break;
+                    default:
+                        throw new Exception("Internal Compiler error" + xOpCode.OperandType);
+                }
+                EmittedOpCodes.Add(xOpCodeType);
             }
+
+            return EmittedOpCodes;
         }
 
         internal int GetTypeSize(Type type, bool aligned = false)
