@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace Atomixilc
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             try
             {
@@ -14,7 +14,10 @@ namespace Atomixilc
                 ParseArguments(args, out CompilerOptions);
                 CompilerOptions.Normalize();
 
-                new Compiler(CompilerOptions).Execute();
+                var xCompiler = new Compiler(CompilerOptions);
+                xCompiler.Execute();
+
+                xCompiler.Flush();
             }
             catch (Exception e)
             {
@@ -22,7 +25,7 @@ namespace Atomixilc
             }
         }
 
-        internal static void ParseArguments(string[] args, out Options CompilerOptions)
+        private static void ParseArguments(string[] args, out Options CompilerOptions)
         {
             Options Options = new Options();
 

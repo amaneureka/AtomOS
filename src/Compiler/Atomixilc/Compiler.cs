@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using Emit = System.Reflection.Emit;
@@ -28,6 +29,7 @@ namespace Atomixilc
 
         Dictionary<string, int> ZeroSegment;
         Dictionary<string, byte[]> DataSegment;
+        List<FunctionalBlock> CodeSegment;
 
         internal Compiler(Options aCompilerOptions)
         {
@@ -50,6 +52,7 @@ namespace Atomixilc
 
             ZeroSegment = new Dictionary<string, int>();
             DataSegment = new Dictionary<string, byte[]>();
+            CodeSegment = new List<FunctionalBlock>();
 
             var types = ExecutingAssembly.GetTypes();
             foreach (var type in types)
@@ -86,6 +89,7 @@ namespace Atomixilc
             FinishedQ.Clear();
             ZeroSegment.Clear();
             DataSegment.Clear();
+            CodeSegment.Clear();
 
             ScanQ.Enqueue(main);
             while(ScanQ.Count != 0)
@@ -112,10 +116,53 @@ namespace Atomixilc
                 var field = ScanObject as FieldInfo;
                 if (field != null)
                 {
+                    ProcessFieldInfo(field);
                     continue;
                 }
 
                 throw new Exception(string.Format("Invalid Object in Queue of type '{0}'", ScanObject.GetType()));
+            }
+        }
+
+        internal void Flush()
+        {
+            switch (Config.TargetPlatform)
+            {
+                case Architecture.x86:
+                    Flushx86();
+                    break;
+                default:
+                    throw new Exception("Unsupported Flush Platform");
+            }
+        }
+
+        private void Flushx86()
+        {
+            using (var SW = new StreamWriter(Config.OutputFile))
+            {
+                SW.WriteLine("section .bss");
+                foreach (var bssEntry in ZeroSegment)
+                    SW.WriteLine(string.Format("{0} resb {1}", bssEntry.Key, bssEntry.Value));
+                SW.WriteLine();
+
+                SW.WriteLine("section .data");
+                foreach (var dataEntry in DataSegment)
+                    SW.WriteLine(string.Format("{0} resb {1}", dataEntry.Key, string.Join(", ", dataEntry.Value.Select(a => a.ToString()))));
+                SW.WriteLine();
+
+                SW.WriteLine("section .text");
+                SW.WriteLine();
+                foreach (var block in CodeSegment)
+                {
+                    var xbody = block.Body;
+                    foreach (var code in xbody)
+                    {
+                        if (!(code is Label))
+                            SW.Write("    ");
+                        SW.WriteLine(code);
+                    }
+                    SW.WriteLine();
+                }
             }
         }
 
@@ -193,23 +240,28 @@ namespace Atomixilc
 
         internal void ScanMethod(MethodBase method)
         {
+            FunctionalBlock block = null;
+
             if (method.GetCustomAttribute<AssemblyAttribute>() != null)
-                ProcessAssemblyMethod(method);
+                ProcessAssemblyMethod(method, ref block);
             else if (method.GetCustomAttribute<DllImportAttribute>() != null)
-                ProcessExternMethod(method);
+                ProcessExternMethod(method, ref block);
             else
-                ProcessMethod(method);
+                ProcessMethod(method, ref block);
+
+            if (block != null)
+                CodeSegment.Add(block);
 
             FinishedQ.Add(method);
         }
 
-        internal void ProcessAssemblyMethod(MethodBase method)
+        internal void ProcessAssemblyMethod(MethodBase method, ref FunctionalBlock block)
         {
             var attrib = method.GetCustomAttribute<AssemblyAttribute>();
             if (attrib == null)
                 throw new Exception("Invalid call to ProcessAssemblyMethod");
 
-            var block = new FunctionalBlock(method.FullName(), Config.TargetPlatform, CallingConvention.StdCall);
+            block = new FunctionalBlock(method.FullName(), Config.TargetPlatform, CallingConvention.StdCall);
 
             Instruction.Block = block;
 
@@ -233,15 +285,35 @@ namespace Atomixilc
             Instruction.Block = null;
         }
 
-        internal void ProcessExternMethod(MethodBase method)
+        internal void ProcessExternMethod(MethodBase method, ref FunctionalBlock block)
         {
             var attrib = method.GetCustomAttribute<DllImportAttribute>();
             if (attrib == null)
                 throw new Exception("Invalid call to ProcessExternMethod");
-
         }
 
-        internal void ProcessMethod(MethodBase method)
+        internal void ProcessFieldInfo(FieldInfo fieldInfo)
+        {
+            var name = fieldInfo.FullName();
+            int size = GetTypeSize(fieldInfo.FieldType);
+
+            InsertData(name, size);
+            FinishedQ.Add(fieldInfo);
+        }
+
+        internal void InsertData(string name, int size)
+        {
+            if (ZeroSegment.ContainsKey(name))
+            {
+                if (ZeroSegment[name] != size)
+                    Verbose.Error("Two different size for same field label '{0}' : '{1}' '{2}'", name, ZeroSegment[name], size);
+                return;
+            }
+
+            ZeroSegment.Add(name, size);
+        }
+
+        internal void ProcessMethod(MethodBase method, ref FunctionalBlock block)
         {
             var Body = method.GetMethodBody();
             if (Body == null)
@@ -266,7 +338,7 @@ namespace Atomixilc
                 ScanQ.Enqueue(localvar.LocalType);
             }
 
-            var block = new FunctionalBlock(MethodName, Config.TargetPlatform, CallingConvention.StdCall);
+            block = new FunctionalBlock(MethodName, Config.TargetPlatform, CallingConvention.StdCall);
 
             Instruction.Block = block;
 
@@ -308,9 +380,6 @@ namespace Atomixilc
 
             EmitFooter(block, method);
             Instruction.Block = null;
-
-            foreach (var inst in block.Body)
-                Verbose.Message(inst.ToString());
         }
 
         internal void EmitHeader(FunctionalBlock block, MethodBase method, int stackspace)
@@ -349,8 +418,7 @@ namespace Atomixilc
                 case Architecture.x86:
                     {
                         var key = method.ConstructorKey();
-                        if (!ZeroSegment.ContainsKey(key))
-                            ZeroSegment.Add(key, 1);
+                        InsertData(key, 1);
 
                         new Test { DestinationRef = key, DestinationIndirect = true, SourceRef = "0x1" };
                         new Jmp { Condition = ConditionalJump.JZ, DestinationRef = ".Load" };
