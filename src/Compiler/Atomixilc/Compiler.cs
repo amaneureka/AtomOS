@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using Emit = System.Reflection.Emit;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
@@ -15,6 +16,7 @@ namespace Atomixilc
     {
         Options Config;
         Dictionary<ILCode, MSIL> ILCodes;
+        Dictionary<short, Emit.OpCode> OpCode;
 
         Dictionary<MethodBase, string> Plugs;
         Dictionary<string, MethodBase> Labels;
@@ -43,6 +45,7 @@ namespace Atomixilc
             ScanQ = new Queue<object>();
             FinishedQ = new HashSet<object>();
             Virtual = new HashSet<MethodBase>();
+            OpCode = new Dictionary<short, Emit.OpCode>();
 
             ZeroSegment = new Dictionary<string, int>();
             DataSegment = new Dictionary<string, byte[]>();
@@ -55,6 +58,13 @@ namespace Atomixilc
                 {
                     ILCodes.Add(attrib.OpCode, (MSIL)Activator.CreateInstance(type, this));
                 }
+            }
+
+            var ilOpcodes = typeof(Emit.OpCodes).GetFields(BindingFlags.DeclaredOnly | BindingFlags.Static | BindingFlags.Public);
+            foreach (var xField in ilOpcodes)
+            {
+                var xOpCode = (Emit.OpCode)xField.GetValue(null);
+                OpCode.Add(xOpCode.Value, xOpCode);
             }
         }
 
@@ -270,9 +280,6 @@ namespace Atomixilc
 
             EmitFooter(block, method);
             Instruction.Block = null;
-
-            foreach (var inst in block.Body)
-                Console.WriteLine(inst);
         }
 
         internal void EmitHeader(FunctionalBlock block, MethodBase method, int stackspace)
@@ -350,6 +357,43 @@ namespace Atomixilc
                     break;
                 default:
                     throw new Exception(string.Format("Unsupported CallingConvention used in method '{0}'", method.FullName()));
+            }
+        }
+
+        internal void EmitOpCodes(MethodBase method)
+        {
+            var body = method.GetMethodBody();
+            if (body == null)
+                throw new Exception(string.Format("illegal call to EmitOpCodes '{0}'", method.FullName()));
+
+            var byteCode = body.GetILAsByteArray();
+
+            Type[] genericTypeArgs = null;
+            Type[] genericMethodArgs = null;
+
+            if (method.DeclaringType.IsGenericType)
+                genericTypeArgs = method.DeclaringType.GetGenericArguments();
+
+            if (method.IsGenericMethod)
+                genericMethodArgs = method.GetGenericArguments();
+
+            int index = 0;
+
+            Emit.OpCode xOpCode;
+            while (index < byteCode.Length)
+            {
+                if (byteCode[index] == 0xFE)
+                {
+                    xOpCode = OpCode[BitConverter.ToInt16(byteCode, index)];
+                    index += 2;
+                }
+                else
+                {
+                    xOpCode = OpCode[byteCode[index]];
+                    index++;
+                }
+
+
             }
         }
 
