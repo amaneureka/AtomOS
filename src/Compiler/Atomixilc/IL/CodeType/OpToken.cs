@@ -6,6 +6,8 @@ namespace Atomixilc.IL.CodeType
     internal class OpToken : OpCodeType
     {
         internal readonly int Value;
+        internal readonly Type ValueType;
+        internal readonly FieldInfo ValueField;
 
         internal bool IsType
         {
@@ -31,6 +33,10 @@ namespace Atomixilc.IL.CodeType
             :base(aCode, aPosition, aNextPosition, aEhc)
         {
             Value = aValue;
+            if (IsField)
+                ValueField = aModule.ResolveField(Value, aTypeGenericArgs, aMethodGenericArgs);
+            if (IsType)
+                ValueType = aModule.ResolveType(Value, aTypeGenericArgs, aMethodGenericArgs);
         }
     }
 }

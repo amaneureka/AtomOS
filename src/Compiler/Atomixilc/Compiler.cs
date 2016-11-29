@@ -279,8 +279,38 @@ namespace Atomixilc
 
             EmitHeader(block, method, bodySize);
 
+            var xOpCodes = EmitOpCodes(method);
+            foreach(var xOp in xOpCodes)
+            {
+                if (xOp is OpMethod)
+                    ScanQ.Enqueue(((OpMethod)xOp).Value);
+                else if (xOp is OpType)
+                    ScanQ.Enqueue(((OpType)xOp).Value);
+                else if (xOp is OpField)
+                    ScanQ.Enqueue(((OpField)xOp).Value.DeclaringType);
+                else if (xOp is OpToken)
+                {
+                    var xOpToken = (OpToken)xOp;
+                    if (xOpToken.IsType)
+                        ScanQ.Enqueue(xOpToken.ValueType);
+                    else if (xOpToken.IsField)
+                        ScanQ.Enqueue(xOpToken.ValueField.DeclaringType);
+                }
+
+                MSIL ILHandler = null;
+                ILCodes.TryGetValue(xOp.ILCode, out ILHandler);
+
+                if (ILHandler == null)
+                    Verbose.Error("Unimplemented ILCode '{0}'", xOp.ILCode);
+                else
+                    ILHandler.Execute();
+            }
+
             EmitFooter(block, method);
             Instruction.Block = null;
+
+            foreach (var inst in block.Body)
+                Verbose.Message(inst.ToString());
         }
 
         internal void EmitHeader(FunctionalBlock block, MethodBase method, int stackspace)
