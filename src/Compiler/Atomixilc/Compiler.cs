@@ -295,7 +295,7 @@ namespace Atomixilc
         internal void ProcessFieldInfo(FieldInfo fieldInfo)
         {
             var name = fieldInfo.FullName();
-            int size = GetTypeSize(fieldInfo.FieldType);
+            int size = Helper.GetTypeSize(fieldInfo.FieldType, Config.TargetPlatform);
 
             InsertData(name, size);
             FinishedQ.Add(fieldInfo);
@@ -334,7 +334,7 @@ namespace Atomixilc
             int bodySize = 0;
             foreach(var localvar in localvars)
             {
-                bodySize += GetTypeSize(localvar.LocalType);
+                bodySize += Helper.GetTypeSize(localvar.LocalType, Config.TargetPlatform, true);
                 ScanQ.Enqueue(localvar.LocalType);
             }
 
@@ -377,7 +377,7 @@ namespace Atomixilc
                 if (ILHandler == null)
                     Verbose.Error("Unimplemented ILCode '{0}'", xOp.ILCode);
                 else
-                    ILHandler.Execute(xOp, method, vStack);
+                    ILHandler.Execute(Config, xOp, method, vStack);
             }
 
             EmitFooter(block, method);
@@ -435,7 +435,7 @@ namespace Atomixilc
 
         internal void EmitFooter(FunctionalBlock block, MethodBase method)
         {
-            var paramsSize = method.GetParameters().Sum(arg => GetTypeSize(arg.ParameterType));
+            var paramsSize = method.GetParameters().Sum(arg => Helper.GetTypeSize(arg.ParameterType, Config.TargetPlatform, true));
 
             if (paramsSize > 255) throw new Exception(string.Format("Too large stack frame for parameters '{0}'", method.FullName()));
 
@@ -757,73 +757,6 @@ namespace Atomixilc
             }
 
             return EmittedOpCodes;
-        }
-
-        internal int GetTypeSize(Type type, bool aligned = false)
-        {
-            if (aligned)
-            {
-                int size = GetTypeSize(type, false);
-                int alignment = GetTypeSize(typeof(IntPtr));
-                return ((size / alignment) + ((size % alignment) != 0 ? 1 : 0)) * alignment;
-            }
-
-            if (type == typeof(void))
-                return 0;
-
-            if ((type == typeof(byte))
-                || (type == typeof(sbyte))
-                || (type == typeof(bool)))
-                return 1;
-
-            if ((type == typeof(char))
-                || (type == typeof(short))
-                || (type == typeof(ushort)))
-                return 2;
-
-            if ((type == typeof(int))
-                || (type == typeof(uint))
-                || (type == typeof(float)))
-                return 4;
-
-            if ((type == typeof(long))
-                || (type == typeof(ulong))
-                || (type == typeof(double)))
-                return 8;
-
-            if (type == typeof(decimal))
-                return 16;
-
-            if ((type == typeof(IntPtr))
-                || (type == typeof(UIntPtr))
-                || (type.IsByRef)
-                || (!type.IsValueType && type.IsClass)
-                || (!string.IsNullOrEmpty(type.FullName) && type.FullName.EndsWith("*")))
-            {
-                switch(Config.TargetPlatform)
-                {
-                    case Architecture.x86: return 4;
-                    case Architecture.x64: return 8;
-                    default: throw new Exception(string.Format("GetTypeSize Unknown Platform '{0}'", Config.TargetPlatform));
-                }
-            }
-
-            if (type.IsEnum)
-                return GetTypeSize(type.GetField("value__").FieldType);
-
-            if (type.IsValueType)
-            {
-                var size = type.GetFields().Sum(field => GetTypeSize(field.FieldType));
-                var attrib = type.StructLayoutAttribute;
-                if (attrib != null && size != attrib.Size)
-                {
-                    size = Math.Max(size, attrib.Size);
-                    Verbose.Warning("GetTypeSize of type '{0}' mismatch. taking size: '{1}'", type, size);
-                }
-                return size;
-            }
-
-            throw new Exception(string.Format("GetTypeSize of Unhandled type '{0}'", type));
         }
     }
 }

@@ -6,6 +6,20 @@ namespace Atomixilc.IL
 {
     internal abstract class MSIL
     {
-        internal abstract void Execute(OpCodeType xOp, MethodBase method, Stack<StackItem> vStack);
+        internal ILCode msIL;
+
+        internal MSIL(ILCode aILCode)
+        {
+            msIL = aILCode;
+        }
+
+        internal abstract void Execute(Options Config, OpCodeType xOp, MethodBase method, Stack<StackItem> vStack);
+
+        internal static void Swap(ref StackItem A, ref StackItem B)
+        {
+            StackItem temp = A;
+            A = B;
+            B = temp;
+        }
     }
 }
