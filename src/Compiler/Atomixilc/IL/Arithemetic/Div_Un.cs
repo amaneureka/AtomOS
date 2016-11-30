@@ -12,7 +12,7 @@ namespace Atomixilc.IL
     internal class Div_Un_il : MSIL
     {
         internal Div_Un_il()
-            : base(ILCode.Div)
+            : base(ILCode.Div_Un)
         {
 
         }
