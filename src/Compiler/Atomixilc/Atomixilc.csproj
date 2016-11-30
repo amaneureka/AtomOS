@@ -50,6 +50,9 @@
     <Compile Include="IL\Arithemetic\And.cs" />
     <Compile Include="IL\Arithemetic\Div.cs" />
     <Compile Include="IL\Arithemetic\Div_Un.cs" />
+    <Compile Include="IL\Arithemetic\Mul.cs" />
+    <Compile Include="IL\Arithemetic\Or.cs" />
+    <Compile Include="IL\Arithemetic\Xor.cs" />
     <Compile Include="IL\CodeType\OpBranch.cs" />
     <Compile Include="IL\CodeType\OpDouble.cs" />
     <Compile Include="IL\CodeType\OpField.cs" />
@@ -83,6 +86,7 @@
     <Compile Include="Machine\x86\Mov.cs" />
     <Compile Include="Machine\x86\OnlyDestination.cs" />
     <Compile Include="Machine\x86\OnlySize.cs" />
+    <Compile Include="Machine\x86\Or.cs" />
     <Compile Include="Machine\x86\Pop.cs" />
     <Compile Include="Machine\x86\Push.cs" />
     <Compile Include="Machine\x86\Ret.cs" />
