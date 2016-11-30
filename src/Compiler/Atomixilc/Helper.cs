@@ -74,5 +74,72 @@ namespace Atomixilc
         {
             return string.Format("cctor_{0}", method.FullName());
         }
+
+        internal static int GetTypeSize(Type type, Architecture platform, bool aligned = false)
+        {
+            if (aligned)
+            {
+                int size = GetTypeSize(type, platform, false);
+                int alignment = GetTypeSize(typeof(IntPtr), platform);
+                return ((size / alignment) + ((size % alignment) != 0 ? 1 : 0)) * alignment;
+            }
+
+            if (type == typeof(void))
+                return 0;
+
+            if ((type == typeof(byte))
+                || (type == typeof(sbyte))
+                || (type == typeof(bool)))
+                return 1;
+
+            if ((type == typeof(char))
+                || (type == typeof(short))
+                || (type == typeof(ushort)))
+                return 2;
+
+            if ((type == typeof(int))
+                || (type == typeof(uint))
+                || (type == typeof(float)))
+                return 4;
+
+            if ((type == typeof(long))
+                || (type == typeof(ulong))
+                || (type == typeof(double)))
+                return 8;
+
+            if (type == typeof(decimal))
+                return 16;
+
+            if ((type == typeof(IntPtr))
+                || (type == typeof(UIntPtr))
+                || (type.IsByRef)
+                || (!type.IsValueType && type.IsClass)
+                || (!string.IsNullOrEmpty(type.FullName) && type.FullName.EndsWith("*")))
+            {
+                switch (platform)
+                {
+                    case Architecture.x86: return 4;
+                    case Architecture.x64: return 8;
+                    default: throw new Exception(string.Format("GetTypeSize Unknown Platform '{0}'", platform));
+                }
+            }
+
+            if (type.IsEnum)
+                return GetTypeSize(type.GetField("value__").FieldType, platform);
+
+            if (type.IsValueType)
+            {
+                var size = type.GetFields().Sum(field => GetTypeSize(field.FieldType, platform));
+                var attrib = type.StructLayoutAttribute;
+                if (attrib != null && size != attrib.Size)
+                {
+                    size = Math.Max(size, attrib.Size);
+                    Verbose.Warning("GetTypeSize of type '{0}' mismatch. taking size: '{1}'", type, size);
+                }
+                return size;
+            }
+
+            throw new Exception(string.Format("GetTypeSize of Unhandled type '{0}'", type));
+        }
     }
 }
