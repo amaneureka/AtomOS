@@ -199,7 +199,7 @@ namespace Atomix.Kernel_H.Arch.x86
                             Paging.SetFrame((Address & 0xFFFFF000) / 0x1000);
                         }
                     }
-                    mmap = (MemoryMap_Info*)((uint)mmap + sizeof(MemoryMap_Info) + mmap->Size);
+                    mmap = (MemoryMap_Info*)((uint)mmap + (uint)sizeof(MemoryMap_Info) + mmap->Size);
                 }
             }
         }

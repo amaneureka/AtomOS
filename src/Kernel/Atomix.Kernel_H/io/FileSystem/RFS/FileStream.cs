@@ -28,7 +28,7 @@ namespace Atomix.Kernel_H.IO.FileSystem.RFS
             if (aCount + mPosition > RamFile.Length)
                 aCount = (int)RamFile.Length - mPosition;
 
-            var xAddress = (byte*)(RamFile.StartAddress + mPosition);
+            var xAddress = (byte*)(RamFile.StartAddress + (uint)mPosition);
             for (int index = 0; index < aCount; index++)
                 aBuffer[index] = xAddress[index];
 
