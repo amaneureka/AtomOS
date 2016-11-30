@@ -8,18 +8,18 @@ using Atomixilc.Machine.x86;
 
 namespace Atomixilc.IL
 {
-    [ILImpl(ILCode.Add)]
-    internal class Add_il : MSIL
+    [ILImpl(ILCode.And)]
+    internal class And_il : MSIL
     {
-        internal Add_il()
-            :base(ILCode.Add)
+        internal And_il()
+            : base(ILCode.And)
         {
 
         }
 
         /*
-         * URL : https://msdn.microsoft.com/en-us/library/system.reflection.emit.opcodes.Add(v=vs.110).aspx
-         * Description : Adds two values and pushes the result onto the evaluation stack.
+         * URL : https://msdn.microsoft.com/en-us/library/system.reflection.emit.opcodes.And(v=vs.110).aspx
+         * Description : Computes the bitwise AND of two values and pushes the result onto the evaluation stack.
          */
         internal override void Execute(Options Config, OpCodeType xOp, MethodBase method, Stack<StackItem> vStack)
         {
@@ -35,7 +35,7 @@ namespace Atomixilc.IL
             /* The stack transitional behavior, in sequential order, is:
              * value1 is pushed onto the stack.
              * value2 is pushed onto the stack.
-             * value2 and value1 are popped from the stack; value1 is added to value2.
+             * value1 and value2 are popped from the stack; the bitwise AND of the two values is computed.
              * The result is pushed onto the stack.
              */
 
@@ -71,7 +71,7 @@ namespace Atomixilc.IL
                             };
                         }
 
-                        new Add
+                        new And
                         {
                             DestinationReg = DesReg,
                             SourceReg = itemB.RegisterRef,
