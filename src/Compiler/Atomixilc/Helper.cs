@@ -75,6 +75,11 @@ namespace Atomixilc
             return string.Format("cctor_{0}", method.FullName());
         }
 
+        internal static string GetLabel(MethodBase xMethod, int NextPosition)
+        {
+            return string.Format("{0}.IL_{1}", xMethod.FullName(), NextPosition.ToString("X").PadLeft(5, '0'));
+        }
+
         internal static int GetTypeSize(Type type, Architecture platform, bool aligned = false)
         {
             if (aligned)
