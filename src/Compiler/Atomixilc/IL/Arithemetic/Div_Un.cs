@@ -21,13 +21,13 @@ namespace Atomixilc.IL
          * URL : https://msdn.microsoft.com/en-us/library/system.reflection.emit.opcodes.Div_Un(v=vs.110).aspx
          * Description : Divides two unsigned integer values and pushes the result (int32) onto the evaluation stack.
          */
-        internal override void Execute(Options Config, OpCodeType xOp, MethodBase method, Stack<StackItem> vStack)
+        internal override void Execute(Options Config, OpCodeType xOp, MethodBase method, Optimizer Optimizer)
         {
-            if (vStack.Count < 2)
+            if (Optimizer.vStack.Count < 2)
                 throw new Exception("Internal Compiler Error: vStack.Count < 2");
 
-            var divisor = vStack.Pop();
-            var dividend = vStack.Pop();
+            var divisor = Optimizer.vStack.Pop();
+            var dividend = Optimizer.vStack.Pop();
 
             var size = Math.Max(Helper.GetTypeSize(divisor.OperandType, Config.TargetPlatform),
                 Helper.GetTypeSize(dividend.OperandType, Config.TargetPlatform));
@@ -46,28 +46,68 @@ namespace Atomixilc.IL
                         if (divisor.IsFloat || dividend.IsFloat || size > 4)
                             throw new Exception(string.Format("UnImplemented '{0}'", msIL));
 
-                        if (!dividend.RegisterRef.HasValue || dividend.RegisterRef != Register.EAX || dividend.IsIndirect)
+                        if (divisor.RegisterRef.HasValue)
+                            Optimizer.FreeRegister(divisor.RegisterRef.Value);
+
+                        if (dividend.RegisterRef.HasValue)
+                            Optimizer.FreeRegister(dividend.RegisterRef.Value);
+
+                        if (divisor.SystemStack)
+                        {
+                            new Pop { DestinationReg = Register.ESI };
+                        }
+
+                        if (dividend.SystemStack)
+                        {
+                            new Pop { DestinationReg = Register.EAX };
+                        }
+                        else
                         {
                             new Mov
                             {
                                 DestinationReg = Register.EAX,
                                 SourceReg = dividend.RegisterRef,
-                                SourceRef = dividend.AddressRef,
                                 SourceIndirect = dividend.IsIndirect,
-                                SourceDisplacement = dividend.Displacement
+                                SourceDisplacement = dividend.Displacement,
+                                SourceRef = dividend.AddressRef
                             };
                         }
 
                         new Xor { DestinationReg = Register.EDX, SourceReg = Register.EDX };
-                        new Div
-                        {
-                            DestinationReg = divisor.RegisterRef,
-                            DestinationRef = divisor.AddressRef,
-                            DestinationDisplacement = divisor.Displacement,
-                            DestinationIndirect = divisor.IsIndirect
-                        };
 
-                        vStack.Push(new StackItem { RegisterRef = Register.EAX, OperandType = typeof(UInt32) });
+                        if (divisor.SystemStack)
+                        {
+                            new Div { DestinationReg = Register.ESI };
+                        }
+                        else
+                        {
+                            new Div
+                            {
+                                DestinationReg = dividend.RegisterRef,
+                                DestinationIndirect = dividend.IsIndirect,
+                                DestinationDisplacement = dividend.Displacement,
+                                DestinationRef = dividend.AddressRef
+                            };
+                        }
+
+                        Register? NonVolatileRegister = null;
+                        Optimizer.GetNonVolatileRegister(ref NonVolatileRegister);
+
+                        if (NonVolatileRegister.HasValue)
+                        {
+                            new Mov
+                            {
+                                DestinationReg = NonVolatileRegister.Value,
+                                SourceReg = Register.EAX
+                            };
+                            Optimizer.AllocateRegister(NonVolatileRegister.Value);
+                            Optimizer.vStack.Push(new StackItem(NonVolatileRegister.Value, typeof(UInt32)));
+                        }
+                        else
+                        {
+                            new Push { DestinationReg = Register.EAX };
+                            Optimizer.vStack.Push(new StackItem(typeof(UInt32)));
+                        }
                     }
                     break;
                 default:

@@ -81,9 +81,11 @@
     <Compile Include="Machine\x86\Div.cs" />
     <Compile Include="Machine\x86\Helper.cs" />
     <Compile Include="Machine\x86\IDiv.cs" />
+    <Compile Include="Machine\x86\IMul.cs" />
     <Compile Include="Machine\x86\Jmp.cs" />
     <Compile Include="Machine\x86\Leave.cs" />
     <Compile Include="Machine\x86\Mov.cs" />
+    <Compile Include="Machine\x86\Mul.cs" />
     <Compile Include="Machine\x86\OnlyDestination.cs" />
     <Compile Include="Machine\x86\OnlySize.cs" />
     <Compile Include="Machine\x86\Or.cs" />
