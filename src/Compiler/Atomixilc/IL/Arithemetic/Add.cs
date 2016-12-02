@@ -57,7 +57,6 @@ namespace Atomixilc.IL
                             if (itemB.RegisterOnly)
                             {
                                 new Add { DestinationReg = itemA.RegisterRef, SourceReg = itemB.RegisterRef };
-
                             }
                             else if (itemB.SystemStack)
                             {

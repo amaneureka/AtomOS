@@ -21,13 +21,13 @@ namespace Atomixilc.IL
          * URL : https://msdn.microsoft.com/en-us/library/system.reflection.emit.opcodes.Or(v=vs.110).aspx
          * Description : Compute the bitwise complement of the two integer values on top of the stack and pushes the result onto the evaluation stack.
          */
-        internal override void Execute(Options Config, OpCodeType xOp, MethodBase method, Stack<StackItem> vStack)
+        internal override void Execute(Options Config, OpCodeType xOp, MethodBase method, Optimizer Optimizer)
         {
-            if (vStack.Count < 2)
+            if (Optimizer.vStack.Count < 2)
                 throw new Exception("Internal Compiler Error: vStack.Count < 2");
 
-            var itemA = vStack.Pop();
-            var itemB = vStack.Pop();
+            var itemA = Optimizer.vStack.Pop();
+            var itemB = Optimizer.vStack.Pop();
 
             var size = Math.Max(Helper.GetTypeSize(itemA.OperandType, Config.TargetPlatform),
                 Helper.GetTypeSize(itemB.OperandType, Config.TargetPlatform));
@@ -46,41 +46,181 @@ namespace Atomixilc.IL
                         if (itemA.IsFloat || itemB.IsFloat || size > 4)
                             throw new Exception(string.Format("UnImplemented '{0}'", msIL));
 
-                        if (itemB.RegisterOnly)
-                            Swap(ref itemA, ref itemB);
+                        if (itemA.RegisterRef.HasValue)
+                            Optimizer.FreeRegister(itemA.RegisterRef.Value);
 
-                        if (itemB.RegisterOnly && itemB.RegisterRef == Register.EAX)
-                            Swap(ref itemA, ref itemB);
+                        if (itemB.RegisterRef.HasValue)
+                            Optimizer.FreeRegister(itemB.RegisterRef.Value);
 
-                        Register DesReg;
                         if (itemA.RegisterOnly)
                         {
-                            DesReg = itemA.RegisterRef.Value;
+                            if (itemB.RegisterOnly)
+                            {
+                                new Or { DestinationReg = itemA.RegisterRef, SourceReg = itemB.RegisterRef };
+                            }
+                            else if (itemB.SystemStack)
+                            {
+                                new Pop { DestinationReg = Register.EAX };
+                                new Or { DestinationReg = itemA.RegisterRef, SourceReg = Register.EAX };
+                            }
+                            else
+                            {
+                                new Or
+                                {
+                                    DestinationReg = itemA.RegisterRef,
+                                    SourceReg = itemB.RegisterRef,
+                                    SourceIndirect = itemB.IsIndirect,
+                                    SourceDisplacement = itemB.Displacement,
+                                    SourceRef = itemB.AddressRef
+                                };
+                            }
+
+                            Optimizer.AllocateRegister(itemA.RegisterRef.Value);
+                            Optimizer.vStack.Push(new StackItem(itemA.RegisterRef.Value, itemA.OperandType));
+                        }
+                        else if (itemA.SystemStack)
+                        {
+                            new Pop { DestinationReg = Register.EAX };
+                            if (itemB.RegisterOnly)
+                            {
+                                new Or { DestinationReg = itemB.RegisterRef, SourceReg = Register.EAX };
+                                Optimizer.AllocateRegister(itemB.RegisterRef.Value);
+                                Optimizer.vStack.Push(new StackItem(itemB.RegisterRef.Value, itemA.OperandType));
+                            }
+                            else if (itemB.SystemStack)
+                            {
+                                Register? NonVolatileRegister = null;
+                                Optimizer.GetNonVolatileRegister(ref NonVolatileRegister);
+
+                                if (NonVolatileRegister.HasValue)
+                                {
+                                    new Pop { DestinationReg = NonVolatileRegister.Value };
+                                    new Or { DestinationReg = NonVolatileRegister.Value, SourceReg = Register.EAX };
+                                    Optimizer.AllocateRegister(NonVolatileRegister.Value);
+                                    Optimizer.vStack.Push(new StackItem(NonVolatileRegister.Value, itemA.OperandType));
+                                }
+                                else
+                                {
+                                    new Or { DestinationReg = Register.ESP, DestinationIndirect = true, SourceReg = Register.EAX };
+                                    Optimizer.vStack.Push(new StackItem(itemA.OperandType));
+                                }
+                            }
+                            else
+                            {
+                                Register? NonVolatileRegister = null;
+                                Optimizer.GetNonVolatileRegister(ref NonVolatileRegister);
+
+                                if (NonVolatileRegister.HasValue)
+                                {
+                                    new Mov
+                                    {
+                                        DestinationReg = NonVolatileRegister.Value,
+                                        SourceReg = itemB.RegisterRef,
+                                        SourceIndirect = itemB.IsIndirect,
+                                        SourceDisplacement = itemB.Displacement,
+                                        SourceRef = itemB.AddressRef
+                                    };
+                                    new Or { DestinationReg = NonVolatileRegister.Value, SourceReg = Register.EAX };
+                                    Optimizer.AllocateRegister(NonVolatileRegister.Value);
+                                    Optimizer.vStack.Push(new StackItem(NonVolatileRegister.Value, itemA.OperandType));
+                                }
+                                else
+                                {
+                                    new Or
+                                    {
+                                        DestinationReg = Register.EAX,
+                                        SourceReg = itemB.RegisterRef,
+                                        SourceIndirect = itemB.IsIndirect,
+                                        SourceDisplacement = itemB.Displacement,
+                                        SourceRef = itemB.AddressRef
+                                    };
+                                    new Push { DestinationReg = Register.EAX };
+                                    Optimizer.vStack.Push(new StackItem(itemA.OperandType));
+                                }
+                            }
                         }
                         else
                         {
-                            DesReg = Register.EAX;
-
-                            new Mov
+                            if (itemB.RegisterOnly)
                             {
-                                DestinationReg = Register.EAX,
-                                SourceReg = itemA.RegisterRef,
-                                SourceRef = itemA.AddressRef,
-                                SourceIndirect = itemA.IsIndirect,
-                                SourceDisplacement = itemA.Displacement
-                            };
+                                new Or
+                                {
+                                    DestinationReg = itemB.RegisterRef,
+                                    SourceReg = itemA.RegisterRef,
+                                    SourceIndirect = itemA.IsIndirect,
+                                    SourceDisplacement = itemA.Displacement,
+                                    SourceRef = itemA.AddressRef
+                                };
+                                Optimizer.AllocateRegister(itemB.RegisterRef.Value);
+                                Optimizer.vStack.Push(new StackItem(itemB.RegisterRef.Value, itemA.OperandType));
+                            }
+                            else if (itemB.SystemStack)
+                            {
+                                Register? NonVolatileRegister = null;
+                                Optimizer.GetNonVolatileRegister(ref NonVolatileRegister);
+
+                                if (!NonVolatileRegister.HasValue)
+                                    NonVolatileRegister = Register.EAX;
+
+                                new Pop { DestinationReg = NonVolatileRegister.Value };
+                                new Or
+                                {
+                                    DestinationReg = NonVolatileRegister.Value,
+                                    SourceReg = itemA.RegisterRef,
+                                    SourceIndirect = itemA.IsIndirect,
+                                    SourceDisplacement = itemA.Displacement,
+                                    SourceRef = itemA.AddressRef
+                                };
+
+                                if (NonVolatileRegister != Register.EAX)
+                                {
+                                    Optimizer.AllocateRegister(NonVolatileRegister.Value);
+                                    Optimizer.vStack.Push(new StackItem(NonVolatileRegister.Value, itemA.OperandType));
+                                }
+                                else
+                                {
+                                    new Push { DestinationReg = Register.EAX };
+                                    Optimizer.vStack.Push(new StackItem(itemA.OperandType));
+                                }
+                            }
+                            else
+                            {
+                                Register? NonVolatileRegister = null;
+                                Optimizer.GetNonVolatileRegister(ref NonVolatileRegister);
+
+                                if (!NonVolatileRegister.HasValue)
+                                    NonVolatileRegister = Register.EAX;
+
+                                new Mov
+                                {
+                                    DestinationReg = NonVolatileRegister.Value,
+                                    SourceReg = itemA.RegisterRef,
+                                    SourceIndirect = itemA.IsIndirect,
+                                    SourceDisplacement = itemA.Displacement,
+                                    SourceRef = itemA.AddressRef
+                                };
+
+                                new Or
+                                {
+                                    DestinationReg = NonVolatileRegister.Value,
+                                    SourceReg = itemB.RegisterRef,
+                                    SourceIndirect = itemB.IsIndirect,
+                                    SourceDisplacement = itemB.Displacement,
+                                    SourceRef = itemB.AddressRef
+                                };
+
+                                if (NonVolatileRegister != Register.EAX)
+                                {
+                                    Optimizer.AllocateRegister(NonVolatileRegister.Value);
+                                    Optimizer.vStack.Push(new StackItem(NonVolatileRegister.Value, itemA.OperandType));
+                                }
+                                else
+                                {
+                                    new Push { DestinationReg = Register.EAX };
+                                    Optimizer.vStack.Push(new StackItem(itemA.OperandType));
+                                }
+                            }
                         }
-
-                        new Or
-                        {
-                            DestinationReg = DesReg,
-                            SourceReg = itemB.RegisterRef,
-                            SourceRef = itemB.AddressRef,
-                            SourceIndirect = itemB.IsIndirect,
-                            SourceDisplacement = itemB.Displacement
-                        };
-
-                        vStack.Push(new StackItem { RegisterRef = DesReg, OperandType = itemA.OperandType });
                     }
                     break;
                 default:
