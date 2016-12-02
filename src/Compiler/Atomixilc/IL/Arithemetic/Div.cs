@@ -46,68 +46,16 @@ namespace Atomixilc.IL
                         if (divisor.IsFloat || dividend.IsFloat || size > 4)
                             throw new Exception(string.Format("UnImplemented '{0}'", msIL));
 
-                        if (divisor.RegisterRef.HasValue)
-                            Optimizer.FreeRegister(divisor.RegisterRef.Value);
+                        if (!divisor.SystemStack || !dividend.SystemStack)
+                            throw new Exception(string.Format("UnImplemented-RegisterType '{0}'", msIL));
 
-                        if (dividend.RegisterRef.HasValue)
-                            Optimizer.FreeRegister(dividend.RegisterRef.Value);
-
-                        if (divisor.SystemStack)
-                        {
-                            new Pop { DestinationReg = Register.ESI };
-                        }
-
-                        if (dividend.SystemStack)
-                        {
-                            new Pop { DestinationReg = Register.EAX };
-                        }
-                        else
-                        {
-                            new Mov
-                            {
-                                DestinationReg = Register.EAX,
-                                SourceReg = dividend.RegisterRef,
-                                SourceIndirect = dividend.IsIndirect,
-                                SourceDisplacement = dividend.Displacement,
-                                SourceRef = dividend.AddressRef
-                            };
-                        }
-
+                        new Pop { DestinationReg = Register.EBX };
+                        new Pop { DestinationReg = Register.EAX };
                         new Cdq { };
+                        new IDiv { DestinationReg = Register.EBX };
+                        new Push { DestinationReg = Register.EAX };
 
-                        if (divisor.SystemStack)
-                        {
-                            new IDiv { DestinationReg = Register.ESI };
-                        }
-                        else
-                        {
-                            new IDiv
-                            {
-                                DestinationReg = dividend.RegisterRef,
-                                DestinationIndirect = dividend.IsIndirect,
-                                DestinationDisplacement = dividend.Displacement,
-                                DestinationRef = dividend.AddressRef
-                            };
-                        }
-
-                        Register? NonVolatileRegister = null;
-                        Optimizer.GetNonVolatileRegister(ref NonVolatileRegister);
-
-                        if (NonVolatileRegister.HasValue)
-                        {
-                            new Mov
-                            {
-                                DestinationReg = NonVolatileRegister.Value,
-                                SourceReg = Register.EAX
-                            };
-                            Optimizer.AllocateRegister(NonVolatileRegister.Value);
-                            Optimizer.vStack.Push(new StackItem(NonVolatileRegister.Value, typeof(Int32)));
-                        }
-                        else
-                        {
-                            new Push { DestinationReg = Register.EAX };
-                            Optimizer.vStack.Push(new StackItem(typeof(Int32)));
-                        }
+                        Optimizer.vStack.Push(new StackItem(divisor.OperandType));
                     }
                     break;
                 default:

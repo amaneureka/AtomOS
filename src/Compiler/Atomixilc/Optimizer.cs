@@ -40,6 +40,8 @@ namespace Atomixilc
                     throw new Exception("Tried to allocate already allocated register");
                 NonVolatileRegisters[aReg] = true;
             }
+            else
+                Verbose.Error("Tried to Allocate VolatileRegister '{0}'", aReg);
         }
 
         internal bool GetNonVolatileRegister(ref Register? aFreeReg)

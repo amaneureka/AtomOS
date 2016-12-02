@@ -46,66 +46,15 @@ namespace Atomixilc.IL
                         if (itemA.IsFloat || itemA.IsFloat || size > 4)
                             throw new Exception(string.Format("UnImplemented '{0}'", msIL));
 
-                        if (itemA.RegisterRef.HasValue)
-                            Optimizer.FreeRegister(itemA.RegisterRef.Value);
+                        if (!itemA.SystemStack || !itemB.SystemStack)
+                            throw new Exception(string.Format("UnImplemented-RegisterType '{0}'", msIL));
 
-                        if (itemB.RegisterRef.HasValue)
-                            Optimizer.FreeRegister(itemB.RegisterRef.Value);
+                        new Pop { DestinationReg = Register.EAX };
+                        new Pop { DestinationReg = Register.EBX };
+                        new IMul { DestinationReg = Register.EBX };
+                        new Push { DestinationReg = Register.EAX };
 
-                        if (itemB.SystemStack)
-                        {
-                            new Pop { DestinationReg = Register.ESI };
-                        }
-
-                        if (itemA.SystemStack)
-                        {
-                            new Pop { DestinationReg = Register.EAX };
-                        }
-                        else
-                        {
-                            new Mov
-                            {
-                                DestinationReg = Register.EAX,
-                                SourceReg = itemA.RegisterRef,
-                                SourceIndirect = itemA.IsIndirect,
-                                SourceDisplacement = itemA.Displacement,
-                                SourceRef = itemA.AddressRef
-                            };
-                        }
-
-                        if (itemB.SystemStack)
-                        {
-                            new IMul { DestinationReg = Register.ESI };
-                        }
-                        else
-                        {
-                            new IMul
-                            {
-                                DestinationReg = itemA.RegisterRef,
-                                DestinationIndirect = itemA.IsIndirect,
-                                DestinationDisplacement = itemA.Displacement,
-                                DestinationRef = itemA.AddressRef
-                            };
-                        }
-
-                        Register? NonVolatileRegister = null;
-                        Optimizer.GetNonVolatileRegister(ref NonVolatileRegister);
-
-                        if (NonVolatileRegister.HasValue)
-                        {
-                            new Mov
-                            {
-                                DestinationReg = NonVolatileRegister.Value,
-                                SourceReg = Register.EAX
-                            };
-                            Optimizer.AllocateRegister(NonVolatileRegister.Value);
-                            Optimizer.vStack.Push(new StackItem(NonVolatileRegister.Value, typeof(Int32)));
-                        }
-                        else
-                        {
-                            new Push { DestinationReg = Register.EAX };
-                            Optimizer.vStack.Push(new StackItem(typeof(Int32)));
-                        }
+                        Optimizer.vStack.Push(new StackItem(itemA.OperandType));
                     }
                     break;
                 default:

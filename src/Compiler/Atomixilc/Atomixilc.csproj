@@ -52,6 +52,9 @@
     <Compile Include="IL\Arithemetic\Div_Un.cs" />
     <Compile Include="IL\Arithemetic\Mul.cs" />
     <Compile Include="IL\Arithemetic\Or.cs" />
+    <Compile Include="IL\Arithemetic\Rem.cs" />
+    <Compile Include="IL\Arithemetic\Rem_Un.cs" />
+    <Compile Include="IL\Arithemetic\Sub.cs" />
     <Compile Include="IL\Arithemetic\Xor.cs" />
     <Compile Include="IL\CodeType\OpBranch.cs" />
     <Compile Include="IL\CodeType\OpDouble.cs" />
