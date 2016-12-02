@@ -24,8 +24,8 @@ namespace Atomixilc.IL
          */
         internal override void Execute(Options Config, OpCodeType xOp, MethodBase method, Optimizer Optimizer)
         {
-            if (Optimizer.vStack.Count < 2)
-                throw new Exception("Internal Compiler Error: vStack.Count < 2");
+            if (Optimizer.vStack.Count < 1)
+                throw new Exception("Internal Compiler Error: vStack.Count < 1");
 
             var item = Optimizer.vStack.Pop();
             var size = Helper.GetTypeSize(item.OperandType, Config.TargetPlatform);
