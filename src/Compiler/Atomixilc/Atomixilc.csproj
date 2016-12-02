@@ -56,6 +56,18 @@
     <Compile Include="IL\Arithemetic\Rem_Un.cs" />
     <Compile Include="IL\Arithemetic\Sub.cs" />
     <Compile Include="IL\Arithemetic\Xor.cs" />
+    <Compile Include="IL\Branch\Beq.cs" />
+    <Compile Include="IL\Branch\Bge.cs" />
+    <Compile Include="IL\Branch\Bge_Un.cs" />
+    <Compile Include="IL\Branch\Bgt.cs" />
+    <Compile Include="IL\Branch\Bgt_Un.cs" />
+    <Compile Include="IL\Branch\Ble.cs" />
+    <Compile Include="IL\Branch\Ble_Un.cs" />
+    <Compile Include="IL\Branch\Blt.cs" />
+    <Compile Include="IL\Branch\Blt_Un.cs" />
+    <Compile Include="IL\Branch\Br.cs" />
+    <Compile Include="IL\Branch\Brfalse.cs" />
+    <Compile Include="IL\Branch\Brtrue.cs" />
     <Compile Include="IL\CodeType\OpBranch.cs" />
     <Compile Include="IL\CodeType\OpDouble.cs" />
     <Compile Include="IL\CodeType\OpField.cs" />
@@ -77,6 +89,7 @@
     <Compile Include="Machine\Register.cs" />
     <Compile Include="Machine\x86\Add.cs" />
     <Compile Include="Machine\x86\And.cs" />
+    <Compile Include="Machine\x86\Cmp.cs" />
     <Compile Include="Machine\x86\ConditionalJump.cs" />
     <Compile Include="Machine\x86\Cdq.cs" />
     <Compile Include="Machine\x86\DestinationSource.cs" />
@@ -109,7 +122,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="IL\Branch\" />
     <Folder Include="IL\Conversion\" />
     <Folder Include="IL\Function\" />
     <Folder Include="IL\Load\" />
