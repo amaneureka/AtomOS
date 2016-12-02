@@ -82,6 +82,14 @@
     <Compile Include="IL\CodeType\OpToken.cs" />
     <Compile Include="IL\CodeType\OpType.cs" />
     <Compile Include="IL\CodeType\OpVar.cs" />
+    <Compile Include="IL\Conversion\Conv_I.cs" />
+    <Compile Include="IL\Conversion\Conv_I1.cs" />
+    <Compile Include="IL\Conversion\Conv_I2.cs" />
+    <Compile Include="IL\Conversion\Conv_I4.cs" />
+    <Compile Include="IL\Conversion\Conv_U1.cs" />
+    <Compile Include="IL\Conversion\Conv_U2.cs" />
+    <Compile Include="IL\Conversion\Conv_U4.cs" />
+    <Compile Include="IL\Conversion\Conv_U.cs" />
     <Compile Include="IL\MSIL.cs" />
     <Compile Include="IL\OpCodeType.cs" />
     <Compile Include="Machine\Instruction.cs" />
@@ -101,6 +109,8 @@
     <Compile Include="Machine\x86\Jmp.cs" />
     <Compile Include="Machine\x86\Leave.cs" />
     <Compile Include="Machine\x86\Mov.cs" />
+    <Compile Include="Machine\x86\Movsx.cs" />
+    <Compile Include="Machine\x86\Movzx.cs" />
     <Compile Include="Machine\x86\Mul.cs" />
     <Compile Include="Machine\x86\OnlyDestination.cs" />
     <Compile Include="Machine\x86\OnlySize.cs" />
@@ -122,7 +132,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="IL\Conversion\" />
     <Folder Include="IL\Function\" />
     <Folder Include="IL\Load\" />
     <Folder Include="IL\Object\" />
