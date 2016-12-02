@@ -13,7 +13,7 @@ namespace Atomixilc.IL
             msIL = aILCode;
         }
 
-        internal abstract void Execute(Options Config, OpCodeType xOp, MethodBase method, Stack<StackItem> vStack);
+        internal abstract void Execute(Options Config, OpCodeType xOp, MethodBase method, Optimizer Optimizer);
 
         internal static void Swap(ref StackItem A, ref StackItem B)
         {

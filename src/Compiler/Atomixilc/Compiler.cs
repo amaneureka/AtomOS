@@ -352,7 +352,7 @@ namespace Atomixilc
             EmitHeader(block, method, bodySize);
 
             var xOpCodes = EmitOpCodes(method);
-            var vStack = new Stack<StackItem>();
+            var Optimizer = new Optimizer(Config);
 
             foreach(var xOp in xOpCodes)
             {
@@ -377,7 +377,7 @@ namespace Atomixilc
                 if (ILHandler == null)
                     Verbose.Error("Unimplemented ILCode '{0}'", xOp.ILCode);
                 else
-                    ILHandler.Execute(Config, xOp, method, vStack);
+                    ILHandler.Execute(Config, xOp, method, Optimizer);
             }
 
             EmitFooter(block, method);

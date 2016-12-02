@@ -7,15 +7,46 @@ namespace Atomixilc
 {
     internal class StackItem
     {
-        internal Register? RegisterRef;
-        internal string AddressRef;
-        internal bool IsIndirect;
-        internal int Displacement;
-        internal Type OperandType;
+        internal readonly Register? RegisterRef;
+        internal readonly string AddressRef;
+
+        internal readonly bool IsIndirect;
+        internal readonly bool SystemStack;
+
+        internal readonly int Displacement;
+
+        internal readonly Type OperandType;
+
+        internal StackItem(Register aReg, Type aType, bool aIndirect = false, int aDisplacement = 0)
+        {
+            RegisterRef = aReg;
+            OperandType = aType;
+            IsIndirect = aIndirect;
+            Displacement = aDisplacement;
+        }
+
+        internal StackItem(Type aType)
+        {
+            SystemStack = true;
+            OperandType = aType;
+        }
+
+        internal StackItem(string aAddress, Type aType, bool aIndirect = false, int aDisplacement = 0)
+        {
+            AddressRef = aAddress;
+            OperandType = aType;
+            IsIndirect = aIndirect;
+            Displacement = aDisplacement;
+        }
 
         internal bool RegisterOnly
         {
             get { return (RegisterRef.HasValue && !IsIndirect); }
+        }
+
+        internal bool MemoryReference
+        {
+            get { return IsIndirect; }
         }
 
         internal bool IsFloat

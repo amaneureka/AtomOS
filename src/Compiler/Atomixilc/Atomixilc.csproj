@@ -93,6 +93,7 @@
     <Compile Include="Machine\x86\Sub.cs" />
     <Compile Include="Machine\x86\Test.cs" />
     <Compile Include="Machine\x86\Xor.cs" />
+    <Compile Include="Optimizer.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
