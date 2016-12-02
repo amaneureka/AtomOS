@@ -4,37 +4,39 @@ using System.Reflection;
 
 using Atomixilc.Machine;
 using Atomixilc.Attributes;
-using Atomixilc.IL.CodeType;
 using Atomixilc.Machine.x86;
 
 namespace Atomixilc.IL
 {
-    [ILImpl(ILCode.Br)]
-    internal class Br_il : MSIL
+    [ILImpl(ILCode.Pop)]
+    internal class Pop_il : MSIL
     {
-        internal Br_il()
-            : base(ILCode.Br)
+        internal Pop_il()
+            : base(ILCode.Pop)
         {
 
         }
 
         /*
-         * URL : https://msdn.microsoft.com/en-us/library/system.reflection.emit.opcodes.Br(v=vs.110).aspx
-         * Description : Unconditionally transfers control to a target instruction.
+         * URL : https://msdn.microsoft.com/en-us/library/system.reflection.emit.opcodes.Pop(v=vs.110).aspx
+         * Description : Removes the value currently on top of the evaluation stack.
          */
         internal override void Execute(Options Config, OpCodeType xOp, MethodBase method, Optimizer Optimizer)
         {
-            var offset = ((OpBranch)xOp).Value;
-            var xTrueLabel = Helper.GetLabel(method, offset);
+            if (Optimizer.vStack.Count < 1)
+                throw new Exception("Internal Compiler Error: vStack.Count < 2");
 
-            /* No evaluation stack behaviors are performed by this operation.
+            Optimizer.vStack.Pop();
+
+            /* The stack transitional behavior, in sequential order, is:
+             * The top value is popped from the stack.
              */
 
             switch (Config.TargetPlatform)
             {
                 case Architecture.x86:
                     {
-                        new Jmp { DestinationRef = xTrueLabel };
+                        new Add { DestinationReg = Register.ESP, SourceRef = "0x4" };
                     }
                     break;
                 default:

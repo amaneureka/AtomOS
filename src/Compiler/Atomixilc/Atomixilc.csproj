@@ -92,6 +92,8 @@
     <Compile Include="IL\Conversion\Conv_U.cs" />
     <Compile Include="IL\MSIL.cs" />
     <Compile Include="IL\OpCodeType.cs" />
+    <Compile Include="IL\Stack\Dup.cs" />
+    <Compile Include="IL\Stack\Pop.cs" />
     <Compile Include="Machine\Instruction.cs" />
     <Compile Include="Machine\Label.cs" />
     <Compile Include="Machine\Register.cs" />
@@ -135,7 +137,6 @@
     <Folder Include="IL\Function\" />
     <Folder Include="IL\Load\" />
     <Folder Include="IL\Object\" />
-    <Folder Include="IL\Stack\" />
     <Folder Include="IL\Store\" />
     <Folder Include="Machine\ARM\" />
     <Folder Include="Machine\x64\" />
