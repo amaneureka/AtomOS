@@ -42,8 +42,8 @@ namespace Atomix.IL
                 xOffset += 12; //Extra offset =)
 
             //As we are sure xFieldInfo should contain value as if not than it throws error in GetFieldOffset
-            var xSize = xFieldInfo.FieldType.SizeOf();
-            
+            var xSize = xF.FieldType.SizeOf();
+
             switch (ILCompiler.CPUArchitecture)
             {
                 #region _x86_

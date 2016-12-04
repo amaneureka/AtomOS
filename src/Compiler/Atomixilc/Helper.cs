@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace Atomixilc
 {
@@ -89,6 +90,31 @@ namespace Atomixilc
                 || (type == typeof(IntPtr)))
                 return true;
             return false;
+        }
+
+        internal static int GetFieldOffset(Options Config, Type type, FieldInfo field)
+        {
+            int offset = 0;
+            if (type.IsClass && !type.IsValueType)
+                offset = 12;
+
+            var attrib = field.GetCustomAttribute<FieldOffsetAttribute>();
+            if (attrib != null)
+                return attrib.Value;
+
+            var fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).OrderBy(a => a.Name).ToList();
+
+            if (type.BaseType != null)
+                fields.AddRange(type.BaseType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).OrderBy(a => a.Name));
+
+            foreach(var fld in fields)
+            {
+                if (fld == field)
+                    return offset;
+                offset += GetTypeSize(fld.FieldType, Config.TargetPlatform);
+            }
+
+            throw new Exception(string.Format("Unable to find memory offset of '{0}' in type '{1}'", field.ToString(), type.ToString()));
         }
 
         internal static int GetTypeSize(Type type, Architecture platform, bool aligned = false)
