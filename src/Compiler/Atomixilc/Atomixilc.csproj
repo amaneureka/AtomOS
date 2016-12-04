@@ -122,6 +122,11 @@
     <Compile Include="IL\Stack\Pop.cs" />
     <Compile Include="IL\Store\Starg.cs" />
     <Compile Include="IL\Store\Stfld.cs" />
+    <Compile Include="IL\Store\Stind\Stind_I.cs" />
+    <Compile Include="IL\Store\Stind\Stind_I1.cs" />
+    <Compile Include="IL\Store\Stind\Stind_I2.cs" />
+    <Compile Include="IL\Store\Stind\Stind_I4.cs" />
+    <Compile Include="IL\Store\Stind\Stind_Ref.cs" />
     <Compile Include="IL\Store\Stloc.cs" />
     <Compile Include="Machine\Instruction.cs" />
     <Compile Include="Machine\Label.cs" />
