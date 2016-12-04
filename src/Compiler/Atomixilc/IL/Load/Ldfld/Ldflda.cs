@@ -28,7 +28,7 @@ namespace Atomixilc.IL
                 throw new Exception("Internal Compiler Error: vStack.Count < 1");
 
             var field = ((OpField)xOp).Value;
-            var offset = Helper.GetFieldOffset(Config, field.DeclaringType, field);
+            var offset = Helper.GetFieldOffset(field.DeclaringType, field, Config.TargetPlatform);
 
             /* The stack transitional behavior, in sequential order, is:
              * An object reference (or pointer) is pushed onto the stack.

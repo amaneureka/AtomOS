@@ -120,6 +120,9 @@
     <Compile Include="IL\OpCodeType.cs" />
     <Compile Include="IL\Stack\Dup.cs" />
     <Compile Include="IL\Stack\Pop.cs" />
+    <Compile Include="IL\Store\Starg.cs" />
+    <Compile Include="IL\Store\Stfld.cs" />
+    <Compile Include="IL\Store\Stloc.cs" />
     <Compile Include="Machine\Instruction.cs" />
     <Compile Include="Machine\Label.cs" />
     <Compile Include="Machine\Register.cs" />
@@ -164,7 +167,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="IL\Object\" />
-    <Folder Include="IL\Store\" />
     <Folder Include="Machine\ARM\" />
     <Folder Include="Machine\x64\" />
   </ItemGroup>
