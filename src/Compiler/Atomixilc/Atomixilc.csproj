@@ -92,6 +92,7 @@
     <Compile Include="IL\Conversion\Conv_U.cs" />
     <Compile Include="IL\Function\Call.cs" />
     <Compile Include="IL\Function\Ret.cs" />
+    <Compile Include="IL\Load\Ldarg.cs" />
     <Compile Include="IL\Load\Ldc\Ldc_I4.cs" />
     <Compile Include="IL\Load\Ldelem\Ldelem.cs" />
     <Compile Include="IL\Load\Ldelem\Ldelem_I.cs" />
