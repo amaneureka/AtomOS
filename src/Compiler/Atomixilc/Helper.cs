@@ -80,6 +80,16 @@ namespace Atomixilc
             return string.Format("{0}.IL_{1}", xMethod.FullName(), NextPosition.ToString("X").PadLeft(5, '0'));
         }
 
+        internal static bool IsSigned(Type type)
+        {
+            if ((type == typeof(sbyte))
+                || (type == typeof(short))
+                || (type == typeof(int))
+                || (type == typeof(long)))
+                return true;
+            return false;
+        }
+
         internal static int GetTypeSize(Type type, Architecture platform, bool aligned = false)
         {
             if (aligned)

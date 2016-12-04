@@ -719,17 +719,8 @@ namespace Atomix
             for (int i = xParams.Length - 1; i > aParamIndex; i--)
                 xOffset += xParams[i].ParameterType.SizeOf().Align();
 
-            if (aParamIndex == -1) // non-static method
-            {
-                if (aMethod.DeclaringType.IsValueType)
-                    xOffset += 4;
-                else
-                    xOffset += aMethod.DeclaringType.SizeOf().Align();
-            }
-            else
-                xOffset += xParams[aParamIndex].ParameterType.SizeOf().Align();
 
-            return (xOffset - 0x4);
+            return xOffset;
         }
     }
 }
