@@ -55,7 +55,8 @@ namespace Atomixilc.IL
                                             DestinationReg = Register.EAX,
                                             SourceReg = Register.EBP,
                                             SourceIndirect = true,
-                                            SourceDisplacement = -EBPoffset
+                                            SourceDisplacement = -EBPoffset,
+                                            Size = (byte)(size * 8)
                                         };
                                     }
                                     else
@@ -65,7 +66,8 @@ namespace Atomixilc.IL
                                             DestinationReg = Register.EAX,
                                             SourceReg = Register.EBP,
                                             SourceIndirect = true,
-                                            SourceDisplacement = -EBPoffset
+                                            SourceDisplacement = -EBPoffset,
+                                            Size = (byte)(size * 8)
                                         };
                                     }
 
