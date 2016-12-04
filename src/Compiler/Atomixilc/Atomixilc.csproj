@@ -92,6 +92,15 @@
     <Compile Include="IL\Conversion\Conv_U.cs" />
     <Compile Include="IL\Function\Call.cs" />
     <Compile Include="IL\Function\Ret.cs" />
+    <Compile Include="IL\Load\Ldc\Ldc_I4.cs" />
+    <Compile Include="IL\Load\Ldelem\Ldelem.cs" />
+    <Compile Include="IL\Load\Ldelem\Ldelem_I.cs" />
+    <Compile Include="IL\Load\Ldelem\Ldelem_I1.cs" />
+    <Compile Include="IL\Load\Ldelem\Ldelem_I2.cs" />
+    <Compile Include="IL\Load\Ldelem\Ldelem_I4.cs" />
+    <Compile Include="IL\Load\Ldelem\Ldelem_U1.cs" />
+    <Compile Include="IL\Load\Ldelem\Ldelem_U2.cs" />
+    <Compile Include="IL\Load\Ldelem\Ldelem_U4.cs" />
     <Compile Include="IL\MSIL.cs" />
     <Compile Include="IL\OpCodeType.cs" />
     <Compile Include="IL\Stack\Dup.cs" />
@@ -137,7 +146,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="IL\Load\" />
+    <Folder Include="IL\Load\Ldind\" />
     <Folder Include="IL\Object\" />
     <Folder Include="IL\Store\" />
     <Folder Include="Machine\ARM\" />
