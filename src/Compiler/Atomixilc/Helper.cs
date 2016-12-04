@@ -85,7 +85,8 @@ namespace Atomixilc
             if ((type == typeof(sbyte))
                 || (type == typeof(short))
                 || (type == typeof(int))
-                || (type == typeof(long)))
+                || (type == typeof(long))
+                || (type == typeof(IntPtr)))
                 return true;
             return false;
         }
