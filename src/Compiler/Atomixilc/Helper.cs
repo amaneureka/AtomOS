@@ -92,7 +92,7 @@ namespace Atomixilc
             return false;
         }
 
-        internal static int GetFieldOffset(Options Config, Type type, FieldInfo field)
+        internal static int GetFieldOffset(Type type, FieldInfo field, Architecture platform)
         {
             int offset = 0;
             if (type.IsClass && !type.IsValueType)
@@ -111,10 +111,24 @@ namespace Atomixilc
             {
                 if (fld == field)
                     return offset;
-                offset += GetTypeSize(fld.FieldType, Config.TargetPlatform);
+                offset += GetTypeSize(fld.FieldType, platform);
             }
 
             throw new Exception(string.Format("Unable to find memory offset of '{0}' in type '{1}'", field.ToString(), type.ToString()));
+        }
+
+        internal static int GetVariableOffset(MethodBody method, int index, Architecture platform)
+        {
+            var vars = method.LocalVariables;
+
+            if (index >= vars.Count)
+                throw new Exception("Variable Index out of bound");
+
+            int offset = 4;
+            for (int i = 0; i < index; i++)
+                offset += GetTypeSize(vars[i].LocalType, platform, true);
+
+            return offset;
         }
 
         internal static int GetTypeSize(Type type, Architecture platform, bool aligned = false)
