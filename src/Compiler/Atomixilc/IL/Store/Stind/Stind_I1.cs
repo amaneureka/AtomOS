@@ -33,7 +33,7 @@ namespace Atomixilc.IL
              * The value and the address are popped from the stack; the value is stored at the address.
              */
 
-            new Comment(string.Format("[{0}] : {1}", ToString(), xOp.ToString()));
+            new Comment(string.Format("[{0}] : {1} => {2}", ToString(), xOp.ToString(), Optimizer.vStack.Count));
 
             Optimizer.vStack.Pop();
             Optimizer.vStack.Pop();

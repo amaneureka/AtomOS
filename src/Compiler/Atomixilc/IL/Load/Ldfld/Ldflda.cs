@@ -36,7 +36,7 @@ namespace Atomixilc.IL
              * The address of the specified field is pushed onto the stack.
              */
 
-            new Comment(string.Format("[{0}] : {1}", ToString(), xOp.ToString()));
+            new Comment(string.Format("[{0}] : {1} => {2}", ToString(), xOp.ToString(), Optimizer.vStack.Count));
 
             Optimizer.vStack.Pop();
 

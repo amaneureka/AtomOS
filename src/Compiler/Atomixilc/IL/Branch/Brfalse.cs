@@ -39,7 +39,7 @@ namespace Atomixilc.IL
              * value is popped from the stack; if value is false, branch to target.
              */
 
-            new Comment(string.Format("[{0}] : {1}", ToString(), xOp.ToString()));
+            new Comment(string.Format("[{0}] : {1} => {2}", ToString(), xOp.ToString(), Optimizer.vStack.Count));
 
             switch (Config.TargetPlatform)
             {

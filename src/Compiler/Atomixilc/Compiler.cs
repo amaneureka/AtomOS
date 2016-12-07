@@ -164,6 +164,8 @@ namespace Atomixilc
                     {
                         if (!(code is Label))
                             SW.Write("    ");
+                        else
+                            SW.WriteLine();
                         SW.WriteLine(code);
                     }
                     SW.WriteLine();
@@ -356,7 +358,9 @@ namespace Atomixilc
 
             EmitHeader(block, method, bodySize);
 
-            var xOpCodes = EmitOpCodes(method);
+            var ReferencedPositions = new HashSet<int>();
+
+            var xOpCodes = EmitOpCodes(method, ReferencedPositions);
             var Optimizer = new Optimizer(Config);
 
             foreach(var xOp in xOpCodes)
@@ -376,6 +380,9 @@ namespace Atomixilc
                         ScanQ.Enqueue(xOpToken.ValueField.DeclaringType);
                 }
 
+                if (ReferencedPositions.Contains(xOp.Position))
+                    new Label(Helper.GetLabel(method, xOp.Position));
+
                 MSIL ILHandler = null;
                 ILCodes.TryGetValue(xOp.ILCode, out ILHandler);
 
@@ -384,6 +391,9 @@ namespace Atomixilc
                 else
                     ILHandler.Execute(Config, xOp, method, Optimizer);
             }
+
+            if (Optimizer.vStack.Count != 0)
+                Verbose.Warning("vStack.Count != 0");
 
             Instruction.Block = null;
         }
@@ -465,7 +475,7 @@ namespace Atomixilc
             }
         }
 
-        internal List<OpCodeType> EmitOpCodes(MethodBase method)
+        internal List<OpCodeType> EmitOpCodes(MethodBase method, HashSet<int> ReferencedPositions)
         {
             var body = method.GetMethodBody();
             if (body == null)
@@ -591,6 +601,7 @@ namespace Atomixilc
                             int xTarget = index + 1 + (sbyte)byteCode[index];
 
                             index++;
+                            ReferencedPositions.Add(xTarget);
                             switch (xOpCodeVal)
                             {
                                 case ILCode.Beq_S:
@@ -645,6 +656,7 @@ namespace Atomixilc
                         {
                             int xTarget = index + 4 + BitConverter.ToInt32(byteCode, index);
                             index += 4;
+                            ReferencedPositions.Add(xTarget);
                             xOpCodeType = new OpBranch(xOpCodeVal, position, index, xTarget, xCurrentHandler);
                         }
                         break;
@@ -707,7 +719,10 @@ namespace Atomixilc
                             int xNextOpPos = index + xCount * 4;
                             int[] xBranchLocations = new int[xCount];
                             for (int i = 0; i < xCount; i++)
+                            {
                                 xBranchLocations[i] = xNextOpPos + BitConverter.ToInt32(byteCode, index + i * 4);
+                                ReferencedPositions.Add(xBranchLocations[i]);
+                            }
                             xOpCodeType = new OpSwitch(xOpCodeVal, position, xNextOpPos, xBranchLocations, xCurrentHandler);
                             index = xNextOpPos;
                         }

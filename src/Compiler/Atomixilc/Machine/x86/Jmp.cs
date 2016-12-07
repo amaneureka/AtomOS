@@ -24,7 +24,7 @@ namespace Atomixilc.Machine.x86
             if (Condition == ConditionalJump.JMP)
                 return string.Format("jmp {0}", DestinationRef);
 
-            return string.Format("{0} near {1}", Condition, DestinationRef);
+            return string.Format("{0} near {1}", Condition.ToString().ToLower(), DestinationRef);
         }
     }
 }
