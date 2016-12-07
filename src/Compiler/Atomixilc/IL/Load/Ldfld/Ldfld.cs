@@ -37,6 +37,8 @@ namespace Atomixilc.IL
              * The value stored in the field is pushed onto the stack.
              */
 
+            new Comment(string.Format("[{0}] : {1}", ToString(), xOp.ToString()));
+
             Optimizer.vStack.Pop();
 
             switch (Config.TargetPlatform)

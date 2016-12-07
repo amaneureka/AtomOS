@@ -38,5 +38,10 @@ namespace Atomixilc.IL.CodeType
             if (IsType)
                 ValueType = aModule.ResolveType(Value, aTypeGenericArgs, aMethodGenericArgs);
         }
+
+        public override string ToString()
+        {
+            return string.Format("{0} [0x{1}-0x{2}] {3}", GetType().Name, Position.ToString("X4"), NextPosition.ToString("X4"), IsField ? ValueField.ToString() : ValueType.ToString());
+        }
     }
 }

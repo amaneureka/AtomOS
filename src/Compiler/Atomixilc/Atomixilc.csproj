@@ -134,6 +134,7 @@
     <Compile Include="IL\Store\Stind\Stind_I4.cs" />
     <Compile Include="IL\Store\Stind\Stind_Ref.cs" />
     <Compile Include="IL\Store\Stloc.cs" />
+    <Compile Include="Machine\Comment.cs" />
     <Compile Include="Machine\Instruction.cs" />
     <Compile Include="Machine\Label.cs" />
     <Compile Include="Machine\Register.cs" />

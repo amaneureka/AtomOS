@@ -36,6 +36,8 @@ namespace Atomixilc.IL
              * The address stored in the local variable at the specified index is pushed onto the stack.
              */
 
+            new Comment(string.Format("[{0}] : {1}", ToString(), xOp.ToString()));
+
             switch (Config.TargetPlatform)
             {
                 case Architecture.x86:

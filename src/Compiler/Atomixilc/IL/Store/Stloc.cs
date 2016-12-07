@@ -39,6 +39,8 @@ namespace Atomixilc.IL
              * A value is popped off of the stack and placed in local variable index.
              */
 
+            new Comment(string.Format("[{0}] : {1}", ToString(), xOp.ToString()));
+
             Optimizer.vStack.Pop();
 
             switch (Config.TargetPlatform)

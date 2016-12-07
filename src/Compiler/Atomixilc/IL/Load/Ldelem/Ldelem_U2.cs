@@ -34,6 +34,8 @@ namespace Atomixilc.IL
              * The value is pushed onto the stack.
              */
 
+            new Comment(string.Format("[{0}] : {1}", ToString(), xOp.ToString()));
+
             Optimizer.vStack.Pop();
             Optimizer.vStack.Pop();
 

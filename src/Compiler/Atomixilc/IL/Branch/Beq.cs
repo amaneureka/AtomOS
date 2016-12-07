@@ -42,6 +42,8 @@ namespace Atomixilc.IL
              * value2 and value1 are popped from the stack; if value1 is equal to value2, the branch operation is performed.
              */
 
+            new Comment(string.Format("[{0}] : {1}", ToString(), xOp.ToString()));
+
             switch (Config.TargetPlatform)
             {
                 case Architecture.x86:
