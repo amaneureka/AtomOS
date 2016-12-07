@@ -41,6 +41,8 @@ namespace Atomixilc.IL
              * The return value obtained in step 1 is pushed onto the caller evaluation stack.
              */
 
+            new Comment(string.Format("[{0}] : {1}", ToString(), xOp.ToString()));
+
             switch (Config.TargetPlatform)
             {
                 case Architecture.x86:

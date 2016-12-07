@@ -39,6 +39,8 @@ namespace Atomixilc.IL
              * The result is pushed onto the stack.
              */
 
+            new Comment(string.Format("[{0}] : {1}", ToString(), xOp.ToString()));
+
             switch (Config.TargetPlatform)
             {
                 case Architecture.x86:

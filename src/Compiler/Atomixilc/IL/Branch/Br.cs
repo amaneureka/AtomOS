@@ -30,6 +30,8 @@ namespace Atomixilc.IL
             /* No evaluation stack behaviors are performed by this operation.
              */
 
+            new Comment(string.Format("[{0}] : {1}", ToString(), xOp.ToString()));
+
             switch (Config.TargetPlatform)
             {
                 case Architecture.x86:

@@ -60,7 +60,7 @@ namespace Atomixilc
                 var attributes = type.GetCustomAttributes<ILImplAttribute>();
                 foreach (var attrib in attributes)
                 {
-                    Verbose.Message(type.ToString());
+                    Verbose.Message("[MSIL] {0}", type.ToString());
                     ILCodes.Add(attrib.OpCode, (MSIL)Activator.CreateInstance(type));
                 }
             }
@@ -69,6 +69,7 @@ namespace Atomixilc
             foreach (var xField in ilOpcodes)
             {
                 var xOpCode = (Emit.OpCode)xField.GetValue(null);
+                Verbose.Message("[OpCode] {0} [0x{1}]", xOpCode, xOpCode.Value.ToString("X4"));
                 OpCode.Add(xOpCode.Value, xOpCode);
             }
         }
@@ -103,6 +104,7 @@ namespace Atomixilc
                 var method = ScanObject as MethodBase;
                 if (method != null)
                 {
+                    Verbose.Message("Scanning Method : {0}", method.FullName());
                     ScanMethod(method);
                     continue;
                 }
@@ -110,6 +112,7 @@ namespace Atomixilc
                 var type = ScanObject as Type;
                 if (type != null)
                 {
+                    Verbose.Message("Scanning Type : {0}", type.FullName);
                     ScanType(type);
                     continue;
                 }
@@ -117,6 +120,7 @@ namespace Atomixilc
                 var field = ScanObject as FieldInfo;
                 if (field != null)
                 {
+                    Verbose.Message("Scanning Field : {0}", field.FullName());
                     ProcessFieldInfo(field);
                     continue;
                 }
@@ -381,7 +385,6 @@ namespace Atomixilc
                     ILHandler.Execute(Config, xOp, method, Optimizer);
             }
 
-            EmitFooter(block, method);
             Instruction.Block = null;
         }
 

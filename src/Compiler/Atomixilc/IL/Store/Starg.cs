@@ -29,10 +29,6 @@ namespace Atomixilc.IL
 
             var index = ((OpVar)xOp).Value;
 
-            /* The stack transitional behavior, in sequential order, is:
-             * The value currently on top of the stack is popped and placed in argument slot num.
-             */
-
             int EBPoffset = Ldarg_il.GetArgumentOffset(Config, method, index);
 
             Type ArgType = null;
@@ -51,6 +47,12 @@ namespace Atomixilc.IL
                 ArgType = method.GetParameters()[index].ParameterType;
 
             int ArgSize = Helper.GetTypeSize(ArgType, Config.TargetPlatform);
+
+            /* The stack transitional behavior, in sequential order, is:
+             * The value currently on top of the stack is popped and placed in argument slot num.
+             */
+
+            new Comment(string.Format("[{0}] : {1}", ToString(), xOp.ToString()));
 
             Optimizer.vStack.Pop();
 
