@@ -52,7 +52,7 @@ namespace Atomixilc.IL
              * The value currently on top of the stack is popped and placed in argument slot num.
              */
 
-            new Comment(string.Format("[{0}] : {1}", ToString(), xOp.ToString()));
+            new Comment(string.Format("[{0}] : {1} => {2}", ToString(), xOp.ToString(), Optimizer.vStack.Count));
 
             Optimizer.vStack.Pop();
 
