@@ -121,6 +121,12 @@
     <Compile Include="IL\Stack\Dup.cs" />
     <Compile Include="IL\Stack\Pop.cs" />
     <Compile Include="IL\Store\Starg.cs" />
+    <Compile Include="IL\Store\Stelem\Stelem.cs" />
+    <Compile Include="IL\Store\Stelem\Stelem_I.cs" />
+    <Compile Include="IL\Store\Stelem\Stelem_I1.cs" />
+    <Compile Include="IL\Store\Stelem\Stelem_I2.cs" />
+    <Compile Include="IL\Store\Stelem\Stelem_I4.cs" />
+    <Compile Include="IL\Store\Stelem\Stelem_Ref.cs" />
     <Compile Include="IL\Store\Stfld.cs" />
     <Compile Include="IL\Store\Stind\Stind_I.cs" />
     <Compile Include="IL\Store\Stind\Stind_I1.cs" />
