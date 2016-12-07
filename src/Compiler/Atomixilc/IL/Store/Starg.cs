@@ -12,7 +12,7 @@ namespace Atomixilc.IL
     [ILImpl(ILCode.Starg)]
     internal class Starg_il : MSIL
     {
-        internal Starg_il()
+        public Starg_il()
             : base(ILCode.Starg)
         {
 

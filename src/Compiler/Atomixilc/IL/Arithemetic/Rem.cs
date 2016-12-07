@@ -11,7 +11,7 @@ namespace Atomixilc.IL
     [ILImpl(ILCode.Rem)]
     internal class Rem_il : MSIL
     {
-        internal Rem_il()
+        public Rem_il()
             : base(ILCode.Rem)
         {
 

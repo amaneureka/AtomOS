@@ -12,7 +12,7 @@ namespace Atomixilc.IL
     [ILImpl(ILCode.Brfalse)]
     internal class Brfalse_il : MSIL
     {
-        internal Brfalse_il()
+        public Brfalse_il()
             : base(ILCode.Brfalse)
         {
 

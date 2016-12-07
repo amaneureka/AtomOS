@@ -11,7 +11,7 @@ namespace Atomixilc.IL
     [ILImpl(ILCode.Mul)]
     internal class Mul_il : MSIL
     {
-        internal Mul_il()
+        public Mul_il()
             : base(ILCode.Mul)
         {
 

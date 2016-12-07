@@ -11,7 +11,7 @@ namespace Atomixilc.IL
     [ILImpl(ILCode.And)]
     internal class And_il : MSIL
     {
-        internal And_il()
+        public And_il()
             : base(ILCode.And)
         {
 

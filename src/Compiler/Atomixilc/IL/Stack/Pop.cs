@@ -11,7 +11,7 @@ namespace Atomixilc.IL
     [ILImpl(ILCode.Pop)]
     internal class Pop_il : MSIL
     {
-        internal Pop_il()
+        public Pop_il()
             : base(ILCode.Pop)
         {
 

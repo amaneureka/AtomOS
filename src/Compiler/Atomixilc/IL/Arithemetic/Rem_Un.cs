@@ -11,7 +11,7 @@ namespace Atomixilc.IL
     [ILImpl(ILCode.Rem_Un)]
     internal class Rem_Un_il : MSIL
     {
-        internal Rem_Un_il()
+        public Rem_Un_il()
             : base(ILCode.Rem_Un)
         {
 

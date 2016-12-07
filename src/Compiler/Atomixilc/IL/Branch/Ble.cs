@@ -12,7 +12,7 @@ namespace Atomixilc.IL
     [ILImpl(ILCode.Ble)]
     internal class Ble_il : MSIL
     {
-        internal Ble_il()
+        public Ble_il()
             : base(ILCode.Ble)
         {
 

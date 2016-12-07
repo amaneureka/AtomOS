@@ -12,7 +12,7 @@ namespace Atomixilc.IL
     [ILImpl(ILCode.Ldelem_U2)]
     internal class Ldelem_U2_il : MSIL
     {
-        internal Ldelem_U2_il()
+        public Ldelem_U2_il()
             : base(ILCode.Ldelem_U2)
         {
 

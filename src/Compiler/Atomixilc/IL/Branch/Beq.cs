@@ -12,7 +12,7 @@ namespace Atomixilc.IL
     [ILImpl(ILCode.Beq)]
     internal class Beq_il : MSIL
     {
-        internal Beq_il()
+        public Beq_il()
             : base(ILCode.Beq)
         {
 

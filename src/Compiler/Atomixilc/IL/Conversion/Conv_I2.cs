@@ -12,7 +12,7 @@ namespace Atomixilc.IL
     [ILImpl(ILCode.Conv_I2)]
     internal class Conv_I2_il : MSIL
     {
-        internal Conv_I2_il()
+        public Conv_I2_il()
             : base(ILCode.Conv_I2)
         {
 

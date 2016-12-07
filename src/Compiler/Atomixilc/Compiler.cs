@@ -60,7 +60,8 @@ namespace Atomixilc
                 var attributes = type.GetCustomAttributes<ILImplAttribute>();
                 foreach (var attrib in attributes)
                 {
-                    ILCodes.Add(attrib.OpCode, (MSIL)Activator.CreateInstance(type, this));
+                    Verbose.Message(type.ToString());
+                    ILCodes.Add(attrib.OpCode, (MSIL)Activator.CreateInstance(type));
                 }
             }
 
