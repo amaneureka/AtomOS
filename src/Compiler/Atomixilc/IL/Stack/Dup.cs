@@ -11,7 +11,7 @@ namespace Atomixilc.IL
     [ILImpl(ILCode.Dup)]
     internal class Dup_il : MSIL
     {
-        internal Dup_il()
+        public Dup_il()
             : base(ILCode.Dup)
         {
 

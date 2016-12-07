@@ -12,7 +12,7 @@ namespace Atomixilc.IL
     [ILImpl(ILCode.Stloc)]
     internal class Stloc_il : MSIL
     {
-        internal Stloc_il()
+        public Stloc_il()
             : base(ILCode.Stloc)
         {
 

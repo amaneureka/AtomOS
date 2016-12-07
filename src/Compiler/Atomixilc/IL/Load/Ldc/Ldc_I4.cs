@@ -12,7 +12,7 @@ namespace Atomixilc.IL
     [ILImpl(ILCode.Ldc_I4)]
     internal class Ldc_I4_il : MSIL
     {
-        internal Ldc_I4_il()
+        public Ldc_I4_il()
             : base(ILCode.Ldc_I4)
         {
 

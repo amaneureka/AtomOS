@@ -12,7 +12,7 @@ namespace Atomixilc.IL
     [ILImpl(ILCode.Ldarga)]
     internal class Ldarga_il : MSIL
     {
-        internal Ldarga_il()
+        public Ldarga_il()
             : base(ILCode.Ldarga)
         {
 

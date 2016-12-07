@@ -12,7 +12,7 @@ namespace Atomixilc.IL
     [ILImpl(ILCode.Stind_I4)]
     internal class Stind_I4_il : MSIL
     {
-        internal Stind_I4_il()
+        public Stind_I4_il()
             : base(ILCode.Stind_I4)
         {
 

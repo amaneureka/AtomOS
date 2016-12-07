@@ -12,7 +12,7 @@ namespace Atomixilc.IL
     [ILImpl(ILCode.Bge)]
     internal class Bge_il : MSIL
     {
-        internal Bge_il()
+        public Bge_il()
             : base(ILCode.Bge)
         {
 

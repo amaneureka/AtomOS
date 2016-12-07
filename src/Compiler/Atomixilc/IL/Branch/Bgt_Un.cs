@@ -12,7 +12,7 @@ namespace Atomixilc.IL
     [ILImpl(ILCode.Bgt_Un)]
     internal class Bgt_Un_il : MSIL
     {
-        internal Bgt_Un_il()
+        public Bgt_Un_il()
             : base(ILCode.Bgt_Un)
         {
 

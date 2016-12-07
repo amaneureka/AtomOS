@@ -11,7 +11,7 @@ namespace Atomixilc.IL
     [ILImpl(ILCode.Xor)]
     internal class Xor_il : MSIL
     {
-        internal Xor_il()
+        public Xor_il()
             : base(ILCode.Xor)
         {
 

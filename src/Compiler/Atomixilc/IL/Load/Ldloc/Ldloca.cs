@@ -12,7 +12,7 @@ namespace Atomixilc.IL
     [ILImpl(ILCode.Ldloca)]
     internal class Ldloca_il : MSIL
     {
-        internal Ldloca_il()
+        public Ldloca_il()
             : base(ILCode.Ldloca)
         {
 

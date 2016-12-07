@@ -12,7 +12,7 @@ namespace Atomixilc.IL
     [ILImpl(ILCode.Stelem)]
     internal class Stelem_il : MSIL
     {
-        internal Stelem_il()
+        public Stelem_il()
             : base(ILCode.Stelem)
         {
 

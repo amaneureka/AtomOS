@@ -13,7 +13,7 @@ namespace Atomixilc.IL
     [ILImpl(ILCode.Call)]
     internal class Call_il : MSIL
     {
-        internal Call_il()
+        public Call_il()
             : base(ILCode.Call)
         {
 

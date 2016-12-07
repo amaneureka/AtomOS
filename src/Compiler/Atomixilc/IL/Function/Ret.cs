@@ -13,7 +13,7 @@ namespace Atomixilc.IL
     [ILImpl(ILCode.Ret)]
     internal class Ret_il : MSIL
     {
-        internal Ret_il()
+        public Ret_il()
             : base(ILCode.Ret)
         {
 

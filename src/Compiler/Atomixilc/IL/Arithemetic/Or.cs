@@ -11,7 +11,7 @@ namespace Atomixilc.IL
     [ILImpl(ILCode.Or)]
     internal class Or_il : MSIL
     {
-        internal Or_il()
+        public Or_il()
             : base(ILCode.Or)
         {
 

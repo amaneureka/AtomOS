@@ -11,7 +11,7 @@ namespace Atomixilc.IL
     [ILImpl(ILCode.Add)]
     internal class Add_il : MSIL
     {
-        internal Add_il()
+        public Add_il()
             :base(ILCode.Add)
         {
 
