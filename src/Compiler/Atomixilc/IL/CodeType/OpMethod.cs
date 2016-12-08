@@ -6,11 +6,13 @@ namespace Atomixilc.IL.CodeType
     internal class OpMethod : OpCodeType
     {
         internal readonly MethodBase Value;
+        internal readonly int MethodUID;
 
         internal OpMethod(ILCode aCode, int aPosition, int aNextPosition, MethodBase aValue, ExceptionHandlingClause aEhc)
             :base(aCode, aPosition, aNextPosition, aEhc)
         {
             Value = aValue;
+            MethodUID = aValue.GetHashCode();
         }
 
         public override string ToString()

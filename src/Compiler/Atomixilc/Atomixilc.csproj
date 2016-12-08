@@ -31,6 +31,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -91,6 +92,7 @@
     <Compile Include="IL\Conversion\Conv_U4.cs" />
     <Compile Include="IL\Conversion\Conv_U.cs" />
     <Compile Include="IL\Function\Call.cs" />
+    <Compile Include="IL\Function\Callvirt.cs" />
     <Compile Include="IL\Function\Ret.cs" />
     <Compile Include="IL\Load\Ldarg\Ldarg.cs" />
     <Compile Include="IL\Load\Ldarg\Ldarga.cs" />
@@ -140,6 +142,7 @@
     <Compile Include="IL\Store\Stind\Stind_I4.cs" />
     <Compile Include="IL\Store\Stind\Stind_Ref.cs" />
     <Compile Include="IL\Store\Stloc.cs" />
+    <Compile Include="Lib\VTable.cs" />
     <Compile Include="Machine\Comment.cs" />
     <Compile Include="Machine\Instruction.cs" />
     <Compile Include="Machine\Label.cs" />
