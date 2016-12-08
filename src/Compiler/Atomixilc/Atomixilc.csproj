@@ -116,6 +116,9 @@
     <Compile Include="IL\Load\Ldind\Ldind_U4.cs" />
     <Compile Include="IL\Load\Ldloc\Ldloc.cs" />
     <Compile Include="IL\Load\Ldloc\Ldloca.cs" />
+    <Compile Include="IL\Load\Ldnull.cs" />
+    <Compile Include="IL\Load\Ldsfld\Ldsfld.cs" />
+    <Compile Include="IL\Load\Ldsfld\Ldsflda.cs" />
     <Compile Include="IL\Load\Ldstr.cs" />
     <Compile Include="IL\MSIL.cs" />
     <Compile Include="IL\OpCodeType.cs" />

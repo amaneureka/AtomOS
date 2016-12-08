@@ -59,6 +59,7 @@ namespace Atomixilc.IL
 
                         switch(size % 4)
                         {
+                            case 0: break;
                             case 1:
                                 {
                                     new Movzx { DestinationReg = Register.EAX, SourceReg = Register.EDX, SourceIndirect = true, SourceDisplacement = offset, Size = 8 };

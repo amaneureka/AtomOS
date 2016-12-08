@@ -155,17 +155,17 @@ namespace Atomixilc
         {
             using (var SW = new StreamWriter(Config.OutputFile))
             {
-                SW.WriteLine("section .bss");
+                SW.WriteLine("section .Bss");
                 foreach (var bssEntry in ZeroSegment)
                     SW.WriteLine(string.Format("{0} resb {1}", bssEntry.Key, bssEntry.Value));
                 SW.WriteLine();
 
-                SW.WriteLine("section .data");
+                SW.WriteLine("section .Data");
                 foreach (var dataEntry in DataSegment)
                     SW.WriteLine(string.Format("{0} resb {1}", dataEntry.Key, string.Join(", ", dataEntry.Value.Select(a => a.ToString()))));
                 SW.WriteLine();
 
-                SW.WriteLine("section .text");
+                SW.WriteLine("section .Text");
                 SW.WriteLine();
                 foreach (var block in CodeSegment)
                 {
@@ -396,14 +396,23 @@ namespace Atomixilc
                 else if (xOp is OpType)
                     ScanQ.Enqueue(((OpType)xOp).Value);
                 else if (xOp is OpField)
-                    ScanQ.Enqueue(((OpField)xOp).Value.DeclaringType);
+                {
+                    var xOpField = ((OpField)xOp).Value;
+                    ScanQ.Enqueue(xOpField.DeclaringType);
+                    if (xOpField.IsStatic)
+                        ScanQ.Enqueue(xOpField);
+                }
                 else if (xOp is OpToken)
                 {
                     var xOpToken = (OpToken)xOp;
                     if (xOpToken.IsType)
                         ScanQ.Enqueue(xOpToken.ValueType);
                     else if (xOpToken.IsField)
+                    {
                         ScanQ.Enqueue(xOpToken.ValueField.DeclaringType);
+                        if (xOpToken.ValueField.IsStatic)
+                            ScanQ.Enqueue(xOpToken.ValueField);
+                    }
                 }
                 else if (xOp is OpString)
                 {
