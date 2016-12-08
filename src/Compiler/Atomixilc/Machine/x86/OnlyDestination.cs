@@ -39,7 +39,7 @@ namespace Atomixilc.Machine.x86
             else
                 SB.Append(DestinationRef);
 
-            if (DestinationDisplacement.HasValue)
+            if (DestinationDisplacement.HasValue && DestinationDisplacement != 0)
             {
                 int offset = DestinationDisplacement.Value;
                 if (offset < 0)
