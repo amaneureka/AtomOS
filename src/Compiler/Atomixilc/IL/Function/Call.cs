@@ -30,17 +30,9 @@ namespace Atomixilc.IL
             var addressRefernce = functionInfo.FullName();
             var parameters = functionInfo.GetParameters();
 
-            var size = parameters.Sum(a => Helper.GetTypeSize(a.ParameterType, Config.TargetPlatform, true));
-
             int count = parameters.Length;
             if (Optimizer.vStack.Count < count)
                 throw new Exception("Internal Compiler Error: vStack.Count < expected size");
-
-            while(count > 0)
-            {
-                Optimizer.vStack.Pop();
-                count--;
-            }
 
             /* The stack transitional behavior, in sequential order, is:
              * Method arguments arg1 through argN are pushed onto the stack.
@@ -51,6 +43,12 @@ namespace Atomixilc.IL
              */
 
             new Comment(string.Format("[{0}] : {1} => {2}", ToString(), xOp.ToString(), Optimizer.vStack.Count));
+
+            while (count > 0)
+            {
+                Optimizer.vStack.Pop();
+                count--;
+            }
 
             switch (Config.TargetPlatform)
             {

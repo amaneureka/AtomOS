@@ -83,6 +83,11 @@ namespace Atomixilc
             return string.Format("{0}.IL_{1}", xMethod.FullName(), NextPosition.ToString("X").PadLeft(5, '0'));
         }
 
+        internal static string GetVTableFlush(int methodID)
+        {
+            return string.Format("__VTable_Flush_{0}__", methodID.ToString("X3"));
+        }
+
         internal static bool IsSigned(Type type)
         {
             if ((type == typeof(sbyte))

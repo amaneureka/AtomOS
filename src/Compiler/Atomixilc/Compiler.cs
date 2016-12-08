@@ -60,8 +60,8 @@ namespace Atomixilc
             var types = ExecutingAssembly.GetTypes();
             foreach (var type in types)
             {
-                var attributes = type.GetCustomAttributes<ILImplAttribute>();
-                foreach (var attrib in attributes)
+                var ILattributes = type.GetCustomAttributes<ILImplAttribute>();
+                foreach (var attrib in ILattributes)
                 {
                     Verbose.Message("[MSIL] {0}", type.ToString());
                     ILCodes.Add(attrib.OpCode, (MSIL)Activator.CreateInstance(type));
@@ -176,6 +176,17 @@ namespace Atomixilc
                             SW.Write("    ");
                         else
                             SW.WriteLine();
+
+                        if (code is Call)
+                        {
+                            var xCall = (Call)code;
+                            if (xCall.IsLabel)
+                            {
+                                xCall.IsLabel = false;
+                                xCall.DestinationRef = Labels[xCall.DestinationRef].FullName();
+                            }
+                        }
+
                         SW.WriteLine(code);
                     }
                     SW.WriteLine();

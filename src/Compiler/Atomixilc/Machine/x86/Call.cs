@@ -4,6 +4,7 @@ namespace Atomixilc.Machine.x86
 {
     public class Call : Instruction
     {
+        public bool IsLabel;
         public string DestinationRef;
 
         public Call()
