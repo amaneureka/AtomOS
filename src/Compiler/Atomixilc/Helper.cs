@@ -105,6 +105,25 @@ namespace Atomixilc
             return str;
         }
 
+        internal static int GetStorageSize(Type type, Architecture platform)
+        {
+            int size = 0;
+            if (type.IsClass && !type.IsValueType)
+                size = 12;
+
+            var fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).OrderBy(a => a.Name).ToList();
+
+            if (type.BaseType != null)
+                fields.AddRange(type.BaseType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).OrderBy(a => a.Name));
+
+            foreach (var fld in fields)
+            {
+                size += GetTypeSize(fld.FieldType, platform);
+            }
+
+            return size;
+        }
+
         internal static int GetFieldOffset(Type type, FieldInfo field, Architecture platform)
         {
             int offset = 0;

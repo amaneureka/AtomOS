@@ -114,9 +114,11 @@
     <Compile Include="IL\Load\Ldind\Ldind_U1.cs" />
     <Compile Include="IL\Load\Ldind\Ldind_U2.cs" />
     <Compile Include="IL\Load\Ldind\Ldind_U4.cs" />
+    <Compile Include="IL\Load\Ldlen.cs" />
     <Compile Include="IL\Load\Ldloc\Ldloc.cs" />
     <Compile Include="IL\Load\Ldloc\Ldloca.cs" />
     <Compile Include="IL\Load\Ldnull.cs" />
+    <Compile Include="IL\Load\Ldobj.cs" />
     <Compile Include="IL\Load\Ldsfld\Ldsfld.cs" />
     <Compile Include="IL\Load\Ldsfld\Ldsflda.cs" />
     <Compile Include="IL\Load\Ldstr.cs" />
