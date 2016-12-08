@@ -4,13 +4,15 @@ using System.Reflection;
 using System.Text;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 
 namespace Atomixilc
 {
     internal static class Helper
     {
-        static Dictionary<FieldInfo, string> cachedFieldLabel = new Dictionary<FieldInfo, string>();
-        static Dictionary<MethodBase, string> cachedMethodLabel = new Dictionary<MethodBase, string>();
+        internal readonly static Dictionary<FieldInfo, string> cachedFieldLabel = new Dictionary<FieldInfo, string>();
+        internal readonly static Dictionary<MethodBase, string> cachedMethodLabel = new Dictionary<MethodBase, string>();
+        internal readonly static Dictionary<string, string> cachedResolvedStringLabel = new Dictionary<string, string>();
 
         private static HashSet<char> IllegalChars = new HashSet<char>
         {
@@ -90,6 +92,17 @@ namespace Atomixilc
                 || (type == typeof(IntPtr)))
                 return true;
             return false;
+        }
+
+        internal static string GetResolvedStringLabel(string aData)
+        {
+            if (cachedResolvedStringLabel.ContainsKey(aData))
+                return cachedResolvedStringLabel[aData];
+
+            var str = string.Format("StringContent_{0}", cachedResolvedStringLabel.Count.ToString("X4"));
+            cachedResolvedStringLabel[aData] = str;
+
+            return str;
         }
 
         internal static int GetFieldOffset(Type type, FieldInfo field, Architecture platform)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Reflection;
 using Emit = System.Reflection.Emit;
 using System.Collections.Generic;
@@ -26,6 +27,7 @@ namespace Atomixilc
         Queue<object> ScanQ;
         HashSet<object> FinishedQ;
         HashSet<MethodBase> Virtual;
+        HashSet<string> StringTable;
 
         Dictionary<string, int> ZeroSegment;
         Dictionary<string, byte[]> DataSegment;
@@ -53,6 +55,7 @@ namespace Atomixilc
             ZeroSegment = new Dictionary<string, int>();
             DataSegment = new Dictionary<string, byte[]>();
             CodeSegment = new List<FunctionalBlock>();
+            StringTable = new HashSet<string>();
 
             var types = ExecutingAssembly.GetTypes();
             foreach (var type in types)
@@ -92,6 +95,11 @@ namespace Atomixilc
             ZeroSegment.Clear();
             DataSegment.Clear();
             CodeSegment.Clear();
+            StringTable.Clear();
+
+            Helper.cachedFieldLabel.Clear();
+            Helper.cachedMethodLabel.Clear();
+            Helper.cachedResolvedStringLabel.Clear();
 
             ScanQ.Enqueue(main);
             while(ScanQ.Count != 0)
@@ -131,6 +139,8 @@ namespace Atomixilc
 
         internal void Flush()
         {
+            FlushStringTable();
+
             switch (Config.TargetPlatform)
             {
                 case Architecture.x86:
@@ -170,6 +180,24 @@ namespace Atomixilc
                     }
                     SW.WriteLine();
                 }
+            }
+        }
+
+        private void FlushStringTable()
+        {
+            var encoding = Encoding.Unicode;
+            foreach(var str in StringTable)
+            {
+                int count = encoding.GetByteCount(str);
+                var data = new byte[count + 0x10];
+
+                Array.Copy(BitConverter.GetBytes(typeof(string).GetHashCode()), 0, data, 0, 4);
+                Array.Copy(BitConverter.GetBytes(0x1), 0, data, 4, 4);
+                Array.Copy(BitConverter.GetBytes(data.Length), 0, data, 8, 4);
+                Array.Copy(BitConverter.GetBytes(str.Length), 0, data, 12, 4);
+                Array.Copy(encoding.GetBytes(str), 0, data, 16, 4);
+
+                DataSegment.Add(Helper.GetResolvedStringLabel(str), data);
             }
         }
 
@@ -376,6 +404,11 @@ namespace Atomixilc
                         ScanQ.Enqueue(xOpToken.ValueType);
                     else if (xOpToken.IsField)
                         ScanQ.Enqueue(xOpToken.ValueField.DeclaringType);
+                }
+                else if (xOp is OpString)
+                {
+                    var xOpStr = (OpString)xOp;
+                    StringTable.Add(xOpStr.Value);
                 }
 
                 if (ReferencedPositions.Contains(xOp.Position))
