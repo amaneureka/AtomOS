@@ -39,12 +39,15 @@ namespace Atomixilc.IL
 
             new Comment(string.Format("[{0}] : {1} => {2}", ToString(), xOp.ToString(), Optimizer.vStack.Count));
 
-            Optimizer.vStack.Pop();
+            var item = Optimizer.vStack.Pop();
 
             switch (Config.TargetPlatform)
             {
                 case Architecture.x86:
                     {
+                        if (!item.SystemStack)
+                            throw new Exception(string.Format("UnImplemented-RegisterType '{0}'", msIL));
+
                         new Pop { DestinationReg = Register.EDX };
                         new Add { DestinationReg = Register.EDX, SourceRef = "0x" + offset.ToString("X") };
 

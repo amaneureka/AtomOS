@@ -358,12 +358,10 @@ namespace Atomixilc
 
             EmitHeader(block, method, bodySize);
 
-            var ReferencedPositions = new HashSet<int>();
-
-            var xOpCodes = EmitOpCodes(method, ReferencedPositions);
             var Optimizer = new Optimizer(Config);
-
-            foreach(var xOp in xOpCodes)
+            var ReferencedPositions = new HashSet<int>();
+            var xOpCodes = EmitOpCodes(method, ReferencedPositions);
+            foreach (var xOp in xOpCodes)
             {
                 if (xOp is OpMethod)
                     ScanQ.Enqueue(((OpMethod)xOp).Value);

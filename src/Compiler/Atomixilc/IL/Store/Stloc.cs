@@ -41,7 +41,7 @@ namespace Atomixilc.IL
 
             new Comment(string.Format("[{0}] : {1} => {2}", ToString(), xOp.ToString(), Optimizer.vStack.Count));
 
-            Optimizer.vStack.Pop();
+            var item = Optimizer.vStack.Pop();
 
             switch (Config.TargetPlatform)
             {
@@ -49,6 +49,9 @@ namespace Atomixilc.IL
                     {
                         if (size > 4)
                             throw new Exception("LocalVariable size > 4 not supported");
+
+                        if (!item.SystemStack)
+                            throw new Exception(string.Format("UnImplemented-RegisterType '{0}'", msIL));
 
                         new Pop { DestinationReg = Register.EAX };
                         new Mov

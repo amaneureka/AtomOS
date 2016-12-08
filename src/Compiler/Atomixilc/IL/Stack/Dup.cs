@@ -45,6 +45,9 @@ namespace Atomixilc.IL
                         if (size > 4)
                             throw new Exception(string.Format("UnImplemented '{0}'", msIL));
 
+                        if (!item.SystemStack)
+                            throw new Exception(string.Format("UnImplemented-RegisterType '{0}'", msIL));
+
                         new Push { DestinationReg = Register.ESP, DestinationIndirect = true };
                     }
                     break;

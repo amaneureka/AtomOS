@@ -52,7 +52,10 @@ namespace Atomixilc.IL
 
                         if (stackCount > 0)
                         {
-                            Optimizer.vStack.Pop();
+                            var item = Optimizer.vStack.Pop();
+                            if (!item.SystemStack)
+                                throw new Exception(string.Format("UnImplemented-RegisterType '{0}'", msIL));
+
                             new Pop { DestinationReg = Register.EAX };
                         }
 

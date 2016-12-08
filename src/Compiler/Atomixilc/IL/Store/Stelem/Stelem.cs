@@ -39,9 +39,9 @@ namespace Atomixilc.IL
 
             new Comment(string.Format("[{0}] : {1} => {2}", ToString(), xOp.ToString(), Optimizer.vStack.Count));
 
-            Optimizer.vStack.Pop();
-            Optimizer.vStack.Pop();
-            Optimizer.vStack.Pop();
+            var itemA = Optimizer.vStack.Pop();
+            var itemB = Optimizer.vStack.Pop();
+            var itemC = Optimizer.vStack.Pop();
 
             switch (Config.TargetPlatform)
             {
@@ -49,6 +49,15 @@ namespace Atomixilc.IL
                     {
                         if (size > 4)
                             throw new Exception("LocalVariable size > 4 not supported");
+
+                        if (!itemA.SystemStack)
+                            throw new Exception(string.Format("UnImplemented-RegisterType '{0}'", msIL));
+
+                        if (!itemB.SystemStack)
+                            throw new Exception(string.Format("UnImplemented-RegisterType '{0}'", msIL));
+
+                        if (!itemC.SystemStack)
+                            throw new Exception(string.Format("UnImplemented-RegisterType '{0}'", msIL));
 
                         Executex86(size);
                     }

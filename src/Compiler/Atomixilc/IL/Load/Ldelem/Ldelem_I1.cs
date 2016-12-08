@@ -36,13 +36,19 @@ namespace Atomixilc.IL
 
             new Comment(string.Format("[{0}] : {1} => {2}", ToString(), xOp.ToString(), Optimizer.vStack.Count));
 
-            Optimizer.vStack.Pop();
-            Optimizer.vStack.Pop();
+            var itemA = Optimizer.vStack.Pop();
+            var itemB = Optimizer.vStack.Pop();
 
             switch (Config.TargetPlatform)
             {
                 case Architecture.x86:
                     {
+                        if (!itemA.SystemStack)
+                            throw new Exception(string.Format("UnImplemented-RegisterType '{0}'", msIL));
+
+                        if (!itemB.SystemStack)
+                            throw new Exception(string.Format("UnImplemented-RegisterType '{0}'", msIL));
+
                         Ldelem_il.Executex86(1, true);
                         Optimizer.vStack.Push(new StackItem(typeof(int)));
                     }
