@@ -18,7 +18,7 @@ namespace Atomix.ILOpCodes
         public readonly uint MethodUID;
 
         private static uint Counter = 1;
-        public static Dictionary<MethodBase, uint> MethodUIDs = new Dictionary<MethodBase, uint>();
+        //public static Dictionary<MethodBase, uint> MethodUIDs = new Dictionary<MethodBase, uint>();
 
         public OpMethod(ILCode aCode, int aPosition, int aNextPosition, MethodBase aValue, ExceptionHandlingClause aEhc)
             : base(aCode, aPosition, aNextPosition, aEhc)
@@ -28,6 +28,8 @@ namespace Atomix.ILOpCodes
 
             if (aValue.IsAbstract)
             {
+                MethodUID = (uint)aValue.GetHashCode();
+                /*
                 if (MethodUIDs.ContainsKey(aValue))
                 {
                     MethodUID = MethodUIDs[aValue];
@@ -36,7 +38,7 @@ namespace Atomix.ILOpCodes
                 {
                     MethodUID = Counter++;
                     MethodUIDs.Add(aValue, MethodUID);
-                }
+                }*/
             }
         }
 

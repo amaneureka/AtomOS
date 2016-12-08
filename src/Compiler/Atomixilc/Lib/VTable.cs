@@ -9,6 +9,13 @@ namespace Atomixilc.Lib
         [Label("__VTable_GetEntry__")]
         internal static unsafe uint GetEntry(uint* FlushTable, uint TypeID)
         {
+            while(*FlushTable != 0)
+            {
+                if (*FlushTable == TypeID)
+                    return *(FlushTable + 1);
+                FlushTable += 2;
+            }
+
             return 0;
         }
     }
