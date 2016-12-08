@@ -38,6 +38,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Architecture.cs" />
+    <Compile Include="AsmData.cs" />
     <Compile Include="Attributes\Assembly.cs" />
     <Compile Include="Attributes\Entrypoint.cs" />
     <Compile Include="Attributes\ILImpl.cs" />

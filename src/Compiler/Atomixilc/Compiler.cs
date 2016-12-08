@@ -26,11 +26,11 @@ namespace Atomixilc
 
         Queue<object> ScanQ;
         HashSet<object> FinishedQ;
-        HashSet<MethodBase> Virtual;
         HashSet<string> StringTable;
+        HashSet<MethodInfo> Virtuals;
 
         Dictionary<string, int> ZeroSegment;
-        Dictionary<string, byte[]> DataSegment;
+        Dictionary<string, AsmData> DataSegment;
         List<FunctionalBlock> CodeSegment;
 
         internal Compiler(Options aCompilerOptions)
@@ -49,11 +49,11 @@ namespace Atomixilc
             Labels = new Dictionary<string, MethodBase>();
             ScanQ = new Queue<object>();
             FinishedQ = new HashSet<object>();
-            Virtual = new HashSet<MethodBase>();
+            Virtuals = new HashSet<MethodInfo>();
             OpCode = new Dictionary<short, Emit.OpCode>();
 
             ZeroSegment = new Dictionary<string, int>();
-            DataSegment = new Dictionary<string, byte[]>();
+            DataSegment = new Dictionary<string, AsmData>();
             CodeSegment = new List<FunctionalBlock>();
             StringTable = new HashSet<string>();
 
@@ -90,7 +90,7 @@ namespace Atomixilc
                 throw new Exception("No main function found");
 
             ScanQ.Clear();
-            Virtual.Clear();
+            Virtuals.Clear();
             FinishedQ.Clear();
             ZeroSegment.Clear();
             DataSegment.Clear();
@@ -139,6 +139,7 @@ namespace Atomixilc
 
         internal void Flush()
         {
+            FlushVTables();
             FlushStringTable();
 
             switch (Config.TargetPlatform)
@@ -162,7 +163,7 @@ namespace Atomixilc
 
                 SW.WriteLine("section .Data");
                 foreach (var dataEntry in DataSegment)
-                    SW.WriteLine(string.Format("{0} resb {1}", dataEntry.Key, string.Join(", ", dataEntry.Value.Select(a => a.ToString()))));
+                    SW.WriteLine(dataEntry.Value);
                 SW.WriteLine();
 
                 SW.WriteLine("section .Text");
@@ -206,9 +207,50 @@ namespace Atomixilc
                 Array.Copy(BitConverter.GetBytes(0x1), 0, data, 4, 4);
                 Array.Copy(BitConverter.GetBytes(data.Length), 0, data, 8, 4);
                 Array.Copy(BitConverter.GetBytes(str.Length), 0, data, 12, 4);
-                Array.Copy(encoding.GetBytes(str), 0, data, 16, 4);
+                Array.Copy(encoding.GetBytes(str), 0, data, 16, count);
 
-                DataSegment.Add(Helper.GetResolvedStringLabel(str), data);
+                var label = Helper.GetResolvedStringLabel(str);
+                DataSegment.Add(label, new AsmData(label, data));
+            }
+        }
+
+        private void FlushVTables()
+        {
+            var tables = new List<KeyValuePair<int, MethodInfo> >();
+            foreach(var method in Virtuals)
+            {
+                var baseDef = method.GetBaseDefinition();
+                if (!baseDef.IsAbstract)
+                    continue;
+
+                tables.Add(new KeyValuePair<int, MethodInfo>(baseDef.GetHashCode(), method));
+            }
+
+            tables.Add(new KeyValuePair<int, MethodInfo>(int.MaxValue, null));
+
+            tables.Sort();
+
+            int MethodUID = 0;
+            List<string> data = null;
+            foreach(var item in tables)
+            {
+                if (item.Key != MethodUID)
+                {
+                    MethodUID = item.Key;
+                    if (data != null)
+                    {
+                        var label = Helper.GetVTableFlush(MethodUID);
+                        DataSegment.Add(Helper.GetVTableFlush(MethodUID), new AsmData(label, data.ToArray()));
+                    }
+
+                    if (MethodUID == int.MaxValue)
+                        break;
+
+                    data = new List<string>();
+                }
+
+                data.Add(item.Value.DeclaringType.GetHashCode().ToString());
+                data.Add(item.Value.FullName());
             }
         }
 
@@ -271,13 +313,13 @@ namespace Atomixilc
             {
                 var basedefination = method.GetBaseDefinition();
 
-                if (Virtual.Contains(method) ||
+                if (Virtuals.Contains(method) ||
                     !basedefination.IsAbstract ||
                     method.DeclaringType.IsAbstract ||
                     basedefination.DeclaringType == method.DeclaringType)
                     continue;
 
-                Virtual.Add(method);
+                Virtuals.Add(method);
                 ScanQ.Enqueue(method);
             }
 

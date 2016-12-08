@@ -865,9 +865,7 @@ namespace Atomix
             var xDict = new Dictionary<int, List<MethodInfo>>();
             foreach (var xV in Virtuals)
             {
-                OpMethod.MethodUIDs.TryGetValue(xV.GetBaseDefinition(), out xUID);
-                if (xUID == 0)
-                    continue;
+                if (!xV.GetBaseDefinition().IsAbstract) continue;
 
                 var xTypeID = ILHelper.GetTypeID(xV.DeclaringType);
                 if (!xDict.ContainsKey(xTypeID))
@@ -894,7 +892,7 @@ namespace Atomix
                 foreach(var yItem in xItem.Value)
                 {
                     string xLabel = yItem.FullName();
-                    xUID = OpMethod.MethodUIDs[yItem.GetBaseDefinition()];
+                    xUID = (uint)((MethodBase)yItem.GetBaseDefinition()).GetHashCode();
                     xVTableData.Add(xUID.ToString());
                     xVTableData.Add(xLabel);
                 }
