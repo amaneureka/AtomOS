@@ -26,11 +26,11 @@ namespace Atomixilc.IL
         internal override void Execute(Options Config, OpCodeType xOp, MethodBase method, Optimizer Optimizer)
         {
             var functionInfo = method as MethodInfo;
-            var parameters = functionInfo.GetParameters();
+            var parameters = method.GetParameters();
             var size = parameters.Sum(a => Helper.GetTypeSize(a.ParameterType, Config.TargetPlatform, true));
 
             int stackCount = 0;
-            if (functionInfo.ReturnType != typeof(void))
+            if (functionInfo != null && functionInfo.ReturnType != typeof(void))
                 stackCount = 1;
 
             if (Optimizer.vStack.Count < stackCount)
@@ -47,7 +47,7 @@ namespace Atomixilc.IL
             {
                 case Architecture.x86:
                     {
-                        if (Helper.GetTypeSize(functionInfo.ReturnType, Config.TargetPlatform) > 4)
+                        if (functionInfo != null && Helper.GetTypeSize(functionInfo.ReturnType, Config.TargetPlatform) > 4)
                             throw new Exception(string.Format("UnImplemented '{0}'", msIL));
 
                         if (stackCount > 0)

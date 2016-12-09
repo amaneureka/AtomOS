@@ -127,6 +127,7 @@
     <Compile Include="IL\Load\Ldstr.cs" />
     <Compile Include="IL\MSIL.cs" />
     <Compile Include="IL\Object\Newarr.cs" />
+    <Compile Include="IL\Object\NewObj.cs" />
     <Compile Include="IL\OpCodeType.cs" />
     <Compile Include="IL\Stack\Dup.cs" />
     <Compile Include="IL\Stack\Pop.cs" />
