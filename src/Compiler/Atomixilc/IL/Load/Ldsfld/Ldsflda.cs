@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Linq;
 
 using Atomixilc.Machine;
 using Atomixilc.Attributes;
@@ -28,6 +29,12 @@ namespace Atomixilc.IL
             var fieldName = field.FullName();
             var size = Helper.GetTypeSize(field.FieldType, Config.TargetPlatform);
 
+            string cctor_addref = null;
+
+            var cctor = (field.DeclaringType.GetConstructors(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public) ?? new ConstructorInfo[0]).SingleOrDefault();
+            if (cctor != null)
+                cctor_addref = cctor.FullName();
+
             /* The stack transitional behavior, in sequential order, is:
              * The value of the specific field is pushed onto the stack.
              */
@@ -38,6 +45,9 @@ namespace Atomixilc.IL
             {
                 case Architecture.x86:
                     {
+                        if (!string.IsNullOrEmpty(cctor_addref) && cctor != method)
+                            new Call { DestinationRef = cctor_addref };
+
                         new Push { DestinationRef = fieldName };
 
                         Optimizer.vStack.Push(new StackItem(typeof(uint)));

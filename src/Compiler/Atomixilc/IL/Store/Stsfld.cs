@@ -10,21 +10,24 @@ using Atomixilc.IL.CodeType;
 
 namespace Atomixilc.IL
 {
-    [ILImpl(ILCode.Ldsfld)]
-    internal class Ldsfld_il : MSIL
+    [ILImpl(ILCode.Stsfld)]
+    internal class Stsfld_il : MSIL
     {
-        public Ldsfld_il()
-            : base(ILCode.Ldsfld)
+        public Stsfld_il()
+            : base(ILCode.Stsfld)
         {
 
         }
 
         /*
-         * URL : https://msdn.microsoft.com/en-us/library/system.reflection.emit.opcodes.Ldsfld(v=vs.110).aspx
-         * Description : Pushes the value of a static field onto the evaluation stack.
+         * URL : https://msdn.microsoft.com/en-us/library/system.reflection.emit.opcodes.Stsfld(v=vs.110).aspx
+         * Description : Replaces the value of a static field with a value from the evaluation stack.
          */
         internal override void Execute(Options Config, OpCodeType xOp, MethodBase method, Optimizer Optimizer)
         {
+            if (Optimizer.vStack.Count < 1)
+                throw new Exception("Internal Compiler Error: vStack.Count < 1");
+
             var field = ((OpField)xOp).Value;
             var fieldName = field.FullName();
             var size = Helper.GetTypeSize(field.FieldType, Config.TargetPlatform);
@@ -36,10 +39,13 @@ namespace Atomixilc.IL
                 cctor_addref = cctor.FullName();
 
             /* The stack transitional behavior, in sequential order, is:
-             * The value of the specific field is pushed onto the stack.
+             * A value is pushed onto the stack.
+             * A value is popped from the stack and stored in field.
              */
 
             new Comment(string.Format("[{0}] : {1} => {2}", ToString(), xOp.ToString(), Optimizer.vStack.Count));
+
+            var item = Optimizer.vStack.Pop();
 
             switch (Config.TargetPlatform)
             {
@@ -48,36 +54,31 @@ namespace Atomixilc.IL
                         if (!string.IsNullOrEmpty(cctor_addref) && cctor != method)
                             new Call { DestinationRef = cctor_addref };
 
-                        for (int i = 1; i <= (size / 4); i++)
+                        for (int i = 0; i < size; i += 4)
                         {
-                            new Push
-                            {
-                                DestinationRef = fieldName,
-                                DestinationIndirect = true,
-                                DestinationDisplacement = (size - (i * 4))
-                            };
+                            new Pop { DestinationReg = Register.EAX };
+                            new Mov { DestinationRef = fieldName, DestinationIndirect = true, DestinationDisplacement = i, SourceReg = Register.EAX };
                         }
 
+                        int offset = size / 4;
                         switch (size % 4)
                         {
                             case 0: break;
                             case 1:
                                 {
-                                    new Movzx { DestinationReg = Register.EAX, SourceRef = fieldName, SourceIndirect = true, Size = 8 };
-                                    new Push { DestinationReg = Register.EAX };
+                                    new Pop { DestinationReg = Register.EAX };
+                                    new Mov { DestinationRef = fieldName, DestinationIndirect = true, DestinationDisplacement = offset * 4, SourceReg = Register.EAX, Size = 8 };
                                 }
                                 break;
                             case 2:
                                 {
-                                    new Movzx { DestinationReg = Register.EAX, SourceRef = fieldName, SourceIndirect = true, Size = 16 };
-                                    new Push { DestinationReg = Register.EAX };
+                                    new Pop { DestinationReg = Register.EAX };
+                                    new Mov { DestinationRef = fieldName, DestinationIndirect = true, DestinationDisplacement = offset * 4, SourceReg = Register.EAX, Size = 16 };
                                 }
                                 break;
                             default:
                                 throw new Exception("Unsupported Size");
                         }
-
-                        Optimizer.vStack.Push(new StackItem(field.FieldType));
                     }
                     break;
                 default:
