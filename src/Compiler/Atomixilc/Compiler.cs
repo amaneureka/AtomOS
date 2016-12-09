@@ -101,6 +101,8 @@ namespace Atomixilc
             if (main == null)
                 throw new Exception("No main function found");
 
+            IncludeLibrary();
+
             ScanQ.Enqueue(main);
             while(ScanQ.Count != 0)
             {
@@ -254,6 +256,11 @@ namespace Atomixilc
             }
         }
 
+        internal void IncludeLibrary()
+        {
+            ScanQ.Enqueue(typeof(Lib.VTable));
+        }
+
         internal void ScanInputAssembly(out Type Entrypoint)
         {
             var InputAssembly = Assembly.LoadFile(Config.InputFiles[0]);
@@ -316,6 +323,22 @@ namespace Atomixilc
             foreach(var method in methods)
             {
                 var basedefination = method.GetBaseDefinition();
+
+                var plugattrib = method.GetCustomAttribute<PlugAttribute>();
+                if (plugattrib != null)
+                {
+                    ScanQ.Enqueue(method);
+                    Plugs.Add(method, plugattrib.TargetLabel);
+                    Verbose.Message("[Plug] {0} : {1}", plugattrib.TargetLabel, method.FullName());
+                }
+
+                var labelattrib = method.GetCustomAttribute<LabelAttribute>();
+                if (labelattrib != null)
+                {
+                    ScanQ.Enqueue(method);
+                    Labels.Add(labelattrib.RefLabel, method);
+                    Verbose.Message("[Label] {0} : {1}", labelattrib.RefLabel, method.FullName());
+                }
 
                 if (Virtuals.Contains(method) ||
                     !basedefination.IsAbstract ||

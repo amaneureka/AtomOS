@@ -25,12 +25,17 @@ namespace Atomixilc.IL
          */
         internal override void Execute(Options Config, OpCodeType xOp, MethodBase method, Optimizer Optimizer)
         {
-            var functionInfo = ((OpMethod)xOp).Value as MethodInfo;
+            var target = ((OpMethod)xOp).Value;
+            var targetinfo = target as MethodInfo;
 
-            var addressRefernce = functionInfo.FullName();
-            var parameters = functionInfo.GetParameters();
+            var addressRefernce = target.FullName();
+            var parameters = target.GetParameters();
 
             int count = parameters.Length;
+
+            if (!target.IsStatic)
+                count++;
+
             if (Optimizer.vStack.Count < count)
                 throw new Exception("Internal Compiler Error: vStack.Count < expected size");
 
@@ -54,15 +59,15 @@ namespace Atomixilc.IL
             {
                 case Architecture.x86:
                     {
-                        if (Helper.GetTypeSize(functionInfo.ReturnType, Config.TargetPlatform) > 4)
+                        if (targetinfo != null &&  Helper.GetTypeSize(targetinfo.ReturnType, Config.TargetPlatform) > 4)
                             throw new Exception(string.Format("UnImplemented '{0}'", msIL));
 
                         new Call { DestinationRef = addressRefernce };
 
-                        if (functionInfo.ReturnType != typeof(void))
+                        if (targetinfo != null && targetinfo.ReturnType != typeof(void))
                         {
                             new Push { DestinationReg = Register.EAX };
-                            Optimizer.vStack.Push(new StackItem(functionInfo.ReturnType));
+                            Optimizer.vStack.Push(new StackItem(targetinfo.ReturnType));
                         }
                     }
                     break;
