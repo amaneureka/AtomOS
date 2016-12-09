@@ -79,16 +79,6 @@ namespace Atomixilc
 
         internal void Execute()
         {
-            Type Entrypoint;
-            ScanInputAssembly(out Entrypoint);
-
-            if (Entrypoint == null)
-                throw new Exception("No input entrypoint found");
-
-            var main = Entrypoint.GetMethod("main");
-            if (main == null)
-                throw new Exception("No main function found");
-
             ScanQ.Clear();
             Virtuals.Clear();
             FinishedQ.Clear();
@@ -100,6 +90,16 @@ namespace Atomixilc
             Helper.cachedFieldLabel.Clear();
             Helper.cachedMethodLabel.Clear();
             Helper.cachedResolvedStringLabel.Clear();
+
+            Type Entrypoint;
+            ScanInputAssembly(out Entrypoint);
+
+            if (Entrypoint == null)
+                throw new Exception("No input entrypoint found");
+
+            var main = Entrypoint.GetMethod("main");
+            if (main == null)
+                throw new Exception("No main function found");
 
             ScanQ.Enqueue(main);
             while(ScanQ.Count != 0)
@@ -281,7 +281,9 @@ namespace Atomixilc
                     {
                         if (Plugs.ContainsValue(plugattrib.TargetLabel))
                             throw new Exception(string.Format("Multiple plugs with same target label '{0}'", plugattrib.TargetLabel));
+                        Verbose.Message("[Plug] {0} : {1}", plugattrib.TargetLabel, method.FullName());
                         Plugs.Add(method, plugattrib.TargetLabel);
+                        ScanQ.Enqueue(method);
                     }
 
                     var labelattrib = method.GetCustomAttribute<LabelAttribute>();
@@ -289,7 +291,9 @@ namespace Atomixilc
                     {
                         if (Labels.ContainsKey(labelattrib.RefLabel))
                             throw new Exception(string.Format("Multiple labels with same Ref label '{0}'", labelattrib.RefLabel));
+                        Verbose.Message("[Label] {0} : {1}", labelattrib.RefLabel, method.FullName());
                         Labels.Add(labelattrib.RefLabel, method);
+                        ScanQ.Enqueue(method);
                     }
                 }
             }

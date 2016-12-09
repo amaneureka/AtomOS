@@ -43,10 +43,7 @@ namespace Atomixilc.IL
             {
                 case Architecture.x86:
                     {
-                        if (!itemA.SystemStack)
-                            throw new Exception(string.Format("UnImplemented-RegisterType '{0}'", msIL));
-
-                        if (!itemB.SystemStack)
+                        if (!itemA.SystemStack || !itemB.SystemStack)
                             throw new Exception(string.Format("UnImplemented-RegisterType '{0}'", msIL));
 
                         Ldelem_il.Executex86(4, true);

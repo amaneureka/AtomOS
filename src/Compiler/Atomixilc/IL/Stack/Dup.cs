@@ -49,6 +49,8 @@ namespace Atomixilc.IL
                             throw new Exception(string.Format("UnImplemented-RegisterType '{0}'", msIL));
 
                         new Push { DestinationReg = Register.ESP, DestinationIndirect = true };
+
+                        Optimizer.vStack.Push(new StackItem(item.OperandType));
                     }
                     break;
                 default:

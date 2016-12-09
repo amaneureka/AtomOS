@@ -76,7 +76,7 @@ namespace Atomixilc.IL
 
                             new Push { DestinationRef = Helper.GetVTableFlush(xOpMethod.MethodUID) };
                             new Push { DestinationReg = Register.EAX };
-                            new Call { DestinationRef = "__VTable_GetEntry__", IsLabel = true };
+                            new Call { DestinationRef = Helper.VTable_Label, IsLabel = true };
 
                             if (functionInfo.DeclaringType == typeof(object))
                                 throw new Exception("Callvirt Object Declaring type not implemented");

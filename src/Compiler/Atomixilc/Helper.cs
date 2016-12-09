@@ -8,8 +8,11 @@ using System.Security.Cryptography;
 
 namespace Atomixilc
 {
-    internal static class Helper
+    public static class Helper
     {
+        public const string Heap_Label = "__Heap__";
+        public const string VTable_Label = "__VTable_GetEntry__";
+
         internal readonly static Dictionary<FieldInfo, string> cachedFieldLabel = new Dictionary<FieldInfo, string>();
         internal readonly static Dictionary<MethodBase, string> cachedMethodLabel = new Dictionary<MethodBase, string>();
         internal readonly static Dictionary<string, string> cachedResolvedStringLabel = new Dictionary<string, string>();
@@ -31,7 +34,7 @@ namespace Atomixilc
                 return cachedMethodLabel[method];
 
             var SB = new StringBuilder();
-            SB.Append((method is MethodInfo) ? ((MethodInfo)method).ReturnType.FullName : "System.Void.");
+            SB.Append((method is MethodInfo) ? ((MethodInfo)method).ReturnType.FullName : "System.Void");
             SB.Append('.');
             SB.Append(method.ReflectedType.FullName);
             SB.Append('.');

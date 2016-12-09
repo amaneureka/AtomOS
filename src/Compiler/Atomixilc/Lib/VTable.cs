@@ -6,7 +6,7 @@ namespace Atomixilc.Lib
 {
     internal class VTable
     {
-        [Label("__VTable_GetEntry__")]
+        [Label(Helper.VTable_Label)]
         internal static unsafe uint GetEntry(uint* FlushTable, uint TypeID)
         {
             while(*FlushTable != 0)

@@ -50,13 +50,7 @@ namespace Atomixilc.IL
                         if (size > 4)
                             throw new Exception("LocalVariable size > 4 not supported");
 
-                        if (!itemA.SystemStack)
-                            throw new Exception(string.Format("UnImplemented-RegisterType '{0}'", msIL));
-
-                        if (!itemB.SystemStack)
-                            throw new Exception(string.Format("UnImplemented-RegisterType '{0}'", msIL));
-
-                        if (!itemC.SystemStack)
+                        if (!itemA.SystemStack || !itemB.SystemStack || !itemC.SystemStack)
                             throw new Exception(string.Format("UnImplemented-RegisterType '{0}'", msIL));
 
                         Executex86(size);
