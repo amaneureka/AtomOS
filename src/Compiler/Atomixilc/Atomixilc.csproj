@@ -126,6 +126,7 @@
     <Compile Include="IL\Load\Ldsfld\Ldsflda.cs" />
     <Compile Include="IL\Load\Ldstr.cs" />
     <Compile Include="IL\MSIL.cs" />
+    <Compile Include="IL\Object\Newarr.cs" />
     <Compile Include="IL\OpCodeType.cs" />
     <Compile Include="IL\Stack\Dup.cs" />
     <Compile Include="IL\Stack\Pop.cs" />
@@ -188,7 +189,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="IL\Object\" />
     <Folder Include="Machine\ARM\" />
     <Folder Include="Machine\x64\" />
   </ItemGroup>

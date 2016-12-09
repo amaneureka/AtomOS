@@ -15,7 +15,14 @@ namespace Atomixilc
                 CompilerOptions.Normalize();
 
                 var xCompiler = new Compiler(CompilerOptions);
-                xCompiler.Execute();
+                try
+                {
+                    xCompiler.Execute();
+                }
+                catch (Exception e)
+                {
+                    Verbose.Error(e.ToString());
+                }
 
                 xCompiler.Flush();
             }

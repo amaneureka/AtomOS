@@ -44,13 +44,7 @@ namespace Atomixilc.IL
             {
                 case Architecture.x86:
                     {
-                        if (!itemA.SystemStack)
-                            throw new Exception(string.Format("UnImplemented-RegisterType '{0}'", msIL));
-
-                        if (!itemB.SystemStack)
-                            throw new Exception(string.Format("UnImplemented-RegisterType '{0}'", msIL));
-
-                        if (!itemC.SystemStack)
+                        if (!itemA.SystemStack || !itemB.SystemStack || !itemC.SystemStack)
                             throw new Exception(string.Format("UnImplemented-RegisterType '{0}'", msIL));
 
                         Stelem_il.Executex86(4);
