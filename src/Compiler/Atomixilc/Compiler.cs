@@ -158,17 +158,17 @@ namespace Atomixilc
         {
             using (var SW = new StreamWriter(Config.OutputFile))
             {
-                SW.WriteLine("section .Bss");
+                SW.WriteLine("section .bss");
                 foreach (var bssEntry in ZeroSegment)
                     SW.WriteLine(string.Format("{0} resb {1}", bssEntry.Key, bssEntry.Value));
                 SW.WriteLine();
 
-                SW.WriteLine("section .Data");
+                SW.WriteLine("section .data");
                 foreach (var dataEntry in DataSegment)
                     SW.WriteLine(dataEntry.Value);
                 SW.WriteLine();
 
-                SW.WriteLine("section .Text");
+                SW.WriteLine("section .text");
                 SW.WriteLine();
                 foreach (var block in CodeSegment)
                 {
@@ -311,7 +311,7 @@ namespace Atomixilc
             if (type.BaseType != null)
                 ScanQ.Enqueue(type);
 
-            var constructors = type.GetConstructors();
+            var constructors = type.GetConstructors(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
             foreach (var ctor in constructors)
             {
                 if (ctor.DeclaringType != type)
@@ -327,6 +327,8 @@ namespace Atomixilc
                 var plugattrib = method.GetCustomAttribute<PlugAttribute>();
                 if (plugattrib != null)
                 {
+                    if (Plugs.ContainsKey(method)) continue;
+
                     ScanQ.Enqueue(method);
                     Plugs.Add(method, plugattrib.TargetLabel);
                     Verbose.Message("[Plug] {0} : {1}", plugattrib.TargetLabel, method.FullName());
@@ -335,6 +337,8 @@ namespace Atomixilc
                 var labelattrib = method.GetCustomAttribute<LabelAttribute>();
                 if (labelattrib != null)
                 {
+                    if (Labels.ContainsKey(labelattrib.RefLabel)) continue;
+
                     ScanQ.Enqueue(method);
                     Labels.Add(labelattrib.RefLabel, method);
                     Verbose.Message("[Label] {0} : {1}", labelattrib.RefLabel, method.FullName());
@@ -405,6 +409,7 @@ namespace Atomixilc
             var attrib = method.GetCustomAttribute<DllImportAttribute>();
             if (attrib == null)
                 throw new Exception("Invalid call to ProcessExternMethod");
+            Verbose.Error("Extern Method not support '{0}'", method.FullName());
         }
 
         internal void ProcessFieldInfo(FieldInfo fieldInfo)
@@ -558,7 +563,7 @@ namespace Atomixilc
 
                         new Test { DestinationRef = key, DestinationIndirect = true, SourceRef = "0x1" };
                         new Jmp { Condition = ConditionalJump.JZ, DestinationRef = ".Load" };
-                        new Ret { };
+                        new Ret { Offset = 0x0 };
                         new Label(".Load");
                     }
                     break;
