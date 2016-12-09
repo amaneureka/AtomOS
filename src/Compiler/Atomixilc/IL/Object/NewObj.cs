@@ -80,7 +80,7 @@ namespace Atomixilc.IL
 
                         new Call { DestinationRef = functionInfo.FullName() };
                         new Pop { DestinationReg = Register.EAX };
-                        new Add { DestinationReg = Register.ESP, DestinationRef = "0x" + paramsize.ToString("X") };
+                        new Add { DestinationReg = Register.ESP, SourceRef = "0x" + paramsize.ToString("X") };
                         new Push { DestinationReg = Register.EAX };
 
                         Optimizer.vStack.Push(new StackItem(type));

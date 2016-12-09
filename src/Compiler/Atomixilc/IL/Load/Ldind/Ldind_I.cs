@@ -58,11 +58,16 @@ namespace Atomixilc.IL
         {
             new Pop { DestinationReg = Register.EDX };
 
-            if (IsSigned)
-                new Movsx { DestinationReg = Register.EAX, SourceReg = Register.EDX, SourceIndirect = true, Size = (byte)(size * 8) };
+            if (size < 4)
+            {
+                if (IsSigned)
+                    new Movsx { DestinationReg = Register.EAX, SourceReg = Register.EDX, SourceIndirect = true, Size = (byte)(size * 8) };
+                else
+                    new Movzx { DestinationReg = Register.EAX, SourceReg = Register.EDX, SourceIndirect = true, Size = (byte)(size * 8) };
+                new Push { DestinationReg = Register.EAX };
+            }
             else
-                new Movzx { DestinationReg = Register.EAX, SourceReg = Register.EDX, SourceIndirect = true, Size = (byte)(size * 8) };
-            new Push { DestinationReg = Register.EAX };
+                new Push { DestinationReg = Register.EDX, DestinationIndirect = true };
         }
     }
 }

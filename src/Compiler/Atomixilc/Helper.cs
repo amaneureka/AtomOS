@@ -235,7 +235,7 @@ namespace Atomixilc
                 return size;
             }
 
-            throw new Exception(string.Format("GetTypeSize of Unhandled type '{0}'", type));
+            return GetTypeSize(typeof(UIntPtr), platform);
         }
     }
 }
