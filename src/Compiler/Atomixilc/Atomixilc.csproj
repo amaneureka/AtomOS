@@ -89,6 +89,7 @@
     <Compile Include="IL\CodeType\OpToken.cs" />
     <Compile Include="IL\CodeType\OpType.cs" />
     <Compile Include="IL\CodeType\OpVar.cs" />
+    <Compile Include="IL\Comparison\Ceq.cs" />
     <Compile Include="IL\Conversion\Conv_I.cs" />
     <Compile Include="IL\Conversion\Conv_I1.cs" />
     <Compile Include="IL\Conversion\Conv_I2.cs" />
@@ -100,6 +101,7 @@
     <Compile Include="IL\Function\Call.cs" />
     <Compile Include="IL\Function\Callvirt.cs" />
     <Compile Include="IL\Function\Ret.cs" />
+    <Compile Include="IL\Function\Throw.cs" />
     <Compile Include="IL\Load\Ldarg\Ldarg.cs" />
     <Compile Include="IL\Load\Ldarg\Ldarga.cs" />
     <Compile Include="IL\Load\Ldc\Ldc_I4.cs" />
@@ -109,6 +111,7 @@
     <Compile Include="IL\Load\Ldelem\Ldelem_I1.cs" />
     <Compile Include="IL\Load\Ldelem\Ldelem_I2.cs" />
     <Compile Include="IL\Load\Ldelem\Ldelem_I4.cs" />
+    <Compile Include="IL\Load\Ldelem\Ldelem_Ref.cs" />
     <Compile Include="IL\Load\Ldelem\Ldelem_U1.cs" />
     <Compile Include="IL\Load\Ldelem\Ldelem_U2.cs" />
     <Compile Include="IL\Load\Ldelem\Ldelem_U4.cs" />
@@ -131,9 +134,11 @@
     <Compile Include="IL\Load\Ldsfld\Ldsfld.cs" />
     <Compile Include="IL\Load\Ldsfld\Ldsflda.cs" />
     <Compile Include="IL\Load\Ldstr.cs" />
+    <Compile Include="IL\Load\Ldtoken.cs" />
     <Compile Include="IL\MSIL.cs" />
     <Compile Include="IL\Object\Newarr.cs" />
     <Compile Include="IL\Object\NewObj.cs" />
+    <Compile Include="IL\Object\Sizeof.cs" />
     <Compile Include="IL\OpCodeType.cs" />
     <Compile Include="IL\Stack\Dup.cs" />
     <Compile Include="IL\Stack\Pop.cs" />

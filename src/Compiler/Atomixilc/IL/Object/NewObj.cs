@@ -60,9 +60,40 @@ namespace Atomixilc.IL
                             throw new Exception("Newobj ValueType not implemented");
 
                         if (type == typeof(string))
-                            throw new Exception("string not supported");
+                        {
+                            new Mov { DestinationReg = Register.EDX, SourceRef = "0x" + memsize.ToString("X") };
+                            if (parameters.Length == 1 && parameters[0].ParameterType.ToString() == "System.Char[]")
+                            {
+                                new Mov { DestinationReg = Register.EAX, SourceReg = Register.ESP, SourceIndirect = true };
+                                new Mov { DestinationReg = Register.EAX, SourceReg = Register.EAX, SourceIndirect = true, SourceDisplacement = 8 };
+                                new Shl { DestinationReg = Register.EAX, SourceRef = "0x1" };
+                                new Add { DestinationReg = Register.EDX, SourceReg = Register.EAX };
+                            }
+                            else if (parameters.Length == 1 && parameters[0].ParameterType.ToString() == "System.Char*")
+                            {
+                                new Push { DestinationReg = Register.ESP, DestinationIndirect = true };
+                                new Call { DestinationRef = "getLength_System_Char__", IsLabel = true };
+                                new Shl { DestinationReg = Register.EAX, SourceRef = "0x1" };
+                                new Add { DestinationReg = Register.EDX, SourceReg = Register.EAX };
+                            }
+                            else if (parameters.Length == 3 && parameters[0].ParameterType.ToString() == "System.Char[]" && parameters[1].ParameterType.ToString() == "System.Int32" && parameters[2].ParameterType.ToString() == "System.Int32")
+                            {
+                                new Mov { DestinationReg = Register.EAX, SourceReg = Register.ESP, SourceIndirect = true };
+                                new Shl { DestinationReg = Register.EAX, SourceRef = "0x1" };
+                                new Add { DestinationReg = Register.EDX, SourceReg = Register.EAX };
+                            }
+                            else if (parameters.Length == 2 && parameters[0].ParameterType.ToString() == "System.Char" && parameters[1].ParameterType.ToString() == "System.Int32")
+                            {
+                                new Mov { DestinationReg = Register.EAX, SourceReg = Register.ESP, SourceIndirect = true };
+                                new Shl { DestinationReg = Register.EAX, SourceRef = "0x1" };
+                                new Add { DestinationReg = Register.EDX, SourceReg = Register.EAX };
+                            }
 
-                        new Push { DestinationRef = "0x" + memsize.ToString("X") };
+                            new Push { DestinationReg = Register.EDX };
+                        }
+                        else
+                            new Push { DestinationRef = "0x" + memsize.ToString("X") };
+
                         new Call { DestinationRef = Helper.Heap_Label, IsLabel = true };
                         new Cmp { DestinationReg = Register.ECX, SourceRef = "0x0" };
                         new Jmp { Condition = ConditionalJump.JNZ, DestinationRef = xOp.HandlerRef };

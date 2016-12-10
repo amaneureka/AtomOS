@@ -50,6 +50,8 @@ namespace Atomixilc.IL
                         if (functionInfo != null && Helper.GetTypeSize(functionInfo.ReturnType, Config.TargetPlatform) > 4)
                             throw new Exception(string.Format("UnImplemented '{0}'", msIL));
 
+                        new Xor { DestinationReg = Register.ECX, SourceReg = Register.ECX };
+
                         if (stackCount > 0)
                         {
                             var item = Optimizer.vStack.Pop();
