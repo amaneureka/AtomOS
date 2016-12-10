@@ -12,11 +12,10 @@ using System;
 
 using Atomix.Kernel_H.Core;
 
-using Atomix.CompilerExt.Attributes;
-
-using Atomix.Assembler;
-using Atomix.Assembler.x86;
-using Core = Atomix.Assembler.AssemblyHelper;
+using Atomixilc;
+using Atomixilc.Machine;
+using Atomixilc.Attributes;
+using Atomixilc.Machine.x86;
 
 namespace Atomix.Kernel_H.Arch.x86
 {
@@ -113,7 +112,7 @@ namespace Atomix.Kernel_H.Arch.x86
             }
         }
 
-        internal static UInt32 FirstFreeFrame()
+        internal static uint FirstFreeFrame()
         {
             int Length = Frames.Length;
             var MemoryFrames = Frames;
@@ -123,7 +122,8 @@ namespace Atomix.Kernel_H.Arch.x86
                 {
                     for (int j = 0; j < 32; j++)
                     {
-                        if ((uint)(MemoryFrames[i] & (0x1 << j)) == 0)
+                        uint index = (uint)(1 << j);
+                        if ((MemoryFrames[i] & index) == 0)
                             return (uint)((i << 5) + j);
                     }
                 }
@@ -132,10 +132,10 @@ namespace Atomix.Kernel_H.Arch.x86
             while (true) ;
         }
 
-        internal static UInt32 GetPage(UInt32* Directory, UInt32 VirtAddress, bool Make, uint flags = 0x3)//Present, ReadWrite, Supervisor
+        internal static uint GetPage(uint* Directory, uint VirtAddress, bool Make, uint flags = 0x3)//Present, ReadWrite, Supervisor
         {
             VirtAddress /= 0x1000; // Align it to page
-            uint index = VirtAddress / 1024;
+            int index = (int)(VirtAddress / 1024);
 
             if (Directory[index] != 0)
             {
@@ -183,23 +183,23 @@ namespace Atomix.Kernel_H.Arch.x86
         [Assembly(true)]
         internal static void RefreshTLB()
         {
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.CR3 });
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.CR3, SourceReg = Registers.EAX });
+            new Mov { DestinationReg = Register.EAX, SourceReg = Register.CR3 };
+            new Mov { DestinationReg = Register.CR3, SourceReg = Register.EAX };
         }
 
         [Assembly(true)]
         internal static void InvalidatePageAt(uint xAddress)
         {
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
-            AssemblyHelper.AssemblerCode.Add(new Literal ("invlpg [EAX]"));
+            new Mov { DestinationReg = Register.EAX, SourceReg = Register.EBP, SourceDisplacement = 0x8, SourceIndirect = true };
+            new Literal ("invlpg [EAX]");
         }
 
         [Assembly(true)]
         public static void SwitchDirectory(uint Directory)
         {
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationRef = "static_Field__System_UInt32__Atomix_Kernel_H_Arch_x86_Paging_CurrentDirectory", DestinationIndirect = true, SourceReg = Registers.EAX });
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.CR3, SourceReg = Registers.EAX });
+            new Mov { DestinationReg = Register.EAX, SourceReg = Register.EBP, SourceDisplacement = 0x8, SourceIndirect = true };
+            new Mov { DestinationRef = "static_Field__System_UInt32__Atomix_Kernel_H_Arch_x86_Paging_CurrentDirectory", DestinationIndirect = true, SourceReg = Register.EAX };
+            new Mov { DestinationReg = Register.CR3, SourceReg = Register.EAX };
         }
     }
 }

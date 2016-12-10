@@ -9,10 +9,10 @@
 
 using System;
 
-using Atomix.Assembler;
-using Atomix.Assembler.x86;
-
-using Atomix.CompilerExt.Attributes;
+using Atomixilc;
+using Atomixilc.Machine;
+using Atomixilc.Attributes;
+using Atomixilc.Machine.x86;
 
 namespace Atomix.Kernel_H.Arch.x86
 {
@@ -24,7 +24,7 @@ namespace Atomix.Kernel_H.Arch.x86
         [Assembly(true)]
         internal static void Cli()
         {
-            AssemblyHelper.AssemblerCode.Add(new Cli ());
+            new Cli ();
         }
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace Atomix.Kernel_H.Arch.x86
         [Assembly(true)]
         internal static void Sti()
         {
-            AssemblyHelper.AssemblerCode.Add(new Sti ());
+            new Sti ();
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace Atomix.Kernel_H.Arch.x86
         [Assembly(true)]
         internal static void Hlt()
         {
-            AssemblyHelper.AssemblerCode.Add(new Literal ("hlt"));
+            new Literal ("hlt");
         }
 
         /// <summary>
@@ -77,19 +77,16 @@ namespace Atomix.Kernel_H.Arch.x86
         {
             // Compiler.cs : ProcessDelegate(MethodBase xMethod);
             // [aDelegate + 0xC] := Address Field
-            AssemblyHelper.AssemblerCode.Add(new Mov
+            new Mov
             {
-                DestinationReg = Registers.EBX,
-                SourceReg = Registers.EBP,
+                DestinationReg = Register.EDX,
+                SourceReg = Register.EBP,
                 SourceDisplacement = 0x8,
                 SourceIndirect = true
-            });
+            };
 
             // EAX := [Address Field]
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBX, SourceDisplacement = 0xC, SourceIndirect = true });
-            // Return : [EBP + 0x8] = EAX
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBP, SourceReg = Registers.EAX, DestinationDisplacement = 0x8, DestinationIndirect = true });
-
+            new Mov { DestinationReg = Register.EAX, SourceReg = Register.EDX, SourceDisplacement = 0xC, SourceIndirect = true };
             return 0;
         }
 
@@ -101,16 +98,14 @@ namespace Atomix.Kernel_H.Arch.x86
         internal static uint EndOfKernel()
         {
             // Just put Compiler_End location into return value
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBP, DestinationDisplacement = 0x8, DestinationIndirect = true, SourceRef = "Compiler_End" });
-
+            new Mov { DestinationReg = Register.EAX, SourceRef = "Compiler_End" };
             return 0; // just for c# error
         }
 
         [Assembly(true)]
         internal static uint CR2Register()
         {
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.CR2 });
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBP, DestinationDisplacement = 0x8, DestinationIndirect = true, SourceReg = Registers.EAX });
+            new Mov { DestinationReg = Register.EAX, SourceReg = Register.CR2 };
             return 0;
         }
     }

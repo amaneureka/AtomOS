@@ -19,7 +19,7 @@ namespace Atomix.Kernel_H.Gui
 {
     internal static class Compositor
     {
-        internal const uint PACKET_SIZE = 48;
+        internal const int PACKET_SIZE = 48;
 
         static Bitmap MainBuffer;
         static Bitmap BackBuffer;
@@ -105,7 +105,7 @@ namespace Atomix.Kernel_H.Gui
                                     winRequest->Height
                                 );
 
-                            Marshal.Copy(winRequest->Hash, newWindow.HashID, (uint)newWindow.HashID.Length);
+                            Marshal.Copy(winRequest->Hash, newWindow.HashID, newWindow.HashID.Length);
 
                             Monitor.AcquireLock(Windows);
                             Windows.Add(newWindow);

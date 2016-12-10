@@ -7,13 +7,16 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-using Atomix.CompilerExt.Attributes;
+using Atomixilc;
+using Atomixilc.Machine;
+using Atomixilc.Attributes;
+using Atomixilc.Machine.x86;
 
 namespace Atomix.Kernel_H.plugs
 {
     internal static unsafe class Enum
     {
-        [Plug("System_Void__System_Enum__cctor__")]
+        [Plug("System_Void_System_Enum__cctor__")]
         internal static void Cctor(byte* Address)
         {
             return;

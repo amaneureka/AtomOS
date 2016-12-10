@@ -26,7 +26,7 @@ namespace Atomix.Kernel_H.IO.FileSystem.RFS
         public override int Read(byte[] aBuffer, int aCount)
         {
             if (aCount + mPosition > RamFile.Length)
-                aCount = (int)RamFile.Length - mPosition;
+                aCount = RamFile.Length - mPosition;
 
             var xAddress = (byte*)(RamFile.StartAddress + (uint)mPosition);
             for (int index = 0; index < aCount; index++)

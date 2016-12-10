@@ -65,7 +65,7 @@ namespace Atomix.Kernel_H.IO.FileSystem
             public uint StartAddress;
 
             [FieldOffset(28)]
-            public uint Length;
+            public int Length;
         }
     }
 }

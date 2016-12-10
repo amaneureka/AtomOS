@@ -7,11 +7,10 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-using Atomix.CompilerExt.Attributes;
-
-using Atomix.Assembler;
-using Atomix.Assembler.x86;
-using Core = Atomix.Assembler.AssemblyHelper;
+using Atomixilc;
+using Atomixilc.Machine;
+using Atomixilc.Attributes;
+using Atomixilc.Machine.x86;
 
 namespace Atomix.Kernel_H.Arch.x86
 {
@@ -26,11 +25,9 @@ namespace Atomix.Kernel_H.Arch.x86
         internal static uint Read32(uint aAddress)
         {
             // Load address into EAX
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
+            new Mov { DestinationReg = Register.EAX, SourceReg = Register.EBP, SourceDisplacement = 0x8, SourceIndirect = true };
             // Read memory into EAX
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.EAX, SourceIndirect = true });
-            // Save read out value into stack
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBP, SourceReg = Registers.EBX, DestinationDisplacement = 0x8, DestinationIndirect = true });
+            new Mov { DestinationReg = Register.EAX, SourceReg = Register.EAX, SourceIndirect = true };
 
             return 0; // For c# error --> Don't make any sense for compiler
         }
@@ -44,13 +41,9 @@ namespace Atomix.Kernel_H.Arch.x86
         internal static ushort Read16(uint aAddress)
         {
             // Load address into EAX
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
-            // Clean EBX Register
-            AssemblyHelper.AssemblerCode.Add(new Xor { DestinationReg = Registers.EBX, SourceReg = Registers.EBX });
+            new Mov { DestinationReg = Register.EAX, SourceReg = Register.EBP, SourceDisplacement = 0x8, SourceIndirect = true };
             // Read memory into EAX
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.EAX, SourceIndirect = true });
-            // Save read out value into stack
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBP, SourceReg = Registers.BX, DestinationDisplacement = 0x8, DestinationIndirect = true, Size = 16 });
+            new Movzx { DestinationReg = Register.EAX, SourceReg = Register.EAX, SourceIndirect = true, Size = 16 };
 
             return 0; // For c# error --> Don't make any sense for compiler
         }
@@ -64,13 +57,9 @@ namespace Atomix.Kernel_H.Arch.x86
         internal static byte Read8(uint aAddress)
         {
             // Load address into EAX
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
-            // Clean EBX Register
-            AssemblyHelper.AssemblerCode.Add(new Xor { DestinationReg = Registers.EBX, SourceReg = Registers.EBX });
+            new Mov { DestinationReg = Register.EAX, SourceReg = Register.EBP, SourceDisplacement = 0x8, SourceIndirect = true };
             // Read memory into EAX
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.EAX, SourceIndirect = true });
-            // Save read out value into stack
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBP, SourceReg = Registers.BL, DestinationDisplacement = 0x8, DestinationIndirect = true, Size = 8 });
+            new Movzx { DestinationReg = Register.EAX, SourceReg = Register.EAX, SourceIndirect = true, Size = 8 };
 
             return 0; // For c# error --> Don't make any sense for compiler
         }
@@ -84,11 +73,11 @@ namespace Atomix.Kernel_H.Arch.x86
         internal static void Write32(uint aAddress, uint Value)
         {
             // Load address into EAX
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0xC, SourceIndirect = true });
+            new Mov { DestinationReg = Register.EAX, SourceReg = Register.EBP, SourceDisplacement = 0xC, SourceIndirect = true };
             // Load Value into EDX
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
+            new Mov { DestinationReg = Register.EBX, SourceReg = Register.EBP, SourceDisplacement = 0x8, SourceIndirect = true };
             // Save value at mem Location
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBX, DestinationIndirect = true });
+            new Mov { DestinationReg = Register.EAX, SourceReg = Register.EBX, DestinationIndirect = true };
         }
 
         /// <summary>
@@ -100,11 +89,11 @@ namespace Atomix.Kernel_H.Arch.x86
         internal static void Write16(uint aAddress, ushort Value)
         {
             // Load address into EAX
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0xC, SourceIndirect = true });
+            new Mov { DestinationReg = Register.EAX, SourceReg = Register.EBP, SourceDisplacement = 0xC, SourceIndirect = true };
             // Load Value into EDX
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
+            new Mov { DestinationReg = Register.EBX, SourceReg = Register.EBP, SourceDisplacement = 0x8, SourceIndirect = true };
             // Save value at mem Location
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.BX, DestinationIndirect = true, Size = 16 });
+            new Mov { DestinationReg = Register.EAX, SourceReg = Register.BX, DestinationIndirect = true, Size = 16 };
         }
 
         /// <summary>
@@ -116,41 +105,41 @@ namespace Atomix.Kernel_H.Arch.x86
         internal static void Write8(uint aAddress, byte Value)
         {
             // Load address into EAX
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0xC, SourceIndirect = true });
+            new Mov { DestinationReg = Register.EAX, SourceReg = Register.EBP, SourceDisplacement = 0xC, SourceIndirect = true };
             // Load Value into EDX
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
+            new Mov { DestinationReg = Register.EBX, SourceReg = Register.EBP, SourceDisplacement = 0x8, SourceIndirect = true };
             // Save value at mem Location
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.BL, DestinationIndirect = true, Size = 8 });
+            new Mov { DestinationReg = Register.EAX, SourceReg = Register.BL, DestinationIndirect = true, Size = 8 };
         }
 
         [Assembly(true)]
         internal static void FastCopy(uint aDest, uint aSrc, uint aLen)
         {
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 8, SourceIndirect = true });
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.ESI, SourceReg = Registers.EBP, SourceDisplacement = 12, SourceIndirect = true });
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDI, SourceReg = Registers.EBP, SourceDisplacement = 16, SourceIndirect = true });
+            new Mov { DestinationReg = Register.EAX, SourceReg = Register.EBP, SourceDisplacement = 8, SourceIndirect = true };
+            new Mov { DestinationReg = Register.ESI, SourceReg = Register.EBP, SourceDisplacement = 12, SourceIndirect = true };
+            new Mov { DestinationReg = Register.EDI, SourceReg = Register.EBP, SourceDisplacement = 16, SourceIndirect = true };
 
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.EAX });
-            AssemblyHelper.AssemblerCode.Add(new ShiftRight { DestinationReg = Registers.ECX, SourceRef = "0x2" });
-            AssemblyHelper.AssemblerCode.Add(new Literal ("rep movsd"));
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.EAX });
-            AssemblyHelper.AssemblerCode.Add(new And { DestinationReg = Registers.ECX, SourceRef = "0x3" });
-            AssemblyHelper.AssemblerCode.Add(new Literal ("rep movsb"));
+            new Mov { DestinationReg = Register.ECX, SourceReg = Register.EAX };
+            new Shr { DestinationReg = Register.ECX, SourceRef = "0x2" };
+            new Literal ("rep movsd");
+            new Mov { DestinationReg = Register.ECX, SourceReg = Register.EAX };
+            new And { DestinationReg = Register.ECX, SourceRef = "0x3" };
+            new Literal ("rep movsb");
         }
 
         [Assembly(true)]
         internal static unsafe void FastClear(uint Address, uint Length)
         {
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDI, SourceReg = Registers.EBP, SourceDisplacement = 0xC, SourceIndirect = true });
+            new Mov { DestinationReg = Register.EBX, SourceReg = Register.EBP, SourceDisplacement = 0x8, SourceIndirect = true };
+            new Mov { DestinationReg = Register.EDI, SourceReg = Register.EBP, SourceDisplacement = 0xC, SourceIndirect = true };
 
-            AssemblyHelper.AssemblerCode.Add(new Xor { DestinationReg = Registers.EAX, SourceReg = Registers.EAX });
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.EBX });
-            AssemblyHelper.AssemblerCode.Add(new ShiftRight { DestinationReg = Registers.ECX, SourceRef = "0x2" });
-            AssemblyHelper.AssemblerCode.Add(new Literal ("rep stosd"));// Copy EAX to EDI
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.EBX });
-            AssemblyHelper.AssemblerCode.Add(new And { DestinationReg = Registers.ECX, SourceRef = "0x3" });// Modulo by 4
-            AssemblyHelper.AssemblerCode.Add(new Literal ("rep stosb"));
+            new Xor { DestinationReg = Register.EAX, SourceReg = Register.EAX };
+            new Mov { DestinationReg = Register.ECX, SourceReg = Register.EBX };
+            new Shr { DestinationReg = Register.ECX, SourceRef = "0x2" };
+            new Literal ("rep stosd");// Copy EAX to EDI
+            new Mov { DestinationReg = Register.ECX, SourceReg = Register.EBX };
+            new And { DestinationReg = Register.ECX, SourceRef = "0x3" };// Modulo by 4
+            new Literal ("rep stosb");
         }
     }
 }

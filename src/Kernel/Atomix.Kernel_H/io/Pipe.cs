@@ -18,17 +18,17 @@ namespace Atomix.Kernel_H.IO
         uint BufferSize;
         bool[] BufferStatus;
 
-        uint ReadingPointer;
-        uint WritingPointer;
+        int ReadingPointer;
+        int WritingPointer;
 
-        internal readonly uint PacketSize;
-        internal readonly uint PacketsCount;
+        internal readonly int PacketSize;
+        internal readonly int PacketsCount;
 
-        internal Pipe(uint aPacketSize, uint aPacketsCount)
+        internal Pipe(int aPacketSize, int aPacketsCount)
         {
             PacketsCount = aPacketsCount;
             PacketSize = aPacketSize;
-            BufferSize = PacketsCount * PacketSize;
+            BufferSize = (uint)(PacketsCount * PacketSize);
             Buffer = Heap.kmalloc(BufferSize);
             BufferStatus = new bool[PacketsCount];
 
@@ -45,11 +45,10 @@ namespace Atomix.Kernel_H.IO
             if (BufferStatus[WritingPointer])
                 return false;
 
-            Memory.FastCopy(Buffer + WritingPointer * PacketSize, Native.GetContentAddress(aData), PacketSize);
+            Memory.FastCopy(Buffer + (uint)(WritingPointer * PacketSize), Native.GetContentAddress(aData), (uint)PacketSize);
             BufferStatus[WritingPointer] = true;
 
             WritingPointer = (WritingPointer + 1) % PacketsCount;
-                WritingPointer = 0;
             return true;
         }
 
@@ -60,7 +59,7 @@ namespace Atomix.Kernel_H.IO
 
             while (!BufferStatus[ReadingPointer]) ;
 
-            Memory.FastCopy(Native.GetContentAddress(aData), Buffer + ReadingPointer * PacketSize, PacketSize);
+            Memory.FastCopy(Native.GetContentAddress(aData), Buffer + (uint)(ReadingPointer * PacketSize), (uint)PacketSize);
             BufferStatus[ReadingPointer] = false;
 
             ReadingPointer = (ReadingPointer + 1) % PacketsCount;

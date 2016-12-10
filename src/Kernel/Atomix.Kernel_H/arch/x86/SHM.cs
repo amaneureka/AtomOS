@@ -60,7 +60,8 @@ namespace Atomix.Kernel_H.Arch.x86
             {
                 for (int j = 0; j < 32; j++)
                 {
-                    if ((shm_mapping[i] & (0x1 << j)) == 0)
+                    uint index = (uint)(1 << j);
+                    if ((shm_mapping[i] & index) == 0)
                     {
                         CurrentFrameCount++;
                         if (CurrentFrameCount == FramesRequired)

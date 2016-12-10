@@ -69,9 +69,9 @@ namespace Atomix.Kernel_H.Exec
             [FieldOffset(20)]
             public uint sh_size;
             [FieldOffset(24)]
-            public uint sh_link;
+            public int sh_link;
             [FieldOffset(28)]
-            public uint sh_info;
+            public int sh_info;
             [FieldOffset(32)]
             public uint sh_addralign;
             [FieldOffset(36)]
@@ -281,11 +281,12 @@ namespace Atomix.Kernel_H.Exec
 
             uint RelocCount = aShdr->sh_size / aShdr->sh_entsize;
 
-            uint SymIdx, SymVal, RelocType;
-            for (int i = 0; i < RelocCount; i++, Reloc++)
+            byte SymIdx;
+            uint SymVal, RelocType;
+            for (uint i = 0; i < RelocCount; i++, Reloc++)
             {
                 SymVal = 0;
-                SymIdx = (Reloc->r_info >> 8);
+                SymIdx = (byte)(Reloc->r_info >> 8);
 				RelocType = Reloc->r_info & 0xFF;
 
                 if (SymIdx != SHN_UNDEF)
@@ -329,7 +330,8 @@ namespace Atomix.Kernel_H.Exec
             uint Address;
             for (uint i = 0; i < count; i++, SymTab++)
             {
-                if ((SymTab->st_info >> 4) == STB_GLOBAL)
+                uint flag = (uint)(SymTab->st_info >> 4);
+                if (flag == STB_GLOBAL)
                 {
                     switch (SymTab->st_shndx)
                     {
@@ -353,7 +355,7 @@ namespace Atomix.Kernel_H.Exec
             }
         }
 
-        private static uint GetSymValue(Elf_Header* aHeader, uint aTableIdx, uint aSymIdx)
+        private static uint GetSymValue(Elf_Header* aHeader, int aTableIdx, int aSymIdx)
         {
             uint BaseAddress = (uint)aHeader;
             Elf_Shdr* SymSection = (Elf_Shdr*)(BaseAddress + aHeader->e_shoff) + aTableIdx;

@@ -203,7 +203,7 @@ namespace Atomix.Kernel_H.IO.FileSystem
                         activeSector,
                         index,
                         (attribute & FatFileAttributes.SubDirectory) != 0,
-                        BitConverter.ToUInt32(aData, offset + (int)Entry.FileSize));
+                        BitConverter.ToInt32(aData, offset + (int)Entry.FileSize));
                 }
 
                 if (aData[(int)Entry.DOSName + offset] == (int)FileNameAttribute.LastEntry)

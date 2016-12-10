@@ -11,19 +11,22 @@ using System;
 
 using Atomix.Kernel_H.Core;
 
-using Atomix.CompilerExt.Attributes;
+using Atomixilc;
+using Atomixilc.Machine;
+using Atomixilc.Attributes;
+using Atomixilc.Machine.x86;
 
 namespace Atomix.Kernel_H.plugs
 {
     internal static class ExceptionImpl
     {
-        [Plug("System_Void__System_Exception__cctor__")]
+        [Plug("System_Void_System_Exception__cctor__")]
         internal static unsafe void ctor()
         {
             return;
         }
 
-        [Plug("System_Void__System_Exception__ctor_System_String_")]
+        [Plug("System_Void_System_Exception__ctor_System_String_")]
         internal static unsafe void cctor(byte* aAddress, uint Message)
         {
             *(uint*)(aAddress + 0xC) = Message;
@@ -33,24 +36,6 @@ namespace Atomix.Kernel_H.plugs
         internal static unsafe uint GetMessage(byte* aAddress)
         {
             return *(uint*)(aAddress + 0xC);
-        }
-
-        [Label(CompilerExt.Helper.lblSetException)]
-        internal static void SetException(Exception aException)
-        {
-            var Thread = Scheduler.RunningThread;
-            if (Thread != null)
-                Thread.Exception = aException;
-            Debug.Write("[SetException]: %s\n", aException.Message);
-        }
-
-        [Label(CompilerExt.Helper.lblGetException)]
-        internal static Exception GetException()
-        {
-            var Thread = Scheduler.RunningThread;
-            if (Thread != null)
-                return Thread.Exception;
-            return null;
         }
     }
 }

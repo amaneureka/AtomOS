@@ -18,7 +18,7 @@ namespace Atomix.Kernel_H.IO.FileSystem.FAT
         private FatFileSystem mFS;
 
         private string mFileName;
-        private uint mFileSize;
+        private int mFileSize;
 
         private uint mFirstCluster;
         private uint mCurrentCluster;
@@ -26,7 +26,7 @@ namespace Atomix.Kernel_H.IO.FileSystem.FAT
 
         private byte[] mBufferCluster;
 
-        internal FatStream(FatFileSystem aFS, string aName, uint aFirstCluster, uint aSize)
+        internal FatStream(FatFileSystem aFS, string aName, uint aFirstCluster, int aSize)
             :base(aName, aSize)
         {
             mFS = aFS;
@@ -46,7 +46,7 @@ namespace Atomix.Kernel_H.IO.FileSystem.FAT
             int BufferPosition = 0, RelativePosition = mPosition % mBufferCluster.Length, EffectiveBytesCopied = 0;
 
             if (mPosition + aCount > mFileSize)
-                aCount = (int)(mFileSize - mPosition);
+                aCount = mFileSize - mPosition;
 
             do
             {

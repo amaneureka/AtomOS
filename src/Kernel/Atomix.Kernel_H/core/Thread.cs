@@ -17,7 +17,6 @@ namespace Atomix.Kernel_H.Core
     {
         internal readonly Process Process;
         internal readonly int ThreadID;
-        internal Exception Exception;
 
         ThreadState State;
         uint Address;

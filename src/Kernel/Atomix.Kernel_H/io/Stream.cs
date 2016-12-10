@@ -14,9 +14,9 @@ namespace Atomix.Kernel_H.IO
     public abstract class Stream
     {
         internal readonly string FileName;
-        internal readonly uint FileSize;
+        internal readonly int FileSize;
 
-        internal Stream(string aFileName, uint aSize)
+        internal Stream(string aFileName, int aSize)
         {
             FileName = aFileName;
             FileSize = aSize;
