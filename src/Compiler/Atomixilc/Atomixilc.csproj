@@ -59,6 +59,8 @@
     <Compile Include="IL\Arithemetic\Rem.cs" />
     <Compile Include="IL\Arithemetic\Rem_Un.cs" />
     <Compile Include="IL\Arithemetic\Shl.cs" />
+    <Compile Include="IL\Arithemetic\Shr.cs" />
+    <Compile Include="IL\Arithemetic\Shr_Un.cs" />
     <Compile Include="IL\Arithemetic\Sub.cs" />
     <Compile Include="IL\Arithemetic\Xor.cs" />
     <Compile Include="IL\Branch\Beq.cs" />
@@ -194,6 +196,7 @@
     <Compile Include="Machine\x86\Push.cs" />
     <Compile Include="Machine\x86\Pushad.cs" />
     <Compile Include="Machine\x86\Ret.cs" />
+    <Compile Include="Machine\x86\Sar.cs" />
     <Compile Include="Machine\x86\Shl.cs" />
     <Compile Include="Machine\x86\Shr.cs" />
     <Compile Include="Machine\x86\Sti.cs" />
