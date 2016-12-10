@@ -31,7 +31,7 @@ namespace Atomixilc.IL
             var itemA = Optimizer.vStack.Pop();
             var itemB = Optimizer.vStack.Pop();
 
-            var xTrueLabel = Helper.GetLabel(method, offset);
+            var xTrueLabel = Helper.GetLabel(offset);
 
             var size = Math.Max(Helper.GetTypeSize(itemA.OperandType, Config.TargetPlatform),
                 Helper.GetTypeSize(itemB.OperandType, Config.TargetPlatform));

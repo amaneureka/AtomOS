@@ -25,7 +25,7 @@ namespace Atomixilc.IL
         internal override void Execute(Options Config, OpCodeType xOp, MethodBase method, Optimizer Optimizer)
         {
             var offset = ((OpBranch)xOp).Value;
-            var xTrueLabel = Helper.GetLabel(method, offset);
+            var xTrueLabel = Helper.GetLabel(offset);
 
             /* No evaluation stack behaviors are performed by this operation.
              */

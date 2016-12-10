@@ -98,9 +98,9 @@ namespace Atomixilc
             return string.Format("cctor_{0}", method.FullName());
         }
 
-        internal static string GetLabel(MethodBase xMethod, int NextPosition)
+        internal static string GetLabel(int NextPosition)
         {
-            return string.Format("{0}.IL_{1}", xMethod.FullName(), NextPosition.ToString("X").PadLeft(5, '0'));
+            return string.Format(".IL_{0}", NextPosition.ToString("X").PadLeft(5, '0'));
         }
 
         internal static string GetVTableFlush(int methodID)

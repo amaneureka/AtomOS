@@ -101,10 +101,11 @@ namespace Atomixilc
             if (main == null)
                 throw new Exception("No main function found");
 
-            IncludeLibrary();
-
             ScanQ.Enqueue(main);
-            while(ScanQ.Count != 0)
+
+            IncludePlugAndLibrary();
+
+            while (ScanQ.Count != 0)
             {
                 var ScanObject = ScanQ.Dequeue();
 
@@ -171,7 +172,6 @@ namespace Atomixilc
                 SW.WriteLine();
 
                 SW.WriteLine("section .text");
-                SW.WriteLine();
                 foreach (var block in CodeSegment)
                 {
                     var xbody = block.Body;
@@ -258,9 +258,15 @@ namespace Atomixilc
             }
         }
 
-        internal void IncludeLibrary()
+        internal void IncludePlugAndLibrary()
         {
             ScanQ.Enqueue(typeof(Lib.VTable));
+
+            foreach (var plug in Plugs)
+                ScanQ.Enqueue(plug.Key);
+
+            foreach (var label in Labels)
+                ScanQ.Enqueue(label.Value);
         }
 
         internal void ScanInputAssembly(out Type Entrypoint)
@@ -293,7 +299,6 @@ namespace Atomixilc
                         Verbose.Message("[Plug] {0} : {1}", plugattrib.TargetLabel, method.FullName());
                         method.AddPlug(plugattrib.TargetLabel);
                         Plugs.Add(method, plugattrib.TargetLabel);
-                        ScanQ.Enqueue(method);
                     }
 
                     var labelattrib = method.GetCustomAttribute<LabelAttribute>();
@@ -303,7 +308,6 @@ namespace Atomixilc
                             throw new Exception(string.Format("Multiple labels with same Ref label '{0}'", labelattrib.RefLabel));
                         Verbose.Message("[Label] {0} : {1}", labelattrib.RefLabel, method.FullName());
                         Labels.Add(labelattrib.RefLabel, method);
-                        ScanQ.Enqueue(method);
                     }
                 }
             }
@@ -565,11 +569,16 @@ namespace Atomixilc
                 }
 
                 if (ReferencedPositions.Contains(xOp.Position))
-                    new Label(Helper.GetLabel(method, xOp.Position));
+                    new Label(Helper.GetLabel(xOp.Position));
+
+                if (xOp.NeedHandler)
+                {
+                    EmitExceptionHandler(block, method);
+                    Optimizer.vStack.Push(new StackItem(typeof(Exception)));
+                }
 
                 MSIL ILHandler = null;
                 ILCodes.TryGetValue(xOp.ILCode, out ILHandler);
-
                 if (ILHandler == null)
                     Verbose.Error("Unimplemented ILCode '{0}'", xOp.ILCode);
                 else
@@ -596,6 +605,29 @@ namespace Atomixilc
                                     new Mov { DestinationReg = Register.EBP, SourceReg = Register.ESP };
                                     if (stackspace > 0)
                                         new Sub { DestinationReg = Register.ESP, SourceRef = "0x" + stackspace.ToString("X") };
+                                }
+                                break;
+                            default:
+                                throw new Exception(string.Format("Unsupported Platform method '{0}'", method.FullName()));
+                        }
+                    }
+                    break;
+                default:
+                    throw new Exception(string.Format("Unsupported CallingConvention used in method '{0}'", method.FullName()));
+            }
+        }
+
+        internal void EmitExceptionHandler(FunctionalBlock block, MethodBase method)
+        {
+            switch (block.CallingConvention)
+            {
+                case CallingConvention.StdCall:
+                    {
+                        switch (block.Platform)
+                        {
+                            case Architecture.x86:
+                                {
+                                    new Push { DestinationReg = Register.ECX };
                                 }
                                 break;
                             default:
@@ -645,6 +677,10 @@ namespace Atomixilc
                         {
                             case Architecture.x86:
                                 {
+                                    new Label(".End");
+                                    new Xor { DestinationReg = Register.ECX, SourceReg = Register.ECX };
+
+                                    new Label(".Error");
                                     new Leave { };
                                     new Ret { Offset = (byte)paramsSize };
                                 }
@@ -685,6 +721,62 @@ namespace Atomixilc
             int index = 0;
             while (index < byteCode.Length)
             {
+                xCurrentHandler = null;
+                foreach (ExceptionHandlingClause xHandler in body.ExceptionHandlingClauses)
+                {
+                    if (xHandler.TryOffset >= 0)
+                    {
+                        if (xHandler.TryOffset <= index && (xHandler.TryLength + xHandler.TryOffset + 1) > index)
+                        {
+                            if (xCurrentHandler == null)
+                            {
+                                xCurrentHandler = xHandler;
+                                continue;
+                            }
+                            else if (xHandler.TryOffset > xCurrentHandler.TryOffset && (xHandler.TryLength + xHandler.TryOffset) < (xCurrentHandler.TryLength + xCurrentHandler.TryOffset))
+                            {
+                                xCurrentHandler = xHandler;
+                                continue;
+                            }
+                        }
+                    }
+                    if (xHandler.HandlerOffset > 0)
+                    {
+                        if (xHandler.HandlerOffset <= index && (xHandler.HandlerOffset + xHandler.HandlerLength + 1) > index)
+                        {
+                            if (xCurrentHandler == null)
+                            {
+                                xCurrentHandler = xHandler;
+                                continue;
+                            }
+                            else if (xHandler.HandlerOffset > xCurrentHandler.HandlerOffset && (xHandler.HandlerOffset + xHandler.HandlerLength) < (xCurrentHandler.HandlerOffset + xCurrentHandler.HandlerLength))
+                            {
+                                xCurrentHandler = xHandler;
+                                continue;
+                            }
+                        }
+                    }
+                    if ((xHandler.Flags & ExceptionHandlingClauseOptions.Filter) > 0)
+                    {
+                        if (xHandler.FilterOffset > 0)
+                        {
+                            if (xHandler.FilterOffset <= index)
+                            {
+                                if (xCurrentHandler == null)
+                                {
+                                    xCurrentHandler = xHandler;
+                                    continue;
+                                }
+                                else if (xHandler.FilterOffset > xCurrentHandler.FilterOffset)
+                                {
+                                    xCurrentHandler = xHandler;
+                                    continue;
+                                }
+                            }
+                        }
+                    }
+                }
+
                 int position = index;
 
                 if (byteCode[index] == 0xFE)
@@ -699,9 +791,6 @@ namespace Atomixilc
                 }
 
                 xOpCodeVal = (ILCode)xOpCode.Value;
-
-                // TODO::
-                xCurrentHandler = null;
 
                 switch (xOpCode.OperandType)
                 {

@@ -64,6 +64,8 @@ namespace Atomixilc.IL
 
                         new Push { DestinationRef = "0x" + memsize.ToString("X") };
                         new Call { DestinationRef = Helper.Heap_Label, IsLabel = true };
+                        new Cmp { DestinationReg = Register.ECX, SourceRef = "0x0" };
+                        new Jmp { Condition = ConditionalJump.JNZ, DestinationRef = xOp.HandlerRef };
 
                         new Mov { DestinationReg = Register.EAX, DestinationIndirect = true, SourceRef = "0x" + type.GetHashCode().ToString("X") };
                         new Mov { DestinationReg = Register.EAX, DestinationIndirect = true, DestinationDisplacement = 4, SourceRef = "0x1" };
@@ -80,6 +82,9 @@ namespace Atomixilc.IL
                         }
 
                         new Call { DestinationRef = functionInfo.FullName() };
+                        new Cmp { DestinationReg = Register.ECX, SourceRef = "0x0" };
+                        new Jmp { Condition = ConditionalJump.JNZ, DestinationRef = xOp.HandlerRef };
+
                         new Pop { DestinationReg = Register.EAX };
                         new Add { DestinationReg = Register.ESP, SourceRef = "0x" + paramsize.ToString("X") };
                         new Push { DestinationReg = Register.EAX };

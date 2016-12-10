@@ -30,7 +30,7 @@ namespace Atomixilc.IL
             var offset = ((OpBranch)xOp).Value;
             var item = Optimizer.vStack.Pop();
 
-            var xTrueLabel = Helper.GetLabel(method, offset);
+            var xTrueLabel = Helper.GetLabel(offset);
 
             var size = Helper.GetTypeSize(item.OperandType, Config.TargetPlatform);
 

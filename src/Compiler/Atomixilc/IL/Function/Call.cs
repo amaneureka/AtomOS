@@ -64,6 +64,8 @@ namespace Atomixilc.IL
                             throw new Exception(string.Format("UnImplemented '{0}'", msIL));
 
                         new Call { DestinationRef = addressRefernce };
+                        new Cmp { DestinationReg = Register.ECX, SourceRef = "0x0" };
+                        new Jmp { Condition = ConditionalJump.JNZ, DestinationRef = xOp.HandlerRef };
 
                         if (targetinfo != null && targetinfo.ReturnType != typeof(void))
                         {

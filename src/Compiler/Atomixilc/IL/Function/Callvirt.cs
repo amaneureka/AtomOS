@@ -68,6 +68,8 @@ namespace Atomixilc.IL
                         if (functionInfo.IsStatic || functionInfo.IsFinal || !functionInfo.IsVirtual || !functionInfo.IsAbstract)
                         {
                             new Call { DestinationRef = addressRefernce };
+                            new Cmp { DestinationReg = Register.ECX, SourceRef = "0x0" };
+                            new Jmp { Condition = ConditionalJump.JNZ, DestinationRef = xOp.HandlerRef };
                         }
                         else
                         {
@@ -77,11 +79,15 @@ namespace Atomixilc.IL
                             new Push { DestinationRef = Helper.GetVTableFlush(xOpMethod.MethodUID) };
                             new Push { DestinationReg = Register.EAX };
                             new Call { DestinationRef = Helper.VTable_Label, IsLabel = true };
+                            new Cmp { DestinationReg = Register.ECX, SourceRef = "0x0" };
+                            new Jmp { Condition = ConditionalJump.JNZ, DestinationRef = xOp.HandlerRef };
 
                             if (functionInfo.DeclaringType == typeof(object))
                                 throw new Exception("Callvirt Object Declaring type not implemented");
 
                             new Call { DestinationRef = "EAX" };
+                            new Cmp { DestinationReg = Register.ECX, SourceRef = "0x0" };
+                            new Jmp { Condition = ConditionalJump.JNZ, DestinationRef = xOp.HandlerRef };
                         }
 
                         if (functionInfo.ReturnType != typeof(void))

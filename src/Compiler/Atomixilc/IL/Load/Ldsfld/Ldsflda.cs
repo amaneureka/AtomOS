@@ -46,7 +46,11 @@ namespace Atomixilc.IL
                 case Architecture.x86:
                     {
                         if (!string.IsNullOrEmpty(cctor_addref) && cctor != method)
+                        {
                             new Call { DestinationRef = cctor_addref };
+                            new Cmp { DestinationReg = Register.ECX, SourceRef = "0x0" };
+                            new Jmp { Condition = ConditionalJump.JNZ, DestinationRef = xOp.HandlerRef };
+                        }
 
                         new Push { DestinationRef = fieldName };
 
