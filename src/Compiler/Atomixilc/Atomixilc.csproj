@@ -95,6 +95,7 @@
     <Compile Include="IL\Comparison\Ceq.cs" />
     <Compile Include="IL\Comparison\Cgt.cs" />
     <Compile Include="IL\Comparison\Cgt_Un.cs" />
+    <Compile Include="IL\Comparison\Clt_Un.cs" />
     <Compile Include="IL\Conversion\Conv_I.cs" />
     <Compile Include="IL\Conversion\Conv_I1.cs" />
     <Compile Include="IL\Conversion\Conv_I2.cs" />

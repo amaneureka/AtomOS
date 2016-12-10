@@ -69,16 +69,51 @@ namespace Atomixilc.IL
             new Mul { DestinationReg = Register.EDX };
 
             new Pop { DestinationReg = Register.EDX };
-            new Add { DestinationReg = Register.EDX, SourceReg = Register.EAX };
+            new Add { DestinationReg = Register.EAX, SourceReg = Register.EDX };
+            new Mov { DestinationReg = Register.EDX, SourceReg = Register.EDI };
 
-            new Mov
+            switch (size)
             {
-                DestinationReg = Register.EDX,
-                DestinationDisplacement = 0x10,
-                DestinationIndirect = true,
-                SourceReg = Register.EDI,
-                Size = (byte)(size * 8)
-            };
+                case 0: break;
+                case 1:
+                    {
+                        new Mov
+                        {
+                            DestinationReg = Register.EAX,
+                            DestinationDisplacement = 0x10,
+                            DestinationIndirect = true,
+                            SourceReg = Register.DL,
+                            Size = 8
+                        };
+                    }
+                    break;
+                case 2:
+                    {
+                        new Mov
+                        {
+                            DestinationReg = Register.EAX,
+                            DestinationDisplacement = 0x10,
+                            DestinationIndirect = true,
+                            SourceReg = Register.DX,
+                            Size = 16
+                        };
+                    }
+                    break;
+                case 4:
+                    {
+                        new Mov
+                        {
+                            DestinationReg = Register.EAX,
+                            DestinationDisplacement = 0x10,
+                            DestinationIndirect = true,
+                            SourceReg = Register.EDX,
+                            Size = 32
+                        };
+                    }
+                    break;
+                default:
+                    throw new Exception("not implemented");
+            }
         }
     }
 }

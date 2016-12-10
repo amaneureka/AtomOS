@@ -61,13 +61,45 @@ namespace Atomixilc.IL
             new Pop { DestinationReg = Register.EDX };
             new Pop { DestinationReg = Register.EAX };
 
-            new Mov
+            switch(size)
             {
-                DestinationReg = Register.EAX,
-                DestinationIndirect = true,
-                SourceReg = Register.EDX,
-                Size = (byte)(size * 8)
-            };
+                case 0: break;
+                case 1:
+                    {
+                        new Mov
+                        {
+                            DestinationReg = Register.EAX,
+                            DestinationIndirect = true,
+                            SourceReg = Register.DL,
+                            Size = 8
+                        };
+                    }
+                    break;
+                case 2:
+                    {
+                        new Mov
+                        {
+                            DestinationReg = Register.EAX,
+                            DestinationIndirect = true,
+                            SourceReg = Register.DX,
+                            Size = 16
+                        };
+                    }
+                    break;
+                case 4:
+                    {
+                        new Mov
+                        {
+                            DestinationReg = Register.EAX,
+                            DestinationIndirect = true,
+                            SourceReg = Register.EDX,
+                            Size = 32
+                        };
+                    }
+                    break;
+                default:
+                    throw new Exception("not implemented");
+            }
         }
     }
 }

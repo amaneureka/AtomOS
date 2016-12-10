@@ -197,6 +197,8 @@ namespace Atomixilc
                     SW.WriteLine();
                 }
 
+                SW.WriteLine("Compiler_End:");
+
                 SW.Flush();
                 SW.Close();
             }
@@ -329,30 +331,30 @@ namespace Atomixilc
                 ScanQ.Enqueue(ctor);
             }
 
-            var methods = type.GetMethods(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
-            foreach(var method in methods)
+            var methods = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static);
+            foreach (var method in methods)
             {
-                var basedefination = method.GetBaseDefinition();
-
                 var plugattrib = method.GetCustomAttribute<PlugAttribute>();
-                if (plugattrib != null)
+                if (plugattrib != null && !Plugs.ContainsKey(method))
                 {
-                    if (Plugs.ContainsKey(method)) continue;
-
                     ScanQ.Enqueue(method);
                     Plugs.Add(method, plugattrib.TargetLabel);
                     Verbose.Message("[Plug] {0} : {1}", plugattrib.TargetLabel, method.FullName());
                 }
 
                 var labelattrib = method.GetCustomAttribute<LabelAttribute>();
-                if (labelattrib != null)
+                if (labelattrib != null && !Labels.ContainsKey(labelattrib.RefLabel))
                 {
-                    if (Labels.ContainsKey(labelattrib.RefLabel)) continue;
-
                     ScanQ.Enqueue(method);
                     Labels.Add(labelattrib.RefLabel, method);
                     Verbose.Message("[Label] {0} : {1}", labelattrib.RefLabel, method.FullName());
                 }
+            }
+
+            methods = type.GetMethods();
+            foreach (var method in methods)
+            {
+                var basedefination = method.GetBaseDefinition();
 
                 if (Virtuals.Contains(method) ||
                     !basedefination.IsAbstract ||
@@ -784,6 +786,9 @@ namespace Atomixilc
                         }
                     }
                 }
+
+                if (xCurrentHandler != null)
+                    ReferencedPositions.Add(xCurrentHandler.HandlerOffset);
 
                 int position = index;
 

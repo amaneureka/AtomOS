@@ -65,14 +65,14 @@ namespace Atomixilc.IL
                             case 2:
                             case 4:
                                 {
-                                    new Mov { DestinationReg = Register.EDX, DestinationIndirect = true, SourceReg = Register.EAX, Size = (byte)(size * 8) };
+                                    new Mov { DestinationReg = Register.EDX, DestinationIndirect = true, SourceReg = Register.EAX };
                                 }
                                 break;
                             case 3:
                                 {
-                                    new Mov { DestinationReg = Register.EDX, DestinationIndirect = true, SourceReg = Register.EAX, Size = 16 };
+                                    new Mov { DestinationReg = Register.EDX, DestinationIndirect = true, SourceReg = Register.AX, Size = 16 };
                                     new Shr { DestinationReg = Register.EAX, SourceRef = "0x10" };
-                                    new Mov { DestinationReg = Register.EDX, DestinationIndirect = true, DestinationDisplacement = 2, SourceReg = Register.EAX, Size = 8 };
+                                    new Mov { DestinationReg = Register.EDX, DestinationIndirect = true, DestinationDisplacement = 2, SourceReg = Register.AL, Size = 8 };
                                 }
                                 break;
                         }

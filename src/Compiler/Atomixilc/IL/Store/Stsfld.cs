@@ -71,13 +71,13 @@ namespace Atomixilc.IL
                             case 1:
                                 {
                                     new Pop { DestinationReg = Register.EAX };
-                                    new Mov { DestinationRef = fieldName, DestinationIndirect = true, DestinationDisplacement = offset * 4, SourceReg = Register.EAX, Size = 8 };
+                                    new Mov { DestinationRef = fieldName, DestinationIndirect = true, DestinationDisplacement = offset * 4, SourceReg = Register.AL, Size = 8 };
                                 }
                                 break;
                             case 2:
                                 {
                                     new Pop { DestinationReg = Register.EAX };
-                                    new Mov { DestinationRef = fieldName, DestinationIndirect = true, DestinationDisplacement = offset * 4, SourceReg = Register.EAX, Size = 16 };
+                                    new Mov { DestinationRef = fieldName, DestinationIndirect = true, DestinationDisplacement = offset * 4, SourceReg = Register.AX, Size = 16 };
                                 }
                                 break;
                             default:
