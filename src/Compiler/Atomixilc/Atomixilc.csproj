@@ -9,9 +9,10 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Atomixilc</RootNamespace>
     <AssemblyName>Atomixilc</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -70,6 +71,7 @@
     <Compile Include="IL\Branch\Br.cs" />
     <Compile Include="IL\Branch\Brfalse.cs" />
     <Compile Include="IL\Branch\Brtrue.cs" />
+    <Compile Include="IL\Branch\Leave.cs" />
     <Compile Include="IL\CodeType\OpBranch.cs" />
     <Compile Include="IL\CodeType\OpDouble.cs" />
     <Compile Include="IL\CodeType\OpField.cs" />

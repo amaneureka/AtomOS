@@ -167,7 +167,7 @@ namespace Atomixilc
                 foreach (var dataEntry in DataSegment)
                     SW.WriteLine(dataEntry.Value);
                 foreach (var dataEntry in Helper.DataSegment)
-                    SW.WriteLine(dataEntry.Value);
+                    SW.WriteLine(dataEntry);
                 SW.WriteLine();
 
                 SW.WriteLine("section .text");
@@ -282,7 +282,7 @@ namespace Atomixilc
                     Entrypoint = type;
                 }
 
-                var methods = type.GetMethods();
+                var methods = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static);
                 foreach (var method in methods)
                 {
                     var plugattrib = method.GetCustomAttribute<PlugAttribute>();
@@ -400,7 +400,7 @@ namespace Atomixilc
             }
             catch (Exception e)
             {
-                throw new Exception(string.Format("Exception occured while invoking assembly function '{0}' => {1}", method.FullName(), e.Message));
+                throw new Exception(string.Format("Exception occured while invoking assembly function '{0}' => {1}", method.FullName(), e.ToString()));
             }
 
             if (attrib.CalliHeader)

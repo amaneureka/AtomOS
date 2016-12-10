@@ -16,7 +16,7 @@ namespace Atomixilc
         public const string SetException_Label = "__Set_Exception__";
         public const string GetException_Label = "__Get_Exception__";
 
-        internal readonly static Dictionary<string, AsmData> DataSegment = new Dictionary<string, AsmData>();
+        internal readonly static List<AsmData> DataSegment = new List<AsmData>();
         internal readonly static Dictionary<FieldInfo, string> cachedFieldLabel = new Dictionary<FieldInfo, string>();
         internal readonly static Dictionary<MethodBase, string> cachedMethodLabel = new Dictionary<MethodBase, string>();
         internal readonly static Dictionary<string, string> cachedResolvedStringLabel = new Dictionary<string, string>();
@@ -34,7 +34,7 @@ namespace Atomixilc
 
         public static void InsertData(AsmData aData)
         {
-            DataSegment.Add(aData.Key, aData);
+            DataSegment.Add(aData);
         }
 
         internal static void AddPlug(this MethodBase method, string target)
