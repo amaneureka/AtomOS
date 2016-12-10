@@ -365,6 +365,8 @@ namespace Atomixilc
                 ProcessAssemblyMethod(method, ref block);
             else if (method.GetCustomAttribute<DllImportAttribute>() != null)
                 ProcessExternMethod(method, ref block);
+            else if (typeof(Delegate).IsAssignableFrom(method.DeclaringType))
+                ProcessDelegate(method, ref block);
             else
                 ProcessMethod(method, ref block);
 
@@ -433,11 +435,65 @@ namespace Atomixilc
             ZeroSegment.Add(name, size);
         }
 
+        internal void ProcessDelegate(MethodBase method, ref FunctionalBlock block)
+        {
+            if (method.Name == ".ctor")
+            {
+                block = new FunctionalBlock(method.FullName(), Config.TargetPlatform, CallingConvention.StdCall);
+                Instruction.Block = block;
+
+                // void.ctor(System.Object, IntPtr)
+                new Label(method.FullName());
+
+                EmitHeader(block, method, 0);
+                new Mov { DestinationReg = Register.EAX, SourceReg = Register.EBP, SourceDisplacement = 0x10, SourceIndirect = true };
+                new Mov { DestinationReg = Register.EDX, SourceReg = Register.EBP, SourceDisplacement = 0x8, SourceIndirect = true };
+                // [Memory + 0x0] := Intptr
+                new Mov { DestinationReg = Register.EAX, DestinationDisplacement = 0xC, DestinationIndirect = true, SourceReg = Register.EDX };
+                new Mov { DestinationReg = Register.EDX, SourceReg = Register.EBP, SourceDisplacement = 0xC, SourceIndirect = true };
+                // [Memory + 0x4] := Object
+                new Mov { DestinationReg = Register.EAX, DestinationDisplacement = 0x10, DestinationIndirect = true, SourceReg = Register.EDX };
+                EmitFooter(block, method);
+
+                Instruction.Block = null;
+            }
+            else if (method.Name == "Invoke")
+            {
+                block = new FunctionalBlock(method.FullName(), Config.TargetPlatform, CallingConvention.StdCall);
+                Instruction.Block = block;
+
+                // Return-Type Invoke(params)
+                new Label(method.FullName());
+
+                int ESPOffset = 4;
+                var xparams = method.GetParameters();
+
+                foreach (var par in xparams)
+                    ESPOffset += Helper.GetTypeSize(par.ParameterType, Config.TargetPlatform, true);
+
+                new Mov { DestinationReg = Register.EDX, SourceReg = Register.ESP, SourceDisplacement = ESPOffset, SourceIndirect = true };
+                new Mov { DestinationReg = Register.EAX, SourceReg = Register.EDX, SourceDisplacement = 0xC, SourceIndirect = true };
+                new Pop { DestinationReg = Register.EDX };
+                new Mov { DestinationReg = Register.ESP, DestinationDisplacement = ESPOffset - 4, DestinationIndirect = true, SourceReg = Register.EDX };
+                new Call { DestinationRef = "EAX" };
+                new Ret { Offset = 0 };
+
+                Instruction.Block = null;
+            }
+            else
+            {
+                Verbose.Error("Unimplemented delegate function '{0}'", method.Name);
+            }
+        }
+
         internal void ProcessMethod(MethodBase method, ref FunctionalBlock block)
         {
             var Body = method.GetMethodBody();
             if (Body == null)
+            {
+                Verbose.Warning("Body == null");
                 return;
+            }
 
             var MethodName = method.FullName();
             if (Plugs.ContainsValue(MethodName))
@@ -627,9 +683,10 @@ namespace Atomixilc
             while (index < byteCode.Length)
             {
                 int position = index;
+
                 if (byteCode[index] == 0xFE)
                 {
-                    xOpCode = OpCode[BitConverter.ToInt16(byteCode, index)];
+                    xOpCode = OpCode[(short)(0xFE00 | byteCode[index + 1])];
                     index += 2;
                 }
                 else

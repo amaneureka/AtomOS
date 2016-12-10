@@ -49,10 +49,11 @@ namespace Atomixilc.IL
 
             new Comment(string.Format("[{0}] : {1} => {2}", ToString(), xOp.ToString(), Optimizer.vStack.Count));
 
-            while (count > 0)
+            int index = count;
+            while (index > 0)
             {
                 Optimizer.vStack.Pop();
-                count--;
+                index--;
             }
 
             switch (Config.TargetPlatform)

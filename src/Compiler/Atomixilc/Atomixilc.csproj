@@ -109,6 +109,7 @@
     <Compile Include="IL\Load\Ldelem\Ldelem_U4.cs" />
     <Compile Include="IL\Load\Ldfld\Ldfld.cs" />
     <Compile Include="IL\Load\Ldfld\Ldflda.cs" />
+    <Compile Include="IL\Load\Ldftn.cs" />
     <Compile Include="IL\Load\Ldind\Ldind_I.cs" />
     <Compile Include="IL\Load\Ldind\Ldind_I1.cs" />
     <Compile Include="IL\Load\Ldind\Ldind_I2.cs" />
