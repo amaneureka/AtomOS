@@ -13,8 +13,6 @@ namespace Atomixilc
         public const string Heap_Label = "__Heap__";
         public const string Extern_Label = "__Extern__";
         public const string VTable_Label = "__VTable_GetEntry__";
-        public const string SetException_Label = "__Set_Exception__";
-        public const string GetException_Label = "__Get_Exception__";
 
         internal readonly static List<AsmData> DataSegment = new List<AsmData>();
         internal readonly static Dictionary<FieldInfo, string> cachedFieldLabel = new Dictionary<FieldInfo, string>();

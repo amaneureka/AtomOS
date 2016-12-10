@@ -7,10 +7,12 @@ namespace Atomixilc.Machine.x86
         public ConditionalJump? Condition;
         public string DestinationRef;
 
+        string ParentLabel;
+
         public Jmp()
             :base("jmp")
         {
-
+            ParentLabel = Label.Primary;
         }
 
         public override string ToString()
@@ -19,7 +21,7 @@ namespace Atomixilc.Machine.x86
                 Condition = ConditionalJump.JMP;
 
             if (DestinationRef.StartsWith("."))
-                DestinationRef = Label.Primary + DestinationRef;
+                DestinationRef = ParentLabel + DestinationRef;
 
             if (Condition == ConditionalJump.JMP)
                 return string.Format("jmp {0}", DestinationRef);

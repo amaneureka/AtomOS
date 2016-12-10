@@ -61,7 +61,7 @@ namespace Atomixilc.IL
                 case Architecture.x86:
                     {
                         if (targetinfo != null &&  Helper.GetTypeSize(targetinfo.ReturnType, Config.TargetPlatform) > 4)
-                            throw new Exception(string.Format("UnImplemented '{0}'", msIL));
+                            throw new Exception(string.Format("UnImplemented '{0}' {1}", msIL, targetinfo.FullName()));
 
                         new Call { DestinationRef = addressRefernce };
                         new Cmp { DestinationReg = Register.ECX, SourceRef = "0x0" };

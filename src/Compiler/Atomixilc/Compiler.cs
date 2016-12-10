@@ -196,6 +196,9 @@ namespace Atomixilc
                     }
                     SW.WriteLine();
                 }
+
+                SW.Flush();
+                SW.Close();
             }
         }
 
@@ -232,7 +235,7 @@ namespace Atomixilc
 
             tables.Add(new KeyValuePair<int, MethodInfo>(int.MaxValue, null));
 
-            tables.Sort();
+            tables.Sort((x, y) => x.Key.CompareTo(y.Key));
 
             int MethodUID = 0;
             List<string> data = null;
@@ -244,7 +247,7 @@ namespace Atomixilc
                     if (data != null)
                     {
                         var label = Helper.GetVTableFlush(MethodUID);
-                        DataSegment.Add(Helper.GetVTableFlush(MethodUID), new AsmData(label, data.ToArray()));
+                        DataSegment.Add(label, new AsmData(label, data.ToArray()));
                     }
 
                     if (MethodUID == int.MaxValue)
@@ -260,7 +263,7 @@ namespace Atomixilc
 
         internal void IncludePlugAndLibrary()
         {
-            ScanQ.Enqueue(typeof(Lib.VTable));
+            ScanType(typeof(Lib.VTable));
 
             foreach (var plug in Plugs)
                 ScanQ.Enqueue(plug.Key);
@@ -316,7 +319,7 @@ namespace Atomixilc
         internal void ScanType(Type type)
         {
             if (type.BaseType != null)
-                ScanQ.Enqueue(type);
+                ScanQ.Enqueue(type.BaseType);
 
             var constructors = type.GetConstructors(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
             foreach (var ctor in constructors)
@@ -326,7 +329,7 @@ namespace Atomixilc
                 ScanQ.Enqueue(ctor);
             }
 
-            var methods = type.GetMethods();
+            var methods = type.GetMethods(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
             foreach(var method in methods)
             {
                 var basedefination = method.GetBaseDefinition();
@@ -580,10 +583,15 @@ namespace Atomixilc
                 MSIL ILHandler = null;
                 ILCodes.TryGetValue(xOp.ILCode, out ILHandler);
                 if (ILHandler == null)
+                {
+                    new Comment(string.Format("Unimplemented ILCode '{0}'", xOp.ILCode));
                     Verbose.Error("Unimplemented ILCode '{0}'", xOp.ILCode);
+                }
                 else
                     ILHandler.Execute(Config, xOp, method, Optimizer);
             }
+
+            EmitFooter(block, method);
 
             if (Optimizer.vStack.Count != 0)
                 Verbose.Warning("vStack.Count != 0");

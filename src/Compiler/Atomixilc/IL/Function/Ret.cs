@@ -26,8 +26,6 @@ namespace Atomixilc.IL
         internal override void Execute(Options Config, OpCodeType xOp, MethodBase method, Optimizer Optimizer)
         {
             var functionInfo = method as MethodInfo;
-            var parameters = method.GetParameters();
-            var size = parameters.Sum(a => Helper.GetTypeSize(a.ParameterType, Config.TargetPlatform, true));
 
             int stackCount = 0;
             if (functionInfo != null && functionInfo.ReturnType != typeof(void))
@@ -50,19 +48,14 @@ namespace Atomixilc.IL
                         if (functionInfo != null && Helper.GetTypeSize(functionInfo.ReturnType, Config.TargetPlatform) > 4)
                             throw new Exception(string.Format("UnImplemented '{0}'", msIL));
 
-                        new Xor { DestinationReg = Register.ECX, SourceReg = Register.ECX };
-
                         if (stackCount > 0)
                         {
                             var item = Optimizer.vStack.Pop();
                             if (!item.SystemStack)
                                 throw new Exception(string.Format("UnImplemented-RegisterType '{0}'", msIL));
-
-                            new Pop { DestinationReg = Register.EAX };
                         }
 
-                        new Leave { };
-                        new Ret { Offset = (byte)size };
+                        new Jmp { DestinationRef = ".End" };
                     }
                     break;
                 default:

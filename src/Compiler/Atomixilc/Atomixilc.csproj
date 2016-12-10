@@ -77,6 +77,7 @@
     <Compile Include="IL\Branch\Brfalse.cs" />
     <Compile Include="IL\Branch\Brtrue.cs" />
     <Compile Include="IL\Branch\Leave.cs" />
+    <Compile Include="IL\Branch\Switch.cs" />
     <Compile Include="IL\CodeType\OpBranch.cs" />
     <Compile Include="IL\CodeType\OpDouble.cs" />
     <Compile Include="IL\CodeType\OpField.cs" />
@@ -92,6 +93,8 @@
     <Compile Include="IL\CodeType\OpType.cs" />
     <Compile Include="IL\CodeType\OpVar.cs" />
     <Compile Include="IL\Comparison\Ceq.cs" />
+    <Compile Include="IL\Comparison\Cgt.cs" />
+    <Compile Include="IL\Comparison\Cgt_Un.cs" />
     <Compile Include="IL\Conversion\Conv_I.cs" />
     <Compile Include="IL\Conversion\Conv_I1.cs" />
     <Compile Include="IL\Conversion\Conv_I2.cs" />
