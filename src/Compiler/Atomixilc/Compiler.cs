@@ -289,6 +289,7 @@ namespace Atomixilc
                         if (Plugs.ContainsValue(plugattrib.TargetLabel))
                             throw new Exception(string.Format("Multiple plugs with same target label '{0}'", plugattrib.TargetLabel));
                         Verbose.Message("[Plug] {0} : {1}", plugattrib.TargetLabel, method.FullName());
+                        method.AddPlug(plugattrib.TargetLabel);
                         Plugs.Add(method, plugattrib.TargetLabel);
                         ScanQ.Enqueue(method);
                     }
@@ -496,7 +497,7 @@ namespace Atomixilc
             }
 
             var MethodName = method.FullName();
-            if (Plugs.ContainsValue(MethodName))
+            if (Plugs.ContainsValue(MethodName) && !Plugs.ContainsKey(method))
                 return;
 
             var parameters = method.GetParameters();

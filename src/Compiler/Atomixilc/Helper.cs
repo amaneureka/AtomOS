@@ -28,6 +28,14 @@ namespace Atomixilc
             '?', ' ', ',', '^'
         };
 
+        internal static void AddPlug(this MethodBase method, string target)
+        {
+            if (cachedMethodLabel.ContainsKey(method))
+                cachedMethodLabel[method] = target;
+            else
+                cachedMethodLabel.Add(method, target);
+        }
+
         internal static string FullName(this MethodBase method)
         {
             if (cachedMethodLabel.ContainsKey(method))
