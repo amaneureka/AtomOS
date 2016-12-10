@@ -166,6 +166,8 @@ namespace Atomixilc
                 SW.WriteLine("section .data");
                 foreach (var dataEntry in DataSegment)
                     SW.WriteLine(dataEntry.Value);
+                foreach (var dataEntry in Helper.DataSegment)
+                    SW.WriteLine(dataEntry.Value);
                 SW.WriteLine();
 
                 SW.WriteLine("section .text");

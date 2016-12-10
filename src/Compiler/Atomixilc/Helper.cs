@@ -11,8 +11,12 @@ namespace Atomixilc
     public static class Helper
     {
         public const string Heap_Label = "__Heap__";
+        public const string Extern_Label = "__Extern__";
         public const string VTable_Label = "__VTable_GetEntry__";
+        public const string SetException_Label = "__Set_Exception__";
+        public const string GetException_Label = "__Get_Exception__";
 
+        internal readonly static Dictionary<string, AsmData> DataSegment = new Dictionary<string, AsmData>();
         internal readonly static Dictionary<FieldInfo, string> cachedFieldLabel = new Dictionary<FieldInfo, string>();
         internal readonly static Dictionary<MethodBase, string> cachedMethodLabel = new Dictionary<MethodBase, string>();
         internal readonly static Dictionary<string, string> cachedResolvedStringLabel = new Dictionary<string, string>();
@@ -27,6 +31,11 @@ namespace Atomixilc
             '@', '!', '~', '`',
             '?', ' ', ',', '^'
         };
+
+        public static void InsertData(AsmData aData)
+        {
+            DataSegment.Add(aData.Key, aData);
+        }
 
         internal static void AddPlug(this MethodBase method, string target)
         {

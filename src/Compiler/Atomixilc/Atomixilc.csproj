@@ -27,7 +27,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\..\Build\Bin\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -151,10 +151,12 @@
     <Compile Include="Machine\Comment.cs" />
     <Compile Include="Machine\Instruction.cs" />
     <Compile Include="Machine\Label.cs" />
+    <Compile Include="Machine\Literal.cs" />
     <Compile Include="Machine\Register.cs" />
     <Compile Include="Machine\x86\Add.cs" />
     <Compile Include="Machine\x86\And.cs" />
     <Compile Include="Machine\x86\Call.cs" />
+    <Compile Include="Machine\x86\Cli.cs" />
     <Compile Include="Machine\x86\Cmp.cs" />
     <Compile Include="Machine\x86\ConditionalJump.cs" />
     <Compile Include="Machine\x86\Cdq.cs" />
@@ -164,7 +166,10 @@
     <Compile Include="Machine\x86\Helper.cs" />
     <Compile Include="Machine\x86\IDiv.cs" />
     <Compile Include="Machine\x86\IMul.cs" />
+    <Compile Include="Machine\x86\In.cs" />
+    <Compile Include="Machine\x86\Iret.cs" />
     <Compile Include="Machine\x86\Jmp.cs" />
+    <Compile Include="Machine\x86\Lea.cs" />
     <Compile Include="Machine\x86\Leave.cs" />
     <Compile Include="Machine\x86\Mov.cs" />
     <Compile Include="Machine\x86\Movsx.cs" />
@@ -173,11 +178,15 @@
     <Compile Include="Machine\x86\OnlyDestination.cs" />
     <Compile Include="Machine\x86\OnlySize.cs" />
     <Compile Include="Machine\x86\Or.cs" />
+    <Compile Include="Machine\x86\Out.cs" />
     <Compile Include="Machine\x86\Pop.cs" />
+    <Compile Include="Machine\x86\Popad.cs" />
     <Compile Include="Machine\x86\Push.cs" />
+    <Compile Include="Machine\x86\Pushad.cs" />
     <Compile Include="Machine\x86\Ret.cs" />
     <Compile Include="Machine\x86\Shl.cs" />
     <Compile Include="Machine\x86\Shr.cs" />
+    <Compile Include="Machine\x86\Sti.cs" />
     <Compile Include="Machine\x86\Sub.cs" />
     <Compile Include="Machine\x86\Test.cs" />
     <Compile Include="Machine\x86\Xor.cs" />

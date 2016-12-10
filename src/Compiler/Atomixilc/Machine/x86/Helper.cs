@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace Atomixilc.Machine.x86
 {
-    public static class Helper
+    internal static class Helper
     {
-        public static string SizeToString(byte Size)
+        internal static string SizeToString(byte Size)
         {
             switch(Size)
             {
