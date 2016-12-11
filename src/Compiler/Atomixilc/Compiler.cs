@@ -376,7 +376,7 @@ namespace Atomixilc
                     method.DeclaringType.IsAbstract ||
                     basedefination.DeclaringType == method.DeclaringType)
                     continue;
-                Verbose.Warning(method.FullName());
+
                 Virtuals.Add(method);
                 ScanQ.Enqueue(method);
             }
@@ -700,6 +700,12 @@ namespace Atomixilc
 
             if (paramsSize > 255) throw new Exception(string.Format("Too large stack frame for parameters '{0}'", method.FullName()));
 
+            var functionInfo = method as MethodInfo;
+
+            int returncount = 0;
+            if (functionInfo != null && functionInfo.ReturnType != typeof(void))
+                returncount = Helper.GetTypeSize(functionInfo.ReturnType, Config.TargetPlatform, true);
+
             switch (block.CallingConvention)
             {
                 case CallingConvention.StdCall:
@@ -712,6 +718,14 @@ namespace Atomixilc
                                     new Xor { DestinationReg = Register.ECX, SourceReg = Register.ECX };
 
                                     new Label(".Error");
+
+                                    if (returncount != 0)
+                                    {
+                                        if (returncount > 4)
+                                            throw new Exception("Return type > 4 not supported");
+                                        new Pop { DestinationReg = Register.EAX };
+                                    }
+
                                     new Leave { };
                                     new Ret { Offset = (byte)paramsSize };
                                 }

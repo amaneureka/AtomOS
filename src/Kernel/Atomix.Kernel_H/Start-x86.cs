@@ -33,13 +33,13 @@ namespace Atomix.Kernel_H
         public static void main()
         {
             const uint MultibootMagic = 0x1BADB002;
-            const uint MultibootFlags = 0x10007;
+            const uint MultibootFlags = 0x10007 ^ 0x4;
             const uint InitalStackSize = 0x50000;
             const uint InitalHeapSize = 0x100000;
 
             /* Multiboot Config */
             new Literal("MultibootSignature dd {0}", MultibootMagic);
-            new Literal("MultibootFlags dd {0}", 65543);
+            new Literal("MultibootFlags dd {0}", MultibootFlags);
             new Literal("MultibootChecksum dd {0}", -(MultibootMagic + MultibootFlags));
             new Literal("MultibootHeaderAddr dd {0}", 0);
             new Literal("MultibootLoadAddr dd {0}", 0);
@@ -125,9 +125,11 @@ namespace Atomix.Kernel_H
         [Label("Kernel_Start")]
         internal static void Start(uint magic, uint address, uint KernelDirectory, uint InitialHeap)
         {
+            Print(0x41, 0);
+            Print(0x42, 1);
             /* Kernel Logger init */
             Debug.Init();
-
+            Print(0x43, 10);
             /* Initalize Heap */
             Heap.Init(InitialHeap);
 
@@ -190,6 +192,16 @@ namespace Atomix.Kernel_H
             }
 
             while (true);
+        }
+
+        public static void Print(byte a, int index)
+        {
+            unsafe
+            {
+                byte* add = (byte*)(0xb8000 + 0xC0000000);
+                add[index*2 + 0] = a;
+                add[index*2 + 1] = 0xa;
+            }
         }
     }
 }

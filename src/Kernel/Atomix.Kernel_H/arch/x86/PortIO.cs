@@ -32,6 +32,8 @@ namespace Atomix.Kernel_H.Arch.x86
             new Xor { DestinationReg = Register.EAX, SourceReg = Register.EAX };
             // Read 8 byte And put result into EAX (AL)
             new In { DestinationReg = Register.AL, SourceReg = Register.DX };
+            // push EAX
+            new Push { DestinationReg = Register.EAX };
 
             return 0x0;
         }
@@ -66,6 +68,8 @@ namespace Atomix.Kernel_H.Arch.x86
             new Xor { DestinationReg = Register.EAX, SourceReg = Register.EAX };
             // Read 16 byte And put result into EAX (AX)
             new In { DestinationReg = Register.AX, SourceReg = Register.DX };
+            // push EAX
+            new Push { DestinationReg = Register.EAX };
 
             return 0x0;
         }
@@ -100,6 +104,8 @@ namespace Atomix.Kernel_H.Arch.x86
             new Xor { DestinationReg = Register.EAX, SourceReg = Register.EAX };
             // Read 16 byte And put result into EAX (AX)
             new In { DestinationReg = Register.EAX, SourceReg = Register.DX };
+            // push EAX
+            new Push { DestinationReg = Register.EAX };
 
             return 0x0;
         }

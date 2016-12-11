@@ -99,7 +99,9 @@ namespace Atomix.Kernel_H.Core
 
         internal static void Write(string str)
         {
+            Startx86.Print((byte)'L', 15);
             Lock();
+            Startx86.Print((byte)'U', 15);
             WriteAsync(str);
             UnLock();
         }
@@ -107,7 +109,10 @@ namespace Atomix.Kernel_H.Core
         private static void WriteAsync(string str)
         {
             for (int i = 0; i < str.Length; i++)
+            {
+                Startx86.Print((byte)str[i], i);
                 Write(str[i]);
+            }
         }
 
         private static void Write(char a)
