@@ -17,6 +17,7 @@ namespace Atomixilc
 {
     internal class Compiler
     {
+        Type Entrypoint;
         Options Config;
         Dictionary<ILCode, MSIL> ILCodes;
         Dictionary<short, Emit.OpCode> OpCode;
@@ -27,11 +28,12 @@ namespace Atomixilc
         Queue<object> ScanQ;
         HashSet<object> FinishedQ;
         HashSet<string> StringTable;
+        HashSet<MethodInfo> Globals;
         HashSet<MethodInfo> Virtuals;
 
+        List<FunctionalBlock> CodeSegment;
         Dictionary<string, int> ZeroSegment;
         Dictionary<string, AsmData> DataSegment;
-        List<FunctionalBlock> CodeSegment;
 
         internal Compiler(Options aCompilerOptions)
         {
@@ -50,6 +52,7 @@ namespace Atomixilc
             ScanQ = new Queue<object>();
             FinishedQ = new HashSet<object>();
             Virtuals = new HashSet<MethodInfo>();
+            Globals = new HashSet<MethodInfo>();
             OpCode = new Dictionary<short, Emit.OpCode>();
 
             ZeroSegment = new Dictionary<string, int>();
@@ -80,6 +83,7 @@ namespace Atomixilc
         internal void Execute()
         {
             ScanQ.Clear();
+            Globals.Clear();
             Virtuals.Clear();
             FinishedQ.Clear();
             ZeroSegment.Clear();
@@ -91,7 +95,7 @@ namespace Atomixilc
             Helper.cachedMethodLabel.Clear();
             Helper.cachedResolvedStringLabel.Clear();
 
-            Type Entrypoint;
+            Entrypoint = null;
             ScanInputAssembly(out Entrypoint);
 
             if (Entrypoint == null)
@@ -159,6 +163,17 @@ namespace Atomixilc
         {
             using (var SW = new StreamWriter(Config.OutputFile))
             {
+                var attrib = Entrypoint.GetCustomAttribute<EntrypointAttribute>();
+                if (attrib == null)
+                    throw new Exception("Internal compiler error");
+
+                SW.WriteLine("global entrypoint");
+                SW.WriteLine(string.Format("entrypoint equ {0}", attrib.Entrypoint));
+
+                foreach (var global in Globals)
+                    SW.WriteLine(string.Format("global {0}", global.FullName()));
+                SW.WriteLine();
+
                 SW.WriteLine("section .bss");
                 foreach (var bssEntry in ZeroSegment)
                     SW.WriteLine(string.Format("{0} resb {1}", bssEntry.Key, bssEntry.Value));
@@ -351,7 +366,7 @@ namespace Atomixilc
                 }
             }
 
-            methods = type.GetMethods();
+            methods = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
             foreach (var method in methods)
             {
                 var basedefination = method.GetBaseDefinition();
@@ -361,7 +376,7 @@ namespace Atomixilc
                     method.DeclaringType.IsAbstract ||
                     basedefination.DeclaringType == method.DeclaringType)
                     continue;
-
+                Verbose.Warning(method.FullName());
                 Virtuals.Add(method);
                 ScanQ.Enqueue(method);
             }
@@ -372,6 +387,12 @@ namespace Atomixilc
         internal void ScanMethod(MethodBase method)
         {
             FunctionalBlock block = null;
+
+            if (!Helper.RestrictedAssembly.Contains(method.DeclaringType.Assembly.GetName().Name)
+                && method.IsPublic
+                && method.DeclaringType.IsVisible
+                && (method as MethodInfo) != null)
+                Globals.Add((MethodInfo)method);
 
             if (method.GetCustomAttribute<AssemblyAttribute>() != null)
                 ProcessAssemblyMethod(method, ref block);

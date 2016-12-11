@@ -22,16 +22,16 @@ namespace Atomix.Kernel_H.IO
             FileSize = aSize;
         }
 
-        public abstract bool CanSeek();
-        public abstract int Position();
-        public abstract bool CanRead();
-        public abstract bool CanWrite();
+        internal abstract bool CanSeek();
+        internal abstract int Position();
+        internal abstract bool CanRead();
+        internal abstract bool CanWrite();
 
-        public abstract bool Write(byte[] aBuffer, int aCount);
-        public abstract int Read(byte[] aBuffer, int aCount);
-        public abstract bool Seek(int val, SEEK pos);
+        internal abstract bool Write(byte[] aBuffer, int aCount);
+        internal abstract int Read(byte[] aBuffer, int aCount);
+        internal abstract bool Seek(int val, SEEK pos);
 
-        public abstract bool Close();
+        internal abstract bool Close();
 
         internal string ReadToEnd()
         {

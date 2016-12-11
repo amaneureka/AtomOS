@@ -42,7 +42,7 @@ namespace Atomix.Kernel_H.IO.FileSystem
             return true;
         }
 
-        public override Stream GetFile(string[] path, int pointer)
+        internal override Stream GetFile(string[] path, int pointer)
         {
             var FileName = path[pointer];
             if (Files.ContainsKey(FileName))
@@ -50,7 +50,7 @@ namespace Atomix.Kernel_H.IO.FileSystem
             return null;
         }
 
-        public override bool CreateFile(string[] path, int pointer)
+        internal override bool CreateFile(string[] path, int pointer)
         {
             return false;
         }

@@ -24,21 +24,21 @@ namespace Atomix.Kernel_H.Devices
             mSectorCount = aSectorCount;
         }
 
-        public override bool Read(uint aSectorNo, uint aSectorCount, byte[] aData)
+        internal override bool Read(uint aSectorNo, uint aSectorCount, byte[] aData)
         {
             if (aSectorNo + aSectorCount > mSectorCount)
                 return false;
             return mParent.Read(mStartSector + aSectorNo, aSectorCount, aData);
         }
 
-        public override bool Write(uint aSectorNo, uint aSectorCount, byte[] aData)
+        internal override bool Write(uint aSectorNo, uint aSectorCount, byte[] aData)
         {
             if (aSectorNo + aSectorCount > mSectorCount)
                 return false;
             return mParent.Write(mStartSector + aSectorNo, aSectorCount, aData);
         }
 
-        public override bool Eject()
+        internal override bool Eject()
         {
             return false;
         }

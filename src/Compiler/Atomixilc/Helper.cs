@@ -19,6 +19,9 @@ namespace Atomixilc
         internal readonly static Dictionary<MethodBase, string> cachedMethodLabel = new Dictionary<MethodBase, string>();
         internal readonly static Dictionary<string, string> cachedResolvedStringLabel = new Dictionary<string, string>();
 
+        internal readonly static HashSet<string> RestrictedAssembly = new HashSet<string>()
+        { "mscorlib", "System", Assembly.GetExecutingAssembly().GetName().Name };
+
         private static HashSet<char> IllegalChars = new HashSet<char>
         {
             ':', '.', '[', ']',

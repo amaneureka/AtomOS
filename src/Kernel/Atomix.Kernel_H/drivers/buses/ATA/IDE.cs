@@ -189,12 +189,12 @@ namespace Atomix.Kernel_H.Drivers.buses.ATA
             Heap.Free(xBuff);
         }
 
-        public override bool Read(uint SectorNo, uint SectorCount, byte[] xData)
+        internal override bool Read(uint SectorNo, uint SectorCount, byte[] xData)
         {
             return Access_Disk(SectorNo, SectorCount, xData, true);
         }
 
-        public override bool Write(uint SectorNo, uint SectorCount, byte[] xData)
+        internal override bool Write(uint SectorNo, uint SectorCount, byte[] xData)
         {
             return Access_Disk(SectorNo, SectorCount, xData, false);
         }
@@ -373,7 +373,7 @@ namespace Atomix.Kernel_H.Drivers.buses.ATA
             return false;
         }
 
-        public override bool Eject()
+        internal override bool Eject()
         {
             if (mDevice == Device.IDE_ATAPI)
             {

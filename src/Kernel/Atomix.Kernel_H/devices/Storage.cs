@@ -9,11 +9,11 @@
 
 namespace Atomix.Kernel_H.Devices
 {
-    public abstract class Storage
+    internal abstract class Storage
     {
-        public abstract bool Read(uint SectorNo, uint SectorCount, byte[] xData);
-        public abstract bool Write(uint SectorNo, uint SectorCount, byte[] xData);
+        internal abstract bool Read(uint SectorNo, uint SectorCount, byte[] xData);
+        internal abstract bool Write(uint SectorNo, uint SectorCount, byte[] xData);
 
-        public abstract bool Eject();
+        internal abstract bool Eject();
     }
 }

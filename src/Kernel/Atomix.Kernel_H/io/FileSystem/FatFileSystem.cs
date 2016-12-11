@@ -139,12 +139,12 @@ namespace Atomix.Kernel_H.IO.FileSystem
             return true;
         }
 
-        public override bool CreateFile(string[] path, int pointer)
+        internal override bool CreateFile(string[] path, int pointer)
         {
             return false;
         }
 
-        public override Stream GetFile(string[] path, int pointer)
+        internal override Stream GetFile(string[] path, int pointer)
         {
             if (!mIsValid)
                 return null;

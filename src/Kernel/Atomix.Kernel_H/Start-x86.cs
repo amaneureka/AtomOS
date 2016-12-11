@@ -26,7 +26,7 @@ namespace Atomix.Kernel_H
     /// Startpoint for x86 CPU
     /// Kernel will be organised at 0xC0000000
     /// </summary>
-    [Entrypoint(Architecture.x86)]
+    [Entrypoint(Architecture.x86, "(_Kernel_Main - 0xC0000000)")]
     public static class Startx86
     {
         [Assembly]

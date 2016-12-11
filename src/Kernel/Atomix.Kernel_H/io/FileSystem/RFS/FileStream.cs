@@ -23,7 +23,7 @@ namespace Atomix.Kernel_H.IO.FileSystem.RFS
             mPosition = 0;
         }
 
-        public override int Read(byte[] aBuffer, int aCount)
+        internal override int Read(byte[] aBuffer, int aCount)
         {
             if (aCount + mPosition > RamFile.Length)
                 aCount = RamFile.Length - mPosition;
@@ -36,27 +36,27 @@ namespace Atomix.Kernel_H.IO.FileSystem.RFS
             return aCount;
         }
 
-        public override bool Write(byte[] aBuffer, int aCount)
+        internal override bool Write(byte[] aBuffer, int aCount)
         {
             return false;
         }
 
-        public override bool CanRead()
+        internal override bool CanRead()
         { return true; }
 
-        public override bool CanSeek()
+        internal override bool CanSeek()
         { return false; }
 
-        public override bool CanWrite()
+        internal override bool CanWrite()
         { return false; }
 
-        public override int Position()
+        internal override int Position()
         { return mPosition; }
 
-        public override bool Seek(int val, SEEK pos)
+        internal override bool Seek(int val, SEEK pos)
         { return false; }
 
-        public override bool Close()
+        internal override bool Close()
         {
             Heap.Free(this);
             return true;
