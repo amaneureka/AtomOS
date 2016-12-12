@@ -62,7 +62,15 @@ namespace Atomixilc.IL
                         switch(size)
                         {
                             case 1:
+                                {
+                                    new Mov { DestinationReg = Register.EDX, DestinationIndirect = true, SourceReg = Register.AL, Size = 8 };
+                                }
+                                break;
                             case 2:
+                                {
+                                    new Mov { DestinationReg = Register.EDX, DestinationIndirect = true, SourceReg = Register.AX, Size = 16 };
+                                }
+                                break;
                             case 4:
                                 {
                                     new Mov { DestinationReg = Register.EDX, DestinationIndirect = true, SourceReg = Register.EAX };

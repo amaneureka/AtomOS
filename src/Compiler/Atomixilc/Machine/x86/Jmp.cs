@@ -6,6 +6,7 @@ namespace Atomixilc.Machine.x86
     {
         public ConditionalJump? Condition;
         public string DestinationRef;
+        public ushort? Selector;
 
         string ParentLabel;
 
@@ -22,6 +23,9 @@ namespace Atomixilc.Machine.x86
 
             if (DestinationRef.StartsWith("."))
                 DestinationRef = ParentLabel + DestinationRef;
+
+            if (Selector.HasValue)
+                DestinationRef = string.Format("{0}:{1}", Selector, DestinationRef);
 
             if (Condition == ConditionalJump.JMP)
                 return string.Format("jmp {0}", DestinationRef);
