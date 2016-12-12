@@ -7,19 +7,29 @@ namespace Atomixilc.Lib
     internal class VTable
     {
         [Label(Helper.VTable_Label)]
-        internal static unsafe uint GetEntry(uint* FlushTable, uint TypeID)
+        internal static unsafe int GetEntry(int* FlushTable, int MethodUID, int TypeID)
         {
-            if (FlushTable == null)
-                throw new Exception("virtual method not found");
-
             while(*FlushTable != 0)
             {
-                if (*FlushTable == TypeID)
-                    return *(FlushTable + 1);
-                FlushTable += 2;
+                var xUID = *(FlushTable + 1);
+                if (xUID == MethodUID)
+                {
+                    FlushTable += 2;
+                    while(*FlushTable != 0)
+                    {
+                        var xTypeID = *(FlushTable + 1);
+                        if (xTypeID == TypeID)
+                            return *FlushTable;
+                        FlushTable += 2;
+                    }
+
+                    throw new Exception("virtual method not found");
+                }
+
+                FlushTable += *FlushTable;
             }
 
-            return 0;
+            throw new Exception("virtual method not found");
         }
     }
 }

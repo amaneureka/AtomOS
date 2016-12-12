@@ -13,6 +13,7 @@ namespace Atomixilc
         public const string Heap_Label = "__Heap__";
         public const string Extern_Label = "__Extern__";
         public const string VTable_Label = "__VTable_GetEntry__";
+        public const string VTable_Flush = "__VTable_Flush__";
 
         internal readonly static List<AsmData> DataSegment = new List<AsmData>();
         internal readonly static Dictionary<string, uint> ZeroSegment = new Dictionary<string, uint>();
@@ -108,11 +109,6 @@ namespace Atomixilc
         internal static string GetLabel(int NextPosition)
         {
             return string.Format(".IL_{0}", NextPosition.ToString("X").PadLeft(5, '0'));
-        }
-
-        internal static string GetVTableFlush(int methodID)
-        {
-            return string.Format("__VTable_Flush_{0}__", methodID.ToString("X3"));
         }
 
         internal static bool IsSigned(Type type)

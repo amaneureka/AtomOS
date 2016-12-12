@@ -244,6 +244,7 @@ namespace Atomixilc
 
         private void FlushVTables()
         {
+            var count = new Dictionary<int, int>();
             var tables = new List<KeyValuePair<int, MethodInfo> >();
             foreach(var method in Virtuals)
             {
@@ -251,35 +252,43 @@ namespace Atomixilc
                 if (!baseDef.IsAbstract)
                     continue;
 
-                tables.Add(new KeyValuePair<int, MethodInfo>(baseDef.GetHashCode(), method));
-            }
+                int UID = baseDef.GetHashCode();
 
-            tables.Add(new KeyValuePair<int, MethodInfo>(int.MaxValue, null));
+                if (count.ContainsKey(UID))
+                    count[UID]++;
+                else
+                    count.Add(UID, 1);
+
+                tables.Add(new KeyValuePair<int, MethodInfo>(UID, method));
+            }
 
             tables.Sort((x, y) => x.Key.CompareTo(y.Key));
 
-            int MethodUID = 0;
-            List<string> data = null;
-            foreach(var item in tables)
+            var methodgroup = count.ToList();
+            methodgroup.Sort((x, y) => x.Key.CompareTo(y.Key));
+
+            int index = 0;
+            List<string> data = new List<string>();
+            foreach(var methodgroupitem in methodgroup)
             {
-                if (item.Key != MethodUID)
+                var offset = (methodgroupitem.Value * 2) + 3;
+                data.Add(offset.ToString()); // methods count
+                data.Add(methodgroupitem.Key.ToString()); // method UID
+                for (;  index < tables.Count; index++)
                 {
-                    MethodUID = item.Key;
-                    if (data != null)
-                    {
-                        var label = Helper.GetVTableFlush(MethodUID);
-                        DataSegment.Add(label, new AsmData(label, data.ToArray()));
-                    }
-
-                    if (MethodUID == int.MaxValue)
+                    var item = tables[index];
+                    if (item.Key != methodgroupitem.Key)
                         break;
-
-                    data = new List<string>();
+                    data.Add(item.Value.FullName()); // method address
+                    data.Add(item.Value.DeclaringType.GetHashCode().ToString()); // type ID
                 }
 
-                data.Add(item.Value.DeclaringType.GetHashCode().ToString());
-                data.Add(item.Value.FullName());
+                data.Add("0");
             }
+
+            data.Add("0");
+
+            DataSegment.Add(Helper.VTable_Flush, new AsmData(Helper.VTable_Flush, data.ToArray()));
         }
 
         internal void IncludePlugAndLibrary()

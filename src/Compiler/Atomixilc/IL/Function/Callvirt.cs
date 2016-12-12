@@ -76,7 +76,8 @@ namespace Atomixilc.IL
                             new Mov { DestinationReg = Register.EAX, SourceReg = Register.ESP, SourceDisplacement = size, SourceIndirect = true };
                             new Mov { DestinationReg = Register.EAX, SourceReg = Register.EAX, SourceIndirect = true };
 
-                            new Push { DestinationRef = Helper.GetVTableFlush(xOpMethod.MethodUID) };
+                            new Push { DestinationRef = Helper.VTable_Flush };
+                            new Push { DestinationRef = "0x" + xOpMethod.MethodUID.ToString("X") };
                             new Push { DestinationReg = Register.EAX };
                             new Call { DestinationRef = Helper.VTable_Label, IsLabel = true };
                             new Cmp { DestinationReg = Register.ECX, SourceRef = "0x0" };
