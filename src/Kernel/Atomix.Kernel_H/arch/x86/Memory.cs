@@ -28,6 +28,8 @@ namespace Atomix.Kernel_H.Arch.x86
             new Mov { DestinationReg = Register.EAX, SourceReg = Register.EBP, SourceDisplacement = 0x8, SourceIndirect = true };
             // Read memory into EAX
             new Mov { DestinationReg = Register.EAX, SourceReg = Register.EAX, SourceIndirect = true };
+            // push value
+            new Push { DestinationReg = Register.EAX };
 
             return 0; // For c# error --> Don't make any sense for compiler
         }
@@ -44,6 +46,8 @@ namespace Atomix.Kernel_H.Arch.x86
             new Mov { DestinationReg = Register.EAX, SourceReg = Register.EBP, SourceDisplacement = 0x8, SourceIndirect = true };
             // Read memory into EAX
             new Movzx { DestinationReg = Register.EAX, SourceReg = Register.EAX, SourceIndirect = true, Size = 16 };
+            // push value
+            new Push { DestinationReg = Register.EAX };
 
             return 0; // For c# error --> Don't make any sense for compiler
         }
@@ -60,6 +64,8 @@ namespace Atomix.Kernel_H.Arch.x86
             new Mov { DestinationReg = Register.EAX, SourceReg = Register.EBP, SourceDisplacement = 0x8, SourceIndirect = true };
             // Read memory into EAX
             new Movzx { DestinationReg = Register.EAX, SourceReg = Register.EAX, SourceIndirect = true, Size = 8 };
+            // push value
+            new Push { DestinationReg = Register.EAX };
 
             return 0; // For c# error --> Don't make any sense for compiler
         }

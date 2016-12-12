@@ -68,8 +68,7 @@ namespace Atomix.Kernel_H.Arch.x86
             new Mov { DestinationReg = Register.FS, SourceReg = Register.EAX, Size = 16 };
             new Mov { DestinationReg = Register.GS, SourceReg = Register.EAX, Size = 16 };
             new Mov { DestinationReg = Register.SS, SourceReg = Register.EAX, Size = 16 };
-            new Literal ("jmp 0x8:Far_Jumper.End");
-            new Label ("Far_Jumper.End");
+            new Jmp { Selector = 0x8, DestinationRef = ".End" };
         }
 
         [StructLayout(LayoutKind.Explicit, Size = 0x8)]

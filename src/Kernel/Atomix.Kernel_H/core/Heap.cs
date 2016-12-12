@@ -52,7 +52,6 @@ namespace Atomix.Kernel_H.Core
             // Allocate memory for future heap manager
             BlockSize = new uint[HeapManagerSize];
             BlockAddress = new uint[HeapManagerSize];
-            Debug.Write("lol\n");
         }
 
         internal static void Setup(uint Start, uint End)
