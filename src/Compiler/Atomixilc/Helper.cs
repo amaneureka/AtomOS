@@ -15,6 +15,7 @@ namespace Atomixilc
         public const string VTable_Label = "__VTable_GetEntry__";
 
         internal readonly static List<AsmData> DataSegment = new List<AsmData>();
+        internal readonly static Dictionary<string, uint> ZeroSegment = new Dictionary<string, uint>();
         internal readonly static Dictionary<FieldInfo, string> cachedFieldLabel = new Dictionary<FieldInfo, string>();
         internal readonly static Dictionary<MethodBase, string> cachedMethodLabel = new Dictionary<MethodBase, string>();
         internal readonly static Dictionary<string, string> cachedResolvedStringLabel = new Dictionary<string, string>();
@@ -36,6 +37,11 @@ namespace Atomixilc
         public static void InsertData(AsmData aData)
         {
             DataSegment.Add(aData);
+        }
+
+        public static void InsertData(string key, uint size)
+        {
+            ZeroSegment.Add(key, size);
         }
 
         internal static void AddPlug(this MethodBase method, string target)

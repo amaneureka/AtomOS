@@ -21,13 +21,13 @@ namespace Atomix.Kernel_H.Arch.x86
 {
     internal static unsafe class Paging
     {
-        public static UInt32* KernelDirectory;
-        public static UInt32* CurrentDirectory;
+        public static uint* KernelDirectory;
+        public static uint* CurrentDirectory;
         private static uint[] Frames;
 
         internal static void Setup(uint aKernelDirectory)
         {
-            KernelDirectory = (UInt32*)aKernelDirectory;
+            KernelDirectory = (uint*)aKernelDirectory;
             Frames = new uint[Multiboot.RAM / 0x20000];
 
             // Tell Frame Allocator that we have already used first 4MB
@@ -97,17 +97,17 @@ namespace Atomix.Kernel_H.Arch.x86
             return 0xE0400000;
         }
 
-        internal static void AllocateFrame(UInt32 Page, UInt32 PhyPage, bool Allocate, uint flags = 0x3)//Present, ReadWrite, Supervisor
+        internal static void AllocateFrame(uint Page, uint PhyPage, bool Allocate, uint flags = 0x3)//Present, ReadWrite, Supervisor
         {
             Page += 0xC0000000;
-            var Add = *((UInt32*)Page);
+            var Add = *((uint*)Page);
             if (Add != 0)
                 return; // We don't want to overwrite anything
             else
             {
                 if (Allocate)
                     PhyPage = FirstFreeFrame() * 0x1000;
-                *((UInt32*)Page) = PhyPage | flags;
+                *((uint*)Page) = PhyPage | flags;
                 SetFrame(PhyPage / 0x1000);
             }
         }
@@ -151,9 +151,9 @@ namespace Atomix.Kernel_H.Arch.x86
             return 0;
         }
 
-        internal static UInt32* CloneKernelDirectory()
+        internal static uint* CloneKernelDirectory()
         {
-            UInt32* NewDirectory = (UInt32*)(Heap.kmalloc(0x1000, true));
+            uint* NewDirectory = (uint*)(Heap.kmalloc(0x1000, true));
             for (uint Table = 768; Table < 1024; Table++)
             {
                 NewDirectory[Table] = KernelDirectory[Table];
@@ -161,7 +161,7 @@ namespace Atomix.Kernel_H.Arch.x86
             return NewDirectory;
         }
 
-        internal static void FreeDirectory(UInt32* Directory)
+        internal static void FreeDirectory(uint* Directory)
         {
             for (uint Table = 0; Table < 768; Table++)
             {
@@ -170,12 +170,12 @@ namespace Atomix.Kernel_H.Arch.x86
             ClearFrame((uint)Directory / 0x1000);
         }
 
-        internal static void SetFrame(UInt32 page)
+        internal static void SetFrame(uint page)
         {
             Frames[(page >> 5)] |= (uint)(0x1 << ((int)page & 31));
         }
 
-        internal static void ClearFrame(UInt32 page)
+        internal static void ClearFrame(uint page)
         {
             Frames[(page >> 5)] &= ~(uint)(0x1 << ((int)page & 31));
         }

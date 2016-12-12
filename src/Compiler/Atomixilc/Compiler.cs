@@ -91,6 +91,8 @@ namespace Atomixilc
             CodeSegment.Clear();
             StringTable.Clear();
 
+            Helper.DataSegment.Clear();
+            Helper.ZeroSegment.Clear();
             Helper.cachedFieldLabel.Clear();
             Helper.cachedMethodLabel.Clear();
             Helper.cachedResolvedStringLabel.Clear();
@@ -175,15 +177,17 @@ namespace Atomixilc
                 SW.WriteLine();
 
                 SW.WriteLine("section .bss");
+                foreach (var bssEntry in Helper.ZeroSegment)
+                    SW.WriteLine(string.Format("{0} resb {1}", bssEntry.Key, bssEntry.Value));
                 foreach (var bssEntry in ZeroSegment)
                     SW.WriteLine(string.Format("{0} resb {1}", bssEntry.Key, bssEntry.Value));
                 SW.WriteLine();
 
                 SW.WriteLine("section .data");
-                foreach (var dataEntry in DataSegment)
-                    SW.WriteLine(dataEntry.Value);
                 foreach (var dataEntry in Helper.DataSegment)
                     SW.WriteLine(dataEntry);
+                foreach (var dataEntry in DataSegment)
+                    SW.WriteLine(dataEntry.Value);
                 SW.WriteLine();
 
                 SW.WriteLine("section .text");

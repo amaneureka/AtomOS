@@ -18,7 +18,7 @@ namespace Atomix.Kernel_H.IO.FileSystem.FAT.Find
             Name = aName;
         }
 
-        public override bool Compare(byte[] data, int offset, FatType type)
+        internal override bool Compare(byte[] data, int offset, FatType type)
         {
             switch ((FileNameAttribute)data[offset + (int)Entry.DOSName])
             {

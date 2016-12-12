@@ -39,13 +39,12 @@ namespace Atomix.Kernel_H.Core
 
         internal static void Init(uint InitHeap)
         {
-            Startx86.Print(0x44, 11);
             HeapStart = InitHeap;
             HeapCurrent = InitHeap;
 #warning [Heap] : "HeapEnd" and "HeapStart" are based on assumption for initial heap setup.
             HeapEnd = HeapStart + 0x100000;
             HeapManagerSetup = false;
-            Startx86.Print(0x45, 12);
+
             Debug.Write("Heap Initialized!!\n");
             Debug.Write("       Start Address::%d\n", InitHeap);
             Debug.Write("       End Address  ::%d\n", HeapEnd);
@@ -53,6 +52,7 @@ namespace Atomix.Kernel_H.Core
             // Allocate memory for future heap manager
             BlockSize = new uint[HeapManagerSize];
             BlockAddress = new uint[HeapManagerSize];
+            Debug.Write("lol\n");
         }
 
         internal static void Setup(uint Start, uint End)

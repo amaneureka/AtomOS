@@ -45,15 +45,16 @@ namespace Atomix.Kernel_H.Arch.x86
 
         private static void Set_GDT_Gate(int index, uint address, uint limit, byte access, byte granularity)
         {
-            gdt_entries[index].BaseLow = (ushort)(address & 0xFFFF);
-            gdt_entries[index].BaseMiddle = (byte)(address >> 16);
-            gdt_entries[index].BaseHigh = (byte)(address >> 24);
+            var gdt_entry = gdt_entries + index;
+            gdt_entry->BaseLow = (ushort)address;
+            gdt_entry->BaseMiddle = (byte)(address >> 16);
+            gdt_entry->BaseHigh = (byte)(address >> 24);
 
-            gdt_entries[index].LimitLow = (ushort)(limit & 0xFFFF);
-            gdt_entries[index].Granularity = (byte)(limit >> 16);
+            gdt_entry->LimitLow = (ushort)limit;
+            gdt_entry->Granularity = (byte)(limit >> 16);
 
-            gdt_entries[index].Granularity |= (byte)(granularity & 0xF0);
-            gdt_entries[index].Access = access;
+            gdt_entry->Granularity |= (byte)(granularity & 0xF0);
+            gdt_entry->Access = access;
         }
 
         [Assembly(true)]

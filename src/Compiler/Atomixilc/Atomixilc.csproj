@@ -218,6 +218,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="IL\Attributes\" />
     <Folder Include="Machine\ARM\" />
     <Folder Include="Machine\x64\" />
   </ItemGroup>

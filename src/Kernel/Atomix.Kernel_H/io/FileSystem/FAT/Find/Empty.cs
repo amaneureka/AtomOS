@@ -13,7 +13,7 @@ namespace Atomix.Kernel_H.IO.FileSystem.FAT.Find
     {
         internal Empty() { }
 
-        public override bool Compare(byte[] data, int offset, FatType type)
+        internal override bool Compare(byte[] data, int offset, FatType type)
         {
             if ((FileNameAttribute)data[offset + (uint)Entry.DOSName] == FileNameAttribute.LastEntry)
                 return true;

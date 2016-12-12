@@ -51,8 +51,8 @@ namespace Atomix.Kernel_H
             new Literal("MultibootVesaHeight dd {0}", 768);
             new Literal("MultibootVesaDepth dd {0}", 32);
 
-            Helper.InsertData(new AsmData("InitialStack", InitalStackSize));
-            Helper.InsertData(new AsmData("InitialHeap", InitalHeapSize));
+            Helper.InsertData("InitialStack", InitalStackSize);
+            Helper.InsertData("InitialHeap", InitalHeapSize);
 
             new Label("_Kernel_Main");
 
@@ -125,11 +125,9 @@ namespace Atomix.Kernel_H
         [Label("Kernel_Start")]
         internal static void Start(uint magic, uint address, uint KernelDirectory, uint InitialHeap)
         {
-            Print(0x41, 0);
-            Print(0x42, 1);
             /* Kernel Logger init */
             Debug.Init();
-            Print(0x43, 10);
+
             /* Initalize Heap */
             Heap.Init(InitialHeap);
 
@@ -192,16 +190,6 @@ namespace Atomix.Kernel_H
             }
 
             while (true);
-        }
-
-        public static void Print(byte a, int index)
-        {
-            unsafe
-            {
-                byte* add = (byte*)(0xb8000 + 0xC0000000);
-                add[index*2 + 0] = a;
-                add[index*2 + 1] = 0xa;
-            }
         }
     }
 }
