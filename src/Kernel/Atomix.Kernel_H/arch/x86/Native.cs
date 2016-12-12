@@ -53,6 +53,8 @@ namespace Atomix.Kernel_H.Arch.x86
         [Assembly(true)]
         internal static uint GetAddress(object aObj)
         {
+            new Push { DestinationReg = Register.EBP, DestinationDisplacement = 0x8, DestinationIndirect = true };
+
             return 0; // Only me and my compiler knows how it is working :P
         }
 
@@ -85,8 +87,7 @@ namespace Atomix.Kernel_H.Arch.x86
                 SourceIndirect = true
             };
 
-            // EAX := [Address Field]
-            new Mov { DestinationReg = Register.EAX, SourceReg = Register.EDX, SourceDisplacement = 0xC, SourceIndirect = true };
+            new Push { DestinationReg = Register.EDX, DestinationDisplacement = 0xC, DestinationIndirect = true };
             return 0;
         }
 
@@ -98,7 +99,7 @@ namespace Atomix.Kernel_H.Arch.x86
         internal static uint EndOfKernel()
         {
             // Just put Compiler_End location into return value
-            new Mov { DestinationReg = Register.EAX, SourceRef = "Compiler_End" };
+            new Push { DestinationRef = "Compiler_End" };
             return 0; // just for c# error
         }
 
@@ -106,6 +107,7 @@ namespace Atomix.Kernel_H.Arch.x86
         internal static uint CR2Register()
         {
             new Mov { DestinationReg = Register.EAX, SourceReg = Register.CR2 };
+            new Push { DestinationReg = Register.EAX };
             return 0;
         }
     }

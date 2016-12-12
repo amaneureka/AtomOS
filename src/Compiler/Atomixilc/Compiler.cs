@@ -702,6 +702,9 @@ namespace Atomixilc
         {
             var paramsSize = method.GetParameters().Sum(arg => Helper.GetTypeSize(arg.ParameterType, Config.TargetPlatform, true));
 
+            if (!method.IsStatic)
+                paramsSize += Helper.GetTypeSize(method.DeclaringType, Config.TargetPlatform, true);
+
             if (paramsSize > 255) throw new Exception(string.Format("Too large stack frame for parameters '{0}'", method.FullName()));
 
             var functionInfo = method as MethodInfo;

@@ -9,6 +9,9 @@ namespace Atomixilc.Lib
         [Label(Helper.VTable_Label)]
         internal static unsafe uint GetEntry(uint* FlushTable, uint TypeID)
         {
+            if (FlushTable == null)
+                throw new Exception("virtual method not found");
+
             while(*FlushTable != 0)
             {
                 if (*FlushTable == TypeID)

@@ -42,7 +42,7 @@ namespace Atomix.Kernel_H.Core
             new Call { DestinationRef = "__Switch_Task__", IsLabel = true };
 
             // Get New task ESP
-            new Pop { DestinationReg = Register.ESP };
+            new Mov { DestinationReg = Register.ESP, SourceReg = Register.EAX };
 
             // Tell CPU that we have recieved IRQ
             new Mov { DestinationReg = Register.AL, SourceRef = "0x20", Size = 8 };
