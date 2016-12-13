@@ -59,7 +59,7 @@ namespace Atomix.Kernel_H.Core
 
         private unsafe void SetupInitialStack()
         {
-            UInt32* Stack = (UInt32*)StackTop;
+            uint* Stack = (uint*)StackTop;
 
             // processor data
             *--Stack = 0x202;           // EFLAGS
@@ -86,7 +86,7 @@ namespace Atomix.Kernel_H.Core
 
         internal void SaveStack(uint Stack)
         {
-            this.StackTop = Stack;
+            StackTop = Stack;
         }
 
         internal void FreeStack()
