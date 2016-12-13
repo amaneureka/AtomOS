@@ -29,9 +29,6 @@ namespace Atomixilc.IL
             var body = method.GetMethodBody();
             var EBPoffset = Helper.GetVariableOffset(body, index, Config.TargetPlatform);
 
-            var varType = body.LocalVariables[index].LocalType;
-            var size = Helper.GetTypeSize(varType, Config.TargetPlatform, true);
-
             /* The stack transitional behavior, in sequential order, is:
              * The address stored in the local variable at the specified index is pushed onto the stack.
              */
@@ -42,11 +39,8 @@ namespace Atomixilc.IL
             {
                 case Architecture.x86:
                     {
-                        if (size > 4)
-                            throw new Exception("LocalVariable size > 4 not supported");
-
                         new Mov { DestinationReg = Register.EAX, SourceReg = Register.EBP };
-                        new Sub { DestinationReg = Register.EAX, SourceRef = "0x" + (EBPoffset + size).ToString() };
+                        new Sub { DestinationReg = Register.EAX, SourceRef = "0x" + EBPoffset.ToString() };
                         new Push { DestinationReg = Register.EAX };
                     }
                     break;

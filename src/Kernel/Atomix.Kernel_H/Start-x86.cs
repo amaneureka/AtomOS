@@ -33,7 +33,7 @@ namespace Atomix.Kernel_H
         public static void main()
         {
             const uint MultibootMagic = 0x1BADB002;
-            const uint MultibootFlags = 0x10007 ^ 0x4;
+            const uint MultibootFlags = 0x10007;
             const uint InitalStackSize = 0x50000;
             const uint InitalHeapSize = 0x100000;
 
