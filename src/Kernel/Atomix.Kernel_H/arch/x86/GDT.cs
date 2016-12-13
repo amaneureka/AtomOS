@@ -7,12 +7,12 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-using Atomix.Kernel_H.Core;
-using Atomix.CompilerExt.Attributes;
+using Atomixilc;
+using Atomixilc.Machine;
+using Atomixilc.Attributes;
+using Atomixilc.Machine.x86;
 
-using Atomix.Assembler;
-using Atomix.Assembler.x86;
-using Core = Atomix.Assembler.AssemblyHelper;
+using Atomix.Kernel_H.Core;
 
 using System.Runtime.InteropServices;
 
@@ -43,33 +43,32 @@ namespace Atomix.Kernel_H.Arch.x86
             SetupGDT(gdt);
         }
 
-        private static void Set_GDT_Gate(uint index, uint address, uint limit, byte access, byte granularity)
+        private static void Set_GDT_Gate(int index, uint address, uint limit, byte access, byte granularity)
         {
-            gdt_entries[index].BaseLow = (ushort)(address & 0xFFFF);
-            gdt_entries[index].BaseMiddle = (byte)(address >> 16);
-            gdt_entries[index].BaseHigh = (byte)(address >> 24);
+            var gdt_entry = gdt_entries + index;
+            gdt_entry->BaseLow = (ushort)address;
+            gdt_entry->BaseMiddle = (byte)(address >> 16);
+            gdt_entry->BaseHigh = (byte)(address >> 24);
 
-            gdt_entries[index].LimitLow = (ushort)(limit & 0xFFFF);
-            gdt_entries[index].Granularity = (byte)(limit >> 16);
+            gdt_entry->LimitLow = (ushort)limit;
+            gdt_entry->Granularity = (byte)(limit >> 16);
 
-            gdt_entries[index].Granularity |= (byte)(granularity & 0xF0);
-            gdt_entries[index].Access = access;
-            Debug.Write("       Gate-%d Present\n", index);
+            gdt_entry->Granularity |= (byte)(granularity & 0xF0);
+            gdt_entry->Access = access;
         }
 
         [Assembly(true)]
         private static void SetupGDT(uint gdtpointer)
         {
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 0x8 });
-            AssemblyHelper.AssemblerCode.Add(new Literal ("lgdt [EAX]"));
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceRef = "0x10" });
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.DS, SourceReg = Registers.EAX, Size = 16 });
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.ES, SourceReg = Registers.EAX, Size = 16 });
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.FS, SourceReg = Registers.EAX, Size = 16 });
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.GS, SourceReg = Registers.EAX, Size = 16 });
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.SS, SourceReg = Registers.EAX, Size = 16 });
-            AssemblyHelper.AssemblerCode.Add(new Literal ("jmp 0x8:Far_Jumper.End"));
-            AssemblyHelper.AssemblerCode.Add(new Label ("Far_Jumper.End"));
+            new Mov { DestinationReg = Register.EAX, SourceReg = Register.EBP, SourceIndirect = true, SourceDisplacement = 0x8 };
+            new Literal ("lgdt [EAX]");
+            new Mov { DestinationReg = Register.EAX, SourceRef = "0x10" };
+            new Mov { DestinationReg = Register.DS, SourceReg = Register.EAX, Size = 16 };
+            new Mov { DestinationReg = Register.ES, SourceReg = Register.EAX, Size = 16 };
+            new Mov { DestinationReg = Register.FS, SourceReg = Register.EAX, Size = 16 };
+            new Mov { DestinationReg = Register.GS, SourceReg = Register.EAX, Size = 16 };
+            new Mov { DestinationReg = Register.SS, SourceReg = Register.EAX, Size = 16 };
+            new Jmp { Selector = 0x8, DestinationRef = ".End" };
         }
 
         [StructLayout(LayoutKind.Explicit, Size = 0x8)]

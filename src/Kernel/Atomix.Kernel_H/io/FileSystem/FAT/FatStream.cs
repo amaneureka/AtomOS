@@ -18,7 +18,7 @@ namespace Atomix.Kernel_H.IO.FileSystem.FAT
         private FatFileSystem mFS;
 
         private string mFileName;
-        private uint mFileSize;
+        private int mFileSize;
 
         private uint mFirstCluster;
         private uint mCurrentCluster;
@@ -26,7 +26,7 @@ namespace Atomix.Kernel_H.IO.FileSystem.FAT
 
         private byte[] mBufferCluster;
 
-        internal FatStream(FatFileSystem aFS, string aName, uint aFirstCluster, uint aSize)
+        internal FatStream(FatFileSystem aFS, string aName, uint aFirstCluster, int aSize)
             :base(aName, aSize)
         {
             mFS = aFS;
@@ -41,12 +41,12 @@ namespace Atomix.Kernel_H.IO.FileSystem.FAT
             LoadCluster(mFirstCluster);
         }
 
-        public override int Read(byte[] aBuffer, int aCount)
+        internal override int Read(byte[] aBuffer, int aCount)
         {
             int BufferPosition = 0, RelativePosition = mPosition % mBufferCluster.Length, EffectiveBytesCopied = 0;
 
             if (mPosition + aCount > mFileSize)
-                aCount = (int)(mFileSize - mPosition);
+                aCount = mFileSize - mPosition;
 
             do
             {
@@ -98,25 +98,25 @@ namespace Atomix.Kernel_H.IO.FileSystem.FAT
             return mFS.IDevice.Read(xSector, mFS.SectorsPerCluster, mBufferCluster);
         }
 
-        public override bool Write(byte[] aBuffer, int aCount)
+        internal override bool Write(byte[] aBuffer, int aCount)
         { return false; }
 
-        public override int Position()
+        internal override int Position()
         { return mPosition; }
 
-        public override bool CanSeek()
+        internal override bool CanSeek()
         { return true; }
 
-        public override bool CanRead()
+        internal override bool CanRead()
         { return true; }
 
-        public override bool CanWrite()
+        internal override bool CanWrite()
         { return false; }
 
-        public override bool Seek(int val, SEEK pos)
+        internal override bool Seek(int val, SEEK pos)
         { return false; }
 
-        public override bool Close()
+        internal override bool Close()
         {
             Heap.Free(mBufferCluster);
             Heap.Free(this);

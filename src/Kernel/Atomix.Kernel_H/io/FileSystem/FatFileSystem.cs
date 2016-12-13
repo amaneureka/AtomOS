@@ -139,12 +139,12 @@ namespace Atomix.Kernel_H.IO.FileSystem
             return true;
         }
 
-        public override bool CreateFile(string[] path, int pointer)
+        internal override bool CreateFile(string[] path, int pointer)
         {
             return false;
         }
 
-        public override Stream GetFile(string[] path, int pointer)
+        internal override Stream GetFile(string[] path, int pointer)
         {
             if (!mIsValid)
                 return null;
@@ -203,7 +203,7 @@ namespace Atomix.Kernel_H.IO.FileSystem
                         activeSector,
                         index,
                         (attribute & FatFileAttributes.SubDirectory) != 0,
-                        BitConverter.ToUInt32(aData, offset + (int)Entry.FileSize));
+                        BitConverter.ToInt32(aData, offset + (int)Entry.FileSize));
                 }
 
                 if (aData[(int)Entry.DOSName + offset] == (int)FileNameAttribute.LastEntry)

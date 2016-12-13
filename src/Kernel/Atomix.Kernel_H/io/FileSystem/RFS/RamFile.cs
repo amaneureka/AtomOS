@@ -13,9 +13,9 @@ namespace Atomix.Kernel_H.IO.FileSystem.RFS
     {
         internal readonly string Name;
         internal readonly uint StartAddress;
-        internal readonly uint Length;
+        internal readonly int Length;
 
-        internal RamFile(string aName, uint aStartAddress, uint aLength)
+        internal RamFile(string aName, uint aStartAddress, int aLength)
         {
             Name = aName;
             StartAddress = aStartAddress;

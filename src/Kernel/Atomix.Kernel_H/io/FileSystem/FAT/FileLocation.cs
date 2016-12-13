@@ -15,9 +15,9 @@ namespace Atomix.Kernel_H.IO.FileSystem.FAT
         internal readonly uint DirectorySector;
         internal readonly uint DirectorySectorIndex;
         internal readonly bool directory;
-        internal readonly uint Size;
+        internal readonly int Size;
 
-        internal FatFileLocation(uint aStartCluster, uint aDirectorySector, uint aDirectoryIndex, bool aDirectory, uint aSize)
+        internal FatFileLocation(uint aStartCluster, uint aDirectorySector, uint aDirectoryIndex, bool aDirectory, int aSize)
         {
             FirstCluster = aStartCluster;
             DirectorySector = aDirectorySector;

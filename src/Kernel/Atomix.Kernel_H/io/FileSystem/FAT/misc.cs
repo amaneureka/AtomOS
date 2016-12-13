@@ -109,8 +109,8 @@ namespace Atomix.Kernel_H.IO.FileSystem.FAT
         LongFileName = 0x0F
     }
 
-    public abstract class Comparison
+    internal abstract class Comparison
     {
-        public abstract bool Compare(byte[] data, int offset, FatType type);
+        internal abstract bool Compare(byte[] data, int offset, FatType type);
     }
 }

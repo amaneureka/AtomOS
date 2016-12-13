@@ -53,7 +53,7 @@ namespace Atomixilc.IL
 
                         new Pop { DestinationReg = Register.EAX };
                         new Pop { DestinationReg = Register.EBX };
-                        new IMul { DestinationReg = Register.EBX };
+                        new Mul { DestinationReg = Register.EBX };
                         new Push { DestinationReg = Register.EAX };
 
                         Optimizer.vStack.Push(new StackItem(itemA.OperandType));

@@ -23,9 +23,9 @@ namespace Atomix.Kernel_H.IO.FileSystem
         internal FileSystemType FileSystem
         { get { return mFSType; } }
 
-        public abstract Stream GetFile(string[] path, int pointer);
+        internal abstract Stream GetFile(string[] path, int pointer);
 
-        public abstract bool CreateFile(string[] path, int pointer);
+        internal abstract bool CreateFile(string[] path, int pointer);
     }
 
     public enum FileSystemType : byte

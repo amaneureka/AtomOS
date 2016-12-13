@@ -7,10 +7,10 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-using Atomix.CompilerExt.Attributes;
-
-using Atomix.Assembler.x86;
-using Core = Atomix.Assembler.AssemblyHelper;
+using Atomixilc;
+using Atomixilc.Machine;
+using Atomixilc.Attributes;
+using Atomixilc.Machine.x86;
 
 namespace Atomix.Kernel_H.plugs
 {
@@ -19,14 +19,14 @@ namespace Atomix.Kernel_H.plugs
         [Assembly(true), Plug("System_Void_System_Threading_Monitor_Enter_System_Object__System_Boolean__")]
         internal static void AcquireLock(object aObj, ref bool aLockTaken)
         {
-            Assembler.AssemblyHelper.AssemblerCode.Add(new Call ("AcquireLock", true));
+            new Call { DestinationRef = "AcquireLock", IsLabel = true };
             // we don't carry exception flag from here, although Thread.Exception contains the flag
         }
 
         [Assembly(true), Plug("System_Void_System_Threading_Monitor_Exit_System_Object_")]
         internal static void ReleaseLock(object aObj)
         {
-            Assembler.AssemblyHelper.AssemblerCode.Add(new Call ("ReleaseLock", true));
+            new Call { DestinationRef = "ReleaseLock", IsLabel = true };
             // we don't carry exception flag from here, although Thread.Exception contains the flag
         }
     }

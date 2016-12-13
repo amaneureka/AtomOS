@@ -49,7 +49,6 @@ namespace Atomixilc.IL
                             throw new Exception(string.Format("UnImplemented-RegisterType '{0}'", msIL));
 
                         new Pop { DestinationReg = Register.EDX };
-                        new Add { DestinationReg = Register.EDX, SourceRef = "0x" + offset.ToString("X") };
 
                         for (int i = 1; i <= (size / 4); i++)
                         {

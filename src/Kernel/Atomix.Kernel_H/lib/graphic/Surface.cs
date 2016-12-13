@@ -9,11 +9,10 @@
 
 using System;
 
-using Atomix.Assembler;
-using Atomix.Assembler.x86;
-
-using Atomix.CompilerExt.Attributes;
-using Core = Atomix.Assembler.AssemblyHelper;
+using Atomixilc;
+using Atomixilc.Machine;
+using Atomixilc.Attributes;
+using Atomixilc.Machine.x86;
 
 namespace Atomix.Kernel_H.Lib.Graphic
 {
@@ -145,37 +144,37 @@ namespace Atomix.Kernel_H.Lib.Graphic
         [Assembly(true)]
         internal static void CopyToBuffer(byte* des, byte* src, int des_x, int des_y, int des_width, int des_height, int src_x, int src_y, int src_width, int data_width, int data_height)
         {
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceRef = "static_Field__System_Int32_Atomix_Kernel_H_Drivers_Video_VBE_BytesPerPixel", SourceIndirect = true });
+            new Mov { DestinationReg = Register.ECX, SourceRef = "static_Field__System_Int32_Atomix_Kernel_H_Drivers_Video_VBE_BytesPerPixel", SourceIndirect = true };
             //EBX = width
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 12 });
+            new Mov { DestinationReg = Register.EBX, SourceReg = Register.EBP, SourceIndirect = true, SourceDisplacement = 12 };
 
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 36 });
-            AssemblyHelper.AssemblerCode.Add(new Multiply { DestinationReg = Registers.EBP, DestinationIndirect = true, DestinationDisplacement = 32 });
-            AssemblyHelper.AssemblerCode.Add(new Add { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 40 });
-            AssemblyHelper.AssemblerCode.Add(new Multiply { DestinationReg = Registers.ECX });
+            new Mov { DestinationReg = Register.EAX, SourceReg = Register.EBP, SourceIndirect = true, SourceDisplacement = 36 };
+            new Mul { DestinationReg = Register.EBP, DestinationIndirect = true, DestinationDisplacement = 32 };
+            new Add { DestinationReg = Register.EAX, SourceReg = Register.EBP, SourceIndirect = true, SourceDisplacement = 40 };
+            new Mul { DestinationReg = Register.ECX };
             //des + (x1 + y1 * width) * BytesPerPixel
-            AssemblyHelper.AssemblerCode.Add(new Add { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 48 });
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDI, SourceReg = Registers.EAX });
+            new Add { DestinationReg = Register.EAX, SourceReg = Register.EBP, SourceIndirect = true, SourceDisplacement = 48 };
+            new Mov { DestinationReg = Register.EDI, SourceReg = Register.EAX };
 
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 20 });
-            AssemblyHelper.AssemblerCode.Add(new Multiply { DestinationReg = Registers.EBP, DestinationIndirect = true, DestinationDisplacement = 16 });
-            AssemblyHelper.AssemblerCode.Add(new Add { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 24 });
-            AssemblyHelper.AssemblerCode.Add(new Multiply { DestinationReg = Registers.ECX });
+            new Mov { DestinationReg = Register.EAX, SourceReg = Register.EBP, SourceIndirect = true, SourceDisplacement = 20 };
+            new Mul { DestinationReg = Register.EBP, DestinationIndirect = true, DestinationDisplacement = 16 };
+            new Add { DestinationReg = Register.EAX, SourceReg = Register.EBP, SourceIndirect = true, SourceDisplacement = 24 };
+            new Mul { DestinationReg = Register.ECX };
             //src + (x1 + y1 * width) * BytesPerPixel
-            AssemblyHelper.AssemblerCode.Add(new Add { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 44 });
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.ESI, SourceReg = Registers.EAX });
+            new Add { DestinationReg = Register.EAX, SourceReg = Register.EBP, SourceIndirect = true, SourceDisplacement = 44 };
+            new Mov { DestinationReg = Register.ESI, SourceReg = Register.EAX };
 
             //factor1 = (des_width - width) * BytesPerPixel
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 32 });
-            AssemblyHelper.AssemblerCode.Add(new Sub { DestinationReg = Registers.EAX, SourceReg = Registers.EBX });
-            AssemblyHelper.AssemblerCode.Add(new Multiply { DestinationReg = Registers.ECX });
-            AssemblyHelper.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
+            new Mov { DestinationReg = Register.EAX, SourceReg = Register.EBP, SourceIndirect = true, SourceDisplacement = 32 };
+            new Sub { DestinationReg = Register.EAX, SourceReg = Register.EBX };
+            new Mul { DestinationReg = Register.ECX };
+            new Push { DestinationReg = Register.EAX };
 
             //factor2 = (src_width - width) * BytesPerPixel
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 16 });
-            AssemblyHelper.AssemblerCode.Add(new Sub { DestinationReg = Registers.EAX, SourceReg = Registers.EBX });
-            AssemblyHelper.AssemblerCode.Add(new Multiply { DestinationReg = Registers.ECX });
-            AssemblyHelper.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
+            new Mov { DestinationReg = Register.EAX, SourceReg = Register.EBP, SourceIndirect = true, SourceDisplacement = 16 };
+            new Sub { DestinationReg = Register.EAX, SourceReg = Register.EBX };
+            new Mul { DestinationReg = Register.ECX };
+            new Push { DestinationReg = Register.EAX };
             /*
              * STACK:
              * [ESP + 0x0] = factor2
@@ -183,53 +182,53 @@ namespace Atomix.Kernel_H.Lib.Graphic
              */
 
             //Number of bytes to write
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 12 });
-            AssemblyHelper.AssemblerCode.Add(new Add { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 40 });
-            AssemblyHelper.AssemblerCode.Add(new Cmp { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 32 });
-            AssemblyHelper.AssemblerCode.Add(new Jmp { Condition = ConditionalJumpEnum.JNG, DestinationRef = Label.PrimaryLabel + ".trunc_width" });
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 32 });
+            new Mov { DestinationReg = Register.EAX, SourceReg = Register.EBP, SourceIndirect = true, SourceDisplacement = 12 };
+            new Add { DestinationReg = Register.EAX, SourceReg = Register.EBP, SourceIndirect = true, SourceDisplacement = 40 };
+            new Cmp { DestinationReg = Register.EAX, SourceReg = Register.EBP, SourceIndirect = true, SourceDisplacement = 32 };
+            new Jmp { Condition = ConditionalJump.JNG, DestinationRef = ".trunc_width" };
+            new Mov { DestinationReg = Register.EAX, SourceReg = Register.EBP, SourceIndirect = true, SourceDisplacement = 32 };
 
-            AssemblyHelper.AssemblerCode.Add(new Label (".trunc_width"));
-            AssemblyHelper.AssemblerCode.Add(new Sub { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 40 });
-            AssemblyHelper.AssemblerCode.Add(new Multiply { DestinationReg = Registers.ECX });
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EDX, SourceReg = Registers.EAX });
-            AssemblyHelper.AssemblerCode.Add(new ShiftRight { DestinationReg = Registers.EAX, SourceRef = "0x2" });//Divide by 4
-            AssemblyHelper.AssemblerCode.Add(new And { DestinationReg = Registers.EDX, SourceRef = "0x3" });//Modulo by 4
+            new Label (".trunc_width");
+            new Sub { DestinationReg = Register.EAX, SourceReg = Register.EBP, SourceIndirect = true, SourceDisplacement = 40 };
+            new Mul { DestinationReg = Register.ECX };
+            new Mov { DestinationReg = Register.EDX, SourceReg = Register.EAX };
+            new Shr { DestinationReg = Register.EAX, SourceRef = "0x2" };//Divide by 4
+            new And { DestinationReg = Register.EDX, SourceRef = "0x3" };//Modulo by 4
 
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 8 });
-            AssemblyHelper.AssemblerCode.Add(new Add { DestinationReg = Registers.EBX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 36 });
-            AssemblyHelper.AssemblerCode.Add(new Cmp { DestinationReg = Registers.EBX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 28 });
-            AssemblyHelper.AssemblerCode.Add(new Jmp { Condition = ConditionalJumpEnum.JNG, DestinationRef = Label.PrimaryLabel + ".trunc_height" });
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 28 });
+            new Mov { DestinationReg = Register.EBX, SourceReg = Register.EBP, SourceIndirect = true, SourceDisplacement = 8 };
+            new Add { DestinationReg = Register.EBX, SourceReg = Register.EBP, SourceIndirect = true, SourceDisplacement = 36 };
+            new Cmp { DestinationReg = Register.EBX, SourceReg = Register.EBP, SourceIndirect = true, SourceDisplacement = 28 };
+            new Jmp { Condition = ConditionalJump.JNG, DestinationRef = ".trunc_height" };
+            new Mov { DestinationReg = Register.EBX, SourceReg = Register.EBP, SourceIndirect = true, SourceDisplacement = 28 };
 
-            AssemblyHelper.AssemblerCode.Add(new Label (".trunc_height"));
-            AssemblyHelper.AssemblerCode.Add(new Sub { DestinationReg = Registers.EBX, SourceReg = Registers.EBP, SourceIndirect = true, SourceDisplacement = 36 });
+            new Label (".trunc_height");
+            new Sub { DestinationReg = Register.EBX, SourceReg = Register.EBP, SourceIndirect = true, SourceDisplacement = 36 };
 
-            AssemblyHelper.AssemblerCode.Add(new Label (".draw_loop"));
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.EAX });
-            AssemblyHelper.AssemblerCode.Add(new Literal ("rep movsd"));
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.EDX });
-            AssemblyHelper.AssemblerCode.Add(new Literal ("rep movsb"));
-            AssemblyHelper.AssemblerCode.Add(new Add { DestinationReg = Registers.EDI, SourceReg = Registers.ESP, SourceDisplacement = 0x4, SourceIndirect = true });
-            AssemblyHelper.AssemblerCode.Add(new Add { DestinationReg = Registers.ESI, SourceReg = Registers.ESP, SourceIndirect = true });
-            AssemblyHelper.AssemblerCode.Add(new Sub { DestinationReg = Registers.EBX, SourceRef = "0x1" });
-            AssemblyHelper.AssemblerCode.Add(new Jmp { Condition = ConditionalJumpEnum.JNZ, DestinationRef = Label.PrimaryLabel + ".draw_loop" });
-            AssemblyHelper.AssemblerCode.Add(new Add { DestinationReg = Registers.ESP, SourceRef = "0x8" });//2 items on stack
+            new Label (".draw_loop");
+            new Mov { DestinationReg = Register.ECX, SourceReg = Register.EAX };
+            new Literal ("rep movsd");
+            new Mov { DestinationReg = Register.ECX, SourceReg = Register.EDX };
+            new Literal ("rep movsb");
+            new Add { DestinationReg = Register.EDI, SourceReg = Register.ESP, SourceDisplacement = 0x4, SourceIndirect = true };
+            new Add { DestinationReg = Register.ESI, SourceReg = Register.ESP, SourceIndirect = true };
+            new Sub { DestinationReg = Register.EBX, SourceRef = "0x1" };
+            new Jmp { Condition = ConditionalJump.JNZ, DestinationRef = ".draw_loop" };
+            new Add { DestinationReg = Register.ESP, SourceRef = "0x8" };//2 items on stack
         }
         
         [Assembly(true)]
         internal static void Clear(byte* aAddress, uint aColor, int aSize)
         {
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0xC, SourceIndirect = true });
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.ESI, SourceReg = Registers.EBP, SourceDisplacement = 0x10, SourceIndirect = true });
+            new Mov { DestinationReg = Register.EBX, SourceReg = Register.EBP, SourceDisplacement = 0x8, SourceIndirect = true };
+            new Mov { DestinationReg = Register.EAX, SourceReg = Register.EBP, SourceDisplacement = 0xC, SourceIndirect = true };
+            new Mov { DestinationReg = Register.ESI, SourceReg = Register.EBP, SourceDisplacement = 0x10, SourceIndirect = true };
 
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.EBX });
-            AssemblyHelper.AssemblerCode.Add(new ShiftRight { DestinationReg = Registers.ECX, SourceRef = "0x2" });
-            AssemblyHelper.AssemblerCode.Add(new Literal ("rep stosd"));
-            AssemblyHelper.AssemblerCode.Add(new And { DestinationReg = Registers.EBX, SourceRef = "0x3" });
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.ECX, SourceReg = Registers.EBX });
-            AssemblyHelper.AssemblerCode.Add(new Literal ("rep stosb"));
+            new Mov { DestinationReg = Register.ECX, SourceReg = Register.EBX };
+            new Shr { DestinationReg = Register.ECX, SourceRef = "0x2" };
+            new Literal ("rep stosd");
+            new And { DestinationReg = Register.EBX, SourceRef = "0x3" };
+            new Mov { DestinationReg = Register.ECX, SourceReg = Register.EBX };
+            new Literal ("rep stosb");
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Atomixilc.Machine.x86
 {
-    public class Lea : DestinationSourceSize
+    public class Lea : DestinationSource
     {
         public Lea()
             : base("lea")

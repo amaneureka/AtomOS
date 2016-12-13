@@ -17,6 +17,7 @@ namespace Atomixilc
 {
     internal class Compiler
     {
+        Type Entrypoint;
         Options Config;
         Dictionary<ILCode, MSIL> ILCodes;
         Dictionary<short, Emit.OpCode> OpCode;
@@ -27,11 +28,12 @@ namespace Atomixilc
         Queue<object> ScanQ;
         HashSet<object> FinishedQ;
         HashSet<string> StringTable;
+        HashSet<MethodInfo> Globals;
         HashSet<MethodInfo> Virtuals;
 
+        List<FunctionalBlock> CodeSegment;
         Dictionary<string, int> ZeroSegment;
         Dictionary<string, AsmData> DataSegment;
-        List<FunctionalBlock> CodeSegment;
 
         internal Compiler(Options aCompilerOptions)
         {
@@ -50,6 +52,7 @@ namespace Atomixilc
             ScanQ = new Queue<object>();
             FinishedQ = new HashSet<object>();
             Virtuals = new HashSet<MethodInfo>();
+            Globals = new HashSet<MethodInfo>();
             OpCode = new Dictionary<short, Emit.OpCode>();
 
             ZeroSegment = new Dictionary<string, int>();
@@ -80,6 +83,7 @@ namespace Atomixilc
         internal void Execute()
         {
             ScanQ.Clear();
+            Globals.Clear();
             Virtuals.Clear();
             FinishedQ.Clear();
             ZeroSegment.Clear();
@@ -87,11 +91,13 @@ namespace Atomixilc
             CodeSegment.Clear();
             StringTable.Clear();
 
+            Helper.DataSegment.Clear();
+            Helper.ZeroSegment.Clear();
             Helper.cachedFieldLabel.Clear();
             Helper.cachedMethodLabel.Clear();
             Helper.cachedResolvedStringLabel.Clear();
 
-            Type Entrypoint;
+            Entrypoint = null;
             ScanInputAssembly(out Entrypoint);
 
             if (Entrypoint == null)
@@ -159,16 +165,29 @@ namespace Atomixilc
         {
             using (var SW = new StreamWriter(Config.OutputFile))
             {
+                var attrib = Entrypoint.GetCustomAttribute<EntrypointAttribute>();
+                if (attrib == null)
+                    throw new Exception("Internal compiler error");
+
+                SW.WriteLine("global entrypoint");
+                SW.WriteLine(string.Format("entrypoint equ {0}", attrib.Entrypoint));
+
+                foreach (var global in Globals)
+                    SW.WriteLine(string.Format("global {0}", global.FullName()));
+                SW.WriteLine();
+
                 SW.WriteLine("section .bss");
+                foreach (var bssEntry in Helper.ZeroSegment)
+                    SW.WriteLine(string.Format("{0} resb {1}", bssEntry.Key, bssEntry.Value));
                 foreach (var bssEntry in ZeroSegment)
                     SW.WriteLine(string.Format("{0} resb {1}", bssEntry.Key, bssEntry.Value));
                 SW.WriteLine();
 
                 SW.WriteLine("section .data");
-                foreach (var dataEntry in DataSegment)
-                    SW.WriteLine(dataEntry.Value);
                 foreach (var dataEntry in Helper.DataSegment)
                     SW.WriteLine(dataEntry);
+                foreach (var dataEntry in DataSegment)
+                    SW.WriteLine(dataEntry.Value);
                 SW.WriteLine();
 
                 SW.WriteLine("section .text");
@@ -225,6 +244,7 @@ namespace Atomixilc
 
         private void FlushVTables()
         {
+            var count = new Dictionary<int, int>();
             var tables = new List<KeyValuePair<int, MethodInfo> >();
             foreach(var method in Virtuals)
             {
@@ -232,35 +252,43 @@ namespace Atomixilc
                 if (!baseDef.IsAbstract)
                     continue;
 
-                tables.Add(new KeyValuePair<int, MethodInfo>(baseDef.GetHashCode(), method));
-            }
+                int UID = baseDef.GetHashCode();
 
-            tables.Add(new KeyValuePair<int, MethodInfo>(int.MaxValue, null));
+                if (count.ContainsKey(UID))
+                    count[UID]++;
+                else
+                    count.Add(UID, 1);
+
+                tables.Add(new KeyValuePair<int, MethodInfo>(UID, method));
+            }
 
             tables.Sort((x, y) => x.Key.CompareTo(y.Key));
 
-            int MethodUID = 0;
-            List<string> data = null;
-            foreach(var item in tables)
+            var methodgroup = count.ToList();
+            methodgroup.Sort((x, y) => x.Key.CompareTo(y.Key));
+
+            int index = 0;
+            List<string> data = new List<string>();
+            foreach(var methodgroupitem in methodgroup)
             {
-                if (item.Key != MethodUID)
+                var offset = (methodgroupitem.Value * 2) + 3;
+                data.Add(offset.ToString()); // methods count
+                data.Add(methodgroupitem.Key.ToString()); // method UID
+                for (;  index < tables.Count; index++)
                 {
-                    MethodUID = item.Key;
-                    if (data != null)
-                    {
-                        var label = Helper.GetVTableFlush(MethodUID);
-                        DataSegment.Add(label, new AsmData(label, data.ToArray()));
-                    }
-
-                    if (MethodUID == int.MaxValue)
+                    var item = tables[index];
+                    if (item.Key != methodgroupitem.Key)
                         break;
-
-                    data = new List<string>();
+                    data.Add(item.Value.FullName()); // method address
+                    data.Add(item.Value.DeclaringType.GetHashCode().ToString()); // type ID
                 }
 
-                data.Add(item.Value.DeclaringType.GetHashCode().ToString());
-                data.Add(item.Value.FullName());
+                data.Add("0");
             }
+
+            data.Add("0");
+
+            DataSegment.Add(Helper.VTable_Flush, new AsmData(Helper.VTable_Flush, data.ToArray()));
         }
 
         internal void IncludePlugAndLibrary()
@@ -351,7 +379,7 @@ namespace Atomixilc
                 }
             }
 
-            methods = type.GetMethods();
+            methods = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
             foreach (var method in methods)
             {
                 var basedefination = method.GetBaseDefinition();
@@ -372,6 +400,12 @@ namespace Atomixilc
         internal void ScanMethod(MethodBase method)
         {
             FunctionalBlock block = null;
+
+            if (!Helper.RestrictedAssembly.Contains(method.DeclaringType.Assembly.GetName().Name)
+                && method.IsPublic
+                && method.DeclaringType.IsVisible
+                && (method as MethodInfo) != null)
+                Globals.Add((MethodInfo)method);
 
             if (method.GetCustomAttribute<AssemblyAttribute>() != null)
                 ProcessAssemblyMethod(method, ref block);
@@ -483,12 +517,24 @@ namespace Atomixilc
                 foreach (var par in xparams)
                     ESPOffset += Helper.GetTypeSize(par.ParameterType, Config.TargetPlatform, true);
 
-                new Mov { DestinationReg = Register.EDX, SourceReg = Register.ESP, SourceDisplacement = ESPOffset, SourceIndirect = true };
-                new Mov { DestinationReg = Register.EAX, SourceReg = Register.EDX, SourceDisplacement = 0xC, SourceIndirect = true };
+                new Mov { DestinationReg = Register.EAX, SourceReg = Register.ESP, SourceDisplacement = ESPOffset, SourceIndirect = true };
+                new Add { DestinationReg = Register.EAX, SourceRef = "0xC" };
+                new Cmp { DestinationReg = Register.EAX, DestinationDisplacement = 0x4, DestinationIndirect = true, SourceRef = "0x0" };
+                new Jmp { Condition = ConditionalJump.JNE, DestinationRef = ".push_object_ref" };
+
                 new Pop { DestinationReg = Register.EDX };
                 new Mov { DestinationReg = Register.ESP, DestinationDisplacement = ESPOffset - 4, DestinationIndirect = true, SourceReg = Register.EDX };
-                new Call { DestinationRef = "EAX" };
+                new Call { DestinationRef = "[EAX]" };
                 new Ret { Offset = 0 };
+
+                new Label(".push_object_ref");
+                new Push { DestinationReg = Register.EAX, DestinationDisplacement = 0x4, DestinationIndirect = true };
+                for (int i = ESPOffset; i > 4; i -= 4)
+                    new Push { DestinationReg = Register.ESP, DestinationDisplacement = ESPOffset, DestinationIndirect = true };
+
+                new Call { DestinationRef = "[EAX]" };
+
+                new Ret { Offset = (byte)ESPOffset };
 
                 Instruction.Block = null;
             }
@@ -677,7 +723,16 @@ namespace Atomixilc
         {
             var paramsSize = method.GetParameters().Sum(arg => Helper.GetTypeSize(arg.ParameterType, Config.TargetPlatform, true));
 
+            if (!method.IsStatic)
+                paramsSize += Helper.GetTypeSize(method.DeclaringType, Config.TargetPlatform, true);
+
             if (paramsSize > 255) throw new Exception(string.Format("Too large stack frame for parameters '{0}'", method.FullName()));
+
+            var functionInfo = method as MethodInfo;
+
+            int returncount = 0;
+            if (functionInfo != null && functionInfo.ReturnType != typeof(void))
+                returncount = Helper.GetTypeSize(functionInfo.ReturnType, Config.TargetPlatform, true);
 
             switch (block.CallingConvention)
             {
@@ -691,6 +746,14 @@ namespace Atomixilc
                                     new Xor { DestinationReg = Register.ECX, SourceReg = Register.ECX };
 
                                     new Label(".Error");
+
+                                    if (returncount != 0)
+                                    {
+                                        if (returncount > 4)
+                                            throw new Exception("Return type > 4 not supported");
+                                        new Pop { DestinationReg = Register.EAX };
+                                    }
+
                                     new Leave { };
                                     new Ret { Offset = (byte)paramsSize };
                                 }

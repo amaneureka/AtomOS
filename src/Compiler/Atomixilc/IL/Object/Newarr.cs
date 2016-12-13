@@ -54,7 +54,7 @@ namespace Atomixilc.IL
 
                         new Push { DestinationReg = Register.EAX };
                         new Call { DestinationRef = Helper.Heap_Label, IsLabel = true };
-                        new Cmp { DestinationReg = Register.ECX, SourceRef = "0x0" };
+                        new Test { DestinationReg = Register.ECX, SourceRef = "0xFFFFFFFF" };
                         new Jmp { Condition = ConditionalJump.JNZ, DestinationRef = xOp.HandlerRef };
 
                         new Pop { DestinationReg = Register.ESI };

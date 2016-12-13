@@ -11,8 +11,10 @@ using System;
 
 using Atomix.Kernel_H.Core;
 
-using Atomix.CompilerExt;
-using Atomix.CompilerExt.Attributes;
+using Atomixilc;
+using Atomixilc.Machine;
+using Atomixilc.Attributes;
+using Atomixilc.Machine.x86;
 
 namespace Atomix.Kernel_H.Exec
 {
@@ -20,7 +22,7 @@ namespace Atomix.Kernel_H.Exec
     {
         const uint MAGIC = 0xEF00FE00;
 
-        [Label(Helper.lblImportDll)]
+        [Label(Helper.Extern_Label)]
         private static uint ImportDLL(string aDLLName, string aMethodName)
         {
             string SymbolName = aDLLName + aMethodName;

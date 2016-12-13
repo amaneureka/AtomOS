@@ -37,7 +37,7 @@ namespace Atomix.Kernel_H.Drivers.buses.ATA
 
         protected UInt32 mCylinder;
         protected UInt32 mHeads;
-        protected UInt64 mSize;
+        protected UInt32 mSize;
         protected UInt32 mSectorsPerTrack;
         protected UInt32 mCommandSet;
         protected string mModel;
@@ -176,7 +176,8 @@ namespace Atomix.Kernel_H.Drivers.buses.ATA
 
             if ((mCommandSet & (1 << 26)) != 0)
                 // Device uses 48-Bit Addressing:
-                mSize = xBuff.ToUInt48((int)Identify.ATA_IDENT_MAX_LBA_EXT);
+                throw new Exception("48bit addresssing not supported");
+            //mSize = xBuff.ToUInt48((int)Identify.ATA_IDENT_MAX_LBA_EXT);
             else
                 // Device uses CHS or 28-bit Addressing:
                 mSize = xBuff.ToUInt32((int)Identify.ATA_IDENT_MAX_LBA);
@@ -188,12 +189,12 @@ namespace Atomix.Kernel_H.Drivers.buses.ATA
             Heap.Free(xBuff);
         }
 
-        public override bool Read(uint SectorNo, uint SectorCount, byte[] xData)
+        internal override bool Read(uint SectorNo, uint SectorCount, byte[] xData)
         {
             return Access_Disk(SectorNo, SectorCount, xData, true);
         }
 
-        public override bool Write(uint SectorNo, uint SectorCount, byte[] xData)
+        internal override bool Write(uint SectorNo, uint SectorCount, byte[] xData)
         {
             return Access_Disk(SectorNo, SectorCount, xData, false);
         }
@@ -240,7 +241,7 @@ namespace Atomix.Kernel_H.Drivers.buses.ATA
                     Send_SCSI_Package();
 
                     // Actual size that is to transferred
-                    UInt32 size = (UInt32)(PortIO.In8(LBA2) << 8 | PortIO.In8(LBA1));
+                    int size = (PortIO.In8(LBA2) << 8 | PortIO.In8(LBA1));
 
                     // Read the data
                     PortIO.Read16(DataReg, xData, size);
@@ -372,7 +373,7 @@ namespace Atomix.Kernel_H.Drivers.buses.ATA
             return false;
         }
 
-        public override bool Eject()
+        internal override bool Eject()
         {
             if (mDevice == Device.IDE_ATAPI)
             {

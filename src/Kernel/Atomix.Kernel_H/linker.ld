@@ -1,4 +1,4 @@
-ENTRY(Kernel_Main)
+ENTRY(entrypoint)
 OUTPUT_FORMAT(elf32-i386)
 
 SECTIONS

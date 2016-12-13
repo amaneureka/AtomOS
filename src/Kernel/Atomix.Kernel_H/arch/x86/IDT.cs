@@ -9,12 +9,12 @@
 
 using System;
 
+using Atomixilc;
+using Atomixilc.Machine;
+using Atomixilc.Attributes;
+using Atomixilc.Machine.x86;
+
 using Atomix.Kernel_H.Core;
-
-using Atomix.CompilerExt.Attributes;
-
-using Atomix.Assembler;
-using Atomix.Assembler.x86;
 
 using System.Runtime.InteropServices;
 
@@ -106,8 +106,8 @@ namespace Atomix.Kernel_H.Arch.x86
         [Assembly(true)]
         private static void LoadIDT(uint idt_table, uint idt_entries)
         {
-            AssemblyHelper.AssemblerCode.Add(new Cli ());
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0x8, SourceIndirect = true });
+            new Cli ();
+            new Mov { DestinationReg = Register.EAX, SourceReg = Register.EBP, SourceDisplacement = 0x8, SourceIndirect = true };
             for (int i = 0; i <= 0xFF; i++)
             {
                 if (i == 1 || i == 3)
@@ -115,18 +115,18 @@ namespace Atomix.Kernel_H.Arch.x86
 
                 var xHex = i.ToString("X2");
 
-                AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EBX, SourceRef = "__ISR_Handler_" + xHex });
-                AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = (i * 8) + 0, SourceReg = Registers.BX, Size = 16 });
+                new Mov { DestinationReg = Register.EBX, SourceRef = "__ISR_Handler_" + xHex };
+                new Mov { DestinationReg = Register.EAX, DestinationIndirect = true, DestinationDisplacement = (i * 8) + 0, SourceReg = Register.BX, Size = 16 };
 
-                AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = (i * 8) + 2, SourceRef = "0x8", Size = 8 });
-                AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = (i * 8) + 5, SourceRef = "0x8E", Size = 8 });
+                new Mov { DestinationReg = Register.EAX, DestinationIndirect = true, DestinationDisplacement = (i * 8) + 2, SourceRef = "0x8", Size = 8 };
+                new Mov { DestinationReg = Register.EAX, DestinationIndirect = true, DestinationDisplacement = (i * 8) + 5, SourceRef = "0x8E", Size = 8 };
 
-                AssemblyHelper.AssemblerCode.Add(new ShiftRight { DestinationReg = Registers.EBX, SourceRef = "0x10" });
+                new Shr { DestinationReg = Register.EBX, SourceRef = "0x10" };
 
-                AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, DestinationIndirect = true, DestinationDisplacement = (i * 8) + 6, SourceReg = Registers.BX, Size = 16 });
+                new Mov { DestinationReg = Register.EAX, DestinationIndirect = true, DestinationDisplacement = (i * 8) + 6, SourceReg = Register.BX, Size = 16 };
             }
-            var xLabel = Label.PrimaryLabel + ".End";
-            AssemblyHelper.AssemblerCode.Add(new Jmp { DestinationRef = xLabel });
+            var xLabel = Label.Primary + ".End";
+            new Jmp { DestinationRef = xLabel };
 
             var xInterruptsWithParam = new int[] { 8, 10, 11, 12, 13, 14 };
             for (int i = 0; i <= 255; i++)
@@ -135,41 +135,41 @@ namespace Atomix.Kernel_H.Arch.x86
                     continue;
 
                 var xHex = i.ToString("X2");
-                AssemblyHelper.AssemblerCode.Add(new Label ("__ISR_Handler_" + xHex));
+                new Label ("__ISR_Handler_" + xHex);
 
-                AssemblyHelper.AssemblerCode.Add(new Cli ());
+                new Cli ();
                 if(Array.IndexOf(xInterruptsWithParam, i) == -1)
                 {
-                    AssemblyHelper.AssemblerCode.Add(new Push { DestinationRef = "0x0" });
+                    new Push { DestinationRef = "0x0" };
                 }
 
-                AssemblyHelper.AssemblerCode.Add(new Push { DestinationRef = "0x" + xHex });
-                AssemblyHelper.AssemblerCode.Add(new Pushad());
-                AssemblyHelper.AssemblerCode.Add(new Sub { DestinationReg = Registers.ESP, SourceRef = "0x4" });
-                AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.ESP });
-                AssemblyHelper.AssemblerCode.Add(new And { DestinationReg = Registers.ESP, SourceRef = "0xFFFFFFF0" });
-                AssemblyHelper.AssemblerCode.Add(new Sub { DestinationReg = Registers.ESP, SourceRef = "0x200" });
-                AssemblyHelper.AssemblerCode.Add(new Literal("fxsave [ESP]"));
-                AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.ESP, DestinationIndirect = true });
-                AssemblyHelper.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
-                AssemblyHelper.AssemblerCode.Add(new Push { DestinationReg = Registers.EAX });
-                AssemblyHelper.AssemblerCode.Add(new Literal("jmp 8:__ISR_Handler_" + xHex + ".SetCS"));
+                new Push { DestinationRef = "0x" + xHex };
+                new Pushad();
+                new Sub { DestinationReg = Register.ESP, SourceRef = "0x4" };
+                new Mov { DestinationReg = Register.EAX, SourceReg = Register.ESP };
+                new And { DestinationReg = Register.ESP, SourceRef = "0xFFFFFFF0" };
+                new Sub { DestinationReg = Register.ESP, SourceRef = "0x200" };
+                new Literal("fxsave [ESP]");
+                new Mov { DestinationReg = Register.EAX, SourceReg = Register.ESP, DestinationIndirect = true };
+                new Push { DestinationReg = Register.EAX };
+                new Push { DestinationReg = Register.EAX };
+                new Literal("jmp 8:__ISR_Handler_" + xHex + ".SetCS");
 
-                AssemblyHelper.AssemblerCode.Add(new Label("__ISR_Handler_" + xHex + ".SetCS"));
-                AssemblyHelper.AssemblerCode.Add(new Call("__Interrupt_Handler__", true));
-                AssemblyHelper.AssemblerCode.Add(new Pop { DestinationReg = Registers.EAX });
-                AssemblyHelper.AssemblerCode.Add(new Literal("fxrstor [ESP]"));
-                AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.ESP, SourceReg = Registers.EAX });
-                AssemblyHelper.AssemblerCode.Add(new Add { DestinationReg = Registers.ESP, SourceRef = "0x4" });
-                AssemblyHelper.AssemblerCode.Add(new Popad());
-                AssemblyHelper.AssemblerCode.Add(new Add { DestinationReg = Registers.ESP, SourceRef = "0x8" });
-                AssemblyHelper.AssemblerCode.Add(new Sti());
-                AssemblyHelper.AssemblerCode.Add(new Iret());
+                new Label("__ISR_Handler_" + xHex + ".SetCS");
+                new Call { DestinationRef = "__Interrupt_Handler__", IsLabel = true };
+                new Pop { DestinationReg = Register.EAX };
+                new Literal("fxrstor [ESP]");
+                new Mov { DestinationReg = Register.ESP, SourceReg = Register.EAX };
+                new Add { DestinationReg = Register.ESP, SourceRef = "0x4" };
+                new Popad();
+                new Add { DestinationReg = Register.ESP, SourceRef = "0x8" };
+                new Sti();
+                new Iret();
             }
 
-            AssemblyHelper.AssemblerCode.Add(new Label (xLabel));
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.EAX, SourceReg = Registers.EBP, SourceDisplacement = 0xC, SourceIndirect = true });
-            AssemblyHelper.AssemblerCode.Add(new Literal ("lidt [EAX]"));
+            new Label (xLabel);
+            new Mov { DestinationReg = Register.EAX, SourceReg = Register.EBP, SourceDisplacement = 0xC, SourceIndirect = true };
+            new Literal ("lidt [EAX]");
         }
     }
 }

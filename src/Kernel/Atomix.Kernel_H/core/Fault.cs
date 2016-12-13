@@ -31,6 +31,7 @@ namespace Atomix.Kernel_H.Core
             Debug.Write("EDI: %d\n", aDump.EDI);
             Debug.Write("ESI: %d\n", aDump.ESI);
             Debug.Write("CR2: %d\n", Native.CR2Register());
+            Debug.Write("Thread-ID: %d\n", (uint)Scheduler.RunningThreadID);
             Native.Hlt();
         }
     }

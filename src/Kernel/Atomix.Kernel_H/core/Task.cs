@@ -9,12 +9,12 @@
 
 using System;
 
-using Atomix.Assembler;
-using Atomix.Assembler.x86;
+using Atomixilc;
+using Atomixilc.Machine;
+using Atomixilc.Attributes;
+using Atomixilc.Machine.x86;
 
 using Atomix.Kernel_H.Devices;
-
-using Atomix.CompilerExt.Attributes;
 
 namespace Atomix.Kernel_H.Core
 {
@@ -28,33 +28,33 @@ namespace Atomix.Kernel_H.Core
             return Scheduler.SwitchTask(oldStack);
         }
 
-        [Assembly, Plug("__ISR_Handler_20")]
+        [Assembly, Plug("__ISR_Handler_20", Architecture.x86)]
         private static void SetupIRQ0()
         {
             // Clear Interrupts
-            AssemblyHelper.AssemblerCode.Add(new Cli ());
+            new Cli ();
 
             // Push all the Registers
-            AssemblyHelper.AssemblerCode.Add(new Pushad ());
+            new Pushad ();
 
             // Push ESP
-            AssemblyHelper.AssemblerCode.Add(new Push { DestinationReg = Registers.ESP });
-            AssemblyHelper.AssemblerCode.Add(new Call ("__Switch_Task__", true));
+            new Push { DestinationReg = Register.ESP };
+            new Call { DestinationRef = "__Switch_Task__", IsLabel = true };
 
             // Get New task ESP
-            AssemblyHelper.AssemblerCode.Add(new Pop { DestinationReg = Registers.ESP });
+            new Mov { DestinationReg = Register.ESP, SourceReg = Register.EAX };
 
             // Tell CPU that we have recieved IRQ
-            AssemblyHelper.AssemblerCode.Add(new Mov { DestinationReg = Registers.AL, SourceRef = "0x20", Size = 8 });
-            AssemblyHelper.AssemblerCode.Add(new Out { DestinationRef = "0x20", SourceReg = Registers.AL });
+            new Mov { DestinationReg = Register.AL, SourceRef = "0x20", Size = 8 };
+            new Out { DestinationRef = "0x20", SourceReg = Register.AL };
 
             // Load Registers
-            AssemblyHelper.AssemblerCode.Add(new Popad ());
+            new Popad ();
 
             // Enable Interrupts
-            AssemblyHelper.AssemblerCode.Add(new Sti ());
+            new Sti ();
 
-            AssemblyHelper.AssemblerCode.Add(new Iret ());
+            new Iret ();
         }
     }
 }

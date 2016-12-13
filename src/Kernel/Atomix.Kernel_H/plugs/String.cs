@@ -7,7 +7,10 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-using Atomix.CompilerExt.Attributes;
+using Atomixilc;
+using Atomixilc.Machine;
+using Atomixilc.Attributes;
+using Atomixilc.Machine.x86;
 
 using Atomix.Kernel_H.Core;
 
@@ -15,13 +18,13 @@ namespace Atomix.Kernel_H.plugs
 {
     internal static class String
     {
-        [Plug("System_Void__System_String__ctor_System_Char___")]
+        [Plug("System_Void_System_String__ctor_System_Char___")]
         internal static unsafe void ctor(byte* aFirstChar, char[] aChar)
         {
             ctor(aFirstChar, aChar, 0, aChar.Length);
         }
 
-        [Plug("System_Void__System_String__ctor_System_Char__")]
+        [Plug("System_Void_System_String__ctor_System_Char__")]
         internal static unsafe void ctor(byte* aFirstChar, char* aChar)
         {
             int i = 0;
@@ -36,7 +39,7 @@ namespace Atomix.Kernel_H.plugs
             *((int*)(aFirstChar + 0xC)) = i;
         }
 
-        [Plug("System_Void__System_String__ctor_System_Char____System_Int32__System_Int32_")]
+        [Plug("System_Void_System_String__ctor_System_Char____System_Int32__System_Int32_")]
         internal static unsafe void ctor(byte* aFirstChar, char[] aChar, int Start, int Length)
         {
             int i;
