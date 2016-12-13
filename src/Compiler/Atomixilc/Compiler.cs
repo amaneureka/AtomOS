@@ -517,12 +517,24 @@ namespace Atomixilc
                 foreach (var par in xparams)
                     ESPOffset += Helper.GetTypeSize(par.ParameterType, Config.TargetPlatform, true);
 
-                new Mov { DestinationReg = Register.EDX, SourceReg = Register.ESP, SourceDisplacement = ESPOffset, SourceIndirect = true };
-                new Mov { DestinationReg = Register.EAX, SourceReg = Register.EDX, SourceDisplacement = 0xC, SourceIndirect = true };
+                new Mov { DestinationReg = Register.EAX, SourceReg = Register.ESP, SourceDisplacement = ESPOffset, SourceIndirect = true };
+                new Add { DestinationReg = Register.EAX, SourceRef = "0xC" };
+                new Cmp { DestinationReg = Register.EAX, DestinationDisplacement = 0x4, DestinationIndirect = true, SourceRef = "0x0" };
+                new Jmp { Condition = ConditionalJump.JNE, DestinationRef = ".push_object_ref" };
+
                 new Pop { DestinationReg = Register.EDX };
                 new Mov { DestinationReg = Register.ESP, DestinationDisplacement = ESPOffset - 4, DestinationIndirect = true, SourceReg = Register.EDX };
-                new Call { DestinationRef = "EAX" };
+                new Call { DestinationRef = "[EAX]" };
                 new Ret { Offset = 0 };
+
+                new Label(".push_object_ref");
+                new Push { DestinationReg = Register.EAX, DestinationDisplacement = 0x4, DestinationIndirect = true };
+                for (int i = ESPOffset; i > 4; i -= 4)
+                    new Push { DestinationReg = Register.ESP, DestinationDisplacement = ESPOffset, DestinationIndirect = true };
+
+                new Call { DestinationRef = "[EAX]" };
+
+                new Ret { Offset = (byte)ESPOffset };
 
                 Instruction.Block = null;
             }

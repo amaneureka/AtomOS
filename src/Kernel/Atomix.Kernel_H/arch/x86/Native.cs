@@ -81,13 +81,13 @@ namespace Atomix.Kernel_H.Arch.x86
             // [aDelegate + 0xC] := Address Field
             new Mov
             {
-                DestinationReg = Register.EDX,
+                DestinationReg = Register.EAX,
                 SourceReg = Register.EBP,
                 SourceDisplacement = 0x8,
                 SourceIndirect = true
             };
 
-            new Push { DestinationReg = Register.EDX, DestinationDisplacement = 0xC, DestinationIndirect = true };
+            new Push { DestinationReg = Register.EAX, DestinationDisplacement = 0xC, DestinationIndirect = true };
             return 0;
         }
 
