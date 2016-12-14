@@ -179,7 +179,10 @@ namespace Atomixilc
                 SW.WriteLine("section .bss");
                 foreach (var bssEntry in Helper.ZeroSegment)
                     SW.WriteLine(string.Format("{0} resb {1}", bssEntry.Key, bssEntry.Value));
-                foreach (var bssEntry in ZeroSegment)
+
+                var bssEntries = ZeroSegment.ToList();
+                bssEntries.Sort((x, y) => y.Value.CompareTo(x.Value));
+                foreach (var bssEntry in bssEntries)
                     SW.WriteLine(string.Format("{0} resb {1}", bssEntry.Key, bssEntry.Value));
                 SW.WriteLine();
 
