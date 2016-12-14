@@ -125,14 +125,9 @@
     <Compile Include="lib\graphic\Surface.cs" />
     <Compile Include="lib\Marshal.cs" />
     <Compile Include="lib\Numerics.cs" />
-    <Compile Include="plugs\Array.cs" />
-    <Compile Include="plugs\BitConverter.cs" />
     <Compile Include="plugs\Convert.cs" />
-    <Compile Include="plugs\Enum.cs" />
     <Compile Include="plugs\Helper.cs" />
     <Compile Include="plugs\Math.cs" />
-    <Compile Include="plugs\NativeException.cs" />
-    <Compile Include="plugs\Exception.cs" />
     <Compile Include="plugs\Numerics.cs" />
     <Compile Include="plugs\String.cs" />
     <Compile Include="plugs\Threading.cs" />

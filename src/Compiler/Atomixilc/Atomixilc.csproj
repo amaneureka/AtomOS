@@ -163,6 +163,9 @@
     <Compile Include="IL\Store\Stind\Stind_Ref.cs" />
     <Compile Include="IL\Store\Stloc.cs" />
     <Compile Include="IL\Store\Stsfld.cs" />
+    <Compile Include="Lib\Plugs\Array.cs" />
+    <Compile Include="Lib\Plugs\BitConverter.cs" />
+    <Compile Include="Lib\Plugs\Exception.cs" />
     <Compile Include="Lib\VTable.cs" />
     <Compile Include="Machine\Comment.cs" />
     <Compile Include="Machine\Instruction.cs" />

@@ -293,7 +293,10 @@ namespace Atomixilc
 
         internal void IncludePlugAndLibrary()
         {
-            ScanType(typeof(Lib.VTable));
+            ScanQ.Enqueue(typeof(Lib.VTable));
+            ScanQ.Enqueue(typeof(Lib.Plugs.ArrayImpl));
+            ScanQ.Enqueue(typeof(Lib.Plugs.ExceptionImpl));
+            ScanQ.Enqueue(typeof(Lib.Plugs.BitConverterImpl));
 
             foreach (var plug in Plugs)
                 ScanQ.Enqueue(plug.Key);
@@ -366,6 +369,7 @@ namespace Atomixilc
                 if (plugattrib != null && !Plugs.ContainsKey(method))
                 {
                     ScanQ.Enqueue(method);
+                    method.AddPlug(plugattrib.TargetLabel);
                     Plugs.Add(method, plugattrib.TargetLabel);
                     Verbose.Message("[Plug] {0} : {1}", plugattrib.TargetLabel, method.FullName());
                 }
