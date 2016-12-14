@@ -1,48 +1,42 @@
-﻿/*
-* PROJECT:          Atomix Development
-* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
-*                   Unauthorized copying of this file, via any medium is
-*                   strictly prohibited Proprietary and confidential.
-* PURPOSE:          x86 arch support functions
-* PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
-*/
-
-using System;
+﻿using System;
 
 using Atomixilc;
 using Atomixilc.Machine;
 using Atomixilc.Attributes;
 using Atomixilc.Machine.x86;
 
-namespace Atomix.Kernel_H.Arch.x86
+namespace Atomixilc.Lib
 {
-    internal static class Native
+    public static class Native
     {
         /// <summary>
         /// Clear Interrupts
         /// </summary>
-        [Assembly(true)]
-        internal static void Cli()
+        [Assembly(false)]
+        public static void Cli()
         {
-            new Cli ();
+            new Cli();
+            new Ret { Offset = 0x0 };
         }
 
         /// <summary>
         /// Enable Interrupts
         /// </summary>
-        [Assembly(true)]
-        internal static void Sti()
+        [Assembly(false)]
+        public static void Sti()
         {
-            new Sti ();
+            new Sti();
+            new Ret { Offset = 0x0 };
         }
 
         /// <summary>
         /// Halt The Processor
         /// </summary>
-        [Assembly(true)]
-        internal static void Hlt()
+        [Assembly(false)]
+        public static void Hlt()
         {
-            new Literal ("hlt");
+            new Literal("hlt");
+            new Ret { Offset = 0x0 };
         }
 
         /// <summary>
@@ -50,10 +44,11 @@ namespace Atomix.Kernel_H.Arch.x86
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        [Assembly(true)]
-        internal static uint GetAddress(object aObj)
+        [Assembly(false)]
+        public static uint GetAddress(object aObj)
         {
-            new Push { DestinationReg = Register.EBP, DestinationDisplacement = 0x8, DestinationIndirect = true };
+            new Mov { DestinationReg = Register.EAX, SourceReg = Register.ESP, SourceDisplacement = 0x4, SourceIndirect = true };
+            new Ret { Offset = 0x4 };
 
             return 0; // Only me and my compiler knows how it is working :P
         }
@@ -63,7 +58,7 @@ namespace Atomix.Kernel_H.Arch.x86
         /// </summary>
         /// <param name="aArray"></param>
         /// <returns></returns>
-        internal static uint GetContentAddress(object aObj)
+        public static uint GetContentAddress(object aObj)
         {
             // 0x10 bytes are reserved for compiler specific work
             return (GetAddress(aObj) + 0x10);
@@ -74,20 +69,22 @@ namespace Atomix.Kernel_H.Arch.x86
         /// </summary>
         /// <param name="aDelegate"></param>
         /// <returns></returns>
-        [Assembly(true)]
-        internal static uint InvokableAddress(this Delegate aDelegate)
+        [Assembly(false)]
+        public static uint InvokableAddress(this Delegate aDelegate)
         {
             // Compiler.cs : ProcessDelegate(MethodBase xMethod);
             // [aDelegate + 0xC] := Address Field
             new Mov
             {
                 DestinationReg = Register.EAX,
-                SourceReg = Register.EBP,
-                SourceDisplacement = 0x8,
+                SourceReg = Register.ESP,
+                SourceDisplacement = 0x4,
                 SourceIndirect = true
             };
 
-            new Push { DestinationReg = Register.EAX, DestinationDisplacement = 0xC, DestinationIndirect = true };
+            new Mov { DestinationReg = Register.EAX,  SourceReg = Register.EAX, SourceDisplacement = 0xC, SourceIndirect = true };
+            new Ret { Offset = 0x4 };
+
             return 0;
         }
 
@@ -95,19 +92,22 @@ namespace Atomix.Kernel_H.Arch.x86
         /// End of kernel offset
         /// </summary>
         /// <returns></returns>
-        [Assembly(true)]
-        internal static uint EndOfKernel()
+        [Assembly(false)]
+        public static uint EndOfKernel()
         {
             // Just put Compiler_End location into return value
-            new Push { DestinationRef = "Compiler_End" };
+            new Mov { DestinationReg = Register.EAX, SourceRef = "Compiler_End" };
+            new Ret { Offset = 0x0 };
+
             return 0; // just for c# error
         }
 
-        [Assembly(true)]
-        internal static uint CR2Register()
+        [Assembly(false)]
+        public static uint CR2Register()
         {
             new Mov { DestinationReg = Register.EAX, SourceReg = Register.CR2 };
-            new Push { DestinationReg = Register.EAX };
+            new Ret { Offset = 0x0 };
+
             return 0;
         }
     }

@@ -7,9 +7,7 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-using Atomix.Kernel_H.Arch.x86;
-
-using Atomixilc;
+using Atomixilc.Lib;
 using Atomixilc.Machine;
 using Atomixilc.Attributes;
 using Atomixilc.Machine.x86;
@@ -72,7 +70,7 @@ namespace Atomix.Kernel_H.Core
             LockStatus = -1;
         }
 
-        [Label(Helper.Heap_Label)]
+        [Label(Atomixilc.Helper.Heap_Label)]
         internal static uint kmalloc(uint len)
         {
             if (!HeapManagerSetup)

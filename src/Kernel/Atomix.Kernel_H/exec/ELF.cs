@@ -10,6 +10,8 @@
 using System;
 using System.Runtime.InteropServices;
 
+using Atomixilc.Lib;
+
 using Atomix.Kernel_H.IO;
 using Atomix.Kernel_H.Core;
 using Atomix.Kernel_H.Arch.x86;

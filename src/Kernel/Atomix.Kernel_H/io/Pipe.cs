@@ -7,6 +7,8 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
+using Atomixilc.Lib;
+
 using Atomix.Kernel_H.Core;
 using Atomix.Kernel_H.Arch.x86;
 

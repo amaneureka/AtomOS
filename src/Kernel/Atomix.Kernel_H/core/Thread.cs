@@ -9,7 +9,7 @@
 
 using System;
 
-using Atomix.Kernel_H.Arch.x86;
+using Atomixilc.Lib;
 
 namespace Atomix.Kernel_H.Core
 {

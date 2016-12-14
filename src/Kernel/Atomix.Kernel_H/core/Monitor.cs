@@ -12,7 +12,7 @@ using System;
 using Atomix.Kernel_H.Lib;
 using Atomix.Kernel_H.Arch.x86;
 
-using Atomixilc;
+using Atomixilc.Lib;
 using Atomixilc.Machine;
 using Atomixilc.Attributes;
 using Atomixilc.Machine.x86;

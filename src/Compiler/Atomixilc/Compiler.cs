@@ -297,6 +297,8 @@ namespace Atomixilc
         internal void IncludePlugAndLibrary()
         {
             ScanQ.Enqueue(typeof(Lib.VTable));
+            ScanQ.Enqueue(typeof(Lib.Memory));
+            ScanQ.Enqueue(typeof(Lib.Native));
             ScanQ.Enqueue(typeof(Lib.Plugs.ArrayImpl));
             ScanQ.Enqueue(typeof(Lib.Plugs.ExceptionImpl));
             ScanQ.Enqueue(typeof(Lib.Plugs.BitConverterImpl));

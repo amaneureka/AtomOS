@@ -9,6 +9,8 @@
 
 using System;
 
+using Atomixilc.Lib;
+
 using Atomix.Kernel_H.Arch.x86;
 
 namespace Atomix.Kernel_H.Lib

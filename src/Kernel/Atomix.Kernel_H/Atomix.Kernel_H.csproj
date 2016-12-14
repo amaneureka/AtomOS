@@ -62,9 +62,7 @@
   <ItemGroup>
     <Compile Include="arch\x86\GDT.cs" />
     <Compile Include="arch\x86\IDT.cs" />
-    <Compile Include="arch\x86\Memory.cs" />
     <Compile Include="arch\x86\Multiboot.cs" />
-    <Compile Include="arch\x86\Native.cs" />
     <Compile Include="arch\x86\Paging.cs" />
     <Compile Include="arch\x86\PIC.cs" />
     <Compile Include="arch\x86\PortIO.cs" />
