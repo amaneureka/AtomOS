@@ -9,6 +9,8 @@
 
 using System;
 
+using Atomixilc.Lib;
+
 using Atomix.Kernel_H.Lib;
 using Atomix.Kernel_H.Arch.x86;
 
@@ -63,13 +65,7 @@ namespace Atomix.Kernel_H.Core
 
         internal static void Setup()
         {
-            mCallHandlers = new IDictionary<uint, InterruptHandler>(delegate (uint a)
-            {
-                return a;
-            }, delegate (uint a, uint b)
-            {
-                return a==b;
-            });
+            mCallHandlers = new IDictionary<uint, InterruptHandler>(Internals.GetHashCode, Internals.Equals);
 
             /* Register Syscall Handler */
             IDT.RegisterInterrupt(Handler, 0x80);

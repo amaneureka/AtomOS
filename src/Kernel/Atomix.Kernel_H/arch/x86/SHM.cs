@@ -7,9 +7,10 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
+using Atomixilc.Lib;
+
 using Atomix.Kernel_H.Lib;
 using Atomix.Kernel_H.Core;
-using Atomix.Kernel_H.Lib.Crypto;
 
 namespace Atomix.Kernel_H.Arch.x86
 {
@@ -30,7 +31,7 @@ namespace Atomix.Kernel_H.Arch.x86
 
         internal static void Install()
         {
-            Nodes = new IDictionary<string, shm_chunk>(sdbm.GetHashCode, string.Equals);
+            Nodes = new IDictionary<string, shm_chunk>(Internals.GetHashCode, string.Equals);
         }
 
         internal static unsafe uint Obtain(string aID, uint aSize, bool aDoAllocate = false)

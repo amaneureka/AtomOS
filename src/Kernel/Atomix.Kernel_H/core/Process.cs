@@ -9,9 +9,10 @@
 
 using System;
 
+using Atomixilc.Lib;
+
 using Atomix.Kernel_H.Lib;
 using Atomix.Kernel_H.Arch.x86;
-using Atomix.Kernel_H.Lib.Crypto;
 
 namespace Atomix.Kernel_H.Core
 {
@@ -32,7 +33,7 @@ namespace Atomix.Kernel_H.Core
             Name = aName;
             Threads = new IList<Thread>();
             shm_mapping = new uint[SHM.LIMIT_TO_PROCESS];
-            mSymbols = new IDictionary<string, uint>(sdbm.GetHashCode, string.Equals);
+            mSymbols = new IDictionary<string, uint>(Internals.GetHashCode, string.Equals);
         }
 
         internal void SetEnvironment()

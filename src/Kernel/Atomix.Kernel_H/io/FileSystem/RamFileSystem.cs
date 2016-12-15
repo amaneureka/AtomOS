@@ -7,8 +7,9 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
+using Atomixilc.Lib;
+
 using Atomix.Kernel_H.Lib;
-using Atomix.Kernel_H.Lib.Crypto;
 using Atomix.Kernel_H.IO.FileSystem.RFS;
 
 using System.Runtime.InteropServices;
@@ -25,7 +26,7 @@ namespace Atomix.Kernel_H.IO.FileSystem
         {
             DataAddress = aAddress;
             DataLength = aLength;
-            Files = new IDictionary<string, RamFile>(sdbm.GetHashCode, string.Equals);
+            Files = new IDictionary<string, RamFile>(Internals.GetHashCode, string.Equals);
             mIsValid = LoadFileSystem();
         }
 

@@ -9,9 +9,10 @@
 
 using System;
 
+using Atomixilc.Lib;
+
 using Atomix.Kernel_H.Lib;
 using Atomix.Kernel_H.Core;
-using Atomix.Kernel_H.Lib.Crypto;
 
 namespace Atomix.Kernel_H.IO.FileSystem
 {
@@ -21,7 +22,7 @@ namespace Atomix.Kernel_H.IO.FileSystem
 
         internal static void Setup()
         {
-            MountedFS = new IDictionary<string, GenericFileSystem>(sdbm.GetHashCode, string.Equals);
+            MountedFS = new IDictionary<string, GenericFileSystem>(Internals.GetHashCode, string.Equals);
         }
 
         internal static GenericFileSystem GetFS(string aDevice)
