@@ -110,7 +110,6 @@ namespace Atomix.Kernel_H
             }
             else
                 Debug.Write("Boot Image not found!\n");
-            Thread.Die();
         }
 
         internal static void LoadIDE(bool IsPrimary, bool IsMaster)

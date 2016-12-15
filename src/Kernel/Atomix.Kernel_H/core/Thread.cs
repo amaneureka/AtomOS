@@ -18,11 +18,18 @@ namespace Atomix.Kernel_H.Core
         internal readonly Process Process;
         internal readonly int ThreadID;
 
+        Action Dead;
         ThreadState State;
+
         uint Address;
         uint StackBottom;
         uint StackTop;
         uint StackLimit;
+
+        internal ThreadState Status
+        {
+            get { return State; }
+        }
 
         static int ThreadCounter = 0;
 
@@ -34,6 +41,7 @@ namespace Atomix.Kernel_H.Core
 
         public Thread(Process aParent, uint aAddress, uint aStackStart, uint aStackLimit)
         {
+            Dead = Die;
             Process = aParent;
             Address = aAddress;
             Process.Threads.Add(this);
@@ -60,6 +68,8 @@ namespace Atomix.Kernel_H.Core
         private unsafe void SetupInitialStack()
         {
             uint* Stack = (uint*)StackTop;
+
+            *--Stack = Native.InvokableAddress(Dead);
 
             // processor data
             *--Stack = 0x202;           // EFLAGS
@@ -99,13 +109,10 @@ namespace Atomix.Kernel_H.Core
             var curr = Scheduler.RunningThread;
             if (curr == null)
                 return;
-            curr.State = ThreadState.Dead;
-            while (true) ;// Hook up till the next time slice
-        }
 
-        internal ThreadState Status
-        {
-            get { return State; }
+            curr.State = ThreadState.Dead;
+            Debug.Write("Thread.Die() : %d\n", (uint)curr.ThreadID);
+            while (true) ;// Hook up till the next time slice
         }
     }
 

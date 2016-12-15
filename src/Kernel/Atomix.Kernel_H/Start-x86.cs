@@ -141,7 +141,7 @@ namespace Atomix.Kernel_H
             /* Setup Paging */
             Paging.Setup(KernelDirectory);
 
-            /* Setup GDT Again */
+            /* Setup GDT */
             GDT.Setup();
 
             /* Remap PIC */
