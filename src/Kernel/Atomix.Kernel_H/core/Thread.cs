@@ -69,7 +69,7 @@ namespace Atomix.Kernel_H.Core
         {
             uint* Stack = (uint*)StackTop;
 
-            *--Stack = Native.InvokableAddress(Dead);
+            *--Stack = Dead.InvokableAddress();
 
             // processor data
             *--Stack = 0x202;           // EFLAGS
@@ -101,6 +101,8 @@ namespace Atomix.Kernel_H.Core
 
         internal void FreeStack()
         {
+            Heap.Free(Dead);
+            Heap.Free(this);
             Heap.Free(StackBottom, StackLimit);
         }
 

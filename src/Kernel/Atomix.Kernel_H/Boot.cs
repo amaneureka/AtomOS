@@ -94,7 +94,6 @@ namespace Atomix.Kernel_H
                 SystemClient.Read(xData);
 
                 string HashCode = new string(Request2->Hash);
-                Debug.Write("WinHash: %s\n", HashCode);
                 var aBuffer = SHM.Obtain(HashCode, 0, false);
 
                 BootImage.Read(xData, 8);
