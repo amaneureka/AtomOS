@@ -7,6 +7,7 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
+using System;
 using System.Reflection;
 
 namespace Atomixilc.IL.CodeType
