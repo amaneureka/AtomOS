@@ -36,23 +36,6 @@ namespace Atomixilc.IL
 
             int EBPoffset = Ldarg_il.GetArgumentOffset(Config, method, index);
 
-            Type ArgType = null;
-            if (!method.IsStatic)
-            {
-                if (index == 0)
-                {
-                    ArgType = method.DeclaringType;
-                    if (method.DeclaringType.IsValueType)
-                        ArgType = ArgType.MakeByRefType();
-                }
-                else
-                    ArgType = method.GetParameters()[index - 1].ParameterType;
-            }
-            else
-                ArgType = method.GetParameters()[index].ParameterType;
-
-            int ArgSize = Helper.GetTypeSize(ArgType, Config.TargetPlatform);
-
             /* The stack transitional behavior, in sequential order, is:
              * The address addr of the argument indexed by index is pushed onto the stack.
              */
@@ -63,11 +46,7 @@ namespace Atomixilc.IL
             {
                 case Architecture.x86:
                     {
-                        if (ArgSize > 4)
-                            throw new Exception("Unsupported ArgSize");
-
-                        new Mov { DestinationReg = Register.EAX, SourceReg = Register.EBP };
-                        new Add { DestinationReg = Register.EAX, SourceRef = "0x" + EBPoffset.ToString("X") };
+                        new Lea { DestinationReg = Register.EAX, SourceReg = Register.EBP, SourceDisplacement = EBPoffset, SourceIndirect = true };
                         new Push { DestinationReg = Register.EAX };
 
                         Optimizer.vStack.Push(new StackItem(typeof(uint)));

@@ -47,8 +47,7 @@ namespace Atomixilc.IL
             {
                 case Architecture.x86:
                     {
-                        new Mov { DestinationReg = Register.EAX, SourceReg = Register.EBP };
-                        new Sub { DestinationReg = Register.EAX, SourceRef = "0x" + EBPoffset.ToString() };
+                        new Lea { DestinationReg = Register.EAX, SourceReg = Register.EBP, SourceDisplacement = -EBPoffset, SourceIndirect = true };
                         new Push { DestinationReg = Register.EAX };
                     }
                     break;
