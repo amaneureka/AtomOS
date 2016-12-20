@@ -1,0 +1,132 @@
+diff -urN gcc-old/config.sub gcc/config.sub
+--- gcc-old/config.sub	2015-01-02 15:00:21.000000000 +0530
++++ gcc/config.sub	2016-09-24 14:04:03.955832000 +0530
+@@ -1368,7 +1368,7 @@
+ 	# The portable systems comes first.
+ 	# Each alternative MUST END IN A *, to match a version number.
+ 	# -sysv* is not here because it comes later, after sysvr4.
+-	-gnu* | -bsd* | -mach* | -minix* | -genix* | -ultrix* | -irix* \
++	-gnu* | -bsd* | -mach* | -minix* | -genix* | -ultrix* | -irix* | -atomos* \
+ 	      | -*vms* | -sco* | -esix* | -isc* | -aix* | -cnk* | -sunos | -sunos[34]*\
+ 	      | -hpux* | -unos* | -osf* | -luna* | -dgux* | -auroraux* | -solaris* \
+ 	      | -sym* | -kopensolaris* | -plan9* \
+diff -urN gcc-old/fixincludes/mkfixinc.sh gcc/fixincludes/mkfixinc.sh
+--- gcc-old/fixincludes/mkfixinc.sh	2012-10-29 03:12:48.000000000 +0530
++++ gcc/fixincludes/mkfixinc.sh	2016-09-24 14:16:48.787810000 +0530
+@@ -12,6 +12,7 @@
+ # Check for special fix rules for particular targets
+ case $machine in
+     i?86-*-cygwin* | \
++    *-myos* | \
+     i?86-*-mingw32* | \
+     x86_64-*-mingw32* | \
+     i?86-*-interix* | \
+diff -urN gcc-old/gcc/config/atomos.h gcc/gcc/config/atomos.h
+--- gcc-old/gcc/config/atomos.h	1970-01-01 05:30:00.000000000 +0530
++++ gcc/gcc/config/atomos.h	2016-09-25 17:11:54.102944000 +0530
+@@ -0,0 +1,29 @@
++/* Useful if you wish to make target-specific gcc changes. */
++#undef TARGET_ATOMOS
++#define TARGET_ATOMOS 1
++
++/* Default arguments you want when running your
++   i686-atomos-gcc/x86_64-atomos-gcc toolchain */
++#define LIB_SPEC "-lc -lg -lm -lnosys"
++
++/* Files that are linked before user code.
++   The %s tells gcc to look for these files in the library directory. */
++#define STARTFILE_SPEC "crt0.o%s crti.o%s crtbegin.o%s"
++
++/* Files that are linked after user code. */
++#define ENDFILE_SPEC "crtend.o%s crtn.o%s"
++
++/* Don't automatically add extern "C" { } around header files. */
++#undef  NO_IMPLICIT_EXTERN_C
++#define NO_IMPLICIT_EXTERN_C 1
++
++/* Additional predefined macros. */
++#undef TARGET_OS_CPP_BUILTINS
++#define TARGET_OS_CPP_BUILTINS()      \
++  do {                                \
++    builtin_define ("__atomos__");      \
++    builtin_define ("__unix__");      \
++    builtin_assert ("system=atomos");   \
++    builtin_assert ("system=unix");   \
++    builtin_assert ("system=posix");   \
++  } while(0);
+\ No newline at end of file
+diff -urN gcc-old/gcc/config.gcc gcc/gcc/config.gcc
+--- gcc-old/gcc/config.gcc	2015-09-10 19:47:53.000000000 +0530
++++ gcc/gcc/config.gcc	2016-09-24 14:10:47.931820000 +0530
+@@ -625,6 +625,11 @@
+     "" | yes | posix) thread_file='posix' ;;
+   esac
+   ;;
++*-*-atomos*)
++  gas=yes
++  gnu_ld=yes
++  default_use_cxa_atexit=yes
++  ;;
+ *-*-dragonfly*)
+   gas=yes
+   gnu_ld=yes
+@@ -909,6 +914,12 @@
+ 	done
+ 	TM_MULTILIB_CONFIG=`echo $TM_MULTILIB_CONFIG | sed 's/^,//'`
+ 	;;
++i[34567]86-*-atomos*)
++	tm_file="${tm_file} i386/unix.h i386/att.h dbxelf.h elfos.h glibc-stdint.h i386/i386elf.h atomos.h"
++	;;
++x86_64-*-atomos*)
++	tm_file="${tm_file} i386/unix.h i386/att.h dbxelf.h elfos.h glibc-stdint.h i386/i386elf.h i386/x86-64.h atomos.h"
++	;;
+ aarch64*-*-linux*)
+ 	tm_file="${tm_file} dbxelf.h elfos.h gnu-user.h linux.h glibc-stdint.h"
+ 	tm_file="${tm_file} aarch64/aarch64-elf.h aarch64/aarch64-linux.h"
+diff -urN gcc-old/libgcc/config.host gcc/libgcc/config.host
+--- gcc-old/libgcc/config.host	2015-10-01 17:31:18.000000000 +0530
++++ gcc/libgcc/config.host	2016-09-24 14:15:31.471812000 +0530
+@@ -328,6 +328,14 @@
+ 	tmake_file="${tmake_file} ${cpu_type}/t-aarch64"
+ 	tmake_file="${tmake_file} ${cpu_type}/t-softfp t-softfp t-crtfm"
+ 	;;
++i[34567]86-*-atomos*)
++	extra_parts="$extra_parts crtbegin.o crtend.o"
++	tmake_file="$tmake_file i386/t-crtstuff t-crtstuff-pic t-libgcc-pic"
++	;;
++x86_64-*-atomos*)
++	extra_parts="$extra_parts crtbegin.o crtend.o"
++	tmake_file="$tmake_file i386/t-crtstuff t-crtstuff-pic t-libgcc-pic"
++	;;
+ aarch64*-*-linux*)
+ 	extra_parts="$extra_parts crtfastmath.o"
+ 	md_unwind_header=aarch64/linux-unwind.h
+diff -urN gcc-old/libstdc++-v3/crossconfig.m4 gcc/libstdc++-v3/crossconfig.m4
+--- gcc-old/libstdc++-v3/crossconfig.m4	2014-04-22 18:00:59.000000000 +0530
++++ gcc/libstdc++-v3/crossconfig.m4	2016-09-24 17:22:40.323493000 +0530
+@@ -36,6 +36,13 @@
+     AM_ICONV
+     ;;
+ 
++  *-atomos*)
++    GLIBCXX_CHECK_COMPILER_FEATURES
++    GLIBCXX_CHECK_LINKER_FEATURES
++    GLIBCXX_CHECK_MATH_SUPPORT
++    GLIBCXX_CHECK_STDLIB_SUPPORT
++    ;;
++
+   *-aix*)
+     GLIBCXX_CHECK_LINKER_FEATURES
+     GLIBCXX_CHECK_MATH_SUPPORT
+diff -urN gcc-old/libstdc++-v3/include/std/type_traits gcc/libstdc++-v3/include/std/type_traits
+--- gcc-old/libstdc++-v3/include/std/type_traits	2015-01-08 21:54:55.000000000 +0530
++++ gcc/libstdc++-v3/include/std/type_traits	2016-09-25 15:05:42.603159000 +0530
+@@ -38,7 +38,7 @@
+ #include <bits/c++config.h>
+ 
+ #ifdef _GLIBCXX_USE_C99_STDINT_TR1
+-# if defined (__UINT_LEAST16_TYPE__) && defined(__UINT_LEAST32_TYPE__)
++# if defined (__UINT_LEAST16_TYPE__) && defined(__UINT_LEAST32_TYPE__) && 0
+ namespace std
+ {
+   typedef __UINT_LEAST16_TYPE__ uint_least16_t;

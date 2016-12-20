@@ -1,0 +1,194 @@
+diff -urN binutils-old/bfd/config.bfd binutils/bfd/config.bfd
+--- binutils-old/bfd/config.bfd	2015-11-13 13:57:40.000000000 +0530
++++ binutils/bfd/config.bfd	2016-09-24 15:13:04.923714000 +0530
+@@ -167,8 +167,14 @@
+     targ_selvecs="plugin_vec"
+     ;;
+ 
++
+ # START OF targmatch.h
+ #ifdef BFD64
++  x86_64-*-atomos*)
++    targ_defvec=x86_64_elf64_vec
++    targ_selvecs=i386_elf32_vec
++    want64=true
++    ;;
+   aarch64-*-elf)
+     targ_defvec=aarch64_elf64_le_vec
+     targ_selvecs="aarch64_elf64_be_vec aarch64_elf32_le_vec aarch64_elf32_be_vec arm_elf32_le_vec arm_elf32_be_vec"
+@@ -206,7 +212,7 @@
+     # FreeBSD <= 4.0 supports only the old nonstandard way of ABI labelling.
+     case "${targ}" in
+       alpha*-*-freebsd3* | alpha*-*-freebsd4 | alpha*-*-freebsd4.0*)
+-	targ_cflags=-DOLD_FREEBSD_ABI_LABEL ;;
++  targ_cflags=-DOLD_FREEBSD_ABI_LABEL ;;
+     esac
+     ;;
+   alpha*-*-netbsd* | alpha*-*-openbsd*)
+@@ -525,6 +531,12 @@
+     targ_selvecs=hppa_elf32_vec
+     ;;
+ 
++  i[3-7]86-*-atomos*)
++    targ_defvec=i386_elf32_vec
++    targ_selvecs=
++    targ64_selvecs=x86_64_elf64_vec
++    ;;
++
+   i370-*-*)
+     targ_defvec=i370_elf32_vec
+     targ_selvecs="i370_elf32_vec"
+diff -urN binutils-old/config.sub binutils/config.sub
+--- binutils-old/config.sub	2015-11-13 13:57:41.000000000 +0530
++++ binutils/config.sub	2016-09-24 13:13:22.503918000 +0530
+@@ -1374,7 +1374,7 @@
+ 	# The portable systems comes first.
+ 	# Each alternative MUST END IN A *, to match a version number.
+ 	# -sysv* is not here because it comes later, after sysvr4.
+-	-gnu* | -bsd* | -mach* | -minix* | -genix* | -ultrix* | -irix* \
++	-gnu* | -bsd* | -mach* | -minix* | -genix* | -ultrix* | -irix* | -atomos* \
+ 	      | -*vms* | -sco* | -esix* | -isc* | -aix* | -cnk* | -sunos | -sunos[34]*\
+ 	      | -hpux* | -unos* | -osf* | -luna* | -dgux* | -auroraux* | -solaris* \
+ 	      | -sym* | -kopensolaris* | -plan9* \
+diff -urN binutils-old/gas/configure.tgt binutils/gas/configure.tgt
+--- binutils-old/gas/configure.tgt	2015-11-13 13:57:41.000000000 +0530
++++ binutils/gas/configure.tgt	2016-09-24 13:18:24.367910000 +0530
+@@ -219,6 +219,7 @@
+   i386-*-coff)				fmt=coff ;;
+   i386-*-elfiamcu)			fmt=elf arch=iamcu ;;
+   i386-*-elf*)				fmt=elf ;;
++  i386-*-atomos*)			fmt=elf ;;
+   i386-*-kaos*)				fmt=elf ;;
+   i386-*-bsd*)				fmt=aout em=386bsd ;;
+   i386-*-nacl*)				fmt=elf em=nacl
+diff -urN binutils-old/ld/configure.tgt binutils/ld/configure.tgt
+--- binutils-old/ld/configure.tgt	2015-11-13 13:57:42.000000000 +0530
++++ binutils/ld/configure.tgt	2016-09-24 13:20:48.471906000 +0530
+@@ -74,6 +74,15 @@
+ alpha*-*-openbsd*)	targ_emul=elf64alpha ;;
+ alpha*-*-*vms*)		targ_emul=alphavms
+ 			;;
++i[3-7]86-*-atomos*)
++			targ_emul=elf_i386_atomos
++			targ_extra_emuls=elf_i386
++			targ64_extra_emuls="elf_x86_64_atomos elf_x86_64"
++			;;
++x86_64-*-atomos*)
++			targ_emul=elf_x86_64_atomos
++			targ_extra_emuls="elf_i386_atomos elf_x86_64 elf_i386"
++			;;
+ arc*-*-elf*)		targ_emul=arcelf
+             		targ_extra_emuls="arcelf_prof arclinux arclinux_prof arcv2elf arcv2elfx"
+             		;;
+diff -urN binutils-old/ld/emulparams/elf_i386_atomos.sh binutils/ld/emulparams/elf_i386_atomos.sh
+--- binutils-old/ld/emulparams/elf_i386_atomos.sh	1970-01-01 05:30:00.000000000 +0530
++++ binutils/ld/emulparams/elf_i386_atomos.sh	2016-09-24 13:23:50.427900000 +0530
+@@ -0,0 +1,3 @@
++. ${srcdir}/emulparams/elf_i386.sh
++GENERATE_SHLIB_SCRIPT=yes
++GENERATE_PIE_SCRIPT=yes
+\ No newline at end of file
+diff -urN binutils-old/ld/emulparams/elf_x86_64_atomos.sh binutils/ld/emulparams/elf_x86_64_atomos.sh
+--- binutils-old/ld/emulparams/elf_x86_64_atomos.sh	1970-01-01 05:30:00.000000000 +0530
++++ binutils/ld/emulparams/elf_x86_64_atomos.sh	2016-09-24 13:24:30.331899000 +0530
+@@ -0,0 +1 @@
++. ${srcdir}/emulparams/elf_x86_64.sh
+\ No newline at end of file
+diff -urN binutils-old/ld/Makefile.am binutils/ld/Makefile.am
+--- binutils-old/ld/Makefile.am	2015-11-13 13:57:42.000000000 +0530
++++ binutils/ld/Makefile.am	2016-09-24 13:28:20.299893000 +0530
+@@ -280,6 +280,7 @@
+ 	eelf32xstormy16.c \
+ 	eelf32xtensa.c \
+ 	eelf_i386.c \
++	eelf_i386_atomos.c \
+ 	eelf_i386_be.c \
+ 	eelf_i386_chaos.c \
+ 	eelf_i386_fbsd.c \
+@@ -496,6 +497,7 @@
+ 	eelf_k1om.c \
+ 	eelf_k1om_fbsd.c \
+ 	eelf_x86_64.c \
++	eelf_x86_64_atomos.c \
+ 	eelf_x86_64_cloudabi.c \
+ 	eelf_x86_64_fbsd.c \
+ 	eelf_x86_64_nacl.c \
+@@ -1295,6 +1297,10 @@
+ eelf_i386.c: $(srcdir)/emulparams/elf_i386.sh \
+   $(ELF_DEPS) $(srcdir)/scripttempl/elf.sc ${GEN_DEPENDS}
+ 
++eelf_i386_atomos.c: $(srcdir)/emulparams/elf_i386_atomos.sh \
++  $(ELF_DEPS) $(srcdir)/scripttempl/elf.sc ${GEN_DEPENDS}
++	${GENSCRIPTS} elf_i386_atomos "$(tdir_elf_i386_atomos)"
++
+ eelf_i386_be.c: $(srcdir)/emulparams/elf_i386_be.sh \
+   $(ELF_DEPS) $(srcdir)/scripttempl/elf.sc ${GEN_DEPENDS}
+ 
+@@ -1987,6 +1993,10 @@
+ eelf_x86_64.c: $(srcdir)/emulparams/elf_x86_64.sh \
+   $(ELF_DEPS) $(srcdir)/scripttempl/elf.sc ${GEN_DEPENDS}
+ 
++eelf_x86_64_atomos.c: $(srcdir)/emulparams/elf_x86_64_atomos.sh \
++  $(ELF_DEPS) $(srcdir)/scripttempl/elf.sc ${GEN_DEPENDS}
++	${GENSCRIPTS} elf_x86_64_atomos "$(tdir_elf_x86_64_atomos)"
++
+ eelf_x86_64_cloudabi.c: $(srcdir)/emulparams/elf_x86_64_cloudabi.sh \
+   $(srcdir)/emulparams/elf_x86_64.sh \
+   $(ELF_DEPS) $(srcdir)/scripttempl/elf.sc ${GEN_DEPENDS}
+diff -urN binutils-old/ld/Makefile.in binutils/ld/Makefile.in
+--- binutils-old/ld/Makefile.in	2015-11-13 13:57:42.000000000 +0530
++++ binutils/ld/Makefile.in	2016-09-24 13:37:44.999877000 +0530
+@@ -610,6 +610,7 @@
+ 	eelf32xstormy16.c \
+ 	eelf32xtensa.c \
+ 	eelf_i386.c \
++	eelf_i386_atomos.c \
+ 	eelf_i386_be.c \
+ 	eelf_i386_chaos.c \
+ 	eelf_i386_fbsd.c \
+@@ -825,6 +826,7 @@
+ 	eelf_k1om.c \
+ 	eelf_k1om_fbsd.c \
+ 	eelf_x86_64.c \
++	eelf_x86_64_atomos.c \
+ 	eelf_x86_64_cloudabi.c \
+ 	eelf_x86_64_fbsd.c \
+ 	eelf_x86_64_nacl.c \
+@@ -1283,6 +1285,7 @@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf64tilegx.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf64tilegx_be.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_i386.Po@am__quote@
++@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_i386_atomos.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_i386_be.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_i386_chaos.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_i386_fbsd.Po@am__quote@
+@@ -1297,6 +1300,7 @@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_l1om_fbsd.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_s390.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_x86_64.Po@am__quote@
++@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_x86_64_atomos.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_x86_64_cloudabi.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_x86_64_fbsd.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_x86_64_nacl.Po@am__quote@
+@@ -2801,6 +2805,10 @@
+ eelf_i386.c: $(srcdir)/emulparams/elf_i386.sh \
+   $(ELF_DEPS) $(srcdir)/scripttempl/elf.sc ${GEN_DEPENDS}
+ 
++eelf_i386_atomos.c: $(srcdir)/emulparams/elf_i386_atomos.sh \
++  $(ELF_DEPS) $(srcdir)/scripttempl/elf.sc ${GEN_DEPENDS}
++	${GENSCRIPTS} elf_i386_atomos "$(tdir_elf_i386_atomos)"
++
+ eelf_i386_be.c: $(srcdir)/emulparams/elf_i386_be.sh \
+   $(ELF_DEPS) $(srcdir)/scripttempl/elf.sc ${GEN_DEPENDS}
+ 
+@@ -3493,6 +3501,10 @@
+ eelf_x86_64.c: $(srcdir)/emulparams/elf_x86_64.sh \
+   $(ELF_DEPS) $(srcdir)/scripttempl/elf.sc ${GEN_DEPENDS}
+ 
++eelf_x86_64_atomos.c: $(srcdir)/emulparams/elf_x86_64_atomos.sh \
++  $(ELF_DEPS) $(srcdir)/scripttempl/elf.sc ${GEN_DEPENDS}
++	${GENSCRIPTS} elf_x86_64_atomos "$(tdir_elf_x86_64_atomos)"
++
+ eelf_x86_64_cloudabi.c: $(srcdir)/emulparams/elf_x86_64_cloudabi.sh \
+   $(srcdir)/emulparams/elf_x86_64.sh \
+   $(ELF_DEPS) $(srcdir)/scripttempl/elf.sc ${GEN_DEPENDS}

@@ -6,6 +6,7 @@ Output/
 *.map
 *.bin
 *.o
+tarballs/
 
 # User-specific files
 *.suo
