@@ -100,6 +100,7 @@ fetch "ftp://sources.redhat.com/pub/newlib/newlib-1.19.0.tar.gz" "newlib-1.19.0.
 
 patchc "binutils-2.26" "binutils-2.26.diff"
 patchc "gcc-5.3.0" "gcc-5.3.0.diff"
+patchc "newlib-1.19.0" "newlib-1.19.0.diff"
 
 message "Building Stuffs..."
 
@@ -160,8 +161,15 @@ pushd build || bail
 	if $BUILD_NEWLIB; then
 		reply "    Compiling newlib"
 		cleandir "newlib"
+		cp -r $PATCHFILES/newlib $SOURCES/newlib-1.19.0 || bail
+		pushd $SOURCES/newlib-1.19.0/newlib/libc/sys || bail
+			autoconf
+		popd
+		pushd $SOURCES/newlib-1.19.0/newlib/libc/sys/atomos || bail
+			autoreconf
+		popd
 		pushd newlib || bail
-			$SOURCES/newlib/configure --target=$TARGET --prefix=$PREFIX || bail
+			$SOURCES/newlib-1.19.0/configure --target=$TARGET --prefix=$PREFIX || bail
 			make -j4 || bail
 			make install || bail
 		popd

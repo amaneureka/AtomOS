@@ -1,0 +1,36 @@
+diff -urN newlib-old/config.sub newlib/config.sub
+--- newlib-old/config.sub	2010-06-01 23:23:40.000000000 +0530
++++ newlib/config.sub	2016-09-25 11:29:28.549239000 +0530
+@@ -1292,7 +1292,7 @@
+ 	# The portable systems comes first.
+ 	# Each alternative MUST END IN A *, to match a version number.
+ 	# -sysv* is not here because it comes later, after sysvr4.
+-	-gnu* | -bsd* | -mach* | -minix* | -genix* | -ultrix* | -irix* \
++	-gnu* | -bsd* | -mach* | -minix* | -genix* | -ultrix* | -irix* | -atomos* \
+ 	      | -*vms* | -sco* | -esix* | -isc* | -aix* | -cnk* | -sunos | -sunos[34]*\
+ 	      | -hpux* | -unos* | -osf* | -luna* | -dgux* | -auroraux* | -solaris* \
+ 	      | -sym* | -kopensolaris* \
+diff -urN newlib-old/newlib/configure.host newlib/newlib/configure.host
+--- newlib-old/newlib/configure.host	2010-12-03 01:00:46.000000000 +0530
++++ newlib/newlib/configure.host	2016-09-25 11:29:12.969239000 +0530
+@@ -354,6 +354,9 @@
+ 	stdio64_dir=stdio64
+ 	xdr_dir=xdr
+ 	;;
++  i[3-7]86-*-atomos*)
++	sys_dir=atomos
++	;;
+   *-*-netware*)
+ 	signal_dir=
+ 	sys_dir=netware
+diff -urN newlib-old/newlib/libc/sys/configure.in newlib/newlib/libc/sys/configure.in
+--- newlib-old/newlib/libc/sys/configure.in	2010-02-25 02:29:55.000000000 +0530
++++ newlib/newlib/libc/sys/configure.in	2016-09-25 14:38:33.383206000 +0530
+@@ -44,6 +44,7 @@
+ 	sysvi386) AC_CONFIG_SUBDIRS(sysvi386) ;;
+ 	sysvnecv70) AC_CONFIG_SUBDIRS(sysvnecv70) ;;
+ 	tic80) AC_CONFIG_SUBDIRS(tic80) ;;
++	atomos) AC_CONFIG_SUBDIRS(atomos) ;;
+ 	w65) AC_CONFIG_SUBDIRS(w65) ;;
+ 	z8ksim) AC_CONFIG_SUBDIRS(z8ksim) ;;
+   esac;
