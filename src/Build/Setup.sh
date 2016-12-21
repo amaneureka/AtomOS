@@ -39,7 +39,7 @@ fetch()
 	if [ -f "$TARBALLS/$2" ]; then
 		reply "    $2...SKIPPED"
 	else
-		wget -O "$TARBALLS/$2" "$1"
+		wget -O "$TARBALLS/$2" "$1" || bail
 		extract "$2"
 	fi
 }
@@ -50,7 +50,7 @@ extract()
 		mkdir "$SOURCES"
 	fi
 
-	tar -xvzf "$TARBALLS/$1" -C "$SOURCES/"
+	tar -xvzf "$TARBALLS/$1" -C "$SOURCES/" || bail
 }
 
 cleandir()
@@ -92,7 +92,7 @@ do
 done
 
 message "Fetching Tarballs..."
-fetch "https://ftp.gnu.org/gnu/automake/automake-1.14.tar.gz" "automake-1.14.tar.gz"
+fetch "https://ftp.gnu.org/gnu/automake/automake-1.12.tar.gz" "automake-1.12.tar.gz"
 fetch "https://ftp.gnu.org/gnu/autoconf/autoconf-2.65.tar.gz" "autoconf-2.65.tar.gz"
 fetch "https://ftp.gnu.org/gnu/binutils/binutils-2.26.tar.gz" "binutils-2.26.tar.gz"
 fetch "https://ftp.gnu.org/gnu/gcc/gcc-5.3.0/gcc-5.3.0.tar.gz" "gcc-5.3.0.tar.gz"
@@ -112,7 +112,6 @@ if [ ! -d $PREFIX ]; then
 	mkdir $PREFIX
 fi
 
-mkdir build
 pushd build || bail
 
 	if $BUILD_AUTOCONF; then
@@ -129,7 +128,7 @@ pushd build || bail
 		reply "    Compiling automake"
 		cleandir "automake-native"
 		pushd automake-native || bail
-			$SOURCES/automake-1.14/configure --prefix=$PREFIX || bail
+			$SOURCES/automake-1.12/configure --prefix=$PREFIX || bail
 			make -j4 || bail
 			make -j4 install || bail
 		popd
@@ -162,11 +161,11 @@ pushd build || bail
 		reply "    Compiling newlib"
 		cleandir "newlib"
 		cp -r $PATCHFILES/newlib $SOURCES/newlib-1.19.0 || bail
-		pushd $SOURCES/newlib-1.19.0/newlib/libc/sys || bail
-			autoconf
-		popd
 		pushd $SOURCES/newlib-1.19.0/newlib/libc/sys/atomos || bail
-			autoreconf
+			autoreconf || bail
+		popd
+		pushd $SOURCES/newlib-1.19.0/newlib/libc/sys || bail
+			autoconf || bail
 		popd
 		pushd newlib || bail
 			$SOURCES/newlib-1.19.0/configure --target=$TARGET --prefix=$PREFIX || bail
@@ -184,3 +183,4 @@ pushd build || bail
 	fi
 
 popd
+
