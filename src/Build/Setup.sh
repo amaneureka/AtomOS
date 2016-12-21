@@ -2,7 +2,7 @@
 
 export TARGET=i386-atomos
 export PREFIX="$(pwd)/Local"
-export SOURCES="$(pwd)/temp"
+export SOURCES="$(pwd)/Temp"
 export TARBALLS="$(pwd)/../../tarballs"
 export PATCHFILES="$(pwd)/../../toolchain"
 export PATH=/usr/bin:$PREFIX/bin
@@ -104,15 +104,15 @@ patchc "newlib-1.19.0" "newlib-1.19.0.diff"
 
 message "Building Stuffs..."
 
-if [ ! -d build ]; then
-	mkdir build
+if [ ! -d Bin ]; then
+	mkdir Bin
 fi
 
 if [ ! -d $PREFIX ]; then
 	mkdir $PREFIX
 fi
 
-pushd build || bail
+pushd Bin || bail
 
 	if $BUILD_AUTOCONF; then
 		reply "    Compiling autoconf"

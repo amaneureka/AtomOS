@@ -7,6 +7,8 @@ Output/
 *.bin
 *.o
 tarballs/
+src/Build/Local
+src/Build/Temp
 
 # User-specific files
 *.suo
