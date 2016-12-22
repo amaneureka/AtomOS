@@ -1,0 +1,12 @@
+diff -urN cairo-old/build/config.sub cairo/build/config.sub
+--- cairo-old/build/config.sub	2013-12-11 08:35:48.000000000 +0530
++++ cairo/build/config.sub	2016-12-22 16:23:08.677936000 +0530
+@@ -1343,7 +1343,7 @@
+ 	# The portable systems comes first.
+ 	# Each alternative MUST END IN A *, to match a version number.
+ 	# -sysv* is not here because it comes later, after sysvr4.
+-	-gnu* | -bsd* | -mach* | -minix* | -genix* | -ultrix* | -irix* \
++	-gnu* | -bsd* | -mach* | -minix* | -genix* | -ultrix* | -irix* | -atomos* \
+ 	      | -*vms* | -sco* | -esix* | -isc* | -aix* | -cnk* | -sunos | -sunos[34]*\
+ 	      | -hpux* | -unos* | -osf* | -luna* | -dgux* | -auroraux* | -solaris* \
+ 	      | -sym* | -kopensolaris* \

@@ -1,0 +1,12 @@
+diff -urN freetype-old/builds/unix/config.sub freetype/builds/unix/config.sub
+--- freetype-old/builds/unix/config.sub	2012-03-09 01:39:13.000000000 +0530
++++ freetype/builds/unix/config.sub	2016-12-22 17:16:40.933446100 +0530
+@@ -1337,7 +1337,7 @@
+ 	# The portable systems comes first.
+ 	# Each alternative MUST END IN A *, to match a version number.
+ 	# -sysv* is not here because it comes later, after sysvr4.
+-	-gnu* | -bsd* | -mach* | -minix* | -genix* | -ultrix* | -irix* \
++	-gnu* | -bsd* | -mach* | -minix* | -genix* | -ultrix* | -irix* | -atomos* \
+ 	      | -*vms* | -sco* | -esix* | -isc* | -aix* | -cnk* | -sunos | -sunos[34]*\
+ 	      | -hpux* | -unos* | -osf* | -luna* | -dgux* | -auroraux* | -solaris* \
+ 	      | -sym* | -kopensolaris* \

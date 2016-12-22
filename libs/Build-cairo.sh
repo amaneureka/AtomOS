@@ -8,8 +8,8 @@ export TARBALLS="$ROOT/../tarballs"
 export PATCHFILES="$ROOT/../toolchain"
 export PATH=/usr/bin:$PREFIX/bin
 
-LIB_URL=https://www.cairographics.org/releases/pixman-0.34.0.tar.gz
-LIB_FOLDER=pixman-0.34.0
+LIB_URL=https://www.cairographics.org/releases/cairo-1.12.2.tar.xz
+LIB_FOLDER=cairo-1.12.2
 
 bail()
 {
@@ -21,7 +21,7 @@ if [ ! -d $LIB_FOLDER ]; then
 	if [ ! -f "$TARBALLS/$LIB_FOLDER.tar.gz" ]; then
 		wget -O "$TARBALLS/$LIB_FOLDER.tar.gz" $LIB_URL || bail
 	fi
-	tar -xvzf "$TARBALLS/$LIB_FOLDER.tar.gz" -C $ROOT
+	tar -xvf "$TARBALLS/$LIB_FOLDER.tar.gz" -C $ROOT
 	pushd $ROOT/$LIB_FOLDER || bail
 		patch -p1 -i "$PATCHFILES/$LIB_FOLDER.diff" || bail
 	popd
@@ -37,7 +37,10 @@ pushd "$ROOT/../src/Build/Bin" || bail
 
 	pushd $LIB_FOLDER || bail
 
-		$ROOT/$LIB_FOLDER/configure --prefix=$PREFIX --host=$TARGET --disable-shared || bail
+		CPPFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib" PKG_CONFIG_PATH=$PREFIX/lib/pkgconfig $ROOT/$LIB_FOLDER/configure --prefix=$PREFIX --host=$TARGET --enable-ps=no --enable-pdf=no --enable-interpreter=no --enable-xlib=no --enable-shared=no || bail
+		cp "$PATCHFILES/cairo-Makefile" test/Makefile || bail
+		cp "$PATCHFILES/cairo-Makefile" perf/Makefile || bail
+		echo -e "\n\n#define CAIRO_NO_MUTEX 1" >> config.h
 		make -j4 || bail
 		make -j4 install || bail
 

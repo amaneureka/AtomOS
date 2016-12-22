@@ -8,8 +8,8 @@ export TARBALLS="$ROOT/../tarballs"
 export PATCHFILES="$ROOT/../toolchain"
 export PATH=/usr/bin:$PREFIX/bin
 
-LIB_URL=https://www.cairographics.org/releases/pixman-0.34.0.tar.gz
-LIB_FOLDER=pixman-0.34.0
+LIB_URL=http://mirror.rackdc.com/savannah//freetype/freetype-2.4.9.tar.gz
+LIB_FOLDER=freetype-2.4.9
 
 bail()
 {
@@ -21,7 +21,7 @@ if [ ! -d $LIB_FOLDER ]; then
 	if [ ! -f "$TARBALLS/$LIB_FOLDER.tar.gz" ]; then
 		wget -O "$TARBALLS/$LIB_FOLDER.tar.gz" $LIB_URL || bail
 	fi
-	tar -xvzf "$TARBALLS/$LIB_FOLDER.tar.gz" -C $ROOT
+	tar -xvf "$TARBALLS/$LIB_FOLDER.tar.gz" -C $ROOT
 	pushd $ROOT/$LIB_FOLDER || bail
 		patch -p1 -i "$PATCHFILES/$LIB_FOLDER.diff" || bail
 	popd
@@ -37,7 +37,7 @@ pushd "$ROOT/../src/Build/Bin" || bail
 
 	pushd $LIB_FOLDER || bail
 
-		$ROOT/$LIB_FOLDER/configure --prefix=$PREFIX --host=$TARGET --disable-shared || bail
+		$ROOT/$LIB_FOLDER/configure --prefix=$PREFIX --host=$TARGET || bail
 		make -j4 || bail
 		make -j4 install || bail
 

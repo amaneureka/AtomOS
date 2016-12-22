@@ -5,10 +5,11 @@ export ROOT=$(pwd)
 export PREFIX="$ROOT/../src/Build/Local"
 export SOURCES="$ROOT/../src/Build/Temp"
 export TARBALLS="$ROOT/../tarballs"
-export PATH=/usr/bin:$PREFIX/bin
+export PATCHFILES="$ROOT/../toolchain"
+export PATH=/usr/bin:$PREFIX/bin:$PREFIX/lib
 
-LIB_URL=http://excellmedia.dl.sourceforge.net/project/libpng/libpng15/1.5.27/libpng-1.5.27.tar.gz
-LIB_FOLDER=libpng-1.5.27
+LIB_URL=http://b.dakko.us/~klange/mirrors/libpng-1.5.13.tar.gz
+LIB_FOLDER=libpng-1.5.13
 
 bail()
 {
@@ -20,7 +21,10 @@ if [ ! -d $LIB_FOLDER ]; then
 	if [ ! -f "$TARBALLS/$LIB_FOLDER.tar.gz" ]; then
 		wget -O "$TARBALLS/$LIB_FOLDER.tar.gz" $LIB_URL || bail
 	fi
-	tar -xvzf "$TARBALLS/$LIB_FOLDER.tar.gz" -C $ROOT
+	tar -xvf "$TARBALLS/$LIB_FOLDER.tar.gz" -C $ROOT
+	pushd $ROOT/$LIB_FOLDER || bail
+		patch -p1 -i "$PATCHFILES/$LIB_FOLDER.diff" || bail
+	popd
 fi
 
 pushd "$ROOT/../src/Build/Bin" || bail
@@ -33,7 +37,7 @@ pushd "$ROOT/../src/Build/Bin" || bail
 
 	pushd $LIB_FOLDER || bail
 
-		$ROOT/$LIB_FOLDER/configure --prefix=$PREFIX --target=$TARGET --disable-shared || bail
+		CPPFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib" $ROOT/$LIB_FOLDER/configure --prefix=$PREFIX --host=$TARGET --disable-shared || bail
 		make -j4 || bail
 		make -j4 install || bail
 
