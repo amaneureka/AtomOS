@@ -10,6 +10,7 @@
 using System;
 using System.Reflection;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 using Atomixilc.Machine;
 using Atomixilc.Attributes;
@@ -33,7 +34,8 @@ namespace Atomixilc.IL
          */
         internal override void Execute(Options Config, OpCodeType xOp, MethodBase method, Optimizer Optimizer)
         {
-            var functionInfo = ((OpMethod)xOp).Value;
+            var xOpMethod = (OpMethod)xOp;
+            var functionInfo = xOpMethod.Value;
 
             var addressRefernce = functionInfo.FullName();
             var parameters = functionInfo.GetParameters();
@@ -44,6 +46,9 @@ namespace Atomixilc.IL
             int count = parameters.Length;
             if (Optimizer.vStack.Count < count)
                 throw new Exception("Internal Compiler Error: vStack.Count < expected size");
+
+            if (xOpMethod.CallingConvention != CallingConvention.StdCall)
+                throw new Exception(string.Format("CallingConvention '{0}' not supported", xOpMethod.CallingConvention));
 
             /* The stack transitional behavior, in sequential order, is:
              * Arguments arg1 through argn are pushed on the stack in sequence.

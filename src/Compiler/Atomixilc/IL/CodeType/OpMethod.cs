@@ -8,6 +8,7 @@
 */
 
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace Atomixilc.IL.CodeType
 {
@@ -15,12 +16,18 @@ namespace Atomixilc.IL.CodeType
     {
         internal readonly MethodBase Value;
         internal readonly int MethodUID;
+        internal readonly CallingConvention CallingConvention;
 
         internal OpMethod(ILCode aCode, int aPosition, int aNextPosition, MethodBase aValue, ExceptionHandlingClause aEhc)
             :base(aCode, aPosition, aNextPosition, aEhc)
         {
             Value = aValue;
             MethodUID = aValue.GetHashCode();
+            CallingConvention = CallingConvention.StdCall;
+
+            var attrib = Value.GetCustomAttribute<DllImportAttribute>();
+            if (attrib != null)
+                CallingConvention = attrib.CallingConvention;
         }
 
         public override string ToString()

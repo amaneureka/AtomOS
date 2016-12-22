@@ -10,6 +10,7 @@
 using System;
 using System.Reflection;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 using Atomixilc.Machine;
 using Atomixilc.Attributes;
@@ -40,6 +41,9 @@ namespace Atomixilc.IL
             var parameters = functionInfo.GetParameters();
 
             var size = parameters.Sum(a => Helper.GetTypeSize(a.ParameterType, Config.TargetPlatform, true));
+            int returnSize = 0;
+            if (functionInfo != null)
+                returnSize = Helper.GetTypeSize(functionInfo.ReturnType, Config.TargetPlatform, true);
 
             int count = parameters.Length;
             if (!functionInfo.IsStatic)
@@ -47,6 +51,9 @@ namespace Atomixilc.IL
 
             if (Optimizer.vStack.Count < count)
                 throw new Exception("Internal Compiler Error: vStack.Count < expected size");
+
+            if (xOpMethod.CallingConvention != CallingConvention.StdCall)
+                throw new Exception(string.Format("CallingConvention '{0}' not supported", xOpMethod.CallingConvention));
 
             /* The stack transitional behavior, in sequential order, is:
              * An object reference obj is pushed onto the stack.
@@ -70,8 +77,8 @@ namespace Atomixilc.IL
             {
                 case Architecture.x86:
                     {
-                        if (Helper.GetTypeSize(functionInfo.ReturnType, Config.TargetPlatform) > 4)
-                            throw new Exception(string.Format("UnImplemented '{0}'", msIL));
+                        if (returnSize > 8)
+                            throw new Exception(string.Format("UnImplemented '{0}' Return-type: '{1}'", msIL, functionInfo.ReturnType));
 
                         if (functionInfo.IsStatic || functionInfo.IsFinal || !functionInfo.IsVirtual || !functionInfo.IsAbstract)
                         {
@@ -101,6 +108,8 @@ namespace Atomixilc.IL
 
                         if (functionInfo.ReturnType != typeof(void))
                         {
+                            if (returnSize == 8)
+                                new Push { DestinationReg = Register.EDX };
                             new Push { DestinationReg = Register.EAX };
                             Optimizer.vStack.Push(new StackItem(functionInfo.ReturnType));
                         }

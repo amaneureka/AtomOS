@@ -51,9 +51,6 @@ namespace Atomixilc.IL
             {
                 case Architecture.x86:
                     {
-                        if (functionInfo != null && Helper.GetTypeSize(functionInfo.ReturnType, Config.TargetPlatform) > 4)
-                            throw new Exception(string.Format("UnImplemented '{0}'", msIL));
-
                         if (stackCount > 0)
                         {
                             var item = Optimizer.vStack.Pop();

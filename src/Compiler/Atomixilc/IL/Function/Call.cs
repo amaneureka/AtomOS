@@ -8,7 +8,9 @@
 */
 
 using System;
+using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 using Atomixilc.Machine;
 using Atomixilc.Attributes;
@@ -32,7 +34,8 @@ namespace Atomixilc.IL
          */
         internal override void Execute(Options Config, OpCodeType xOp, MethodBase method, Optimizer Optimizer)
         {
-            var target = ((OpMethod)xOp).Value;
+            var xOpMethod = (OpMethod)xOp;
+            var target = xOpMethod.Value;
             var targetinfo = target as MethodInfo;
 
             var addressRefernce = target.FullName();
@@ -40,9 +43,21 @@ namespace Atomixilc.IL
             var parameters = target.GetParameters();
 
             int count = parameters.Length;
+            int stacksize = parameters.Select(a => Helper.GetTypeSize(a.ParameterType, Config.TargetPlatform, true)).Sum();
+            int returnSize = 0;
+            if (targetinfo != null)
+                returnSize = Helper.GetTypeSize(targetinfo.ReturnType, Config.TargetPlatform, true);
 
             if (!target.IsStatic)
+            {
                 count++;
+
+                Type ArgType = target.DeclaringType;
+                if (target.DeclaringType.IsValueType)
+                    ArgType = ArgType.MakeByRefType();
+
+                stacksize += Helper.GetTypeSize(ArgType, Config.TargetPlatform, true);
+            }
 
             if (Optimizer.vStack.Count < count)
                 throw new Exception("Internal Compiler Error: vStack.Count < expected size");
@@ -68,10 +83,22 @@ namespace Atomixilc.IL
             {
                 case Architecture.x86:
                     {
-                        if (targetinfo != null &&  Helper.GetTypeSize(targetinfo.ReturnType, Config.TargetPlatform) > 4)
-                            throw new Exception(string.Format("UnImplemented '{0}'", msIL));
+                        if (returnSize > 8)
+                            throw new Exception(string.Format("UnImplemented '{0}' Return-type: '{1}'", msIL, targetinfo.ReturnType));
 
                         new Call { DestinationRef = addressRefernce };
+
+                        switch(xOpMethod.CallingConvention)
+                        {
+                            case CallingConvention.StdCall: break;
+                            case CallingConvention.Cdecl:
+                                {
+                                    new Add { DestinationReg = Register.ESP, SourceRef = "0x" + stacksize.ToString("X") };
+                                }
+                                break;
+                            default:
+                                throw new Exception(string.Format("CallingConvention '{0}' not supported", xOpMethod.CallingConvention));
+                        }
 
                         if (!NoException)
                         {
@@ -81,6 +108,8 @@ namespace Atomixilc.IL
 
                         if (targetinfo != null && targetinfo.ReturnType != typeof(void))
                         {
+                            if (returnSize == 8)
+                                new Push { DestinationReg = Register.EDX };
                             new Push { DestinationReg = Register.EAX };
                             Optimizer.vStack.Push(new StackItem(targetinfo.ReturnType));
                         }
