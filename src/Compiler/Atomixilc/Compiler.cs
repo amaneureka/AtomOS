@@ -1077,8 +1077,11 @@ namespace Atomixilc
                                     /* pop return value and put it in EAX register */
                                     if (returncount != 0)
                                     {
-                                        if (returncount > 4)
-                                            throw new Exception("Return type > 4 not supported");
+                                        if (returncount > 8)
+                                            throw new Exception("Return type > 8 not supported");
+
+                                        if (returncount == 8)
+                                            new Pop { DestinationReg = Register.EDX };
                                         new Pop { DestinationReg = Register.EAX };
                                     }
 

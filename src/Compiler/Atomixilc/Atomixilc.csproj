@@ -112,6 +112,9 @@
     <Compile Include="IL\Load\Ldarg\Ldarg.cs" />
     <Compile Include="IL\Load\Ldarg\Ldarga.cs" />
     <Compile Include="IL\Load\Ldc\Ldc_I4.cs" />
+    <Compile Include="IL\Load\Ldc\Ldc_I8.cs" />
+    <Compile Include="IL\Load\Ldc\Ldc_R4.cs" />
+    <Compile Include="IL\Load\Ldc\Ldc_R8.cs" />
     <Compile Include="IL\Load\Ldelem\Ldelem.cs" />
     <Compile Include="IL\Load\Ldelem\Ldelema.cs" />
     <Compile Include="IL\Load\Ldelem\Ldelem_I.cs" />
