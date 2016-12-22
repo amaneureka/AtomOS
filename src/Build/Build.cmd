@@ -81,7 +81,7 @@ IF NOT EXIST %OUTPUT_DIR%\Kernel.asm SET /A EXIT_CODE^|=ERROR_COMPILER_NZEC & GO
 nasm.exe -felf %OUTPUT_DIR%\Kernel.asm -o %ATOMIX_ISO_DIR%\Kernel.o
 IF %ERRORLEVEL% NEQ 0 SET /A EXIT_CODE^|=ERROR_NASM_NZEC & GOTO BUILDER_EXIT
 
-i386-atomos-ld %ATOMIX_ISO_DIR%\Kernel.o Local\i386-atomos\lib\libc.a -T %ATOMIX_KERNEL_LINKER% -o %ATOMIX_ISO_DIR%\Kernel.bin
+i386-atomos-ld %ATOMIX_ISO_DIR%\Kernel.o Local\lib\libcairo.a Local\lib\libz.a Local\lib\libpixman-1.a Local\lib\libpng15.a Local\i386-atomos\lib\libm.a Local\lib\gcc\i386-atomos\5.3.0\libgcc.a Local\lib\libfreetype.a Local\i386-atomos\lib\libc.a -T %ATOMIX_KERNEL_LINKER% -o %ATOMIX_ISO_DIR%\Kernel.bin
 IF %ERRORLEVEL% NEQ 0 SET /A EXIT_CODE^|=ERROR_LINKER_NZEC & GOTO BUILDER_EXIT
 
 del %ATOMIX_ISO_DIR%\Kernel.o

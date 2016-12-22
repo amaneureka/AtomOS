@@ -8,8 +8,8 @@ export TARBALLS="$ROOT/../tarballs"
 export PATCHFILES="$ROOT/../toolchain"
 export PATH=/usr/bin:$PREFIX/bin
 
-LIB_URL=https://www.cairographics.org/releases/cairo-1.12.2.tar.xz
-LIB_FOLDER=cairo-1.12.2
+LIB_URL=https://www.cairographics.org/releases/cairo-1.14.2.tar.xz
+LIB_FOLDER=cairo-1.14.2
 
 bail()
 {
@@ -37,10 +37,10 @@ pushd "$ROOT/../src/Build/Bin" || bail
 
 	pushd $LIB_FOLDER || bail
 
-		CPPFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib" PKG_CONFIG_PATH=$PREFIX/lib/pkgconfig $ROOT/$LIB_FOLDER/configure --prefix=$PREFIX --host=$TARGET --enable-ps=no --enable-pdf=no --enable-interpreter=no --enable-xlib=no --enable-shared=no || bail
+		CPPFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib" PKG_CONFIG_PATH=$PREFIX/lib/pkgconfig $ROOT/$LIB_FOLDER/configure --prefix=$PREFIX --host=$TARGET --enable-ps=no --enable-pdf=no --enable-interpreter=no --enable-xlib=no || bail
 		cp "$PATCHFILES/cairo-Makefile" test/Makefile || bail
 		cp "$PATCHFILES/cairo-Makefile" perf/Makefile || bail
-		echo -e "\n\n#define CAIRO_NO_MUTEX 1" >> config.h
+		echo -e "\n\n#define CAIRO_NO_MUTEX 1" >> config.h || bail
 		make -j4 || bail
 		make -j4 install || bail
 
