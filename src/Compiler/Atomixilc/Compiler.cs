@@ -77,6 +77,11 @@ namespace Atomixilc
         HashSet<MethodInfo> Globals;
 
         /// <summary>
+        /// External Symbols
+        /// </summary>
+        HashSet<MethodBase> Externals;
+
+        /// <summary>
         /// Inherit methods
         /// </summary>
         HashSet<MethodInfo> Virtuals;
@@ -121,6 +126,7 @@ namespace Atomixilc
             FinishedQ = new HashSet<object>();
             Virtuals = new HashSet<MethodInfo>();
             Globals = new HashSet<MethodInfo>();
+            Externals = new HashSet<MethodBase>();
             OpCode = new Dictionary<short, Emit.OpCode>();
 
             ZeroSegment = new Dictionary<string, int>();
@@ -159,6 +165,7 @@ namespace Atomixilc
             ScanQ.Clear();
             Globals.Clear();
             Virtuals.Clear();
+            Externals.Clear();
             FinishedQ.Clear();
             ZeroSegment.Clear();
             DataSegment.Clear();
@@ -274,8 +281,14 @@ namespace Atomixilc
                 SW.WriteLine("global entrypoint");
                 SW.WriteLine(string.Format("entrypoint equ {0}", attrib.Entrypoint));
 
+                /* Global Symbols */
                 foreach (var global in Globals)
                     SW.WriteLine(string.Format("global {0}", global.FullName()));
+                SW.WriteLine();
+
+                /* External Symbols */
+                foreach (var method in Externals)
+                    SW.WriteLine(string.Format("extern {0}", method.FullName()));
                 SW.WriteLine();
 
                 /* BSS Section */
@@ -677,10 +690,9 @@ namespace Atomixilc
             var attrib = method.GetCustomAttribute<DllImportAttribute>();
             if (attrib == null)
                 throw new Exception("Invalid call to ProcessExternMethod");
-            Verbose.Error("Extern Method not support '{0}'", method.FullName());
 
-            /* I am really feeling lazy to implement it right now */
-            /* sorry compiler :P */
+            Externals.Add(method);
+            Verbose.Message("Extern Method Found '{0}'", method.FullName());
         }
 
         /// <summary>

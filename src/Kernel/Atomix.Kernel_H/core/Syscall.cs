@@ -20,55 +20,12 @@ namespace Atomix.Kernel_H.Core
     {
         static IDictionary<uint, InterruptHandler> mCallHandlers;
 
-        #region Enum
-        /// <summary>
-        /// https://sourceware.org/newlib/libc.html#Syscalls
-        /// </summary>
-        internal enum Function : uint
-        {
-            exit            = 1,
-            fork            = 2,
-            read            = 3,
-            write           = 4,
-            open            = 5,
-            close           = 6,
-            wait4           = 7,
-            creat           = 8,
-            link            = 9,
-            unlink          = 10,
-            execv           = 11,
-            chdir           = 12,
-            mknod           = 14,
-            chmod           = 15,
-            chown           = 16,
-            lseek           = 19,
-            getpid          = 20,
-            isatty          = 21,
-            fstat           = 22,
-            time            = 23,
-            ARG             = 24,
-            kill            = 37,
-            stat            = 38,
-            pipe            = 42,
-            brk             = 45,
-            execve          = 59,
-            gettimeofday    = 78,
-            truncate        = 129,
-            ftruncate       = 130,
-            argc            = 172,
-            argnlen         = 173,
-            argn            = 174,
-            utime           = 201,
-            wait            = 202,
-        };
-        #endregion
-
         internal static void Setup()
         {
             mCallHandlers = new IDictionary<uint, InterruptHandler>(Internals.GetHashCode, Internals.Equals);
 
             /* Register Syscall Handler */
-            IDT.RegisterInterrupt(Handler, 0x80);
+            IDT.RegisterInterrupt(Handler, 0x7F);
         }
 
         internal static void Register(Function aFunction, InterruptHandler aContext)
@@ -78,18 +35,51 @@ namespace Atomix.Kernel_H.Core
 
         private static void Handler(ref IRQContext state)
         {
-            try
-            {
-                if (mCallHandlers.ContainsKey(state.EAX))
-                    mCallHandlers[state.EAX](ref state);
-                else
-                    throw new Exception("[Syscall]: Handler not found");
-            }
-            catch (Exception e)
-            {
-                state.ECX |= 0x2;// Mark it as fail
-                Heap.Free(e);
-            }
+            if (mCallHandlers.ContainsKey(state.EAX))
+                mCallHandlers[state.EAX](ref state);
+            else
+                Debug.Write("syscall handler not found : %d\n", state.EAX);
         }
+
+        /// <summary>
+        /// Defined in Syscalls.h
+        /// </summary>
+        internal enum Function : uint
+        {
+            SYS_exit = 1,
+            SYS_fork = 2,
+            SYS_read = 3,
+            SYS_write = 4,
+            SYS_open = 5,
+            SYS_close = 6,
+            SYS_wait4 = 7,
+            SYS_creat = 8,
+            SYS_link = 9,
+            SYS_unlink = 10,
+            SYS_execv = 11,
+            SYS_chdir = 12,
+            SYS_mknod = 14,
+            SYS_chmod = 15,
+            SYS_chown = 16,
+            SYS_lseek = 19,
+            SYS_getpid = 20,
+            SYS_isatty = 21,
+            SYS_fstat = 22,
+            SYS_time = 23,
+            SYS_ARG = 24,
+            SYS_kill = 37,
+            SYS_stat = 38,
+            SYS_pipe = 42,
+            SYS_brk = 45,
+            SYS_execve = 59,
+            SYS_gettimeofday = 78,
+            SYS_truncate = 129,
+            SYS_ftruncate = 130,
+            SYS_argc = 172,
+            SYS_argnlen = 173,
+            SYS_argn = 174,
+            SYS_utime = 201,
+            SYS_wait = 202
+        };
     }
 }

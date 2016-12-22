@@ -36,6 +36,7 @@ namespace Atomixilc.IL
             var targetinfo = target as MethodInfo;
 
             var addressRefernce = target.FullName();
+            bool NoException = target.GetCustomAttribute<NoExceptionAttribute>() != null;
             var parameters = target.GetParameters();
 
             int count = parameters.Length;
@@ -71,8 +72,12 @@ namespace Atomixilc.IL
                             throw new Exception(string.Format("UnImplemented '{0}'", msIL));
 
                         new Call { DestinationRef = addressRefernce };
-                        new Test { DestinationReg = Register.ECX, SourceRef = "0xFFFFFFFF" };
-                        new Jmp { Condition = ConditionalJump.JNZ, DestinationRef = xOp.HandlerRef };
+
+                        if (!NoException)
+                        {
+                            new Test { DestinationReg = Register.ECX, SourceRef = "0xFFFFFFFF" };
+                            new Jmp { Condition = ConditionalJump.JNZ, DestinationRef = xOp.HandlerRef };
+                        }
 
                         if (targetinfo != null && targetinfo.ReturnType != typeof(void))
                         {

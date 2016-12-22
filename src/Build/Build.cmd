@@ -81,11 +81,13 @@ IF NOT EXIST %OUTPUT_DIR%\Kernel.asm SET /A EXIT_CODE^|=ERROR_COMPILER_NZEC & GO
 nasm.exe -felf %OUTPUT_DIR%\Kernel.asm -o %ATOMIX_ISO_DIR%\Kernel.o
 IF %ERRORLEVEL% NEQ 0 SET /A EXIT_CODE^|=ERROR_NASM_NZEC & GOTO BUILDER_EXIT
 
-i386-atomos-ld %ATOMIX_ISO_DIR%\Kernel.o -T %ATOMIX_KERNEL_LINKER% -o %ATOMIX_ISO_DIR%\Kernel.bin
+i386-atomos-gcc -c main.c
+
+i386-atomos-ld %ATOMIX_ISO_DIR%\Kernel.o main.o Local\i386-atomos\lib\libc.a -T %ATOMIX_KERNEL_LINKER% -o %ATOMIX_ISO_DIR%\Kernel.bin
 IF %ERRORLEVEL% NEQ 0 SET /A EXIT_CODE^|=ERROR_LINKER_NZEC & GOTO BUILDER_EXIT
 
 del %ATOMIX_ISO_DIR%\Kernel.o
-readelf --symbols %ATOMIX_ISO_DIR%\Kernel.bin > main.map
+readelf --wide --symbols %ATOMIX_ISO_DIR%\Kernel.bin > main.map
 
 REM BUILD APP ONE BY ONE
 FOR %%I IN (%ATOMIX_APPS%\*.dll) DO (
