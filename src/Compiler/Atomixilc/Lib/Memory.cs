@@ -20,6 +20,7 @@ namespace Atomixilc.Lib
         /// </summary>
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
+        [NoException]
         [Assembly(false)]
         public static uint Read32(uint aAddress)
         {
@@ -38,6 +39,7 @@ namespace Atomixilc.Lib
         /// </summary>
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
+        [NoException]
         [Assembly(false)]
         public static ushort Read16(uint aAddress)
         {
@@ -56,6 +58,7 @@ namespace Atomixilc.Lib
         /// </summary>
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
+        [NoException]
         [Assembly(false)]
         public static byte Read8(uint aAddress)
         {
@@ -74,6 +77,7 @@ namespace Atomixilc.Lib
         /// </summary>
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
+        [NoException]
         [Assembly(false)]
         public static void Write32(uint aAddress, uint Value)
         {
@@ -92,6 +96,7 @@ namespace Atomixilc.Lib
         /// </summary>
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
+        [NoException]
         [Assembly(false)]
         public static void Write16(uint aAddress, ushort Value)
         {
@@ -110,6 +115,7 @@ namespace Atomixilc.Lib
         /// </summary>
         /// <param name="aAddress">Address of memory</param>
         /// <returns></returns>
+        [NoException]
         [Assembly(false)]
         public static void Write8(uint aAddress, byte Value)
         {
@@ -123,6 +129,7 @@ namespace Atomixilc.Lib
             new Ret { Offset = 0x8 };
         }
 
+        [NoException]
         [Assembly(false)]
         public static void FastCopy(uint aDest, uint aSrc, uint aLen)
         {
@@ -141,6 +148,7 @@ namespace Atomixilc.Lib
             new Ret { Offset = 0xC };
         }
 
+        [NoException]
         [Assembly(false)]
         public static unsafe void FastClear(uint Address, uint Length)
         {

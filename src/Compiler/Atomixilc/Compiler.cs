@@ -647,6 +647,9 @@ namespace Atomixilc
             if (attrib == null)
                 throw new Exception("Invalid call to ProcessAssemblyMethod");
 
+            if (attrib.CalliHeader == false && method.GetCustomAttribute<NoExceptionAttribute>() == null)
+                Verbose.Error("NoException Attribute not present '{0}' CalliHeader == false", method.FullName());
+
             /* I am sure captain that we have discovered something, can we have our new functional block? */
             block = new FunctionalBlock(method.FullName(), Config.TargetPlatform, CallingConvention.StdCall);
 

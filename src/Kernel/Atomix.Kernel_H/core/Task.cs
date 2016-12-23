@@ -28,7 +28,9 @@ namespace Atomix.Kernel_H.Core
             return Scheduler.SwitchTask(oldStack);
         }
 
-        [Assembly, Plug("__ISR_Handler_20", Architecture.x86)]
+        [NoException]
+        [Assembly(false)]
+        [Plug("__ISR_Handler_20", Architecture.x86)]
         private static void SetupIRQ0()
         {
             // Clear Interrupts

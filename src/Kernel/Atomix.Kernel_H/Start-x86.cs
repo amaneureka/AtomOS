@@ -30,7 +30,8 @@ namespace Atomix.Kernel_H
     [Entrypoint(Architecture.x86, "(_Kernel_Main - 0xC0000000)")]
     public static class Startx86
     {
-        [Assembly]
+        [NoException]
+        [Assembly(false)]
         public static void main()
         {
             const uint MultibootMagic = 0x1BADB002;

@@ -20,6 +20,7 @@ namespace Atomixilc.Lib
         /// <summary>
         /// Clear Interrupts
         /// </summary>
+        [NoException]
         [Assembly(false)]
         public static void Cli()
         {
@@ -30,6 +31,7 @@ namespace Atomixilc.Lib
         /// <summary>
         /// Enable Interrupts
         /// </summary>
+        [NoException]
         [Assembly(false)]
         public static void Sti()
         {
@@ -40,6 +42,7 @@ namespace Atomixilc.Lib
         /// <summary>
         /// Halt The Processor
         /// </summary>
+        [NoException]
         [Assembly(false)]
         public static void Hlt()
         {
@@ -52,6 +55,7 @@ namespace Atomixilc.Lib
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
+        [NoException]
         [Assembly(false)]
         public static uint GetAddress(object aObj)
         {
@@ -77,6 +81,7 @@ namespace Atomixilc.Lib
         /// </summary>
         /// <param name="aDelegate"></param>
         /// <returns></returns>
+        [NoException]
         [Assembly(false)]
         public static uint InvokableAddress(this Delegate aDelegate)
         {
@@ -100,6 +105,7 @@ namespace Atomixilc.Lib
         /// End of kernel offset
         /// </summary>
         /// <returns></returns>
+        [NoException]
         [Assembly(false)]
         public static uint EndOfKernel()
         {
@@ -110,6 +116,7 @@ namespace Atomixilc.Lib
             return 0; // just for c# error
         }
 
+        [NoException]
         [Assembly(false)]
         public static uint CR2Register()
         {
