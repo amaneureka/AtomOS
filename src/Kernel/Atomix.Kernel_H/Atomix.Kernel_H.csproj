@@ -110,6 +110,9 @@
     <Compile Include="Drivers\video\VBE.cs" />
     <Compile Include="IO\Pipe.cs" />
     <Compile Include="IO\Stream.cs" />
+    <Compile Include="Lib\Cairo\ColorFormat.cs" />
+    <Compile Include="Lib\Cairo\NativeMethods.cs" />
+    <Compile Include="Lib\Cairo\Status.cs" />
     <Compile Include="Lib\ds\IDictionary.cs" />
     <Compile Include="Lib\ds\IList.cs" />
     <Compile Include="Lib\ds\IQueue.cs" />
@@ -139,6 +142,7 @@
       <Name>Atomixilc</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

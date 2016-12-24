@@ -461,6 +461,7 @@ namespace Atomixilc
              * that much of debugging completely drain your skills :P
              * don't mess up this code, and move forward
              */
+            ScanQ.Enqueue(typeof(Lib.Libc));
             ScanQ.Enqueue(typeof(Lib.VTable));
             ScanQ.Enqueue(typeof(Lib.Memory));
             ScanQ.Enqueue(typeof(Lib.Native));

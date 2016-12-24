@@ -171,6 +171,7 @@
     <Compile Include="IL\Store\Stloc.cs" />
     <Compile Include="IL\Store\Stsfld.cs" />
     <Compile Include="Lib\Internals.cs" />
+    <Compile Include="Lib\Libc.cs" />
     <Compile Include="Lib\Memory.cs" />
     <Compile Include="Lib\Native.cs" />
     <Compile Include="Lib\Plugs\Array.cs" />

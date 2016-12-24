@@ -9,36 +9,48 @@
 
 using System;
 
-using Atomixilc.Lib;
-
-using Atomix.Kernel_H.Lib;
 using Atomix.Kernel_H.Arch.x86;
 
 namespace Atomix.Kernel_H.Core
 {
     internal static class Syscall
     {
-        static IDictionary<uint, InterruptHandler> mCallHandlers;
+        static InterruptHandler[] functions;
 
         internal static void Setup()
         {
-            mCallHandlers = new IDictionary<uint, InterruptHandler>(Internals.GetHashCode, Internals.Equals);
+            functions = new InterruptHandler[256];
 
-            /* Register Syscall Handler */
             IDT.RegisterInterrupt(Handler, 0x7F);
+
+            functions[(int)Function.SYS_brk] = sys_brk;
         }
 
-        internal static void Register(Function aFunction, InterruptHandler aContext)
+        private static void Handler(ref IRQContext context)
         {
-            mCallHandlers.Add((uint)aFunction, aContext);
+            if (context.EAX >= functions.Length)
+            {
+                Debug.Write("Invalid call\n");
+                return;
+            }
+
+            var Handler = functions[context.EAX];
+
+            if (Handler == null)
+            {
+                Debug.Write("syscall handler not found : %d\n", context.EAX);
+                return;
+            }
+
+            Handler(ref context);
         }
 
-        private static void Handler(ref IRQContext state)
+        private static void sys_brk(ref IRQContext context)
         {
-            if (mCallHandlers.ContainsKey(state.EAX))
-                mCallHandlers[state.EAX](ref state);
-            else
-                Debug.Write("syscall handler not found : %d\n", state.EAX);
+            if ((Function)context.EAX != Function.SYS_brk)
+                return;
+
+            context.EAX = Heap.kmalloc(context.EBX);
         }
 
         /// <summary>

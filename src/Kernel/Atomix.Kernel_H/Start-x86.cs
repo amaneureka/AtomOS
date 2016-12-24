@@ -172,6 +172,9 @@ namespace Atomix.Kernel_H
             /* Setup Syscall */
             Syscall.Setup();
 
+            /* Initialise C library */
+            Libc.Init();
+
             /*
              * Scheduler must be called before Timer because,
              * just after calling timer, it will enable IRQ0 resulting in refrence call for switch task

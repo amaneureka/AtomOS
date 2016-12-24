@@ -125,6 +125,12 @@ namespace Atomixilc
             if (cachedMethodLabel.ContainsKey(method))
                 return cachedMethodLabel[method];
 
+            if (method.GetCustomAttribute<DllImportAttribute>() != null)
+            {
+                cachedMethodLabel.Add(method, method.Name);
+                return method.Name;
+            }
+
             var SB = new StringBuilder();
             SB.Append((method is MethodInfo) ? ((MethodInfo)method).ReturnType.FullName : "System.Void");
             SB.Append('.');
