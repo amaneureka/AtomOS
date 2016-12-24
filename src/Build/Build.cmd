@@ -18,6 +18,7 @@ SET ATOMIX_ISO_DIR=.\ISO
 SET ATOMIX_RD=.\ramdisk
 SET ATOMIX_LIB=.\Bin\Atomix.Core.dll
 SET ATOMIX_RamFS=.\Bin\Atomix.RamFS.exe
+SET GCC_LIB=.\Local\lib
 
 REM CONSTANTS
 SET /A EXIT_CODE=0
@@ -81,7 +82,8 @@ IF NOT EXIST %OUTPUT_DIR%\Kernel.asm SET /A EXIT_CODE^|=ERROR_COMPILER_NZEC & GO
 nasm.exe -felf %OUTPUT_DIR%\Kernel.asm -o %ATOMIX_ISO_DIR%\Kernel.o
 IF %ERRORLEVEL% NEQ 0 SET /A EXIT_CODE^|=ERROR_NASM_NZEC & GOTO BUILDER_EXIT
 
-i386-atomos-ld %ATOMIX_ISO_DIR%\Kernel.o Local\lib\libcairo.a Local\lib\libz.a Local\lib\libpixman-1.a Local\lib\libpng15.a Local\i386-atomos\lib\libm.a Local\lib\gcc\i386-atomos\5.3.0\libgcc.a Local\lib\libfreetype.a Local\i386-atomos\lib\libc.a -T %ATOMIX_KERNEL_LINKER% -o %ATOMIX_ISO_DIR%\Kernel.bin
+i386-atomos-ld %ATOMIX_ISO_DIR%\Kernel.o Local\i386-atomos\lib\crti.o %GCC_LIB%\gcc\i386-atomos\5.3.0\crtbegin.o %GCC_LIB%\libcairo.a %GCC_LIB%\libpng15.a %GCC_LIB%\libpixman-1.a %GCC_LIB%\libz.a %GCC_LIB%\libfreetype.a %GCC_LIB%\gcc\i386-atomos\5.3.0\crtend.o Local\i386-atomos\lib\crtn.o Local\i386-atomos\lib\libm.a %GCC_LIB%\gcc\i386-atomos\5.3.0\libgcc.a Local\i386-atomos\lib\libc.a -T %ATOMIX_KERNEL_LINKER% -o %ATOMIX_ISO_DIR%\Kernel.bin
+::i386-atomos-ld %ATOMIX_ISO_DIR%\Kernel.o Local\i386-atomos\lib\crti.o %GCC_LIB%\gcc\i386-atomos\5.3.0\crtbegin.o Local\i386-atomos\lib\crti.o %GCC_LIB%\libcairo.a %GCC_LIB%\libpng15.a %GCC_LIB%\libpixman-1.a %GCC_LIB%\libz.a %GCC_LIB%\libfreetype.a %GCC_LIB%\gcc\i386-atomos\5.3.0\crtend.o Local\i386-atomos\lib\crtn.o Local\i386-atomos\lib\libm.a %GCC_LIB%\gcc\i386-atomos\5.3.0\libgcc.a Local\i386-atomos\lib\libc.a -T %ATOMIX_KERNEL_LINKER% -o %ATOMIX_ISO_DIR%\Kernel.bin
 IF %ERRORLEVEL% NEQ 0 SET /A EXIT_CODE^|=ERROR_LINKER_NZEC & GOTO BUILDER_EXIT
 
 del %ATOMIX_ISO_DIR%\Kernel.o

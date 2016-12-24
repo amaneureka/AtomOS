@@ -14,21 +14,23 @@ SECTIONS
    .data ALIGN (0x1000) : AT(ADDR(.data) - 0xC0000000)
    {
        *(.data)
+	   *(.symbols)
    }
 
    .bss : AT(ADDR(.bss) - 0xC0000000)
    {
-       _sbss = .;
        *(COMMON)
        *(.bss)
-       _ebss = .;
+   }
+
+   .eh_frame : AT(ADDR(.eh_frame) - 0xC0000000)
+   {
+       *(.eh_frame)
    }
 
    	/DISCARD/ :
 	{
 		*(.comment)
-		*(.eh_frame)
 		*(.note.gnu.build-id)
-		*(.debug_*)
 	}
 }

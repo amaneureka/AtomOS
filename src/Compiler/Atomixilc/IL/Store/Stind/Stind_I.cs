@@ -70,7 +70,7 @@ namespace Atomixilc.IL
 
             switch(size)
             {
-                case 0: break;
+                case 0: throw new Exception("Invalid call to Stind");
                 case 1:
                     {
                         new Mov
@@ -102,6 +102,15 @@ namespace Atomixilc.IL
                             SourceReg = Register.EDX,
                             Size = 32
                         };
+                    }
+                    break;
+                case 8:
+                    {
+                        // Low := EDX
+                        // High := EAX
+                        new Pop { DestinationReg = Register.EDI };
+                        new Mov { DestinationReg = Register.EDI, DestinationIndirect = true, SourceReg = Register.EDX };
+                        new Mov { DestinationReg = Register.EDI, DestinationDisplacement = 4, DestinationIndirect = true, SourceReg = Register.EAX };
                     }
                     break;
                 default:

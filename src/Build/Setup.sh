@@ -98,9 +98,9 @@ fetch "https://ftp.gnu.org/gnu/binutils/binutils-2.26.tar.gz" "binutils-2.26.tar
 fetch "https://ftp.gnu.org/gnu/gcc/gcc-5.3.0/gcc-5.3.0.tar.gz" "gcc-5.3.0.tar.gz"
 fetch "ftp://sources.redhat.com/pub/newlib/newlib-1.19.0.tar.gz" "newlib-1.19.0.tar.gz"
 
-patchc "binutils-2.26" "binutils-2.26.diff"
-patchc "gcc-5.3.0" "gcc-5.3.0.diff"
-patchc "newlib-1.19.0" "newlib-1.19.0.diff"
+#patchc "binutils-2.26" "binutils-2.26.diff"
+#patchc "gcc-5.3.0" "gcc-5.3.0.diff"
+#patchc "newlib-1.19.0" "newlib-1.19.0.diff"
 
 message "Building Stuffs..."
 
@@ -171,6 +171,10 @@ pushd Bin || bail
 			$SOURCES/newlib-1.19.0/configure --target=$TARGET --prefix=$PREFIX || bail
 			make -j4 || bail
 			make install || bail
+		popd
+		pushd $SOURCES/newlib-1.19.0/newlib/libc/sys/atomos || bail
+			nasm -felf crti.s -o $PREFIX/$TARGET/lib/crti.o || bail
+			nasm -felf crtn.s -o $PREFIX/$TARGET/lib/crtn.o || bail
 		popd
 	fi
 
