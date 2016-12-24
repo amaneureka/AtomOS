@@ -35,10 +35,10 @@ diff -urN gcc-old/gcc/config/atomos.h gcc/gcc/config/atomos.h
 +
 +/* Files that are linked before user code.
 +   The %s tells gcc to look for these files in the library directory. */
-+#define STARTFILE_SPEC "crt0.o%s crtbegin.o%s"
++#define STARTFILE_SPEC "crt0.o%s crti.o%s crtbegin.o%s"
 +
 +/* Files that are linked after user code. */
-+#define ENDFILE_SPEC "crtend.o%s"
++#define ENDFILE_SPEC "crtend.o%s crtn.o%s"
 +
 +/* Don't automatically add extern "C" { } around header files. */
 +#undef  NO_IMPLICIT_EXTERN_C

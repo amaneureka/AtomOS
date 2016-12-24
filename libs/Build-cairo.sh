@@ -8,8 +8,8 @@ export TARBALLS="$ROOT/../tarballs"
 export PATCHFILES="$ROOT/../toolchain"
 export PATH=/usr/bin:$PREFIX/bin
 
-LIB_URL=https://www.cairographics.org/releases/cairo-1.14.2.tar.xz
-LIB_FOLDER=cairo-1.14.2
+LIB_URL=https://cairographics.org/releases/cairo-1.12.18.tar.xz
+LIB_FOLDER=cairo-1.12.18
 
 bail()
 {
