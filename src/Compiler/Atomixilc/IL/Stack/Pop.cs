@@ -35,6 +35,7 @@ namespace Atomixilc.IL
                 throw new Exception("Internal Compiler Error: vStack.Count < 2");
 
             var item = Optimizer.vStack.Pop();
+            var size = Helper.GetTypeSize(item.OperandType, Config.TargetPlatform);
 
             /* The stack transitional behavior, in sequential order, is:
              * The top value is popped from the stack.
@@ -46,6 +47,9 @@ namespace Atomixilc.IL
             {
                 case Architecture.x86:
                     {
+                        if (size > 4)
+                            throw new Exception(string.Format("UnImplemented '{0}'", msIL));
+
                         if (!item.SystemStack)
                             throw new Exception(string.Format("UnImplemented-RegisterType '{0}'", msIL));
 
