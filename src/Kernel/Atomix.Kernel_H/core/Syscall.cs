@@ -28,12 +28,6 @@ namespace Atomix.Kernel_H.Core
 
         private static void Handler(ref IRQContext context)
         {
-            if (context.EAX >= functions.Length)
-            {
-                Debug.Write("Invalid call\n");
-                return;
-            }
-
             var Handler = functions[context.EAX];
 
             if (Handler == null)

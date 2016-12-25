@@ -111,7 +111,7 @@ namespace Atomix.Kernel_H
             new Or { DestinationReg = Register.AX, SourceRef = "0x2", Size = 16 };
             new Mov { DestinationReg = Register.CR0, SourceReg = Register.EAX };
             new Mov { DestinationReg = Register.EAX, SourceReg = Register.CR4 };
-            new Or { DestinationReg = Register.EAX, SourceRef = "0x600" };
+            new Or { DestinationReg = Register.AX, SourceRef = "0x600", Size = 16 };
             new Mov { DestinationReg = Register.CR4, SourceReg = Register.EAX };
 
             /* Call Kernel Start */
@@ -174,16 +174,6 @@ namespace Atomix.Kernel_H
 
             /* Initialise C library */
             Libc.Init();
-
-            /*
-             * Scheduler must be called before Timer because,
-             * just after calling timer, it will enable IRQ0 resulting in refrence call for switch task
-             * Hence results in pagefault.
-             */
-            Scheduler.SystemProcess = new Process("System", KernelDirectory - 0xC0000000);
-
-            /* System Thread */
-            new Thread(Scheduler.SystemProcess, 0, 0, 10000).Start();
 
             try
             {

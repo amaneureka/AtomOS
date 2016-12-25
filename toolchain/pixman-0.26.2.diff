@@ -1,0 +1,36 @@
+diff -urN pixman-old/config.sub pixman/config.sub
+--- pixman-old/config.sub	2016-12-25 05:18:55.291979800 +0530
++++ pixman/config.sub	2012-06-30 00:03:44.000000000 +0530
+@@ -1355,7 +1355,7 @@
+ 	# The portable systems comes first.
+ 	# Each alternative MUST END IN A *, to match a version number.
+ 	# -sysv* is not here because it comes later, after sysvr4.
+-	-gnu* | -bsd* | -mach* | -minix* | -genix* | -ultrix* | -irix* | -atomos* \
++	-gnu* | -bsd* | -mach* | -minix* | -genix* | -ultrix* | -irix* \
+ 	      | -*vms* | -sco* | -esix* | -isc* | -aix* | -cnk* | -sunos | -sunos[34]*\
+ 	      | -hpux* | -unos* | -osf* | -luna* | -dgux* | -auroraux* | -solaris* \
+ 	      | -sym* | -kopensolaris* \
+diff -urN pixman-old/pixman/pixman-utils.c pixman/pixman/pixman-utils.c
+--- pixman-old/pixman/pixman-utils.c	2016-12-25 05:20:06.588923300 +0530
++++ pixman/pixman/pixman-utils.c	2012-06-29 23:55:17.000000000 +0530
+@@ -41,10 +41,7 @@
+     } cache [N_CACHED_FAST_PATHS];
+ } cache_t;
+ 
+-//PIXMAN_DEFINE_THREAD_LOCAL (cache_t, fast_path_cache);
+-
+-
+-cache_t fast_path_cache;
++PIXMAN_DEFINE_THREAD_LOCAL (cache_t, fast_path_cache);
+ 
+ pixman_bool_t
+ _pixman_lookup_composite_function (pixman_implementation_t     *toplevel,
+@@ -63,7 +60,7 @@
+     int i;
+ 
+     /* Check cache for fast paths */
+-    cache = &fast_path_cache;//PIXMAN_GET_THREAD_LOCAL (fast_path_cache);
++    cache = PIXMAN_GET_THREAD_LOCAL (fast_path_cache);
+ 
+     for (i = 0; i < N_CACHED_FAST_PATHS; ++i)
+     {

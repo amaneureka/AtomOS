@@ -42,6 +42,11 @@ namespace Atomix.Kernel_H.Core
         internal static void Init()
         {
             ThreadQueue = new IQueue<Thread>(100);
+
+            SystemProcess = new Process("System", 0xDEADCAFE);
+            CurrentTask = new Thread(Scheduler.SystemProcess, 0, 0, 10000);
+
+            CurrentTask.Start();
         }
 
         internal static void AddThread(Thread th)
@@ -52,12 +57,6 @@ namespace Atomix.Kernel_H.Core
         internal static uint SwitchTask(uint aStack)
         {
             var NextTask = InvokeNext();
-
-            if (CurrentTask == null)
-            {
-                CurrentTask = NextTask;
-                return aStack;
-            }
 
             if ((CurrentTask == NextTask) || (NextTask == null))
                 return aStack;

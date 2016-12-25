@@ -62,7 +62,7 @@ namespace Atomix.Kernel_H.Gui
 
         internal void Draw(Bitmap aImage, uint aXpos, uint aYpos, uint aWidth, uint aHeight)
         {
-            uint aDes = mBuffer + (aXpos + ((aYpos * mWidth)) * mBytesPerPixel);
+            uint aDes = mBuffer + ((aXpos + (aYpos * mWidth)) * mBytesPerPixel);
             uint aSrc = aImage.Buffer;
             uint aLen = mBytesPerPixel * aWidth;
             uint aLen2 = mBytesPerPixel * mWidth;

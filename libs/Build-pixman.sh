@@ -8,8 +8,8 @@ export TARBALLS="$ROOT/../tarballs"
 export PATCHFILES="$ROOT/../toolchain"
 export PATH=/usr/bin:$PREFIX/bin
 
-LIB_URL=https://www.cairographics.org/releases/pixman-0.30.2.tar.gz
-LIB_FOLDER=pixman-0.30.2
+LIB_URL=https://www.cairographics.org/releases/pixman-0.26.2.tar.gz
+LIB_FOLDER=pixman-0.26.2
 
 bail()
 {
