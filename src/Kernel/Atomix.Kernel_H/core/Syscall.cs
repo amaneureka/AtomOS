@@ -24,6 +24,7 @@ namespace Atomix.Kernel_H.Core
             IDT.RegisterInterrupt(Handler, 0x7F);
 
             functions[(int)Function.SYS_brk] = sys_brk;
+            functions[(int)Function.SYS_write] = sys_write;
         }
 
         private static void Handler(ref IRQContext context)
@@ -39,12 +40,37 @@ namespace Atomix.Kernel_H.Core
             Handler(ref context);
         }
 
-        private static void sys_brk(ref IRQContext context)
+        private static unsafe void sys_brk(ref IRQContext context)
         {
-            if ((Function)context.EAX != Function.SYS_brk)
-                return;
+            var Process = Scheduler.RunningProcess;
 
-            context.EAX = Heap.kmalloc(context.EBX);
+            uint directory = Process.PageDirectory;
+            uint current = Process.HeapCurrent;
+            uint end = Process.HeapEndAddress;
+
+            // Assert EAX == sys_brk
+
+            context.EAX = current;
+            current += context.EBX;
+
+            // Assert end should be page aligned
+
+            while (current > end)
+            {
+                Paging.AllocateFrame(Paging.GetPage((uint*)directory, end, true), 0, true);
+                Paging.InvalidatePageAt(end);
+                end += Paging.PageSize;
+            }
+
+            Process.HeapCurrent = current;
+            Process.HeapEndAddress = end;
+        }
+
+        private static unsafe void sys_write(ref IRQContext context)
+        {
+            context.EAX = context.EDX;
+            for (uint i = 0; i < context.EDX; i++)
+                Debug.Write((*(byte*)(context.ECX + i)));
         }
 
         /// <summary>

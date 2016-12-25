@@ -16,48 +16,58 @@ using Atomix.Kernel_H.Arch.x86;
 
 namespace Atomix.Kernel_H.Core
 {
-    internal unsafe class Process
+    internal class Process
     {
-        internal readonly uint pid;
+        internal readonly uint ID;
         internal readonly string Name;
+        internal readonly uint PageDirectory;
         internal readonly IList<Thread> Threads;
-        internal readonly uint[] shm_mapping;// Using Bitmask keeps a track of which shm region is occupied
+        internal readonly IDictionary<string, uint> Symbols;
+        internal readonly uint[] shm_mapping;
 
-        uint mPageDirectory;
-        IDictionary<string, uint> mSymbols;
+        internal uint HeapCurrent;
+        internal uint HeapEndAddress;
+        internal readonly uint HeapStartAddress;
 
-        internal Process(string aName, UInt32 Directory)
+        internal Process(string aName, uint aDirectory)
         {
-            pid = NewID();
-            mPageDirectory = Directory;
             Name = aName;
+            ID = GetNewProcessID();
+            PageDirectory = aDirectory;
+
             Threads = new IList<Thread>();
+            Symbols = new IDictionary<string, uint>(Internals.GetHashCode, string.Equals);
+
+            // TODO: Should be a random address
+            HeapStartAddress = 0xA0000000;
+            HeapCurrent = HeapStartAddress;
+            HeapEndAddress = HeapStartAddress;
+
             shm_mapping = new uint[SHM.LIMIT_TO_PROCESS];
-            mSymbols = new IDictionary<string, uint>(Internals.GetHashCode, string.Equals);
         }
 
         internal void SetEnvironment()
         {
-            Paging.SwitchDirectory(mPageDirectory);
+            Paging.SwitchDirectory(PageDirectory);
         }
 
         internal uint GetSymbols(string aStr)
         {
-            return mSymbols.GetValue(aStr, 0);
+            return Symbols.GetValue(aStr, 0);
         }
 
         internal void SetSymbol(string aStr, uint aAddress)
         {
-            uint add = mSymbols.GetValue(aStr, 0);
+            uint add = Symbols.GetValue(aStr, 0);
             if (add != 0)
                 throw new Exception("[Process]: Symbol already exist!");
-            mSymbols.Add(aStr, aAddress);
+            Symbols.Add(aStr, aAddress);
         }
 
-        static uint ProcessID = 0;
-        static uint NewID()
+        static uint _pid = 0;
+        static uint GetNewProcessID()
         {
-            return ProcessID++;
+            return _pid++;
         }
     }
 }

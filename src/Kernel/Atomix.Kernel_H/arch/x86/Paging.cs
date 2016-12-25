@@ -25,6 +25,8 @@ namespace Atomix.Kernel_H.Arch.x86
         public static uint* CurrentDirectory;
         private static uint[] Frames;
 
+        internal const uint PageSize = 0x1000;
+
         internal static void Setup(uint aKernelDirectory)
         {
             KernelDirectory = (uint*)aKernelDirectory;
@@ -187,7 +189,7 @@ namespace Atomix.Kernel_H.Arch.x86
             new Mov { DestinationReg = Register.CR3, SourceReg = Register.EAX };
         }
 
-        [Assembly(true)]
+        [Assembly(false)]
         internal static void InvalidatePageAt(uint xAddress)
         {
             new Mov { DestinationReg = Register.EAX, SourceReg = Register.EBP, SourceDisplacement = 0x8, SourceIndirect = true };

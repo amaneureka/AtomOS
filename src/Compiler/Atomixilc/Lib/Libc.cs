@@ -27,5 +27,15 @@ namespace Atomixilc.Lib
         [Plug("_fini")]
         [DllImport(LIBRARY, CallingConvention = CallingConvention.Cdecl)]
         public static extern void Finish();
+
+        [NoException]
+        [Plug("malloc")]
+        [DllImport(LIBRARY, CallingConvention = CallingConvention.Cdecl)]
+        public static extern uint malloc(uint len);
+
+        [NoException]
+        [Plug("free")]
+        [DllImport(LIBRARY, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void free(uint addr);
     }
 }

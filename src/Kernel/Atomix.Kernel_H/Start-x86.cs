@@ -155,7 +155,7 @@ namespace Atomix.Kernel_H
             Native.Sti();
 
             /* Setup Scheduler */
-            Scheduler.Init();
+            Scheduler.Init(KernelDirectory);
 
             /* Setup System Timer */
             Timer.Setup();

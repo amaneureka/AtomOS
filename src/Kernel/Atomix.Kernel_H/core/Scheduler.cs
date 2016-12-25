@@ -8,6 +8,7 @@
 */
 
 using Atomix.Kernel_H.Lib;
+using Atomix.Kernel_H.Arch.x86;
 
 namespace Atomix.Kernel_H.Core
 {
@@ -39,12 +40,12 @@ namespace Atomix.Kernel_H.Core
 
         internal static Process SystemProcess;
 
-        internal static void Init()
+        internal static void Init(uint KernelDirectory)
         {
             ThreadQueue = new IQueue<Thread>(100);
 
-            SystemProcess = new Process("System", 0xDEADCAFE);
-            CurrentTask = new Thread(Scheduler.SystemProcess, 0, 0, 10000);
+            SystemProcess = new Process("System", KernelDirectory);
+            CurrentTask = new Thread(SystemProcess, 0, 0, 10000);
 
             CurrentTask.Start();
         }

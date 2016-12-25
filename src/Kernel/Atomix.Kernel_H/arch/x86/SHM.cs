@@ -98,7 +98,7 @@ namespace Atomix.Kernel_H.Arch.x86
             }
 
             Monitor.ReleaseLock(Nodes);
-            Debug.Write("shm_mapping failed, Process id:=%d ", ParentProcess.pid);
+            Debug.Write("shm_mapping failed, Process id:=%d ", ParentProcess.ID);
             Debug.Write("shm_id := %s ", aID);
             Debug.Write("FramesRequired: %d\n", (uint)FramesRequired);
             return 0;

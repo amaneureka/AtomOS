@@ -115,7 +115,7 @@ namespace Atomix.Kernel_H.Core
             Write((byte)a);
         }
 
-        private static void Write(byte a)
+        public static void Write(byte a)
         {
             WaitForWriteReady();
             PortIO.Out8((ushort)Port.Com1, a);
