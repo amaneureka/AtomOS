@@ -111,7 +111,9 @@
     <Compile Include="IO\Pipe.cs" />
     <Compile Include="IO\Stream.cs" />
     <Compile Include="Lib\Cairo\ColorFormat.cs" />
+    <Compile Include="Lib\Cairo\Font.cs" />
     <Compile Include="Lib\Cairo\NativeMethods.cs" />
+    <Compile Include="Lib\Cairo\Operator.cs" />
     <Compile Include="Lib\Cairo\Status.cs" />
     <Compile Include="Lib\ds\IDictionary.cs" />
     <Compile Include="Lib\ds\IList.cs" />

@@ -189,7 +189,7 @@ namespace Atomix.Kernel_H.Arch.x86
             new Mov { DestinationReg = Register.CR3, SourceReg = Register.EAX };
         }
 
-        [Assembly(false)]
+        [Assembly(true)]
         internal static void InvalidatePageAt(uint xAddress)
         {
             new Mov { DestinationReg = Register.EAX, SourceReg = Register.EBP, SourceDisplacement = 0x8, SourceIndirect = true };

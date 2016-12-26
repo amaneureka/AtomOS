@@ -215,7 +215,15 @@ namespace Atomix.Kernel_H.Lib.Cairo
         /// </summary>
         [NoException]
         [DllImport(LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void cairo_select_font_face(uint weight, uint slant, uint family, uint cr);
+        internal static extern void cairo_select_font_face(FontWeight weight, FontSlant slant, uint family, uint cr);
+
+        /// <summary>
+        /// cairo_public void
+        /// cairo_set_operator (cairo_t *cr, cairo_operator_t op);
+        /// </summary>
+        [NoException]
+        [DllImport(LIBRARY, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void cairo_set_operator(Operator op, uint cr);
 
         /// <summary>
         /// cairo_public void

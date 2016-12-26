@@ -2,16 +2,6 @@
 
 namespace Atomix.Kernel_H.Lib.Cairo
 {
-    /* typedef enum _cairo_format {
-     *      CAIRO_FORMAT_INVALID   = -1,
-     *      CAIRO_FORMAT_ARGB32    = 0,
-     *      CAIRO_FORMAT_RGB24     = 1,
-     *      CAIRO_FORMAT_A8        = 2,
-     *      CAIRO_FORMAT_A1        = 3,
-     *      CAIRO_FORMAT_RGB16_565 = 4,
-     *      CAIRO_FORMAT_RGB30     = 5
-     * } cairo_format_t;
-     */
     /* typedef enum _cairo_status {
      *      CAIRO_STATUS_SUCCESS = 0,
      *      CAIRO_STATUS_NO_MEMORY,
