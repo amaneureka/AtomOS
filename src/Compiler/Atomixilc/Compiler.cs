@@ -1084,9 +1084,9 @@ namespace Atomixilc
                                         if (returncount > 8)
                                             throw new Exception("Return type > 8 not supported");
 
+                                        new Pop { DestinationReg = Register.EAX };
                                         if (returncount == 8)
                                             new Pop { DestinationReg = Register.EDX };
-                                        new Pop { DestinationReg = Register.EAX };
                                     }
 
                                     new Leave { };

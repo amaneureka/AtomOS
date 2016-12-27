@@ -101,6 +101,7 @@
     <Compile Include="IL\Conversion\Conv_I1.cs" />
     <Compile Include="IL\Conversion\Conv_I2.cs" />
     <Compile Include="IL\Conversion\Conv_I4.cs" />
+    <Compile Include="IL\Conversion\Conv_R8.cs" />
     <Compile Include="IL\Conversion\Conv_U1.cs" />
     <Compile Include="IL\Conversion\Conv_U2.cs" />
     <Compile Include="IL\Conversion\Conv_U4.cs" />
@@ -193,6 +194,8 @@
     <Compile Include="Machine\x86\DestinationSource.cs" />
     <Compile Include="Machine\x86\DestinationSourceSize.cs" />
     <Compile Include="Machine\x86\Div.cs" />
+    <Compile Include="Machine\x86\Fild.cs" />
+    <Compile Include="Machine\x86\Fstp.cs" />
     <Compile Include="Machine\x86\Helper.cs" />
     <Compile Include="Machine\x86\IDiv.cs" />
     <Compile Include="Machine\x86\IMul.cs" />
