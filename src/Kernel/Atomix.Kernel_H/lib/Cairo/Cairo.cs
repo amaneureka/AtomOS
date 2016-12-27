@@ -81,7 +81,7 @@ namespace Atomix.Kernel_H.Lib.Cairo
         [NoException]
         [Plug("cairo_save")]
         [DllImport(LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern uint Save(uint cr);
+        internal static extern void Save(uint cr);
 
         /// <summary>
         /// cairo_public void
@@ -90,7 +90,7 @@ namespace Atomix.Kernel_H.Lib.Cairo
         [NoException]
         [Plug("cairo_restore")]
         [DllImport(LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern uint Restore(uint cr);
+        internal static extern void Restore(uint cr);
 
         /// <summary>
         /// cairo_public unsigned char *

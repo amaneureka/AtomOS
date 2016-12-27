@@ -66,6 +66,19 @@ namespace Atomix.Kernel_H.Gui
         internal int Height;
     }
 
+    [StructLayout(LayoutKind.Explicit, Size = 16)]
+    internal struct Rect
+    {
+        [FieldOffset(0)]
+        internal int X;
+        [FieldOffset(4)]
+        internal int Y;
+        [FieldOffset(8)]
+        internal int Width;
+        [FieldOffset(12)]
+        internal int Height;
+    }
+
     internal enum RequestType : uint
     {
         None = 0,

@@ -27,6 +27,7 @@ namespace Atomix.Kernel_H.Arch.x86
         // Maximum of 0x10000 frames starting from SHM_Start to any process
         public const int LIMIT_TO_PROCESS = 0x10000 >> 5;
 
+        static uint aLock;
         static IDictionary<string, shm_chunk> Nodes;
 
         internal static void Install()
@@ -36,13 +37,13 @@ namespace Atomix.Kernel_H.Arch.x86
 
         internal static unsafe uint Obtain(string aID, uint aSize, bool aDoAllocate = false)
         {
-            Monitor.AcquireLock(Nodes);
+            Monitor.AcquireLock(ref aLock);
 
             if (!Nodes.ContainsKey(aID))
             {
                 if (!aDoAllocate)
                 {
-                    Monitor.ReleaseLock(Nodes);
+                    Monitor.ReleaseLock(ref aLock);
                     return 0;
                 }
                 CreateNew(aID, aSize);
@@ -86,7 +87,7 @@ namespace Atomix.Kernel_H.Arch.x86
                                 xOffset++;
                                 Index++;
                             }
-                            Monitor.ReleaseLock(Nodes);
+                            Monitor.ReleaseLock(ref aLock);
                             return xReturnAddress;
                         }
                     }
@@ -97,7 +98,7 @@ namespace Atomix.Kernel_H.Arch.x86
                 }
             }
 
-            Monitor.ReleaseLock(Nodes);
+            Monitor.ReleaseLock(ref aLock);
             Debug.Write("shm_mapping failed, Process id:=%d ", ParentProcess.ID);
             Debug.Write("shm_id := %s ", aID);
             Debug.Write("FramesRequired: %d\n", (uint)FramesRequired);

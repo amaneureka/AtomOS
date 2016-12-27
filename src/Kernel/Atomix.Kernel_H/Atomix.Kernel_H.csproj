@@ -130,7 +130,6 @@
     <Compile Include="plugs\Math.cs" />
     <Compile Include="plugs\Numerics.cs" />
     <Compile Include="plugs\String.cs" />
-    <Compile Include="plugs\Threading.cs" />
     <Compile Include="Start-x86.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

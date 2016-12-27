@@ -209,7 +209,7 @@ namespace Atomix.Kernel_H.Drivers.buses.ATA
                         return false;
 
                     // Lock up device
-                    Monitor.AcquireLock(this);
+                    //Monitor.AcquireLock(this);
 
                     // SCSI Packet Command
                     mATAPI_Packet[0] = (byte)Cmd.ATAPI_CMD_READ;
@@ -250,7 +250,7 @@ namespace Atomix.Kernel_H.Drivers.buses.ATA
                     while (((Status)PortIO.In8(StatusReg) & (Status.ATA_SR_BSY | Status.ATA_SR_DRQ)) != 0) ;
 
                     // UnLock up device
-                    Monitor.ReleaseLock(this);
+                    //Monitor.ReleaseLock(this);
 
                     return true;
                 }
@@ -259,7 +259,7 @@ namespace Atomix.Kernel_H.Drivers.buses.ATA
             else if (mDevice == Device.IDE_ATA)
             {
                 // Lock up device
-                Monitor.AcquireLock(this);
+                //Monitor.AcquireLock(this);
 
                 // Disable IRQ
                 IRQInvoked = false;
@@ -367,7 +367,7 @@ namespace Atomix.Kernel_H.Drivers.buses.ATA
                 }
 
                 // UnLock up device
-                Monitor.ReleaseLock(this);
+                //Monitor.ReleaseLock(this);
                 return true;
             }
             return false;

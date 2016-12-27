@@ -64,7 +64,6 @@ namespace Atomix.Kernel_H.Lib.Graphic
                 o = Math.Min(s, d);
 
                 // Draw on buffer @{(l, m), (n, o)} from bitamp {(l-x, m-y), (n-x, o-y)}
-                CopyToBuffer(mBuffer, bitamp, l, m, mWidth, mHeight, l - x, m - y, w, n - l + 1, o - m + 1);
             }
         }
 
@@ -142,9 +141,9 @@ namespace Atomix.Kernel_H.Lib.Graphic
          * "data_height"        [EBP + 08]
          */
         [Assembly(true)]
-        internal static void CopyToBuffer(byte* des, byte* src, int des_x, int des_y, int des_width, int des_height, int src_x, int src_y, int src_width, int data_width, int data_height)
+        internal static void CopyToBuffer(uint des, uint src, int des_x, int des_y, int des_width, int des_height, int src_x, int src_y, int src_width, int data_width, int data_height)
         {
-            new Mov { DestinationReg = Register.ECX, SourceRef = "static_Field__System_Int32_Atomix_Kernel_H_Drivers_Video_VBE_BytesPerPixel", SourceIndirect = true };
+            new Mov { DestinationReg = Register.ECX, SourceRef = "static_Field__System_UInt32_Atomix_Kernel_H_Drivers_Video_VBE_BytesPerPixel", SourceIndirect = true };
             //EBX = width
             new Mov { DestinationReg = Register.EBX, SourceReg = Register.EBP, SourceIndirect = true, SourceDisplacement = 12 };
 
