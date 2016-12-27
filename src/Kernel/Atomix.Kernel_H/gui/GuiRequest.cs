@@ -12,7 +12,7 @@ using System.Runtime.InteropServices;
 
 namespace Atomix.Kernel_H.Gui
 {
-    [StructLayout(LayoutKind.Explicit, Size = 12)]
+    [StructLayout(LayoutKind.Explicit, Size = 16)]
     internal struct GuiRequest
     {
         [FieldOffset(0)]
@@ -21,24 +21,50 @@ namespace Atomix.Kernel_H.Gui
         internal int ClientID;
         [FieldOffset(8)]
         internal RequestType Type;
+        [FieldOffset(12)]
+        internal ErrorType Error;
+    };
+
+    [StructLayout(LayoutKind.Explicit, Size = 28)]
+    internal unsafe struct MouseData
+    {
+        [FieldOffset(16)]
+        internal int Button;
+        [FieldOffset(20)]
+        internal int Xpos;
+        [FieldOffset(24)]
+        internal int Ypos;
     };
 
     [StructLayout(LayoutKind.Explicit, Size = 48)]
     internal unsafe struct NewWindow
     {
-        [FieldOffset(12)]
-        internal uint X;
         [FieldOffset(16)]
-        internal uint Y;
+        internal int X;
         [FieldOffset(20)]
-        internal uint Width;
+        internal int Y;
         [FieldOffset(24)]
-        internal uint Height;
+        internal int Width;
         [FieldOffset(28)]
-        internal ErrorType Error;
+        internal int Height;
         [FieldOffset(32)]
-        internal fixed char Hash[8];
+        internal fixed char Buffer[8];
     };
+
+    [StructLayout(LayoutKind.Explicit, Size = 36)]
+    internal struct Redraw
+    {
+        [FieldOffset(16)]
+        internal int WindowID;
+        [FieldOffset(20)]
+        internal int X;
+        [FieldOffset(24)]
+        internal int Y;
+        [FieldOffset(28)]
+        internal int Width;
+        [FieldOffset(32)]
+        internal int Height;
+    }
 
     internal enum RequestType : uint
     {
@@ -53,6 +79,9 @@ namespace Atomix.Kernel_H.Gui
     internal enum ErrorType : uint
     {
         None = 0,
-        InvalidParameters = 1,
+        BadRequest = 1,
+        BadParameters = 2,
+        OutOfMemory = 3,
+        BadFunction = 4,
     }
 }

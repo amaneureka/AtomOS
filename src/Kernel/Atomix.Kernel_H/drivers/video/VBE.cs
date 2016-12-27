@@ -13,7 +13,6 @@ using System.Runtime.InteropServices;
 using Atomix.Kernel_H.Core;
 using Atomix.Kernel_H.Arch.x86;
 
-using Atomixilc;
 using Atomixilc.Machine;
 using Atomixilc.Attributes;
 using Atomixilc.Machine.x86;
@@ -22,8 +21,8 @@ namespace Atomix.Kernel_H.Drivers.Video
 {
     internal static unsafe class VBE
     {
-        internal static uint Xres;
-        internal static uint Yres;
+        internal static int Xres;
+        internal static int Yres;
         internal static uint BytesPerPixel;
         internal static uint SecondaryBuffer;
         internal static uint VirtualFrameBuffer;
@@ -42,8 +41,8 @@ namespace Atomix.Kernel_H.Drivers.Video
             /* Print Debug Info */
             Debug.Write("Virtual Frame Buffer: %d\n", VirtualFrameBuffer);
             Debug.Write("Secondary Frame Buffer: %d\n", SecondaryBuffer);
-            Debug.Write("Resolution: %dx", Xres);
-            Debug.Write("%dx", Yres);
+            Debug.Write("Resolution: %dx", (uint)Xres);
+            Debug.Write("%dx", (uint)Yres);
             Debug.Write("%d\n", BytesPerPixel);
         }
 

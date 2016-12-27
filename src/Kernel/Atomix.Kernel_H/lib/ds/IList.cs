@@ -39,19 +39,6 @@ namespace Atomix.Kernel_H.Lib
             _items[_size++] = item;
         }
 
-        internal void Refresh()
-        {
-            int _l = 0;
-            for (int i = 0; i < _size; i++)
-            {
-                if (_items[i] != null)
-                {
-                    _items[_l++] = _items[i];
-                }
-            }
-            _size = _l;
-        }
-
         internal T this[int index]
         {
             get
@@ -77,9 +64,6 @@ namespace Atomix.Kernel_H.Lib
             _size = 0;
         }
 
-        /// <summary>
-        /// Free Internal Memory
-        /// </summary>
         internal void Delete()
         {
             Heap.Free(_items);

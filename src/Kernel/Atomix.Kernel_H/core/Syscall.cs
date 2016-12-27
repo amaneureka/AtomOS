@@ -53,6 +53,9 @@ namespace Atomix.Kernel_H.Core
             context.EAX = current;
             current += context.EBX;
 
+            if (current > 0xA0100000)
+                Debug.Write("sys_brk failed\n");
+
             // Assert end should be page aligned
 
             while (current > end)

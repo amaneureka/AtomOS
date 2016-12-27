@@ -78,7 +78,6 @@
     <Compile Include="Drivers\buses\ATA\misc.cs" />
     <Compile Include="Drivers\input\Keyboard.cs" />
     <Compile Include="Drivers\input\Mouse.cs" />
-    <Compile Include="Gui\Bitmap.cs" />
     <Compile Include="Gui\Compositor.cs" />
     <Compile Include="Core\Debug.cs" />
     <Compile Include="Core\Fault.cs" />
@@ -112,7 +111,7 @@
     <Compile Include="IO\Stream.cs" />
     <Compile Include="Lib\Cairo\ColorFormat.cs" />
     <Compile Include="Lib\Cairo\Font.cs" />
-    <Compile Include="Lib\Cairo\NativeMethods.cs" />
+    <Compile Include="Lib\Cairo\Cairo.cs" />
     <Compile Include="Lib\Cairo\Operator.cs" />
     <Compile Include="Lib\Cairo\Status.cs" />
     <Compile Include="Lib\ds\IDictionary.cs" />

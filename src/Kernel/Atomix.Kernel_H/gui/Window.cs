@@ -12,35 +12,48 @@ using System;
 using Atomix.Kernel_H.Core;
 using Atomix.Kernel_H.Devices;
 using Atomix.Kernel_H.Arch.x86;
+using Atomix.Kernel_H.Lib.Cairo;
 
 namespace Atomix.Kernel_H.Gui
 {
     internal class Window
     {
-        Bitmap mBuffer;
-        string mHashID;
+        internal uint Buffer;
+        internal string HashID;
 
         internal int ClientID;
 
-        internal uint X;
-        internal uint Y;
-        internal uint Z;
+        internal int X;
+        internal int Y;
+        internal int Z;
 
-        internal Bitmap Buffer
-        { get { return mBuffer; } }
+        internal int Width;
+        internal int Height;
 
-        internal string HashID
-        { get { return mHashID; } }
+        internal uint Surface;
 
-        internal Window(int aClientID, uint aXpos, uint aYpos, uint aWidth, uint aHeight)
+        static int Zcounter;
+
+        internal Window(int aClientID, int aXpos, int aYpos, int aWidth, int aHeight)
         {
             ClientID = aClientID;
             X = aXpos;
             Y = aYpos;
-            Z = 0;
 
-            mHashID = GenerateNewHashID();
-            mBuffer = new Bitmap(mHashID, aWidth, aHeight);
+            Width = aWidth;
+            Height = aHeight;
+
+            HashID = GenerateNewHashID();
+            Buffer = SHM.Obtain(HashID, (uint)(aWidth * aHeight * 4), true);
+
+            Surface = Cairo.ImageSurfaceCreateForData(aWidth * 4, aHeight, aWidth, ColorFormat.ARGB32, Buffer);
+
+            BringToFront();
+        }
+
+        internal void BringToFront()
+        {
+            Z = ++Zcounter;
         }
 
         internal static string GenerateNewHashID()
