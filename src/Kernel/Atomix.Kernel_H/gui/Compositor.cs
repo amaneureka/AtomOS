@@ -49,7 +49,7 @@ namespace Atomix.Kernel_H.Gui
             RedrawRects = new IQueue<uint>();
 
             int stride = Cairo.FormatStrideForWidth(VBE.Xres, ColorFormat.ARGB32);
-            MouseSurface = Cairo.ImageSurfaceCreateForData(4 * 32, 32, 32, ColorFormat.ARGB32, GetMouseBitamp());
+            MouseSurface = Cairo.ImageSurfaceFromPng(Native.GetContentAddress("disk0/boot.png\0")); //Cairo.ImageSurfaceCreateForData(4 * 32, 32, 32, ColorFormat.ARGB32, GetMouseBitamp());
             MainSurface = Cairo.ImageSurfaceCreateForData(stride, VBE.Yres, VBE.Xres, ColorFormat.ARGB32, VBE.SecondaryBuffer);
             VideoSurface = Cairo.ImageSurfaceCreateForData(stride, VBE.Yres, VBE.Xres, ColorFormat.ARGB32, VBE.VirtualFrameBuffer);
 
@@ -135,8 +135,8 @@ namespace Atomix.Kernel_H.Gui
                 {
                     Cairo.Clip(VideoContext);
                     Cairo.MoveTo(0, 0, VideoContext);
-                    Cairo.SetOperator(Operator.Source, VideoContext);
-                    Cairo.SetSourceSurface(0, 0, MainSurface, VideoContext);
+                    Cairo.SetOperator(Operator.Over, VideoContext);
+                    Cairo.SetSourceSurface(0, 0, MouseSurface, VideoContext);
                     Cairo.Paint(VideoContext);
 
                     Lib.Graphic.Surface.CopyToBuffer(VBE.VirtualFrameBuffer, MouseBuffer, old_mouse_X, old_mouse_Y, VBE.Xres, VBE.Yres, 0, 0, 32, 32, 32);

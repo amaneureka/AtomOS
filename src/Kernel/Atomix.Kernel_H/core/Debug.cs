@@ -55,6 +55,11 @@ namespace Atomix.Kernel_H.Core
             while ((PortIO.In8((ushort)(Port.Com1 + (ushort)Cmd.COM_ModemStatus)) & 0x20) == 0x0) ;
         }
 
+        internal static void Write(string str, int nums)
+        {
+            Write(str, (uint)nums);
+        }
+
         internal static void Write(string str, uint nums)
         {
             Lock();

@@ -9,11 +9,13 @@
 
 using System;
 
+using Atomixilc.Lib;
+
 using Atomix.Kernel_H.Core;
 
 namespace Atomix.Kernel_H.IO.FileSystem.FAT
 {
-    internal class FatStream : Stream
+    internal unsafe class FatStream : Stream
     {
         private FatFileSystem mFS;
 
@@ -24,7 +26,8 @@ namespace Atomix.Kernel_H.IO.FileSystem.FAT
         private uint mCurrentCluster;
         private int mPosition;
 
-        private byte[] mBufferCluster;
+        private byte* mBufferCluster;
+        private int mBufferLength;
 
         internal FatStream(FatFileSystem aFS, string aName, uint aFirstCluster, int aSize)
             :base(aName, aSize)
@@ -37,25 +40,34 @@ namespace Atomix.Kernel_H.IO.FileSystem.FAT
             mCurrentCluster = aFirstCluster;
             mPosition = 0;
 
-            mBufferCluster = new byte[aFS.SectorsPerCluster * 512];
+            mBufferLength = (int)(aFS.SectorsPerCluster * 512);
+            mBufferCluster = (byte*)Libc.malloc(aFS.SectorsPerCluster * 512);
             LoadCluster(mFirstCluster);
         }
 
         internal override int Read(byte[] aBuffer, int aCount)
         {
-            int BufferPosition = 0, RelativePosition = mPosition % mBufferCluster.Length, EffectiveBytesCopied = 0;
+            if (aCount > aBuffer.Length)
+                aCount = aBuffer.Length;
+
+            return Read((byte*)Native.GetContentAddress(aBuffer), aCount);
+        }
+
+        internal override int Read(byte* aBuffer, int aCount)
+        {
+            int BufferPosition = 0, RelativePosition = mPosition % mBufferLength, EffectiveBytesCopied = 0;
 
             if (mPosition + aCount > mFileSize)
                 aCount = mFileSize - mPosition;
 
             do
             {
-                int LengthToCopy = mBufferCluster.Length - RelativePosition;
+                int LengthToCopy = mBufferLength - RelativePosition;
 
                 if (LengthToCopy > aCount)
                     LengthToCopy = aCount;
 
-                Array.Copy(mBufferCluster, RelativePosition, aBuffer, BufferPosition, LengthToCopy);
+                Memory.FastCopy((uint)aBuffer + (uint)BufferPosition, (uint)mBufferCluster + (uint)RelativePosition, (uint)LengthToCopy);
 
                 aCount -= LengthToCopy;
                 mPosition += LengthToCopy;
@@ -63,7 +75,7 @@ namespace Atomix.Kernel_H.IO.FileSystem.FAT
                 RelativePosition += LengthToCopy;
                 EffectiveBytesCopied += LengthToCopy;
 
-                if (RelativePosition >= mBufferCluster.Length)
+                if (RelativePosition >= mBufferLength)
                 {
                     RelativePosition = 0;
                     if (ReadNextCluster() == false)
@@ -95,11 +107,14 @@ namespace Atomix.Kernel_H.IO.FileSystem.FAT
         private bool LoadCluster(uint Cluster)
         {
             UInt32 xSector = mFS.DataSector + ((Cluster - mFS.RootCluster) * mFS.SectorsPerCluster);
-            return mFS.IDevice.Read(xSector, mFS.SectorsPerCluster, mBufferCluster);
+            return mFS.IDevice.Read(xSector, mFS.SectorsPerCluster, (byte*)mBufferCluster);
         }
 
-        internal override bool Write(byte[] aBuffer, int aCount)
-        { return false; }
+        internal override int Write(byte[] aBuffer, int aCount)
+        { return 0; }
+
+        internal override int Write(byte* aBuffer, int aCount)
+        { return 0; }
 
         internal override int Position()
         { return mPosition; }
@@ -113,12 +128,12 @@ namespace Atomix.Kernel_H.IO.FileSystem.FAT
         internal override bool CanWrite()
         { return false; }
 
-        internal override bool Seek(int val, SEEK pos)
-        { return false; }
+        internal override int Seek(int val, SEEK pos)
+        { return 0; }
 
         internal override bool Close()
         {
-            Heap.Free(mBufferCluster);
+            Libc.free((uint)mBufferCluster);
             Heap.Free(this);
             return true;
         }

@@ -9,38 +9,45 @@
 
 using System;
 
+using Atomix.Kernel_H.IO;
 using Atomix.Kernel_H.Arch.x86;
+using Atomix.Kernel_H.IO.FileSystem;
 
 namespace Atomix.Kernel_H.Core
 {
     internal static class Syscall
     {
-        static InterruptHandler[] functions;
-
         internal static void Setup()
         {
-            functions = new InterruptHandler[256];
-
             IDT.RegisterInterrupt(Handler, 0x7F);
-
-            functions[(int)Function.SYS_brk] = sys_brk;
-            functions[(int)Function.SYS_write] = sys_write;
         }
 
-        private static void Handler(ref IRQContext context)
+        private static unsafe void Handler(ref IRQContext context)
         {
-            var Handler = functions[context.EAX];
-
-            if (Handler == null)
+            switch((Function)context.EAX)
             {
-                Debug.Write("syscall handler not found : %d\n", context.EAX);
-                return;
+                case Function.SYS_brk:
+                    context.EAX = (int)sys_brk(context.EBX);
+                    break;
+                case Function.SYS_read:
+                    context.EAX = sys_read(context.EBX, (byte*)context.ECX, context.EDX);
+                    break;
+                case Function.SYS_open:
+                    context.EAX = sys_open((char *)context.EBX, context.ECX, context.EDX);
+                    break;
+                case Function.SYS_seek:
+                    context.EAX = sys_seek(context.EBX, context.ECX, context.EDX);
+                    break;
+                case Function.SYS_close:
+                    context.EAX = sys_close(context.EBX);
+                    break;
+                default:
+                    Debug.Write("Unhandled syscall %d\n", context.EAX);
+                    break;
             }
-
-            Handler(ref context);
         }
 
-        private static unsafe void sys_brk(ref IRQContext context)
+        private static unsafe uint sys_brk(int len)
         {
             var Process = Scheduler.RunningProcess;
 
@@ -50,11 +57,14 @@ namespace Atomix.Kernel_H.Core
 
             // Assert EAX == sys_brk
 
-            context.EAX = current;
-            current += context.EBX;
+            uint addr = current;
+            current += (uint)len;
 
             if (current > 0xA0100000)
+            {
                 Debug.Write("sys_brk failed\n");
+                return 0;
+            }
 
             // Assert end should be page aligned
 
@@ -67,6 +77,8 @@ namespace Atomix.Kernel_H.Core
 
             Process.HeapCurrent = current;
             Process.HeapEndAddress = end;
+
+            return addr;
         }
 
         private static unsafe void sys_write(ref IRQContext context)
@@ -74,6 +86,86 @@ namespace Atomix.Kernel_H.Core
             context.EAX = context.EDX;
             for (uint i = 0; i < context.EDX; i++)
                 Debug.Write((*(byte*)(context.ECX + i)));
+        }
+
+        private static unsafe int sys_read(int fd, byte* buffer, int count)
+        {
+            if (fd < 0) return -1;
+
+            var Process = Scheduler.RunningProcess;
+            var files = Process.Files;
+
+            if (fd >= files.Count) return -1;
+
+            var stream = Process.Files[fd];
+            Debug.Write("read() : %d\n", count);
+            return stream.Read(buffer, count);
+        }
+
+        private static int sys_seek(int fd, int offset, int origin)
+        {
+            if (fd < 0) return -1;
+
+            var Process = Scheduler.RunningProcess;
+            var files = Process.Files;
+
+            if (fd >= files.Count) return -1;
+            if (origin > 2) return -1;
+
+            var stream = Process.Files[fd];
+            Debug.Write("seek() : %d\n", fd);
+            return stream.Seek(offset, (SEEK)origin);
+        }
+
+        private static int sys_close(int fd)
+        {
+            if (fd < 0) return -1;
+
+            var Process = Scheduler.RunningProcess;
+            var files = Process.Files;
+
+            if (fd >= files.Count) return -1;
+
+            var stream = Process.Files[fd];
+            Process.Files[fd] = null;
+
+            stream.Close();
+            Debug.Write("close() : %d\n", fd);
+
+            return 0;
+        }
+
+        private static unsafe int sys_open(char * file, int flags, int mode)
+        {
+            var filename = new string(file);
+            var stream = VirtualFileSystem.GetFile(filename);
+
+            if (stream == null)
+                return -1;
+
+            var Process = Scheduler.RunningProcess;
+            var files = Process.Files;
+            int count = files.Count;
+
+            int fd = -1;
+            for (int index = 0; index < count; index++)
+            {
+                if (files[index] == null)
+                {
+                    files[index] = stream;
+                    fd = index;
+                }
+            }
+
+            if (fd == -1)
+            {
+                files.Add(stream);
+                fd = count;
+            }
+
+            Debug.Write("fopen: %s\n", filename);
+
+            return fd;
         }
 
         /// <summary>
@@ -96,7 +188,7 @@ namespace Atomix.Kernel_H.Core
             SYS_mknod = 14,
             SYS_chmod = 15,
             SYS_chown = 16,
-            SYS_lseek = 19,
+            SYS_seek = 19,
             SYS_getpid = 20,
             SYS_isatty = 21,
             SYS_fstat = 22,

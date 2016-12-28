@@ -11,7 +11,7 @@ using System;
 
 namespace Atomix.Kernel_H.Devices
 {
-    internal class Partition : Storage
+    internal unsafe class Partition : Storage
     {
         protected Storage mParent;
         protected uint mStartSector;
@@ -31,10 +31,20 @@ namespace Atomix.Kernel_H.Devices
             return mParent.Read(mStartSector + aSectorNo, aSectorCount, aData);
         }
 
+        internal override bool Read(uint aSectorNo, uint aSectorCount, byte* aData)
+        {
+            return mParent.Read(mStartSector + aSectorNo, aSectorCount, aData);
+        }
+
         internal override bool Write(uint aSectorNo, uint aSectorCount, byte[] aData)
         {
             if (aSectorNo + aSectorCount > mSectorCount)
                 return false;
+            return mParent.Write(mStartSector + aSectorNo, aSectorCount, aData);
+        }
+
+        internal override bool Write(uint aSectorNo, uint aSectorCount, byte* aData)
+        {
             return mParent.Write(mStartSector + aSectorNo, aSectorCount, aData);
         }
 

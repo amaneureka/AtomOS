@@ -28,6 +28,7 @@ namespace Atomix.RamFS
         {
             switch (Path.GetExtension(FileName).ToLower())
             {
+                /*
                 case ".png":
                     using (var bitmap = new Bitmap(FileData))
                     {
@@ -41,7 +42,7 @@ namespace Atomix.RamFS
                                 Array.Copy(BitConverter.GetBytes(bitmap.GetPixel(x, y).ToArgb()), 0, RawData, pointer, 4);
                     }
                     FileName = FileName.Replace(".png", ".xmp");
-                    break;
+                    break;*/
                 default:
                     {
                         RawData = new byte[FileData.Length];

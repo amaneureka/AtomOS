@@ -27,9 +27,12 @@ namespace Atomix.Kernel_H.IO
         internal abstract bool CanRead();
         internal abstract bool CanWrite();
 
-        internal abstract bool Write(byte[] aBuffer, int aCount);
+        internal abstract unsafe int Write(byte* aBuffer, int aCount);
+        internal abstract unsafe int Read(byte* aBuffer, int aCount);
+
+        internal abstract int Write(byte[] aBuffer, int aCount);
         internal abstract int Read(byte[] aBuffer, int aCount);
-        internal abstract bool Seek(int val, SEEK pos);
+        internal abstract int Seek(int val, SEEK pos);
 
         internal abstract bool Close();
 
@@ -42,10 +45,11 @@ namespace Atomix.Kernel_H.IO
             return xResult;
         }
     }
-    public enum SEEK
+
+    public enum SEEK : int
     {
-        SEEK_FROM_ORIGIN,
-        SEEK_FROM_CURRENT,
-        SEEK_FROM_END,
+        SEEK_FROM_ORIGIN = 0,
+        SEEK_FROM_CURRENT = 1,
+        SEEK_FROM_END = 2,
     }
 }

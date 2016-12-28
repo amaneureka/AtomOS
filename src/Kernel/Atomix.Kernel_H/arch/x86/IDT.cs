@@ -28,31 +28,31 @@ namespace Atomix.Kernel_H.Arch.x86
         [FieldOffset(0)]
         public uint MMX_Context;
         [FieldOffset(4)]
-        public uint EDI;
+        public int EDI;
         [FieldOffset(8)]
-        public uint ESI;
+        public int ESI;
         [FieldOffset(12)]
-        public uint EBP;
+        public int EBP;
         [FieldOffset(16)]
-        public uint ESP;
+        public int ESP;
         [FieldOffset(20)]
-        public uint EBX;
+        public int EBX;
         [FieldOffset(24)]
-        public uint EDX;
+        public int EDX;
         [FieldOffset(28)]
-        public uint ECX;
+        public int ECX;
         [FieldOffset(32)]
-        public uint EAX;
+        public int EAX;
         [FieldOffset(36)]
-        public uint Interrupt;
+        public int Interrupt;
         [FieldOffset(40)]
-        public uint ErrorCode;
+        public int ErrorCode;
         [FieldOffset(44)]
-        public uint EIP;
+        public int EIP;
         [FieldOffset(48)]
-        public uint CS;
+        public int CS;
         [FieldOffset(52)]
-        public uint EFlags;
+        public int EFlags;
     };
 
     internal static class IDT
@@ -90,7 +90,7 @@ namespace Atomix.Kernel_H.Arch.x86
             else if (interrupt < 0x20)
                 Fault.Handle(ref xContext);
             else
-                Debug.Write("Unhandled Interrupt %d\n", interrupt);
+                Debug.Write("Unhandled Interrupt %d\n", (uint)interrupt);
 
             // Send End of Interrupt for IRQs
             if (interrupt >= 0x20)

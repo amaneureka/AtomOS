@@ -7,6 +7,10 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
+using System;
+
+using Atomixilc.Lib;
+
 using Atomix.Kernel_H.Core;
 
 namespace Atomix.Kernel_H.IO.FileSystem.RFS
@@ -25,20 +29,31 @@ namespace Atomix.Kernel_H.IO.FileSystem.RFS
 
         internal override int Read(byte[] aBuffer, int aCount)
         {
+            if (aBuffer.Length > aCount)
+                aCount = aBuffer.Length;
+
+            return Read((byte*)Native.GetContentAddress(aBuffer), aCount);
+        }
+
+        internal override unsafe int Read(byte* aBuffer, int aCount)
+        {
             if (aCount + mPosition > RamFile.Length)
                 aCount = RamFile.Length - mPosition;
 
-            var xAddress = (byte*)(RamFile.StartAddress + (uint)mPosition);
-            for (int index = 0; index < aCount; index++)
-                aBuffer[index] = xAddress[index];
+            Memory.FastCopy((uint)aBuffer, RamFile.StartAddress + (uint)mPosition, (uint)aCount);
 
             mPosition += aCount;
             return aCount;
         }
 
-        internal override bool Write(byte[] aBuffer, int aCount)
+        internal override int Write(byte[] aBuffer, int aCount)
         {
-            return false;
+            return 0;
+        }
+
+        internal override unsafe int Write(byte* aBuffer, int aCount)
+        {
+            return 0;
         }
 
         internal override bool CanRead()
@@ -53,8 +68,24 @@ namespace Atomix.Kernel_H.IO.FileSystem.RFS
         internal override int Position()
         { return mPosition; }
 
-        internal override bool Seek(int val, SEEK pos)
-        { return false; }
+        internal override int Seek(int val, SEEK pos)
+        {
+            switch(pos)
+            {
+                case SEEK.SEEK_FROM_CURRENT:
+                    mPosition += val;
+                    break;
+                case SEEK.SEEK_FROM_ORIGIN:
+                    mPosition += val;
+                    break;
+                case SEEK.SEEK_FROM_END:
+                    mPosition = RamFile.Length + val;
+                    break;
+            }
+
+            mPosition %= RamFile.Length;
+            return mPosition;
+        }
 
         internal override bool Close()
         {

@@ -66,7 +66,7 @@ namespace Atomix.Kernel_H.Arch.x86
             //PortIO.Wait();
         }
 
-        internal static void EndOfInterrupt(uint irq)
+        internal static void EndOfInterrupt(int irq)
         {
             if (irq >= 40) // or untranslated IRQ >= 8
                 PortIO.Out8(PIC2_Command, EOI);

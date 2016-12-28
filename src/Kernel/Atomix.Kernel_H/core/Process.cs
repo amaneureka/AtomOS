@@ -11,6 +11,7 @@ using System;
 
 using Atomixilc.Lib;
 
+using Atomix.Kernel_H.IO;
 using Atomix.Kernel_H.Lib;
 using Atomix.Kernel_H.Arch.x86;
 
@@ -24,6 +25,7 @@ namespace Atomix.Kernel_H.Core
         internal readonly IList<Thread> Threads;
         internal readonly IDictionary<string, uint> Symbols;
         internal readonly uint[] shm_mapping;
+        internal readonly IList<Stream> Files;
 
         internal uint HeapCurrent;
         internal uint HeapEndAddress;
@@ -35,6 +37,7 @@ namespace Atomix.Kernel_H.Core
             ID = GetNewProcessID();
             PageDirectory = aDirectory;
 
+            Files = new IList<Stream>();
             Threads = new IList<Thread>();
             Symbols = new IDictionary<string, uint>(Internals.GetHashCode, string.Equals);
 

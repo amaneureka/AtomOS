@@ -15,7 +15,7 @@ using Atomix.Kernel_H.Arch.x86;
 
 namespace Atomix.Kernel_H.Drivers.buses.ATA
 {
-    internal class IDE : Storage
+    internal unsafe class IDE : Storage
     {
         protected UInt16 DataReg;
         protected UInt16 FeatureReg;
@@ -191,15 +191,26 @@ namespace Atomix.Kernel_H.Drivers.buses.ATA
 
         internal override bool Read(uint SectorNo, uint SectorCount, byte[] xData)
         {
-            return Access_Disk(SectorNo, SectorCount, xData, true);
+            return false;
+        }
+
+        internal override unsafe bool Read(uint SectorNo, uint SectorCount, byte* xData)
+        {
+            return false;
         }
 
         internal override bool Write(uint SectorNo, uint SectorCount, byte[] xData)
         {
-            return Access_Disk(SectorNo, SectorCount, xData, false);
+            return false;
         }
 
-        private bool Access_Disk(UInt32 SectorNo, uint SectorCount, byte[] xData, bool IsReading)
+        internal override unsafe bool Write(uint SectorNo, uint SectorCount, byte* xData)
+        {
+            return false;
+        }
+
+        /*
+        private bool Access_Disk(UInt32 SectorNo, uint SectorCount, byte* xData, bool IsReading)
         {
             if (mDevice == Device.IDE_ATAPI)
             {
@@ -371,7 +382,7 @@ namespace Atomix.Kernel_H.Drivers.buses.ATA
                 return true;
             }
             return false;
-        }
+        }*/
 
         internal override bool Eject()
         {
