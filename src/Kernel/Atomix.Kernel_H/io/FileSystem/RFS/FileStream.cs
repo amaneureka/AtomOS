@@ -32,7 +32,7 @@ namespace Atomix.Kernel_H.IO.FileSystem.RFS
             if (aBuffer.Length > aCount)
                 aCount = aBuffer.Length;
 
-            return Read((byte*)Native.GetContentAddress(aBuffer), aCount);
+            return Read((byte*)aBuffer.GetDataOffset(), aCount);
         }
 
         internal override unsafe int Read(byte* aBuffer, int aCount)

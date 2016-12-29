@@ -74,7 +74,7 @@ namespace Atomix.Kernel_H
             VBE.Clear(0x6D6D6D);
             VBE.Update();
             new Thread(Scheduler.SystemProcess, BootAnimation, Heap.kmalloc(0x10000) + 0x10000, 0x10000).Start();
-
+            //System.Text.Encoding.ASCII.GetString()
             while (true) ;
         }
 
@@ -84,7 +84,7 @@ namespace Atomix.Kernel_H
             if (BootImage != null)
             {
                 var xData = new byte[Compositor.PACKET_SIZE];
-                var Request = (GuiRequest*)Native.GetContentAddress(xData);
+                var Request = (GuiRequest*)xData.GetDataOffset();
                 Request->ClientID = ClientID;
                 Request->Error = ErrorType.None;
                 Request->Type = RequestType.NewWindow;

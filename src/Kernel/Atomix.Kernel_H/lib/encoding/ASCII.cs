@@ -42,8 +42,7 @@ namespace Atomix.Kernel_H.Lib.encoding
 
         internal static unsafe string GetString(byte[] aData, int index, int length)
         {
-            var add = (byte*)Native.GetContentAddress(aData);
-            return GetString(add, index, length);
+            return GetString((byte*)aData.GetDataOffset(), index, length);
         }
     }
 }

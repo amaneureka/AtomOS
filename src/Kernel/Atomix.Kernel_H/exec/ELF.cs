@@ -218,7 +218,7 @@ namespace Atomix.Kernel_H.Exec
             var xData = new byte[xStream.FileSize];
             xStream.Read(xData, xData.Length);
 
-            uint BaseAddress = Native.GetContentAddress(xData);
+            uint BaseAddress = xData.GetDataOffset();
             Elf_Header* Header = (Elf_Header*)BaseAddress;
 
             /* verify ELF header and if this code support this type of elf */
@@ -235,11 +235,6 @@ namespace Atomix.Kernel_H.Exec
                 }
             }
 
-            // create GOT if it does not exist
-            // http://stackoverflow.com/questions/14352809/not-enough-got-space-for-local-got-entries
-            // create 128KB table
-            uint GOT = Heap.kmalloc(256 * 4); // 256 entries GOT table
-
             /* Iterate over all sections and perform relocations */
             Shdr = (Elf_Shdr*)(BaseAddress + Header->e_shoff);
             for (int i = 0; i < Header->e_shnum; i++, Shdr++)
@@ -254,7 +249,7 @@ namespace Atomix.Kernel_H.Exec
                     case SHT_REL:
                         {
                             Shdr->sh_addr = BaseAddress + Shdr->sh_offset;
-                            Relocate(Header, Shdr, GOT);
+                            Relocate(Header, Shdr);
                         }
                         break;
                 }
@@ -266,7 +261,7 @@ namespace Atomix.Kernel_H.Exec
             return LoadAddress;
         }
 
-        private static void Relocate(Elf_Header* aHeader, Elf_Shdr* aShdr, uint GOT)
+        private static void Relocate(Elf_Header* aHeader, Elf_Shdr* aShdr)
         {
             uint BaseAddress = (uint)aHeader;
             Elf32_Rel* Reloc = (Elf32_Rel*)aShdr->sh_addr;
@@ -284,9 +279,7 @@ namespace Atomix.Kernel_H.Exec
 
                 if (SymIdx != SHN_UNDEF)
                 {
-                    if (RelocType == R_386_GOTPC)
-                        SymVal = GOT;
-                    else if (RelocType == R_386_PLT32)
+                    if (RelocType == R_386_PLT32)
                         SymVal = 0;
                     else
                         SymVal = GetSymValue(aHeader, TargetSection->sh_link, SymIdx);
@@ -298,14 +291,8 @@ namespace Atomix.Kernel_H.Exec
                     case R_386_32:
                         *add_ref = SymVal + *add_ref; // S + A
                         break;
-                    case R_386_GOTOFF:
-                        *add_ref = SymVal + *add_ref - GOT; // S + A - GOT
-                        break;
                     case R_386_PLT32:   // L + A - P
                     case R_386_PC32:    // S + A - P
-                    case R_386_GOTPC:   // GOT + A - P
-                        *add_ref = SymVal + *add_ref - (uint)add_ref;
-                        break;
                     default:
                         throw new Exception("[ELF]: Unsupported Relocation type");
                 }

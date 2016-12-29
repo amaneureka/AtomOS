@@ -49,7 +49,7 @@ namespace Atomix.Kernel_H.Gui
             RedrawRects = new IQueue<uint>();
 
             int stride = Cairo.FormatStrideForWidth(VBE.Xres, ColorFormat.ARGB32);
-            MouseSurface = Cairo.ImageSurfaceFromPng(Native.GetContentAddress("disk0/cursor.png\0"));
+            MouseSurface = Cairo.ImageSurfaceFromPng(("disk0/cursor.png\0").GetDataOffset());
             MainSurface = Cairo.ImageSurfaceCreateForData(stride, VBE.Yres, VBE.Xres, ColorFormat.ARGB32, VBE.SecondaryBuffer);
             VideoSurface = Cairo.ImageSurfaceCreateForData(stride, VBE.Yres, VBE.Xres, ColorFormat.ARGB32, VBE.VirtualFrameBuffer);
 
@@ -154,8 +154,8 @@ namespace Atomix.Kernel_H.Gui
         private static unsafe void HandleMouse()
         {
             var Packet = new byte[4];
-            var data = new byte[PACKET_SIZE];
-            var request = (GuiRequest*)Native.GetContentAddress(data);
+            var aData = new byte[PACKET_SIZE];
+            var request = (GuiRequest*)aData.GetDataOffset();
 
             request->Type = RequestType.MouseEvent;
 
@@ -171,19 +171,19 @@ namespace Atomix.Kernel_H.Gui
                 mouseRequest->Xpos = Packet[2];
                 mouseRequest->Ypos = Packet[3];
 
-                Server.Write(data);
+                Server.Write(aData);
             }
         }
 
         private static unsafe void HandleRequest()
         {
-            var packet = new byte[PACKET_SIZE];
+            var xData = new byte[PACKET_SIZE];
 
             while(true)
             {
-                Server.Read(packet);
+                Server.Read(xData);
 
-                var request = (GuiRequest*)Native.GetContentAddress(packet);
+                var request = (GuiRequest*)xData.GetDataOffset();
 
                 if (request->ClientID >= Clients.Count)
                     request->Error = ErrorType.BadRequest;
@@ -307,7 +307,7 @@ namespace Atomix.Kernel_H.Gui
                             break;
                     }
                 }
-                Clients[request->ClientID].Write(packet, false);
+                Clients[request->ClientID].Write(xData, false);
             }
         }
     }

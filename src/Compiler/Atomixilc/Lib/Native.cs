@@ -49,31 +49,27 @@ namespace Atomixilc.Lib
             new Literal("hlt");
             new Ret { Offset = 0x0 };
         }
-
-        /// <summary>
-        /// Get Virtual Address of the object
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
+        
         [NoException]
         [Assembly(false)]
-        public static uint GetAddress(object aObj)
+        public static uint GetDataOffset(this string aStr)
         {
             new Mov { DestinationReg = Register.EAX, SourceReg = Register.ESP, SourceDisplacement = 0x4, SourceIndirect = true };
+            new Add { DestinationReg = Register.EAX, SourceRef = "0x10" };
             new Ret { Offset = 0x4 };
 
-            return 0; // Only me and my compiler knows how it is working :P
+            return 0;
         }
 
-        /// <summary>
-        /// Get Virtual Address of an array (addend reserved length)
-        /// </summary>
-        /// <param name="aArray"></param>
-        /// <returns></returns>
-        public static uint GetContentAddress(object aObj)
+        [NoException]
+        [Assembly(false)]
+        public static uint GetDataOffset(this Array aArray)
         {
-            // 0x10 bytes are reserved for compiler specific work
-            return (GetAddress(aObj) + 0x10);
+            new Mov { DestinationReg = Register.EAX, SourceReg = Register.ESP, SourceDisplacement = 0x4, SourceIndirect = true };
+            new Add { DestinationReg = Register.EAX, SourceRef = "0x10" };
+            new Ret { Offset = 0x4 };
+
+            return 0;
         }
 
         /// <summary>

@@ -17,8 +17,7 @@ namespace Atomix.Kernel_H.Lib
     {
         internal static unsafe void Copy(char* aDes, string aSrc, int aLen)
         {
-            uint src = Native.GetContentAddress(aSrc);
-            Memory.FastCopy((uint)aDes, src, (uint)(aLen * sizeof(char)));
+            Memory.FastCopy((uint)aDes, aSrc.GetDataOffset(), (uint)(aLen * sizeof(char)));
             aDes[aLen] = '\0';
         }
     }

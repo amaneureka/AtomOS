@@ -50,7 +50,7 @@ namespace Atomix.Kernel_H.IO.FileSystem.FAT
             if (aCount > aBuffer.Length)
                 aCount = aBuffer.Length;
 
-            return Read((byte*)Native.GetContentAddress(aBuffer), aCount);
+            return Read((byte*)aBuffer.GetDataOffset(), aCount);
         }
 
         internal override int Read(byte* aBuffer, int aCount)
