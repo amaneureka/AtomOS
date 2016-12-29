@@ -67,6 +67,10 @@ namespace Atomixilc
             if (TargetPlatform == Architecture.None)
                 throw new Exception("No target platform selected");
 
+            if (!Path.IsPathRooted(mOutputFile))
+                mOutputFile = Path.Combine(Environment.CurrentDirectory, mOutputFile);
+
+            Directory.CreateDirectory(Path.GetDirectoryName(mOutputFile));
             for (int i = 0; i < InputFiles.Count; i++)
             {
                 string InputFile = InputFiles[i];
