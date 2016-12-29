@@ -24,11 +24,6 @@ namespace Atomixilc
         public const string Heap_Label = "__Heap__";
 
         /// <summary>
-        /// Label to identify and locate External library loading function
-        /// </summary>
-        public const string Extern_Label = "__Extern__";
-
-        /// <summary>
         /// Label to identify and locate VTable Get Entry function
         /// </summary>
         public const string VTable_Label = "__VTable_GetEntry__";

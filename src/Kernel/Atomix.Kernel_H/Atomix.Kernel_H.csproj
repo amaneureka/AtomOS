@@ -69,15 +69,14 @@
     <Compile Include="Arch\x86\SHM.cs" />
     <Compile Include="Core\Syscall.cs" />
     <Compile Include="Exec\ELF.cs" />
-    <Compile Include="Exec\Environment.cs" />
     <Compile Include="Core\Monitor.cs" />
     <Compile Include="Devices\MBR.cs" />
     <Compile Include="Devices\Partition.cs" />
     <Compile Include="Devices\Storage.cs" />
-    <Compile Include="Drivers\buses\ATA\IDE.cs" />
-    <Compile Include="Drivers\buses\ATA\misc.cs" />
-    <Compile Include="Drivers\input\Keyboard.cs" />
-    <Compile Include="Drivers\input\Mouse.cs" />
+    <Compile Include="Drivers\Buses\ATA\IDE.cs" />
+    <Compile Include="Drivers\Buses\ATA\misc.cs" />
+    <Compile Include="Drivers\Input\Keyboard.cs" />
+    <Compile Include="Drivers\Input\Mouse.cs" />
     <Compile Include="Gui\Compositor.cs" />
     <Compile Include="Core\Debug.cs" />
     <Compile Include="Core\Fault.cs" />
@@ -103,7 +102,7 @@
     <Compile Include="IO\FileSystem\RFS\FileStream.cs" />
     <Compile Include="IO\FileSystem\RFS\RamFile.cs" />
     <Compile Include="IO\FileSystem\VirtualFileSystem.cs" />
-    <Compile Include="Drivers\video\VBE.cs" />
+    <Compile Include="Drivers\Video\VBE.cs" />
     <Compile Include="IO\Pipe.cs" />
     <Compile Include="IO\Stream.cs" />
     <Compile Include="Lib\Cairo\ColorFormat.cs" />
@@ -118,8 +117,6 @@
     <Compile Include="Lib\ds\misc.cs" />
     <Compile Include="Lib\ds\Pair.cs" />
     <Compile Include="Lib\encoding\ASCII.cs" />
-    <Compile Include="Lib\graphic\misc.cs" />
-    <Compile Include="Lib\graphic\Surface.cs" />
     <Compile Include="Lib\Marshal.cs" />
     <Compile Include="Lib\Numerics.cs" />
     <Compile Include="plugs\Convert.cs" />

@@ -31,7 +31,7 @@ namespace Atomix.Kernel_H.Core
             get { return State; }
         }
 
-        static int ThreadCounter = 0;
+        static int ThreadCounter;
 
         public Thread(Process aParent, Action aMethod, uint aStackStart, uint aStackLimit)
             :this(aParent, aMethod.InvokableAddress(), aStackStart, aStackLimit)
@@ -99,11 +99,11 @@ namespace Atomix.Kernel_H.Core
             StackTop = Stack;
         }
 
-        internal void FreeStack()
+        internal void Free()
         {
             Heap.Free(Dead);
-            Heap.Free(this);
             Heap.Free(StackBottom, StackLimit);
+            Heap.Free(this);
         }
 
         internal static void Die()

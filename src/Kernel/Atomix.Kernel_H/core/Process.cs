@@ -23,7 +23,6 @@ namespace Atomix.Kernel_H.Core
         internal readonly string Name;
         internal readonly uint PageDirectory;
         internal readonly IList<Thread> Threads;
-        internal readonly IDictionary<string, uint> Symbols;
         internal readonly uint[] shm_mapping;
         internal readonly IList<Stream> Files;
 
@@ -39,7 +38,6 @@ namespace Atomix.Kernel_H.Core
 
             Files = new IList<Stream>();
             Threads = new IList<Thread>();
-            Symbols = new IDictionary<string, uint>(Internals.GetHashCode, string.Equals);
 
             // TODO: Should be a random address
             HeapStartAddress = 0xA0000000;
@@ -52,19 +50,6 @@ namespace Atomix.Kernel_H.Core
         internal void SetEnvironment()
         {
             Paging.SwitchDirectory(PageDirectory);
-        }
-
-        internal uint GetSymbols(string aStr)
-        {
-            return Symbols.GetValue(aStr, 0);
-        }
-
-        internal void SetSymbol(string aStr, uint aAddress)
-        {
-            uint add = Symbols.GetValue(aStr, 0);
-            if (add != 0)
-                throw new Exception("[Process]: Symbol already exist!");
-            Symbols.Add(aStr, aAddress);
         }
 
         static uint _pid = 0;
