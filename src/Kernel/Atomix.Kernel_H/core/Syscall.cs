@@ -41,6 +41,9 @@ namespace Atomix.Kernel_H.Core
                 case Function.SYS_close:
                     context.EAX = sys_close(context.EBX);
                     break;
+                case Function.SYS_write:
+                    context.EAX = sys_write(context.EBX, (byte*)context.ECX, context.EDX);
+                    break;
                 default:
                     Debug.Write("Unhandled syscall %d\n", context.EAX);
                     break;
@@ -81,11 +84,11 @@ namespace Atomix.Kernel_H.Core
             return addr;
         }
 
-        private static unsafe void sys_write(ref IRQContext context)
+        private static unsafe int sys_write(int fb, byte* buffer, int count)
         {
-            context.EAX = context.EDX;
-            for (uint i = 0; i < context.EDX; i++)
-                Debug.Write((*(byte*)(context.ECX + i)));
+            for (int i = 0; i < count; i++)
+                Debug.Write(*(buffer + i));
+            return count;
         }
 
         private static unsafe int sys_read(int fd, byte* buffer, int count)
@@ -98,7 +101,6 @@ namespace Atomix.Kernel_H.Core
             if (fd >= files.Count) return -1;
 
             var stream = Process.Files[fd];
-            Debug.Write("read() : %d\n", count);
             return stream.Read(buffer, count);
         }
 
@@ -113,7 +115,6 @@ namespace Atomix.Kernel_H.Core
             if (origin > 2) return -1;
 
             var stream = Process.Files[fd];
-            Debug.Write("seek() : %d\n", fd);
             return stream.Seek(offset, (SEEK)origin);
         }
 

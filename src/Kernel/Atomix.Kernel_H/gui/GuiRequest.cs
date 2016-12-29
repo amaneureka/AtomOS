@@ -64,7 +64,18 @@ namespace Atomix.Kernel_H.Gui
         internal int Width;
         [FieldOffset(32)]
         internal int Height;
-    }
+    };
+
+    [StructLayout(LayoutKind.Explicit, Size = 28)]
+    internal struct WindowMove
+    {
+        [FieldOffset(16)]
+        internal int WindowID;
+        [FieldOffset(20)]
+        internal int RelX;
+        [FieldOffset(24)]
+        internal int RelY;
+    };
 
     [StructLayout(LayoutKind.Explicit, Size = 16)]
     internal struct Rect
@@ -77,7 +88,7 @@ namespace Atomix.Kernel_H.Gui
         internal int Width;
         [FieldOffset(12)]
         internal int Height;
-    }
+    };
 
     internal enum RequestType : uint
     {

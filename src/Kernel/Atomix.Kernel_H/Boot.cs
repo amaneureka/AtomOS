@@ -10,7 +10,7 @@
 using System;
 
 using Atomixilc.Lib;
-
+using Atomix.Kernel_H.Lib.Cairo;
 using Atomix.Kernel_H.IO;
 using Atomix.Kernel_H.Gui;
 using Atomix.Kernel_H.Core;
@@ -29,7 +29,7 @@ namespace Atomix.Kernel_H
         internal static int ClientID;
         internal static Pipe SystemClient;
 
-        internal static void Init()
+        internal unsafe static void Init()
         {
             Debug.Write("Boot Init()\n");
 
@@ -54,7 +54,7 @@ namespace Atomix.Kernel_H
             Compositor.Setup(Scheduler.SystemProcess);
             ClientID = Compositor.CreateConnection(SystemClient);
 
-            new Thread(Scheduler.SystemProcess, BootAnimation, Heap.kmalloc(0x1000) + 0x1000, 0x1000).Start();
+
             #endregion
             #region IDE Devices
             LoadIDE(true, true);
@@ -71,18 +71,22 @@ namespace Atomix.Kernel_H
             else
                 Debug.Write("File not found!\n");
             Debug.Write("lol: %d\n", __main(0xac));*/
+            VBE.Clear(0x6D6D6D);
+            VBE.Update();
+            new Thread(Scheduler.SystemProcess, BootAnimation, Heap.kmalloc(0x10000) + 0x10000, 0x10000).Start();
+
             while (true) ;
         }
 
         internal static unsafe void BootAnimation()
         {
-            VBE.Clear(0x6D6D6D);
             var BootImage = VirtualFileSystem.GetFile("disk0/boot.xmp");
             if (BootImage != null)
             {
                 var xData = new byte[Compositor.PACKET_SIZE];
                 var Request = (GuiRequest*)Native.GetContentAddress(xData);
                 Request->ClientID = ClientID;
+                Request->Error = ErrorType.None;
                 Request->Type = RequestType.NewWindow;
 
                 var Request2 = (NewWindow*)Request;
@@ -91,9 +95,9 @@ namespace Atomix.Kernel_H
                 Request2->Width = 256;
                 Request2->Height = 256;
                 Compositor.Server.Write(xData);
-                SystemClient.Read(xData);
 
-                string HashCode = new string(Request2->Hash);
+                SystemClient.Read(xData);
+                string HashCode = new string(Request2->Buffer);
                 var aBuffer = SHM.Obtain(HashCode, 0, false);
 
                 BootImage.Read(xData, 8);
@@ -104,8 +108,37 @@ namespace Atomix.Kernel_H
                     Memory.FastCopy(aBuffer + index, (uint)Request, c);
                     index += c;
                 }
-                Heap.Free(xData);
-                Debug.Write("Ticks: %d\n", Timer.TicksFromStart);
+
+                uint surface = Cairo.ImageSurfaceCreateForData(256 * 4, 256, 256, ColorFormat.ARGB32, aBuffer);
+                uint cr = Cairo.Create(surface);
+                //Courier
+                var data = (byte*)Heap.kmalloc(10);
+                data[0] = (byte)'A';
+                data[1] = (byte)'t';
+                data[2] = (byte)'o';
+                data[3] = (byte)'m';
+                data[4] = (byte)' ';
+                data[5] = (byte)'O';
+                data[6] = (byte)'S';
+
+                Cairo.SetSourceRGB(1.0, 0, 0, cr);
+                Cairo.SelectFontFace(FontWeight.Bold, FontSlant.Italic, (uint)data, cr);
+                Cairo.SetFontSize(40, cr);
+
+                Cairo.MoveTo(50, 10, cr);
+                Cairo.ShowText((uint)data, cr);
+                Cairo.SurfaceFlush(surface);
+
+                Request->ClientID = ClientID;
+                Request->Error = ErrorType.None;
+                Request->Type = RequestType.Redraw;
+                var req = (Redraw*)Request;
+                req->WindowID = 0;
+                req->X = 0;
+                req->Y = 0;
+                req->Width = 256;
+                req->Height = 256;
+                Compositor.Server.Write(xData);
             }
             else
                 Debug.Write("Boot Image not found!\n");

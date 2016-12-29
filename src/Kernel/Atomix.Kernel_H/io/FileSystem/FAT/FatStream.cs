@@ -41,7 +41,7 @@ namespace Atomix.Kernel_H.IO.FileSystem.FAT
             mPosition = 0;
 
             mBufferLength = (int)(aFS.SectorsPerCluster * 512);
-            mBufferCluster = (byte*)Libc.malloc(aFS.SectorsPerCluster * 512);
+            mBufferCluster = (byte*)Heap.kmalloc(aFS.SectorsPerCluster * 512);
             LoadCluster(mFirstCluster);
         }
 
@@ -133,7 +133,7 @@ namespace Atomix.Kernel_H.IO.FileSystem.FAT
 
         internal override bool Close()
         {
-            Libc.free((uint)mBufferCluster);
+            Heap.Free((uint)mBufferCluster, (uint)mBufferLength);
             Heap.Free(this);
             return true;
         }

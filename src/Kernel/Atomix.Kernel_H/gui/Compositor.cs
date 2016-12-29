@@ -49,7 +49,7 @@ namespace Atomix.Kernel_H.Gui
             RedrawRects = new IQueue<uint>();
 
             int stride = Cairo.FormatStrideForWidth(VBE.Xres, ColorFormat.ARGB32);
-            MouseSurface = Cairo.ImageSurfaceFromPng(Native.GetContentAddress("disk0/boot.png\0")); //Cairo.ImageSurfaceCreateForData(4 * 32, 32, 32, ColorFormat.ARGB32, GetMouseBitamp());
+            MouseSurface = Cairo.ImageSurfaceFromPng(Native.GetContentAddress("disk0/cursor.png\0"));
             MainSurface = Cairo.ImageSurfaceCreateForData(stride, VBE.Yres, VBE.Xres, ColorFormat.ARGB32, VBE.SecondaryBuffer);
             VideoSurface = Cairo.ImageSurfaceCreateForData(stride, VBE.Yres, VBE.Xres, ColorFormat.ARGB32, VBE.VirtualFrameBuffer);
 
@@ -76,7 +76,6 @@ namespace Atomix.Kernel_H.Gui
         {
             int tmp_mouse_X, tmp_mouse_Y;
             int old_mouse_X = -1, old_mouse_Y = -1;
-            var MouseBuffer = GetMouseBitamp();
 
             bool update;
             while (true)
@@ -93,6 +92,7 @@ namespace Atomix.Kernel_H.Gui
                     update = true;
                     Cairo.Rectangle(32, 32, old_mouse_Y, old_mouse_X, MainContext);
                     Cairo.Rectangle(32, 32, old_mouse_Y, old_mouse_X, VideoContext);
+                    Cairo.Rectangle(32, 32, tmp_mouse_Y, tmp_mouse_X, VideoContext);
                 }
 
                 old_mouse_X = tmp_mouse_X;
@@ -134,35 +134,21 @@ namespace Atomix.Kernel_H.Gui
                 if (update)
                 {
                     Cairo.Clip(VideoContext);
-                    Cairo.MoveTo(0, 0, VideoContext);
+
+                    Cairo.TranslateTo(0, 0, VideoContext);
+                    Cairo.SetOperator(Operator.Source, VideoContext);
+                    Cairo.SetSourceSurface(0, 0, MainSurface, VideoContext);
+                    Cairo.Paint(VideoContext);
+
+                    Cairo.TranslateTo(old_mouse_Y, old_mouse_X, VideoContext);
                     Cairo.SetOperator(Operator.Over, VideoContext);
                     Cairo.SetSourceSurface(0, 0, MouseSurface, VideoContext);
                     Cairo.Paint(VideoContext);
-
-                    Lib.Graphic.Surface.CopyToBuffer(VBE.VirtualFrameBuffer, MouseBuffer, old_mouse_X, old_mouse_Y, VBE.Xres, VBE.Yres, 0, 0, 32, 32, 32);
                 }
 
                 Cairo.Restore(MainContext);
                 Cairo.Restore(VideoContext);
             }
-        }
-
-        public static unsafe uint GetMouseBitamp()
-        {
-            var aBuffer = (byte*)Heap.kmalloc(32 * 32 * 4);
-
-            for (int i = 0; i < 32; i++)
-            {
-                for (int j = 0; j < 32; j++)
-                {
-                    int add = ((j * 32) + i) * 4;
-                    aBuffer[add + 0] = 0xFF;
-                    aBuffer[add + 1] = 0x55;
-                    aBuffer[add + 2] = 0xAA;
-                    aBuffer[add + 3] = 0xFF;
-                }
-            }
-            return (uint)aBuffer;
         }
 
         private static unsafe void HandleMouse()
@@ -212,14 +198,14 @@ namespace Atomix.Kernel_H.Gui
                                 int btn = mouse_request->Button;
 
                                 if ((btn & 0x10) == 0)
-                                    Mouse_X += mouse_request->Xpos;
+                                    Mouse_X += mouse_request->Xpos << 1;
                                 else
-                                    Mouse_X -= (mouse_request->Xpos ^ 0xFF);
+                                    Mouse_X -= (mouse_request->Xpos ^ 0xFF) << 1;
 
                                 if ((btn & 0x20) == 0)
-                                    Mouse_Y -= mouse_request->Ypos;
+                                    Mouse_Y -= mouse_request->Ypos << 1;
                                 else
-                                    Mouse_Y += (mouse_request->Ypos ^ 0xFF);
+                                    Mouse_Y += (mouse_request->Ypos ^ 0xFF) << 1;
 
                                 MouseLeftBtn = (btn & 0x1) != 0;
                                 MouseRightBtn = (btn & 0x2) != 0;
@@ -284,7 +270,36 @@ namespace Atomix.Kernel_H.Gui
                             break;
                         case RequestType.WindowMove:
                             {
+                                var winmove = (WindowMove*)request;
 
+                                int id = winmove->WindowID;
+                                if (id < 0 || id >= Windows.Count)
+                                {
+                                    request->Error = ErrorType.BadParameters;
+                                    break;
+                                }
+
+                                var win = Windows[id];
+
+                                var rect = (Rect*)Libc.malloc((uint)sizeof(Rect));
+                                rect->X = win.X;
+                                rect->Y = win.Y;
+                                rect->Width = win.Width;
+                                rect->Height = win.Height;
+
+                                var rect2 = (Rect*)Libc.malloc((uint)sizeof(Rect));
+                                win.X += winmove->RelX;
+                                win.Y += winmove->RelY;
+
+                                rect2->X = win.X;
+                                rect2->Y = win.Y;
+                                rect2->Width = win.Width;
+                                rect2->Height = win.Height;
+
+                                Monitor.AcquireLock(ref RedrawRectsLock);
+                                RedrawRects.Enqueue((uint)rect);
+                                RedrawRects.Enqueue((uint)rect2);
+                                Monitor.ReleaseLock(ref RedrawRectsLock);
                             }
                             break;
                         default:
