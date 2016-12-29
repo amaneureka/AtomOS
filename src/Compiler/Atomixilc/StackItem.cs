@@ -74,5 +74,15 @@ namespace Atomixilc
                     || (OperandType == typeof(ushort)));
             }
         }
+
+        public bool Equals(StackItem aItem)
+        {
+            return (RegisterRef == aItem.RegisterRef) &&
+                   (AddressRef == aItem.AddressRef) &&
+                   (IsIndirect == aItem.IsIndirect) &&
+                   (SystemStack == aItem.SystemStack) &&
+                   (Displacement == aItem.Displacement) &&
+                   (OperandType == aItem.OperandType);
+        }
     }
 }

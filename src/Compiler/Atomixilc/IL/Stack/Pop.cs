@@ -51,6 +51,7 @@ namespace Atomixilc.IL
                             throw new Exception(string.Format("UnImplemented-RegisterType '{0}'", msIL));
 
                         new Add { DestinationReg = Register.ESP, SourceRef = "0x" + size.ToString("X") };
+                        Optimizer.SaveStack(xOp.NextPosition);
                     }
                     break;
                 default:

@@ -47,6 +47,7 @@ namespace Atomixilc.IL
                         new Push { DestinationRef = function.FullName() };
 
                         Optimizer.vStack.Push(new StackItem(typeof(uint)));
+                        Optimizer.SaveStack(xOp.NextPosition);
                     }
                     break;
                 default:

@@ -85,6 +85,7 @@ namespace Atomixilc.IL
                             new Call { DestinationRef = addressRefernce };
                             new Test { DestinationReg = Register.ECX, SourceRef = "0xFFFFFFFF" };
                             new Jmp { Condition = ConditionalJump.JNZ, DestinationRef = xOp.HandlerRef };
+                            Optimizer.SaveStack(xOp.HandlerPosition);
                         }
                         else
                         {
@@ -97,6 +98,7 @@ namespace Atomixilc.IL
                             new Call { DestinationRef = Helper.VTable_Label, IsLabel = true };
                             new Test { DestinationReg = Register.ECX, SourceRef = "0xFFFFFFFF" };
                             new Jmp { Condition = ConditionalJump.JNZ, DestinationRef = xOp.HandlerRef };
+                            Optimizer.SaveStack(xOp.HandlerPosition);
 
                             if (functionInfo.DeclaringType == typeof(object))
                                 throw new Exception("Callvirt Object Declaring type not implemented");
@@ -113,6 +115,8 @@ namespace Atomixilc.IL
                             new Push { DestinationReg = Register.EAX };
                             Optimizer.vStack.Push(new StackItem(functionInfo.ReturnType));
                         }
+
+                        Optimizer.SaveStack(xOp.NextPosition);
                     }
                     break;
                 default:

@@ -63,6 +63,7 @@ namespace Atomixilc.IL
                         new Or { DestinationReg = Register.ESP, SourceReg = Register.EAX, DestinationIndirect = true };
 
                         Optimizer.vStack.Push(new StackItem(itemA.OperandType));
+                        Optimizer.SaveStack(xOp.NextPosition);
                     }
                     break;
                 default:

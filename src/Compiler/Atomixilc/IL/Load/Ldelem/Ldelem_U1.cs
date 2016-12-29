@@ -57,6 +57,7 @@ namespace Atomixilc.IL
 
                         Ldelem_il.Executex86(1, false);
                         Optimizer.vStack.Push(new StackItem(typeof(uint)));
+                        Optimizer.SaveStack(xOp.NextPosition);
                     }
                     break;
                 default:

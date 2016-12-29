@@ -76,6 +76,7 @@ namespace Atomixilc.IL
                         new Label(xNextLabel);
 
                         Optimizer.vStack.Push(new StackItem(typeof(bool)));
+                        Optimizer.SaveStack(xOp.NextPosition);
                     }
                     break;
                 default:

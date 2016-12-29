@@ -108,6 +108,7 @@ namespace Atomixilc.IL
             }
 
             Optimizer.vStack.Push(new StackItem(ArgType));
+            Optimizer.SaveStack(xOp.NextPosition);
         }
 
         internal static int GetArgumentOffset(Options Config, MethodBase method, int paramIndex)

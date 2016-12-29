@@ -47,6 +47,7 @@ namespace Atomixilc.IL
                         new Push { DestinationRef = Helper.GetResolvedStringLabel(str) };
 
                         Optimizer.vStack.Push(new StackItem(typeof(string)));
+                        Optimizer.SaveStack(xOp.NextPosition);
                     }
                     break;
                 default:

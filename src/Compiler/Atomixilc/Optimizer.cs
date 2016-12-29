@@ -8,60 +8,68 @@ namespace Atomixilc
 {
     internal class Optimizer
     {
-        internal Options Config;
         internal Stack<StackItem> vStack;
+        internal readonly Options Config;
+        internal readonly Queue<int> ILQueue;
+        internal readonly Dictionary<int, Stack<StackItem>> StackState;
 
-        Dictionary<Register, bool> NonVolatileRegisters;
-
-        internal Optimizer(Options aConfig)
+        internal Optimizer(Options aConfig, Queue<int> aILQueue)
         {
             Config = aConfig;
-            vStack = new Stack<StackItem>();
-            NonVolatileRegisters = new Dictionary<Register, bool>();
+            ILQueue = aILQueue;
+            StackState = new Dictionary<int, Stack<StackItem>>();
+
+            StackState.Add(0, new Stack<StackItem>());
         }
 
-        void Setup()
+        internal void SaveStack(int aNextPosition)
         {
-            NonVolatileRegisters.Add(Register.EBX, false);
-            NonVolatileRegisters.Add(Register.ECX, false);
-        }
+            if (aNextPosition < 0) return;
 
-        internal void FreeRegister(Register aReg)
-        {
-            if (NonVolatileRegisters.ContainsKey(aReg))
-                NonVolatileRegisters[aReg] = false;
-        }
+            if (vStack == null)
+                throw new Exception("Invalid SaveStack call!");
 
-        internal void AllocateRegister(Register aReg)
-        {
-            if (NonVolatileRegisters.ContainsKey(aReg))
-            {
-                if (NonVolatileRegisters[aReg])
-                    throw new Exception("Tried to allocate already allocated register");
-                NonVolatileRegisters[aReg] = true;
-            }
+            if (!StackState.ContainsKey(aNextPosition))
+                StackState.Add(aNextPosition, vStack);
             else
-                Verbose.Error("Tried to Allocate VolatileRegister '{0}'", aReg);
-        }
-
-        internal bool GetNonVolatileRegister(ref Register? aFreeReg)
-        {
-            foreach(var regState in NonVolatileRegisters)
             {
-                if (regState.Value == false)
-                {
-                    aFreeReg = regState.Key;
-                    return true;
-                }
+                var oldStack = StackState[aNextPosition];
+                StackState[aNextPosition] = Merge(oldStack, vStack, aNextPosition);
             }
-            return false;
+            ILQueue.Enqueue(aNextPosition);
         }
 
-        internal void Reset()
+        internal void LoadStack(int aPosition)
         {
-            vStack.Clear();
-            NonVolatileRegisters.Clear();
-            Setup();
+            vStack = null;
+            StackState.TryGetValue(aPosition, out vStack);
+            if (vStack == null)
+                throw new Exception(string.Format("StackState not found! '{0}'", aPosition));
+            vStack = new Stack<StackItem>(vStack.Reverse());
+        }
+
+        private Stack<StackItem> Merge(Stack<StackItem> itemA, Stack<StackItem> itemB, int aNextPosition)
+        {
+            var listA = itemA.ToList();
+            var listB = itemB.ToList();
+
+            if (listA.Count != listB.Count)
+                throw new Exception(string.Format("Can't merge two different size stacks '{0}' => {1} {2}", aNextPosition, listA.Count, listB.Count));
+
+            var aStack = new Stack<StackItem>();
+
+            int n = listA.Count;
+            for (int i = 0; i < n; i++)
+            {
+                if (listA[i].Equals(listB[i]))
+                {
+                    aStack.Push(listA[i]);
+                    continue;
+                }
+                aStack.Push(new StackItem(listA[i].OperandType));
+            }
+
+            return aStack;
         }
     }
 }

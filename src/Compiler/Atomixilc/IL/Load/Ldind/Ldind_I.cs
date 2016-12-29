@@ -59,6 +59,7 @@ namespace Atomixilc.IL
             }
 
             Optimizer.vStack.Push(new StackItem(typeof(int)));
+            Optimizer.SaveStack(xOp.NextPosition);
         }
 
         internal static void Executex86(int size, bool IsSigned)

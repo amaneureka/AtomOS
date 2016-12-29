@@ -89,6 +89,7 @@ namespace Atomixilc.IL
             }
 
             Optimizer.vStack.Push(new StackItem(field.FieldType));
+            Optimizer.SaveStack(xOp.NextPosition);
         }
     }
 }

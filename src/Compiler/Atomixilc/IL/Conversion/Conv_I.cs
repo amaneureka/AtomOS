@@ -55,6 +55,7 @@ namespace Atomixilc.IL
                             throw new Exception(string.Format("UnImplemented-RegisterType '{0}'", msIL));
 
                         Optimizer.vStack.Push(new StackItem(typeof(int)));
+                        Optimizer.SaveStack(xOp.NextPosition);
                     }
                     break;
                 default:

@@ -63,6 +63,7 @@ namespace Atomixilc.IL
                         new Sar { DestinationReg = Register.ESP, SourceReg = Register.CL, DestinationIndirect = true };
 
                         Optimizer.vStack.Push(new StackItem(itemB.OperandType));
+                        Optimizer.SaveStack(xOp.NextPosition);
                     }
                     break;
                 default:

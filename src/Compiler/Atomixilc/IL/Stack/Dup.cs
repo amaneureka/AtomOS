@@ -59,6 +59,7 @@ namespace Atomixilc.IL
                         new Push { DestinationReg = Register.ESP, DestinationIndirect = true };
 
                         Optimizer.vStack.Push(new StackItem(item.OperandType));
+                        Optimizer.SaveStack(xOp.NextPosition);
                     }
                     break;
                 default:

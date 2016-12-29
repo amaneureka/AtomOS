@@ -45,6 +45,8 @@ namespace Atomixilc.IL
                 case Architecture.x86:
                     {
                         new Jmp { DestinationRef = xTrueLabel };
+
+                        Optimizer.SaveStack(offset);
                     }
                     break;
                 default:

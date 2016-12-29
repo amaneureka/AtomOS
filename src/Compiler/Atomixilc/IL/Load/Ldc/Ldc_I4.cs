@@ -52,6 +52,7 @@ namespace Atomixilc.IL
             }
 
             Optimizer.vStack.Push(new StackItem(typeof(int)));
+            Optimizer.SaveStack(xOp.NextPosition);
         }
     }
 }

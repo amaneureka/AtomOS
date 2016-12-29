@@ -46,6 +46,7 @@ namespace Atomixilc.IL
                     {
                         new Push { DestinationRef = "0x" + Helper.GetTypeSize(type, Config.TargetPlatform).ToString("X") };
                         Optimizer.vStack.Push(new StackItem(typeof(uint)));
+                        Optimizer.SaveStack(xOp.NextPosition);
                     }
                     break;
                 default:

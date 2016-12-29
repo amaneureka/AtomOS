@@ -53,6 +53,7 @@ namespace Atomixilc.IL
                         new Push { DestinationRef = tokenAddress };
 
                         Optimizer.vStack.Push(new StackItem(typeof(uint)));
+                        Optimizer.SaveStack(xOp.NextPosition);
                     }
                     break;
                 default:

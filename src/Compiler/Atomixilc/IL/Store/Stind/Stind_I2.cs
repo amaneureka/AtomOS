@@ -60,6 +60,8 @@ namespace Atomixilc.IL
                 default:
                     throw new Exception(string.Format("Unsupported target platform '{0}' for MSIL '{1}'", Config.TargetPlatform, msIL));
             }
+
+            Optimizer.SaveStack(xOp.NextPosition);
         }
     }
 }

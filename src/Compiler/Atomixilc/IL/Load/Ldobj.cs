@@ -87,6 +87,7 @@ namespace Atomixilc.IL
                         }
 
                         Optimizer.vStack.Push(new StackItem(xOpType));
+                        Optimizer.SaveStack(xOp.NextPosition);
                     }
                     break;
                 default:

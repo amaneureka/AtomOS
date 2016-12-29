@@ -132,6 +132,7 @@ namespace Atomixilc.IL
                         new Push { DestinationReg = Register.EAX };
 
                         Optimizer.vStack.Push(new StackItem(type));
+                        Optimizer.SaveStack(xOp.NextPosition);
                     }
                     break;
                 default:

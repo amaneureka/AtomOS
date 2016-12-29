@@ -859,7 +859,6 @@ namespace Atomixilc
             }
 
             block = new FunctionalBlock(MethodName, Config.TargetPlatform, CallingConvention.StdCall);
-
             Instruction.Block = block;
 
             new Label(method.FullName());
@@ -872,11 +871,28 @@ namespace Atomixilc
 
             EmitHeader(block, method, bodySize);
 
-            var Optimizer = new Optimizer(Config);
             var ReferencedPositions = new HashSet<int>();
-            var xOpCodes = EmitOpCodes(method, ReferencedPositions);
-            foreach (var xOp in xOpCodes)
+            var xOpCodes = EmitOpCodes(method, ReferencedPositions).ToDictionary(IL => IL.Position);
+
+            var ILQueue = new Queue<int>();
+            ILQueue.Enqueue(0);
+
+            var ILBlocks = new Dictionary<int, FunctionalBlock>();
+            var Optimizer = new Optimizer(Config, ILQueue);
+            while(ILQueue.Count != 0)
             {
+                int index = ILQueue.Dequeue();
+
+                /* Create room for new IL and add it to Blocks List */
+                var xOp = xOpCodes[index];
+                if (xOp == null) continue;
+
+                xOpCodes[index] = null;
+
+                var tempBlock = new FunctionalBlock(null, Config.TargetPlatform, CallingConvention.StdCall);
+                Instruction.Block = tempBlock;
+                ILBlocks.Add(xOp.Position, tempBlock);
+
                 /* scan inline OpCodes, maybe we get some treasure */
                 if (xOp is OpMethod)
                     /* Wow! I found a method, Lucky me :P */
@@ -918,13 +934,15 @@ namespace Atomixilc
                 if (ReferencedPositions.Contains(xOp.Position))
                     new Label(Helper.GetLabel(xOp.Position));
 
+                /* Load state of dynamic state */
+                Optimizer.LoadStack(xOp.Position);
+
                 if (xOp.NeedHandler)
                 {
                     /* sir You asked me load execption object onto the stack? sure sir! */
                     EmitExceptionHandler(block, method);
                     Optimizer.vStack.Push(new StackItem(typeof(Exception)));
                 }
-
 
                 /* darkest magic of all time */
                 MSIL ILHandler = null;
@@ -940,6 +958,15 @@ namespace Atomixilc
                     ILHandler.Execute(Config, xOp, method, Optimizer);
             }
 
+            /* Add minor blocks to main block  */
+            var ILKeys = ILBlocks.Keys.ToList();
+            ILKeys.Sort();
+
+            foreach (var pos in ILKeys)
+                block.Body.AddRange(ILBlocks[pos].Body);
+
+            /* revert to original main block */
+            Instruction.Block = block;
             EmitFooter(block, method);
 
             /* dude! if this happened na, I am going to kill myself :P */

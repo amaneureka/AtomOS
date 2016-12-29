@@ -58,7 +58,10 @@ namespace Atomixilc.IL
                         {
                             new Cmp { DestinationReg = Register.EAX, SourceRef = "0x" + i.ToString("X") };
                             new Jmp { Condition = ConditionalJump.JE, DestinationRef = Helper.GetLabel(branches[i]) };
+                            Optimizer.SaveStack(branches[i]);
                         }
+
+                        Optimizer.SaveStack(xOp.NextPosition);
                     }
                     break;
                 default:

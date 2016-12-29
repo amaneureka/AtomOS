@@ -104,6 +104,7 @@ namespace Atomixilc.IL
                         {
                             new Test { DestinationReg = Register.ECX, SourceRef = "0xFFFFFFFF" };
                             new Jmp { Condition = ConditionalJump.JNZ, DestinationRef = xOp.HandlerRef };
+                            Optimizer.SaveStack(xOp.HandlerPosition);
                         }
 
                         if (targetinfo != null && targetinfo.ReturnType != typeof(void))
@@ -113,6 +114,8 @@ namespace Atomixilc.IL
                             new Push { DestinationReg = Register.EAX };
                             Optimizer.vStack.Push(new StackItem(targetinfo.ReturnType));
                         }
+
+                        Optimizer.SaveStack(xOp.NextPosition);
                     }
                     break;
                 default:

@@ -62,6 +62,9 @@ namespace Atomixilc.IL
                         new Pop { DestinationReg = Register.EAX };
                         new Cmp { DestinationReg = Register.EAX, SourceRef = "0x0" };
                         new Jmp { Condition = ConditionalJump.JNZ, DestinationRef = xTrueLabel };
+
+                        Optimizer.SaveStack(offset);
+                        Optimizer.SaveStack(xOp.NextPosition);
                     }
                     break;
                 default:

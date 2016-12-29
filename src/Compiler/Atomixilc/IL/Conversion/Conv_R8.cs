@@ -60,6 +60,7 @@ namespace Atomixilc.IL
                         new Fstp { DestinationReg = Register.ESP, DestinationIndirect = true, Size = 64 };
 
                         Optimizer.vStack.Push(new StackItem(typeof(double)));
+                        Optimizer.SaveStack(xOp.NextPosition);
                     }
                     break;
                 default:
