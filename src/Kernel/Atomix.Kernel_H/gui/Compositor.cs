@@ -268,7 +268,6 @@ namespace Atomix.Kernel_H.Gui
                                 winRequest->WindowID = Windows.Count;
                                 Windows.Add(newWindow);
                                 Monitor.ReleaseLock(ref WindowsLock);
-
                                 ActiveWindow = newWindow;
                             }
                             break;

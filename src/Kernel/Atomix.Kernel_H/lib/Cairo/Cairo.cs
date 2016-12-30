@@ -108,7 +108,7 @@ namespace Atomix.Kernel_H.Lib.Cairo
         [NoException]
         [Plug("cairo_show_text")]
         [DllImport(LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void ShowText(uint utf8, uint cr);
+        internal static extern unsafe void ShowText(sbyte* utf8, uint cr);
 
         /// <summary>
         /// cairo_public void
@@ -197,6 +197,15 @@ namespace Atomix.Kernel_H.Lib.Cairo
 
         /// <summary>
         /// cairo_public void
+        /// cairo_set_source (cairo_t *cr, cairo_pattern_t *source);
+        /// </summary>
+        [NoException]
+        [Plug("cairo_set_source")]
+        [DllImport(LIBRARY, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void SetSource(uint source, uint cr);
+
+        /// <summary>
+        /// cairo_public void
         /// cairo_paint(cairo_t* cr);
         /// </summary>
         [NoException]
@@ -253,6 +262,15 @@ namespace Atomix.Kernel_H.Lib.Cairo
         internal static extern void ResetClip(uint cr);
 
         /// <summary>
+        /// cairo_public void
+        /// cairo_pattern_destroy (cairo_pattern_t *pattern);
+        /// </summary>
+        [NoException]
+        [Plug("cairo_pattern_destroy")]
+        [DllImport(LIBRARY, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void PatternDestroy(uint pattern);
+
+        /// <summary>
         /// cairo_public cairo_status_t
         /// cairo_surface_write_to_png(cairo_surface_t* surface,
         ///                             const char* filename);
@@ -272,7 +290,7 @@ namespace Atomix.Kernel_H.Lib.Cairo
         [NoException]
         [Plug("cairo_select_font_face")]
         [DllImport(LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void SelectFontFace(FontWeight weight, FontSlant slant, uint family, uint cr);
+        internal static extern unsafe void SelectFontFace(FontWeight weight, FontSlant slant, sbyte* family, uint cr);
 
         /// <summary>
         /// cairo_public void
@@ -359,5 +377,27 @@ namespace Atomix.Kernel_H.Lib.Cairo
         [Plug("cairo_set_source_surface")]
         [DllImport(LIBRARY, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void SetSourceSurface(double y, double x, uint surface, uint cr);
+
+        /// <summary>
+        /// cairo_public cairo_pattern_t *
+        /// cairo_pattern_create_linear (double x0, double y0,
+        ///                                double x1, double y1);
+        /// </summary>
+        [NoException]
+        [Plug("cairo_pattern_create_linear")]
+        [DllImport(LIBRARY, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern uint PatternCreateLinear(double y1, double x1, double y0, double x0);
+
+        /// <summary>
+        /// cairo_public void
+        /// cairo_pattern_add_color_stop_rgba (cairo_pattern_t *pattern,
+        ///                                     double offset,
+        ///                                     double red, double green, double blue,
+        ///                                     double alpha);
+        /// </summary>
+        [NoException]
+        [Plug("cairo_pattern_add_color_stop_rgba")]
+        [DllImport(LIBRARY, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void PatternAddColorStopRgba(double alpha, double blue, double green, double red, double offset, uint pattern);
     }
 }

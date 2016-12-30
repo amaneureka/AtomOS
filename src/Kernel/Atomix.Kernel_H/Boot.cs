@@ -19,6 +19,7 @@ using Atomix.Kernel_H.Arch.x86;
 using Atomix.Kernel_H.Drivers.Video;
 using Atomix.Kernel_H.IO.FileSystem;
 
+using Atomix.Kernel_H.Lib;
 using Atomix.Kernel_H.Drivers.Input;
 using Atomix.Kernel_H.Drivers.buses.ATA;
 
@@ -61,87 +62,215 @@ namespace Atomix.Kernel_H
             LoadIDE(false, true);
             #endregion
 
-            // pp = IntPtr.Add(IntPtr.Zero, 100);
-            //Debug.Write("Test1234: %d\n", (uint)pp.ToInt32());
-
             //FILE READING TEST
             /*var stream = VirtualFileSystem.GetFile("disk0/gohu-11.bdf");
             if (stream != null)
                 Debug.Write(stream.ReadToEnd());
             else
-                Debug.Write("File not found!\n");
-            Debug.Write("lol: %d\n", __main(0xac));*/
-            VBE.Clear(0x6D6D6D);
-            VBE.Update();
-            new Thread(Scheduler.SystemProcess, BootAnimation, Heap.kmalloc(0x10000) + 0x10000, 0x10000).Start();
-            //System.Text.Encoding.ASCII.GetString()
+                Debug.Write("File not found!\n");*/
+
+            BootAnimation();
             while (true) ;
         }
 
         internal static unsafe void BootAnimation()
         {
-            var BootImage = VirtualFileSystem.GetFile("disk0/boot.xmp");
-            if (BootImage != null)
+            var xData = new byte[Compositor.PACKET_SIZE];
+            var Request = (GuiRequest*)xData.GetDataOffset();
+            Request->ClientID = ClientID;
+
+            PrintWallpaper(Request, xData);
+            DrawTaskbar(Request, xData);
+            DrawWindow(Request, xData);
+        }
+
+        private static unsafe void DrawWindow(GuiRequest* request, byte[] xData)
+        {
+            request->Type = RequestType.NewWindow;
+            request->Error = ErrorType.None;
+            var window = (NewWindow*)request;
+            window->X = 340;
+            window->Y = 159;
+            window->Width = 600;
+            window->Height = 450;
+
+            Compositor.Server.Write(xData);
+
+            SystemClient.Read(xData);
+            if (request->Error != ErrorType.None)
             {
-                var xData = new byte[Compositor.PACKET_SIZE];
-                var Request = (GuiRequest*)xData.GetDataOffset();
-                Request->ClientID = ClientID;
-                Request->Error = ErrorType.None;
-                Request->Type = RequestType.NewWindow;
-
-                var Request2 = (NewWindow*)Request;
-                Request2->X = 512;
-                Request2->Y = 150;
-                Request2->Width = 256;
-                Request2->Height = 256;
-                Compositor.Server.Write(xData);
-
-                SystemClient.Read(xData);
-                string HashCode = new string(Request2->Buffer);
-                var aBuffer = SHM.Obtain(HashCode, 0, false);
-
-                BootImage.Read(xData, 8);
-                uint c = 0;
-                uint index = 0;
-                while ((c = (uint)BootImage.Read(xData, 32)) > 0)
-                {
-                    Memory.FastCopy(aBuffer + index, (uint)Request, c);
-                    index += c;
-                }
-
-                uint surface = Cairo.ImageSurfaceCreateForData(256 * 4, 256, 256, ColorFormat.ARGB32, aBuffer);
-                uint cr = Cairo.Create(surface);
-                //Courier
-                var data = (byte*)Heap.kmalloc(10);
-                data[0] = (byte)'A';
-                data[1] = (byte)'t';
-                data[2] = (byte)'o';
-                data[3] = (byte)'m';
-                data[4] = (byte)' ';
-                data[5] = (byte)'O';
-                data[6] = (byte)'S';
-
-                Cairo.SetSourceRGB(1.0, 0, 0, cr);
-                Cairo.SelectFontFace(FontWeight.Bold, FontSlant.Italic, (uint)data, cr);
-                Cairo.SetFontSize(40, cr);
-
-                Cairo.MoveTo(50, 10, cr);
-                Cairo.ShowText((uint)data, cr);
-                Cairo.SurfaceFlush(surface);
-
-                Request->ClientID = ClientID;
-                Request->Error = ErrorType.None;
-                Request->Type = RequestType.Redraw;
-                var req = (Redraw*)Request;
-                req->WindowID = 0;
-                req->X = 0;
-                req->Y = 0;
-                req->Width = 256;
-                req->Height = 256;
-                Compositor.Server.Write(xData);
+                Debug.Write("Error: %d\n", (int)request->Error);
+                return;
             }
-            else
-                Debug.Write("Boot Image not found!\n");
+
+            string HashCode = new string(window->Buffer);
+            var aBuffer = SHM.Obtain(HashCode, 0, false);
+            int winID = window->WindowID;
+            Debug.Write("winID: %d\n", winID);
+
+            uint surface = Cairo.ImageSurfaceCreateForData(600 * 4, 450, 600, ColorFormat.ARGB32, aBuffer);
+            uint cr = Cairo.Create(surface);
+
+            Cairo.SetOperator(Operator.Over, cr);
+
+            Cairo.Rectangle(450, 600, 0, 0, cr);
+            Cairo.SetSourceRGBA(1, 0.41, 0.41, 0.41, cr);
+            Cairo.Fill(cr);
+            Cairo.Rectangle(446, 596, 2, 2, cr);
+            Cairo.SetSourceRGBA(1, 0.87, 0.87, 0.87, cr);
+            Cairo.Fill(cr);
+            Cairo.Rectangle(410, 580, 30, 10, cr);
+            Cairo.SetSourceRGBA(1, 1, 1, 1, cr);
+            Cairo.Fill(cr);
+
+            Cairo.SetSourceRGBA(1, 0.41, 0.41, 0.41, cr);
+            Cairo.SelectFontFace(FontWeight.Normal, FontSlant.Normal, Marshal.C_String(""), cr);
+            Cairo.SetFontSize(15, cr);
+            Cairo.MoveTo(18, 215, cr);
+            Cairo.ShowText(Marshal.C_String("Atom OS : Installation Guide"), cr);
+
+            Cairo.SelectFontFace(FontWeight.Bold, FontSlant.Normal, Marshal.C_String(""), cr);
+            Cairo.MoveTo(18, 580, cr);
+            Cairo.ShowText(Marshal.C_String("X"), cr);
+
+            Cairo.SurfaceFlush(surface);
+            Cairo.Destroy(cr);
+            Cairo.SurfaceDestroy(surface);
+
+            request->Type = RequestType.Redraw;
+            var req = (Redraw*)request;
+            req->WindowID = winID;
+            req->X = 0;
+            req->Y = 0;
+            req->Width = 600;
+            req->Height = 450;
+            Compositor.Server.Write(xData);
+            SystemClient.Read(xData);
+            if (request->Error != ErrorType.None)
+            {
+                Debug.Write("Error: %d\n", (int)request->Error);
+                return;
+            }
+        }
+
+        private static unsafe void DrawTaskbar(GuiRequest* request, byte[] xData)
+        {
+            request->Type = RequestType.NewWindow;
+            request->Error = ErrorType.None;
+            var taskbar = (NewWindow*)request;
+            int height = 30;
+            taskbar->X = 0;
+            taskbar->Y = 0;
+            taskbar->Width = VBE.Xres;
+            taskbar->Height = height;
+
+            Compositor.Server.Write(xData);
+
+            SystemClient.Read(xData);
+            if (request->Error != ErrorType.None)
+            {
+                Debug.Write("Error: %d\n", (int)request->Error);
+                return;
+            }
+
+            string HashCode = new string(taskbar->Buffer);
+            var aBuffer = SHM.Obtain(HashCode, 0, false);
+            int winID = taskbar->WindowID;
+            Debug.Write("winID: %d\n", winID);
+
+            uint surface = Cairo.ImageSurfaceCreateForData(VBE.Xres * 4, height, VBE.Xres, ColorFormat.ARGB32, aBuffer);
+            uint cr = Cairo.Create(surface);
+
+            uint pattern = Cairo.PatternCreateLinear(height, 0, 0, 0);
+            Cairo.PatternAddColorStopRgba(0.7, 0.42, 0.42, 0.42, 0, pattern);
+            Cairo.PatternAddColorStopRgba(0.6, 0.36, 0.36, 0.36, 0.5, pattern);
+            Cairo.PatternAddColorStopRgba(0.7, 0.42, 0.42, 0.42, 1, pattern);
+
+            Cairo.SetOperator(Operator.Over, cr);
+            Cairo.Rectangle(height, VBE.Xres, 0, 0, cr);
+            Cairo.SetSource(pattern, cr);
+            Cairo.Fill(cr);
+
+            Cairo.Rectangle(2, VBE.Xres, height - 2, 0, cr);
+            Cairo.SetSourceRGBA(0.7, 0.41, 0.41, 0.41, cr);
+            Cairo.Fill(cr);
+
+            Cairo.SetSourceRGBA(1, 1, 1, 1, cr);
+            Cairo.SelectFontFace(FontWeight.Bold, FontSlant.Normal, Marshal.C_String(""), cr);
+            Cairo.SetFontSize(20, cr);
+            Cairo.MoveTo(20, 1215, cr);
+            Cairo.ShowText(Marshal.C_String("20:10"), cr);
+
+            Cairo.PatternDestroy(pattern);
+            Cairo.Destroy(cr);
+            Cairo.SurfaceDestroy(surface);
+
+            request->Type = RequestType.Redraw;
+            var req = (Redraw*)request;
+            req->WindowID = winID;
+            req->X = 0;
+            req->Y = 0;
+            req->Width = VBE.Xres;
+            req->Height = height;
+            Compositor.Server.Write(xData);
+            SystemClient.Read(xData);
+            if (request->Error != ErrorType.None)
+            {
+                Debug.Write("Error: %d\n", (int)request->Error);
+                return;
+            }
+        }
+
+        private static unsafe void PrintWallpaper(GuiRequest* request, byte[] xData)
+        {
+            request->Type = RequestType.NewWindow;
+            request->Error = ErrorType.None;
+            var wallpaper = (NewWindow*)request;
+
+            wallpaper->X = 0;
+            wallpaper->Y = 0;
+            wallpaper->Width = VBE.Xres;
+            wallpaper->Height = VBE.Yres;
+
+            Compositor.Server.Write(xData);
+
+            SystemClient.Read(xData);
+
+            if (request->Error != ErrorType.None)
+            {
+                Debug.Write("Error: %d\n", (int)request->Error);
+                return;
+            }
+
+            string HashCode = new string(wallpaper->Buffer);
+            var aBuffer = SHM.Obtain(HashCode, 0, false);
+            int winID = wallpaper->WindowID;
+            Debug.Write("winID: %d\n", winID);
+
+            uint surface = Cairo.ImageSurfaceCreateForData(VBE.Xres * 4, VBE.Yres, VBE.Xres, ColorFormat.ARGB32, aBuffer);
+            uint cr = Cairo.Create(surface);
+
+            uint wall = Cairo.ImageSurfaceFromPng(Marshal.C_String("disk0/wallpaper.png"));
+            Cairo.SetSourceSurface(0, 0, wall, cr);
+            Cairo.Paint(cr);
+
+            Cairo.Destroy(cr);
+            Cairo.SurfaceDestroy(surface);
+
+            request->Type = RequestType.Redraw;
+            var req = (Redraw*)request;
+            req->WindowID = winID;
+            req->X = 0;
+            req->Y = 0;
+            req->Width = VBE.Xres;
+            req->Height = VBE.Yres;
+            Compositor.Server.Write(xData);
+            SystemClient.Read(xData);
+            if (request->Error != ErrorType.None)
+            {
+                Debug.Write("Error: %d\n", (int)request->Error);
+                return;
+            }
         }
 
         internal static void LoadIDE(bool IsPrimary, bool IsMaster)

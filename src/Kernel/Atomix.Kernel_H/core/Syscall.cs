@@ -63,7 +63,7 @@ namespace Atomix.Kernel_H.Core
             uint addr = current;
             current += (uint)len;
 
-            if (current > 0xA0100000)
+            if (current > 0xA5000000)
             {
                 Debug.Write("sys_brk failed\n");
                 return 0;
@@ -140,6 +140,8 @@ namespace Atomix.Kernel_H.Core
         {
             var filename = new string(file);
             var stream = VirtualFileSystem.GetFile(filename);
+            Debug.Write("fopen: %s\n", filename);
+            Heap.Free(filename);
 
             if (stream == null)
                 return -1;
@@ -163,8 +165,6 @@ namespace Atomix.Kernel_H.Core
                 files.Add(stream);
                 fd = count;
             }
-
-            Debug.Write("fopen: %s\n", filename);
 
             return fd;
         }
