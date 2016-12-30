@@ -14,7 +14,6 @@ using Atomixilc.Lib;
 
 using Atomix.Kernel_H.IO;
 using Atomix.Kernel_H.Core;
-using Atomix.Kernel_H.Lib.encoding;
 using Atomix.Kernel_H.IO.FileSystem;
 
 namespace Atomix.Kernel_H.Exec
@@ -326,7 +325,7 @@ namespace Atomix.Kernel_H.Exec
                             break;
                     }
 
-                    string SymName = ASCII.GetString((byte*)(StrTabAdd + SymTab->st_name), 0, 0x0FFFFFFF);
+                    string SymName = new string((sbyte*)(StrTabAdd + SymTab->st_name));
                     Debug.Write("Symbol: %s\n", SymName);
                 }
             }
@@ -343,7 +342,7 @@ namespace Atomix.Kernel_H.Exec
                 case SHN_UNDEF:
                     {
                         var StrTabAdd = ((Elf_Shdr*)(BaseAddress + aHeader->e_shoff) + SymSection->sh_link)->sh_addr;
-                        string SymName = ASCII.GetString((byte*)(StrTabAdd + SymTab->st_name), 0, 0x0FFFFFFF);
+                        string SymName = new string((sbyte*)(StrTabAdd + SymTab->st_name));
 
                         Debug.Write("Undefined Symbol: %s\n", SymName);
                         Heap.Free(SymName);

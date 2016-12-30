@@ -9,9 +9,10 @@
 
 using System;
 
+using Atomixilc.Lib;
+
 using Atomix.Kernel_H.Core;
 using Atomix.Kernel_H.Devices;
-using Atomix.Kernel_H.Lib.encoding;
 using Atomix.Kernel_H.IO.FileSystem.FAT;
 using Atomix.Kernel_H.IO.FileSystem.FAT.Find;
 
@@ -47,7 +48,7 @@ namespace Atomix.Kernel_H.IO.FileSystem
             mIsValid = IsFAT();
         }
 
-        private bool IsFAT()
+        private unsafe bool IsFAT()
         {
             var BootSector = new byte[512];
 
@@ -115,7 +116,7 @@ namespace Atomix.Kernel_H.IO.FileSystem
             if (FatType == FatType.FAT32)
             {
                 SerialNo = BitConverter.ToUInt32(BootSector, 39);
-                VolumeLabel = ASCII.GetString(BootSector, 71, 11);   // for checking
+                VolumeLabel = new string((sbyte*)BootSector.GetDataOffset(), 71, 11);   // for checking
                 RootCluster = BitConverter.ToUInt32(BootSector, 44);
                 RootSector = 0;
                 RootSectorCount = 0;
@@ -124,7 +125,7 @@ namespace Atomix.Kernel_H.IO.FileSystem
             else
             {
                 SerialNo = BitConverter.ToUInt32(BootSector, 67);
-                VolumeLabel = ASCII.GetString(BootSector, 43, 11);
+                VolumeLabel = new string((sbyte*)BootSector.GetDataOffset(), 43, 11);
                 RootSector = ReservedSector + (TotalFAT * SectorsPerFAT);
                 RootSectorCount = (UInt32)((DirectoryEntry * 32 + (BytePerSector - 1)) / BytePerSector);
                 fatEntries = SectorsPerFAT * 512 / 4;

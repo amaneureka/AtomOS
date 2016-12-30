@@ -34,7 +34,7 @@ namespace Atomix.Kernel_H.IO.FileSystem
 
         internal static Stream GetFile(string aPath)
         {
-            var paths = aPath.Split('/');
+            var paths = Marshal.Split(aPath, '/');
             var FileSystem = GetFS(paths[0]);
             if (FileSystem == null)
                 return null;
@@ -45,7 +45,7 @@ namespace Atomix.Kernel_H.IO.FileSystem
 
         internal static bool CreateFile(string aPath)
         {
-            var paths = aPath.Split('/');
+            var paths = Marshal.Split(aPath, '/');
             var FileSystem = GetFS(paths[0]);
             if (FileSystem == null)
                 return false;

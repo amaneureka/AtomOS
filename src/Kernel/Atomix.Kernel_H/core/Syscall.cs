@@ -33,7 +33,7 @@ namespace Atomix.Kernel_H.Core
                     context.EAX = sys_read(context.EBX, (byte*)context.ECX, context.EDX);
                     break;
                 case Function.SYS_open:
-                    context.EAX = sys_open((char *)context.EBX, context.ECX, context.EDX);
+                    context.EAX = sys_open((sbyte*)context.EBX, context.ECX, context.EDX);
                     break;
                 case Function.SYS_seek:
                     context.EAX = sys_seek(context.EBX, context.ECX, context.EDX);
@@ -136,7 +136,7 @@ namespace Atomix.Kernel_H.Core
             return 0;
         }
 
-        private static unsafe int sys_open(char * file, int flags, int mode)
+        private static unsafe int sys_open(sbyte* file, int flags, int mode)
         {
             var filename = new string(file);
             var stream = VirtualFileSystem.GetFile(filename);

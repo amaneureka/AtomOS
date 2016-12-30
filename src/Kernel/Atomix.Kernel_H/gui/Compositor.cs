@@ -49,7 +49,7 @@ namespace Atomix.Kernel_H.Gui
             RedrawRects = new IQueue<uint>();
 
             int stride = Cairo.FormatStrideForWidth(VBE.Xres, ColorFormat.ARGB32);
-            MouseSurface = Cairo.ImageSurfaceFromPng(("disk0/cursor.png\0").GetDataOffset());
+            MouseSurface = Cairo.ImageSurfaceFromPng(Marshal.C_String("disk0/cursor.png"));
             MainSurface = Cairo.ImageSurfaceCreateForData(stride, VBE.Yres, VBE.Xres, ColorFormat.ARGB32, VBE.SecondaryBuffer);
             VideoSurface = Cairo.ImageSurfaceCreateForData(stride, VBE.Yres, VBE.Xres, ColorFormat.ARGB32, VBE.VirtualFrameBuffer);
 

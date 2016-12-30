@@ -347,7 +347,7 @@ namespace Atomix.Kernel_H.Lib.Cairo
         [NoException]
         [Plug("cairo_image_surface_create_from_png")]
         [DllImport(LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern unsafe uint ImageSurfaceFromPng(uint filename);
+        internal static extern unsafe uint ImageSurfaceFromPng(sbyte* filename);
 
         /// <summary>
         /// cairo_public void

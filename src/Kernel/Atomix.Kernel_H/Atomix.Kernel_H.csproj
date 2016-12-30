@@ -116,7 +116,6 @@
     <Compile Include="Lib\ds\ISet.cs" />
     <Compile Include="Lib\ds\misc.cs" />
     <Compile Include="Lib\ds\Pair.cs" />
-    <Compile Include="Lib\encoding\ASCII.cs" />
     <Compile Include="Lib\Marshal.cs" />
     <Compile Include="Lib\Numerics.cs" />
     <Compile Include="plugs\Convert.cs" />

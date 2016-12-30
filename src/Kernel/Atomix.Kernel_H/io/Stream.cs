@@ -35,15 +35,6 @@ namespace Atomix.Kernel_H.IO
         internal abstract int Seek(int val, SEEK pos);
 
         internal abstract bool Close();
-
-        internal string ReadToEnd()
-        {
-            var xData = new byte[FileSize];
-            Read(xData, xData.Length);
-            var xResult = Lib.encoding.ASCII.GetString(xData, 0, xData.Length);
-            Heap.Free(xData);
-            return xResult;
-        }
     }
 
     public enum SEEK : int

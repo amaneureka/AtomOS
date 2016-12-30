@@ -466,6 +466,7 @@ namespace Atomixilc
             ScanQ.Enqueue(typeof(Lib.Memory));
             ScanQ.Enqueue(typeof(Lib.Native));
             ScanQ.Enqueue(typeof(Lib.Plugs.ArrayImpl));
+            ScanQ.Enqueue(typeof(Lib.Plugs.StringImpl));
             ScanQ.Enqueue(typeof(Lib.Plugs.ExceptionImpl));
             ScanQ.Enqueue(typeof(Lib.Plugs.BitConverterImpl));
 

@@ -74,24 +74,36 @@ namespace Atomixilc.IL
 
                         if (type == typeof(string))
                         {
-                            if (parameters.Length == 1 && parameters[0].ParameterType.ToString() == "System.Char[]")
+                            if (parameters.Length == 1)
+                            {
+                                var param = parameters[0].ParameterType.ToString();
+                                if (param == "System.Char[]")
+                                {
+                                    new Mov { DestinationReg = Register.EAX, SourceReg = Register.ESP, SourceIndirect = true };
+                                    new Mov { DestinationReg = Register.EAX, SourceReg = Register.EAX, SourceIndirect = true, SourceDisplacement = 8 };
+                                    new Shl { DestinationReg = Register.EAX, SourceRef = "0x1" };
+                                }
+                                else if (param == "System.Char*")
+                                {
+                                    new Push { DestinationReg = Register.ESP, DestinationIndirect = true };
+                                    new Call { DestinationRef = "GetLength.System.Char*", IsLabel = true };
+                                    new Shl { DestinationReg = Register.EAX, SourceRef = "0x1" };
+                                }
+                                else if (param == "System.SByte*")
+                                {
+                                    new Push { DestinationReg = Register.ESP, DestinationIndirect = true };
+                                    new Call { DestinationRef = "GetLength.System.SByte*", IsLabel = true };
+                                    new Shl { DestinationReg = Register.EAX, SourceRef = "0x1" };
+                                }
+                                else
+                                    throw new Exception("String constructor not implemented");
+                            }
+                            else if (parameters.Length == 3)
                             {
                                 new Mov { DestinationReg = Register.EAX, SourceReg = Register.ESP, SourceIndirect = true };
-                                new Mov { DestinationReg = Register.EAX, SourceReg = Register.EAX, SourceIndirect = true, SourceDisplacement = 8 };
                                 new Shl { DestinationReg = Register.EAX, SourceRef = "0x1" };
                             }
-                            else if (parameters.Length == 1 && parameters[0].ParameterType.ToString() == "System.Char*")
-                            {
-                                new Push { DestinationReg = Register.ESP, DestinationIndirect = true };
-                                new Call { DestinationRef = "getLength_System_Char__", IsLabel = true };
-                                new Shl { DestinationReg = Register.EAX, SourceRef = "0x1" };
-                            }
-                            else if (parameters.Length == 3 && parameters[0].ParameterType.ToString() == "System.Char[]" && parameters[1].ParameterType.ToString() == "System.Int32" && parameters[2].ParameterType.ToString() == "System.Int32")
-                            {
-                                new Mov { DestinationReg = Register.EAX, SourceReg = Register.ESP, SourceIndirect = true };
-                                new Shl { DestinationReg = Register.EAX, SourceRef = "0x1" };
-                            }
-                            else if (parameters.Length == 2 && parameters[0].ParameterType.ToString() == "System.Char" && parameters[1].ParameterType.ToString() == "System.Int32")
+                            else if (parameters.Length == 2)
                             {
                                 new Mov { DestinationReg = Register.EAX, SourceReg = Register.ESP, SourceIndirect = true };
                                 new Shl { DestinationReg = Register.EAX, SourceRef = "0x1" };
