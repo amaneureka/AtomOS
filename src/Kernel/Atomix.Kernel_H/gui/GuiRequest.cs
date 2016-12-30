@@ -29,14 +29,16 @@ namespace Atomix.Kernel_H.Gui
     internal unsafe struct MouseData
     {
         [FieldOffset(16)]
-        internal int Button;
+        internal int WindowID;
         [FieldOffset(20)]
-        internal int Xpos;
+        internal int Button;
         [FieldOffset(24)]
+        internal int Xpos;
+        [FieldOffset(28)]
         internal int Ypos;
     };
 
-    [StructLayout(LayoutKind.Explicit, Size = 48)]
+    [StructLayout(LayoutKind.Explicit, Size = 44)]
     internal unsafe struct NewWindow
     {
         [FieldOffset(16)]
@@ -48,7 +50,9 @@ namespace Atomix.Kernel_H.Gui
         [FieldOffset(28)]
         internal int Height;
         [FieldOffset(32)]
-        internal fixed char Buffer[8];
+        internal int WindowID;
+        [FieldOffset(36)]
+        internal fixed sbyte Buffer[8];
     };
 
     [StructLayout(LayoutKind.Explicit, Size = 36)]
@@ -77,6 +81,17 @@ namespace Atomix.Kernel_H.Gui
         internal int RelY;
     };
 
+    [StructLayout(LayoutKind.Explicit, Size = 28)]
+    internal struct RandomRequest
+    {
+        [FieldOffset(16)]
+        internal int WindowID;
+        [FieldOffset(20)]
+        internal MouseIcon MouseIcon;
+        [FieldOffset(24)]
+        internal WindowState WindowState;
+    };
+
     [StructLayout(LayoutKind.Explicit, Size = 16)]
     internal struct Rect
     {
@@ -97,7 +112,8 @@ namespace Atomix.Kernel_H.Gui
         Redraw = 2,
         WindowMove = 3,
         MouseEvent = 4,
-        KeyboardEvent = 5
+        KeyboardEvent = 5,
+        RandomRequest = 6
     }
 
     internal enum ErrorType : uint
@@ -107,5 +123,22 @@ namespace Atomix.Kernel_H.Gui
         BadParameters = 2,
         OutOfMemory = 3,
         BadFunction = 4,
+    }
+
+    internal enum MouseIcon : int
+    {
+        None = 0,
+        Idle = 1,
+        Help = 2,
+        Clipboard = 3,
+        Busy = 4
+    }
+
+    internal enum WindowState : int
+    {
+        None = 0,
+        FullScreen = 1,
+        Minimized = 2,
+        Close = 3,
     }
 }

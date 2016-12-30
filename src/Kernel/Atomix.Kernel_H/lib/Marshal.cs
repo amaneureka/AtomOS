@@ -30,6 +30,14 @@ namespace Atomix.Kernel_H.Lib
             return cstr;
         }
 
+        internal static void Copy(string aStr, sbyte* aCstr, int aLen)
+        {
+            int i = 0;
+            while (aLen-- != 0)
+                aCstr[i] = (sbyte)aStr[i++];
+            aCstr[i] = 0;
+        }
+
         internal static void Copy(char* aDes, string aSrc, int aLen)
         {
             Memory.FastCopy((uint)aDes, aSrc.GetDataOffset(), (uint)(aLen * sizeof(char)));

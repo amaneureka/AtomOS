@@ -18,8 +18,8 @@ namespace Atomix.RamFS
             this.FileName = aName;
             this.FileData = aData;
 
-            if (FileName.Length > 12)
-                FileName = FileName.Substring(0, 12);
+            if (FileName.Length > 32)
+                FileName = FileName.Substring(0, 32);
 
             PrepareRawData();
         }
@@ -55,14 +55,14 @@ namespace Atomix.RamFS
         public void GetEntryData(int StartAddress, byte[] xResult)
         {
             /*
-             * 24 bytes := FileName
+             * 32 bytes := FileName
              * 4 bytes  := FileStartAddress
              * 4 bytes  := FileLength
              */
-            var xNameByteArray = Encoding.Unicode.GetBytes(FileName);
+            var xNameByteArray = Encoding.ASCII.GetBytes(FileName);
             Array.Copy(xNameByteArray, 0, xResult, 0, xNameByteArray.Length);
-            Array.Copy(BitConverter.GetBytes(StartAddress), 0, xResult, 24, 4);
-            Array.Copy(BitConverter.GetBytes(RawData.Length), 0, xResult, 28, 4);
+            Array.Copy(BitConverter.GetBytes(StartAddress), 0, xResult, 32, 4);
+            Array.Copy(BitConverter.GetBytes(RawData.Length), 0, xResult, 36, 4);
         }
 
         public int Dump(Stream xOutput)

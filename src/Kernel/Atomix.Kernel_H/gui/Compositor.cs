@@ -24,19 +24,28 @@ namespace Atomix.Kernel_H.Gui
     {
         internal const int PACKET_SIZE = 48;
 
+        static Window ActiveWindow;
         static IList<Pipe> Clients;
         static IList<Window> Windows;
         static IQueue<uint> RedrawRects;
 
+        internal static Pipe Server;
+
+        /* Locks */
         static uint WindowsLock;
         static uint RedrawRectsLock;
 
-        internal static Pipe Server;
-
-        static uint MainSurface;
+        /* Mouse Surfaces */
         static uint MouseSurface;
+        static uint MouseIdleSurface;
+        static uint MouseHelpSurface;
+        static uint MouseClipSurface;
+
+        /* Other Surfaces */
+        static uint MainSurface;
         static uint VideoSurface;
 
+        /* Cairo Contexts */
         static uint MainContext;
         static uint VideoContext;
 
@@ -48,17 +57,22 @@ namespace Atomix.Kernel_H.Gui
             Windows = new IList<Window>();
             RedrawRects = new IQueue<uint>();
 
+            /* Mouse Surfaces */
+            MouseIdleSurface = Cairo.ImageSurfaceFromPng(Marshal.C_String("disk0/cursor_idle.png"));
+            MouseHelpSurface = Cairo.ImageSurfaceFromPng(Marshal.C_String("disk0/cursor_help.png"));
+            MouseClipSurface = Cairo.ImageSurfaceFromPng(Marshal.C_String("disk0/cursor_clip.png"));
+            MouseSurface = MouseIdleSurface;
+
             int stride = Cairo.FormatStrideForWidth(VBE.Xres, ColorFormat.ARGB32);
-            MouseSurface = Cairo.ImageSurfaceFromPng(Marshal.C_String("disk0/cursor.png"));
             MainSurface = Cairo.ImageSurfaceCreateForData(stride, VBE.Yres, VBE.Xres, ColorFormat.ARGB32, VBE.SecondaryBuffer);
             VideoSurface = Cairo.ImageSurfaceCreateForData(stride, VBE.Yres, VBE.Xres, ColorFormat.ARGB32, VBE.VirtualFrameBuffer);
 
             MainContext = Cairo.Create(MainSurface);
             VideoContext = Cairo.Create(VideoSurface);
 
-            new Thread(aParent, HandleMouse, Heap.kmalloc(0x1000) + 0x1000, 0x1000).Start();
-            new Thread(aParent, HandleRequest, Heap.kmalloc(0x1000) + 0x1000, 0x1000).Start();
-            new Thread(aParent, Renderer, Heap.kmalloc(0x10000) + 0x10000, 0x10000).Start();
+            new Thread(aParent, Renderer).Start();
+            new Thread(aParent, HandleMouse).Start();
+            new Thread(aParent, HandleRequest).Start();
         }
 
         internal static int CreateConnection(Pipe aClient)
@@ -197,6 +211,7 @@ namespace Atomix.Kernel_H.Gui
                                 var mouse_request = (MouseData*)request;
                                 int btn = mouse_request->Button;
 
+                                /* calculate new mouse position */
                                 if ((btn & 0x10) == 0)
                                     Mouse_X += mouse_request->Xpos << 1;
                                 else
@@ -207,15 +222,24 @@ namespace Atomix.Kernel_H.Gui
                                 else
                                     Mouse_Y += (mouse_request->Ypos ^ 0xFF) << 1;
 
+                                /* bound mouse position */
+                                if (Mouse_X < 0) Mouse_X = 0;
+                                if (Mouse_X > VBE.Xres) Mouse_X = VBE.Xres;
+
+                                if (Mouse_Y < 0) Mouse_Y = 0;
+                                if (Mouse_Y > VBE.Yres) Mouse_Y = VBE.Yres;
+
+                                /* button details */
                                 MouseLeftBtn = (btn & 0x1) != 0;
                                 MouseRightBtn = (btn & 0x2) != 0;
                                 MouseMiddleBtn = (btn & 0x4) != 0;
 
-                                if (Mouse_X < 0 || Mouse_X > VBE.Xres)
-                                    Mouse_X = 0;
+                                /* pass information to active window */
+                                if (ActiveWindow == null)
+                                    continue;
 
-                                if (Mouse_Y < 0 || Mouse_Y > VBE.Yres)
-                                    Mouse_Y = 0;
+                                mouse_request->WindowID = ActiveWindow.ID;
+                                request->ClientID = ActiveWindow.ClientID;
                             }
                             break;
                         case RequestType.NewWindow:
@@ -237,11 +261,15 @@ namespace Atomix.Kernel_H.Gui
                                         winRequest->Height
                                     );
 
-                                Marshal.Copy(winRequest->Buffer, newWindow.HashID, newWindow.HashID.Length);
+                                Marshal.Copy(newWindow.HashID, winRequest->Buffer, newWindow.HashID.Length);
 
                                 Monitor.AcquireLock(ref WindowsLock);
+                                newWindow.ID = Windows.Count;
+                                winRequest->WindowID = Windows.Count;
                                 Windows.Add(newWindow);
                                 Monitor.ReleaseLock(ref WindowsLock);
+
+                                ActiveWindow = newWindow;
                             }
                             break;
                         case RequestType.Redraw:
@@ -302,11 +330,48 @@ namespace Atomix.Kernel_H.Gui
                                 Monitor.ReleaseLock(ref RedrawRectsLock);
                             }
                             break;
+                        case RequestType.RandomRequest:
+                            {
+                                var random = (RandomRequest*)request;
+
+                                if (ActiveWindow == null || random->WindowID != ActiveWindow.ID)
+                                {
+                                    request->Error = ErrorType.BadRequest;
+                                    break;
+                                }
+
+                                switch(random->MouseIcon)
+                                {
+                                    case MouseIcon.Idle:
+                                        MouseSurface = MouseIdleSurface;
+                                        break;
+                                    case MouseIcon.Help:
+                                        MouseSurface = MouseHelpSurface;
+                                        break;
+                                    case MouseIcon.Clipboard:
+                                        MouseSurface = MouseClipSurface;
+                                        break;
+                                    case MouseIcon.None: break;
+                                    default:
+                                        request->Error = ErrorType.BadRequest;
+                                        break;
+                                }
+
+                                switch(random->WindowState)
+                                {
+                                    default:
+                                        request->Error = ErrorType.BadRequest;
+                                        break;
+                                }
+                            }
+                            break;
                         default:
                             request->Error = ErrorType.BadFunction;
                             break;
                     }
                 }
+
+                request->HashID = 0;
                 Clients[request->ClientID].Write(xData, false);
             }
         }

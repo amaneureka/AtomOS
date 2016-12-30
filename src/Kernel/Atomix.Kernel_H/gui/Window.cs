@@ -21,6 +21,7 @@ namespace Atomix.Kernel_H.Gui
         internal uint Buffer;
         internal string HashID;
 
+        internal int ID;
         internal int ClientID;
 
         internal int X;

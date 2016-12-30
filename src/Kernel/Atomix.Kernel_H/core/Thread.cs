@@ -33,6 +33,12 @@ namespace Atomix.Kernel_H.Core
 
         static int ThreadCounter;
 
+        public Thread(Process aParent, Action aMethod)
+            :this(aParent, aMethod.InvokableAddress(), Heap.kmalloc(0x10000) + 0x10000, 0x10000)
+        {
+            return;
+        }
+
         public Thread(Process aParent, Action aMethod, uint aStackStart, uint aStackLimit)
             :this(aParent, aMethod.InvokableAddress(), aStackStart, aStackLimit)
         {

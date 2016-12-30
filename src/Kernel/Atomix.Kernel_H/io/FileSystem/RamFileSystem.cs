@@ -56,16 +56,16 @@ namespace Atomix.Kernel_H.IO.FileSystem
             return false;
         }
 
-        [StructLayout(LayoutKind.Explicit, Size = 32)]
+        [StructLayout(LayoutKind.Explicit, Size = 40)]
         struct FileEntry
         {
             [FieldOffset(0)]
-            public fixed char Name[12];
+            public fixed sbyte Name[32];
 
-            [FieldOffset(24)]
+            [FieldOffset(32)]
             public uint StartAddress;
 
-            [FieldOffset(28)]
+            [FieldOffset(36)]
             public int Length;
         }
     }
