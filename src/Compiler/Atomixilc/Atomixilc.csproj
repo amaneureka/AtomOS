@@ -219,6 +219,11 @@
     <Compile Include="Machine\x86\Pushad.cs" />
     <Compile Include="Machine\x86\Ret.cs" />
     <Compile Include="Machine\x86\Sar.cs" />
+    <Compile Include="Machine\x86\Seta.cs" />
+    <Compile Include="Machine\x86\Setb.cs" />
+    <Compile Include="Machine\x86\Sete.cs" />
+    <Compile Include="Machine\x86\Setg.cs" />
+    <Compile Include="Machine\x86\Setne.cs" />
     <Compile Include="Machine\x86\Shl.cs" />
     <Compile Include="Machine\x86\Shr.cs" />
     <Compile Include="Machine\x86\Sti.cs" />

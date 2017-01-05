@@ -60,18 +60,12 @@ namespace Atomixilc.IL
                         if (!itemA.SystemStack || !itemB.SystemStack)
                             throw new Exception(string.Format("UnImplemented-RegisterType '{0}'", msIL));
 
-                        new Pop { DestinationReg = Register.EDX };
                         new Pop { DestinationReg = Register.EAX };
-                        new Cmp { DestinationReg = Register.EAX, SourceReg = Register.EDX };
-                        new Jmp { Condition = ConditionalJump.JE, DestinationRef = xCurrentLabel + ".true" };
-
-                        new Push { DestinationRef = "0x0" };
-                        new Jmp { DestinationRef = xNextLabel };
-
-                        new Label(xCurrentLabel + ".true");
-                        new Push { DestinationRef = "0x1" };
-
-                        new Label(xNextLabel);
+                        new Pop { DestinationReg = Register.EDX };
+                        new Cmp { DestinationReg = Register.EDX, SourceReg = Register.EAX };
+                        new Sete { DestinationReg = Register.AL };
+                        new Movzx { DestinationReg = Register.EAX, SourceReg = Register.AL, Size = 8 };
+                        new Push { DestinationReg = Register.EAX };
 
                         Optimizer.vStack.Push(new StackItem(typeof(bool)));
                         Optimizer.SaveStack(xOp.NextPosition);
