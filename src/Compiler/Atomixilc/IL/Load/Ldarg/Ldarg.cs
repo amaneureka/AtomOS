@@ -64,41 +64,12 @@ namespace Atomixilc.IL
                         if (ArgSize > 4)
                             throw new Exception("Unsupported ArgSize");
 
-                        if (ArgSize < 4)
+                        new Push
                         {
-                            if (Helper.IsSigned(ArgType))
-                            {
-                                new Movsx
-                                {
-                                    DestinationReg = Register.EAX,
-                                    SourceReg = Register.EBP,
-                                    SourceDisplacement = EBPoffset,
-                                    SourceIndirect = true,
-                                    Size = (byte)(ArgSize * 8)
-                                };
-                            }
-                            else
-                            {
-                                new Movzx
-                                {
-                                    DestinationReg = Register.EAX,
-                                    SourceReg = Register.EBP,
-                                    SourceDisplacement = EBPoffset,
-                                    SourceIndirect = true,
-                                    Size = (byte)(ArgSize * 8)
-                                };
-                            }
-                            new Push { DestinationReg = Register.EAX };
-                        }
-                        else
-                        {
-                            new Push
-                            {
-                                DestinationReg = Register.EBP,
-                                DestinationDisplacement = EBPoffset,
-                                DestinationIndirect = true
-                            };
-                        }
+                            DestinationReg = Register.EBP,
+                            DestinationDisplacement = EBPoffset,
+                            DestinationIndirect = true
+                        };
                     }
                     break;
                 default:

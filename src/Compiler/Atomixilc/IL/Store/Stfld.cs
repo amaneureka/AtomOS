@@ -63,30 +63,29 @@ namespace Atomixilc.IL
 
                         new Pop { DestinationReg = Register.EAX };
                         new Pop { DestinationReg = Register.EDX };
-                        new Add { DestinationReg = Register.EDX, SourceRef = "0x" + offset.ToString("X") };
 
                         switch(size)
                         {
                             case 1:
                                 {
-                                    new Mov { DestinationReg = Register.EDX, DestinationIndirect = true, SourceReg = Register.AL, Size = 8 };
+                                    new Mov { DestinationReg = Register.EDX, DestinationDisplacement = offset, DestinationIndirect = true, SourceReg = Register.AL, Size = 8 };
                                 }
                                 break;
                             case 2:
                                 {
-                                    new Mov { DestinationReg = Register.EDX, DestinationIndirect = true, SourceReg = Register.AX, Size = 16 };
+                                    new Mov { DestinationReg = Register.EDX, DestinationDisplacement = offset, DestinationIndirect = true, SourceReg = Register.AX, Size = 16 };
                                 }
                                 break;
                             case 4:
                                 {
-                                    new Mov { DestinationReg = Register.EDX, DestinationIndirect = true, SourceReg = Register.EAX };
+                                    new Mov { DestinationReg = Register.EDX, DestinationDisplacement = offset, DestinationIndirect = true, SourceReg = Register.EAX };
                                 }
                                 break;
                             case 3:
                                 {
-                                    new Mov { DestinationReg = Register.EDX, DestinationIndirect = true, SourceReg = Register.AX, Size = 16 };
+                                    new Mov { DestinationReg = Register.EDX, DestinationDisplacement = offset, DestinationIndirect = true, SourceReg = Register.AX, Size = 16 };
                                     new Shr { DestinationReg = Register.EAX, SourceRef = "0x10" };
-                                    new Mov { DestinationReg = Register.EDX, DestinationIndirect = true, DestinationDisplacement = 2, SourceReg = Register.AL, Size = 8 };
+                                    new Mov { DestinationReg = Register.EDX, DestinationIndirect = true, DestinationDisplacement = 2 + offset, SourceReg = Register.AL, Size = 8 };
                                 }
                                 break;
                         }

@@ -58,8 +58,7 @@ namespace Atomixilc.IL
 
                         for (int i = 1; i <= (size / 4); i++)
                         {
-                            new Mov { DestinationReg = Register.EAX, SourceReg = Register.EDX, SourceIndirect = true, SourceDisplacement = (size - (i * 4) + offset) };
-                            new Push { DestinationReg = Register.EAX };
+                            new Push { DestinationReg = Register.EDX, DestinationIndirect = true, DestinationDisplacement = (size - (i * 4) + offset) };
                         }
 
                         switch(size % 4)
