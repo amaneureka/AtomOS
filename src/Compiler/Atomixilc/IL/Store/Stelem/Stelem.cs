@@ -45,8 +45,6 @@ namespace Atomixilc.IL
              * The value, the index, and the array reference are popped from the stack; the value is put into the array element at the given index.
              */
 
-            new Comment(string.Format("[{0}] : {1} => {2}", ToString(), xOp.ToString(), Optimizer.vStack.Count));
-
             var itemA = Optimizer.vStack.Pop();
             var itemB = Optimizer.vStack.Pop();
             var itemC = Optimizer.vStack.Pop();

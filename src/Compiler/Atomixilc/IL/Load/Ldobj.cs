@@ -44,8 +44,6 @@ namespace Atomixilc.IL
              * The value of the object stored at that address is pushed onto the stack.
              */
 
-            new Comment(string.Format("[{0}] : {1} => {2}", ToString(), xOp.ToString(), Optimizer.vStack.Count));
-
             var item = Optimizer.vStack.Pop();
 
             switch (Config.TargetPlatform)

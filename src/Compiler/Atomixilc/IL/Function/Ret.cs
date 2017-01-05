@@ -45,8 +45,6 @@ namespace Atomixilc.IL
              * The return value obtained in step 1 is pushed onto the caller evaluation stack.
              */
 
-            new Comment(string.Format("[{0}] : {1} => {2}", ToString(), xOp.ToString(), Optimizer.vStack.Count));
-
             switch (Config.TargetPlatform)
             {
                 case Architecture.x86:
@@ -56,6 +54,13 @@ namespace Atomixilc.IL
                             var item = Optimizer.vStack.Pop();
                             if (!item.SystemStack)
                                 throw new Exception(string.Format("UnImplemented-RegisterType '{0}'", msIL));
+                        }
+
+                        /* dude! if this happened na, I am going to kill myself :P */
+                        if (Optimizer.vStack.Count != 0)
+                        {
+                            new Comment("vStack.Count != 0");
+                            Verbose.Error("vStack.Count != 0");
                         }
 
                         new Jmp { DestinationRef = ".End" };

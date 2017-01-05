@@ -44,8 +44,6 @@ namespace Atomixilc.IL
              * The local variable value at the specified index is pushed onto the stack.
              */
 
-            new Comment(string.Format("[{0}] : {1} => {2}", ToString(), xOp.ToString(), Optimizer.vStack.Count));
-
             switch (Config.TargetPlatform)
             {
                 case Architecture.x86:

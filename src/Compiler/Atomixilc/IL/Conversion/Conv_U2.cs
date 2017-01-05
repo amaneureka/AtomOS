@@ -43,8 +43,6 @@ namespace Atomixilc.IL
              * If the conversion is successful, the resulting value is pushed onto the stack.
              */
 
-            new Comment(string.Format("[{0}] : {1} => {2}", ToString(), xOp.ToString(), Optimizer.vStack.Count));
-
             switch (Config.TargetPlatform)
             {
                 case Architecture.x86:

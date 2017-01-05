@@ -955,8 +955,11 @@ namespace Atomixilc
                     Verbose.Error("Unimplemented ILCode '{0}'", xOp.ILCode);
                 }
                 else
+                {
+                    new Comment(string.Format("[{0}] : {1} => {2}", ToString(), xOp.ToString(), Optimizer.vStack.Count));
                     /* yayaya! I found one that is already implement. I am lucky, right? I should buy a lottery ticket :P */
                     ILHandler.Execute(Config, xOp, method, Optimizer);
+                }
             }
 
             /* Add minor blocks to main block  */
@@ -969,10 +972,6 @@ namespace Atomixilc
             /* revert to original main block */
             Instruction.Block = block;
             EmitFooter(block, method);
-
-            /* dude! if this happened na, I am going to kill myself :P */
-            if (Optimizer.vStack.Count != 0)
-                Verbose.Warning("vStack.Count != 0");
 
             Instruction.Block = null;
         }

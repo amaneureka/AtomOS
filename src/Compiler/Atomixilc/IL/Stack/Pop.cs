@@ -41,8 +41,6 @@ namespace Atomixilc.IL
              * The top value is popped from the stack.
              */
 
-            new Comment(string.Format("[{0}] : {1} => {2}", ToString(), xOp.ToString(), Optimizer.vStack.Count));
-
             switch (Config.TargetPlatform)
             {
                 case Architecture.x86:

@@ -45,8 +45,6 @@ namespace Atomixilc.IL
              * The value and the object reference/pointer are popped from the stack; the value of field in the object is replaced with the supplied value.
              */
 
-            new Comment(string.Format("[{0}] : {1} => {2}", ToString(), xOp.ToString(), Optimizer.vStack.Count));
-
             var itemA = Optimizer.vStack.Pop();
             var itemB = Optimizer.vStack.Pop();
 

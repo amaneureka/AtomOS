@@ -65,8 +65,6 @@ namespace Atomixilc.IL
              * The return value is pushed onto the stack.
              */
 
-            new Comment(string.Format("[{0}] : {1} => {2}", ToString(), xOp.ToString(), Optimizer.vStack.Count));
-
             while (count > 0)
             {
                 Optimizer.vStack.Pop();

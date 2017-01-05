@@ -38,8 +38,6 @@ namespace Atomixilc.IL
              * The unmanaged pointer to a specific method is pushed onto the stack.
              */
 
-            new Comment(string.Format("[{0}] : {1} => {2}", ToString(), xOp.ToString(), Optimizer.vStack.Count));
-
             switch (Config.TargetPlatform)
             {
                 case Architecture.x86:

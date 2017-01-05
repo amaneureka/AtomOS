@@ -41,8 +41,6 @@ namespace Atomixilc.IL
              * The length is pushed onto the stack.
              */
 
-            new Comment(string.Format("[{0}] : {1} => {2}", ToString(), xOp.ToString(), Optimizer.vStack.Count));
-
             var item = Optimizer.vStack.Pop();
 
             switch (Config.TargetPlatform)

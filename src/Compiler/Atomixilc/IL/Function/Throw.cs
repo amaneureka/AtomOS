@@ -41,8 +41,6 @@ namespace Atomixilc.IL
              * The object reference is popped from the stack and the exception thrown.
              */
 
-            new Comment(string.Format("[{0}] : {1} => {2}", ToString(), xOp.ToString(), Optimizer.vStack.Count));
-
             switch (Config.TargetPlatform)
             {
                 case Architecture.x86:

@@ -42,8 +42,6 @@ namespace Atomixilc.IL
              * The value is popped off the stack and execution is transferred to the instruction at the offset indexed by the value, where the value is less than N.
              */
 
-            new Comment(string.Format("[{0}] : {1} => {2}", ToString(), xOp.ToString(), Optimizer.vStack.Count));
-
             var item = Optimizer.vStack.Pop();
 
             switch (Config.TargetPlatform)

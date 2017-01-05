@@ -38,8 +38,6 @@ namespace Atomixilc.IL
             /* No evaluation stack behaviors are performed by this operation.
              */
 
-            new Comment(string.Format("[{0}] : {1} => {2}", ToString(), xOp.ToString(), Optimizer.vStack.Count));
-
             switch (Config.TargetPlatform)
             {
                 case Architecture.x86:
