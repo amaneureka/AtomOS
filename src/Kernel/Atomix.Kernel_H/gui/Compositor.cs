@@ -181,9 +181,24 @@ namespace Atomix.Kernel_H.Gui
                 if (Packet[0] != Mouse.MOUSE_MAGIC)
                     continue;
 
-                mouseRequest->Button = Packet[1];
-                mouseRequest->Xpos = Packet[2];
-                mouseRequest->Ypos = Packet[3];
+                int btn = Packet[1];
+                int x = Packet[2];
+                int y = Packet[3];
+
+                mouseRequest->Button = btn;
+
+                if ((btn & 0x10) == 0)
+                    x = (x << 1);
+                else
+                    x = -((x ^ 0xFF) << 1);
+
+                if ((btn & 0x20) == 0)
+                    y = -(y << 1);
+                else
+                    y = ((y ^ 0xFF) << 1);
+
+                mouseRequest->Xpos = x;
+                mouseRequest->Ypos = y;
 
                 Server.Write(aData);
             }
@@ -212,22 +227,15 @@ namespace Atomix.Kernel_H.Gui
                                 int btn = mouse_request->Button;
 
                                 /* calculate new mouse position */
-                                if ((btn & 0x10) == 0)
-                                    Mouse_X += mouse_request->Xpos << 1;
-                                else
-                                    Mouse_X -= (mouse_request->Xpos ^ 0xFF) << 1;
-
-                                if ((btn & 0x20) == 0)
-                                    Mouse_Y -= mouse_request->Ypos << 1;
-                                else
-                                    Mouse_Y += (mouse_request->Ypos ^ 0xFF) << 1;
+                                int x = Mouse_X + mouse_request->Xpos;
+                                int y = Mouse_Y + mouse_request->Ypos;
 
                                 /* bound mouse position */
-                                if (Mouse_X < 0) Mouse_X = 0;
-                                if (Mouse_X > VBE.Xres) Mouse_X = VBE.Xres;
+                                if (x < 0) x = 0;
+                                if (x > VBE.Xres) x = VBE.Xres;
 
-                                if (Mouse_Y < 0) Mouse_Y = 0;
-                                if (Mouse_Y > VBE.Yres) Mouse_Y = VBE.Yres;
+                                if (y < 0) y = 0;
+                                if (y > VBE.Yres) y = VBE.Yres;
 
                                 /* button details */
                                 MouseLeftBtn = (btn & 0x1) != 0;
@@ -238,8 +246,13 @@ namespace Atomix.Kernel_H.Gui
                                 if (ActiveWindow == null)
                                     continue;
 
+                                mouse_request->Xpos = x - Mouse_X;
+                                mouse_request->Ypos = y - Mouse_Y;
                                 mouse_request->WindowID = ActiveWindow.ID;
                                 request->ClientID = ActiveWindow.ClientID;
+
+                                Mouse_X = x;
+                                Mouse_Y = y;
                             }
                             break;
                         case RequestType.NewWindow:

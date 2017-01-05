@@ -1492,6 +1492,8 @@ namespace Atomixilc
                     default:
                         throw new Exception("Internal Compiler error" + xOpCode.OperandType);
                 }
+
+                xOpCodeType.IsLastIL = xOpCodeType.NextPosition == byteCode.Length;
                 EmittedOpCodes.Add(xOpCodeType);
             }
 

@@ -63,7 +63,10 @@ namespace Atomixilc.IL
                             Verbose.Error("vStack.Count != 0");
                         }
 
-                        new Jmp { DestinationRef = ".End" };
+                        if (!xOp.IsLastIL)
+                        {
+                            new Jmp { DestinationRef = ".End" };
+                        }
                     }
                     break;
                 default:

@@ -26,32 +26,30 @@ namespace Atomix.Kernel_H.Arch.x86
     internal struct IRQContext
     {
         [FieldOffset(0)]
-        public uint MMX_Context;
-        [FieldOffset(4)]
         public int EDI;
-        [FieldOffset(8)]
+        [FieldOffset(4)]
         public int ESI;
-        [FieldOffset(12)]
+        [FieldOffset(8)]
         public int EBP;
-        [FieldOffset(16)]
+        [FieldOffset(12)]
         public int ESP;
-        [FieldOffset(20)]
+        [FieldOffset(16)]
         public int EBX;
-        [FieldOffset(24)]
+        [FieldOffset(20)]
         public int EDX;
-        [FieldOffset(28)]
+        [FieldOffset(24)]
         public int ECX;
-        [FieldOffset(32)]
+        [FieldOffset(28)]
         public int EAX;
-        [FieldOffset(36)]
+        [FieldOffset(32)]
         public int Interrupt;
-        [FieldOffset(40)]
+        [FieldOffset(36)]
         public int ErrorCode;
-        [FieldOffset(44)]
+        [FieldOffset(40)]
         public int EIP;
-        [FieldOffset(48)]
+        [FieldOffset(44)]
         public int CS;
-        [FieldOffset(52)]
+        [FieldOffset(48)]
         public int EFlags;
     };
 
@@ -145,12 +143,10 @@ namespace Atomix.Kernel_H.Arch.x86
 
                 new Push { DestinationRef = "0x" + xHex };
                 new Pushad();
-                new Sub { DestinationReg = Register.ESP, SourceRef = "0x4" };
                 new Mov { DestinationReg = Register.EAX, SourceReg = Register.ESP };
                 new And { DestinationReg = Register.ESP, SourceRef = "0xFFFFFFF0" };
                 new Sub { DestinationReg = Register.ESP, SourceRef = "0x200" };
                 new Literal("fxsave [ESP]");
-                new Mov { DestinationReg = Register.EAX, SourceReg = Register.ESP, DestinationIndirect = true };
                 new Push { DestinationReg = Register.EAX };
                 new Push { DestinationReg = Register.EAX };
                 new Literal("jmp 8:__ISR_Handler_" + xHex + ".SetCS");
@@ -160,7 +156,6 @@ namespace Atomix.Kernel_H.Arch.x86
                 new Pop { DestinationReg = Register.EAX };
                 new Literal("fxrstor [ESP]");
                 new Mov { DestinationReg = Register.ESP, SourceReg = Register.EAX };
-                new Add { DestinationReg = Register.ESP, SourceRef = "0x4" };
                 new Popad();
                 new Add { DestinationReg = Register.ESP, SourceRef = "0x8" };
                 new Sti();

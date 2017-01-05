@@ -22,6 +22,8 @@ namespace Atomixilc.IL
         internal readonly int HandlerPosition;
         internal readonly string HandlerRef;
 
+        internal bool IsLastIL;
+
         internal OpCodeType(ILCode aCode, int aPosition, int aNextPosition, ExceptionHandlingClause aEhc)
         {
             ILCode = aCode;

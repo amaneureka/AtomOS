@@ -68,8 +68,9 @@ namespace Atomix.Kernel_H
                 Debug.Write(stream.ReadToEnd());
             else
                 Debug.Write("File not found!\n");*/
-
+            
             BootAnimation();
+
             while (true) ;
         }
 
@@ -146,10 +147,24 @@ namespace Atomix.Kernel_H
             req->Height = 450;
             Compositor.Server.Write(xData);
             SystemClient.Read(xData);
-            if (request->Error != ErrorType.None)
+
+            while(true)
             {
-                Debug.Write("Error: %d\n", (int)request->Error);
-                return;
+                SystemClient.Read(xData);
+                if (request->Error != ErrorType.None) continue;
+                if (request->Type != RequestType.MouseEvent) continue;
+                var mreq = (MouseData*)request;
+                if ((mreq->Button & 0x1) != 0)
+                {
+                    int x = mreq->Xpos;
+                    int y = mreq->Ypos;
+                    request->Type = RequestType.WindowMove;
+                    var mv = (WindowMove*)request;
+                    mv->WindowID = winID;
+                    mv->RelX = x;
+                    mv->RelY = y;
+                    Compositor.Server.Write(xData);
+                }
             }
         }
 
