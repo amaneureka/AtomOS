@@ -68,7 +68,7 @@ namespace Atomix.Kernel_H
                 Debug.Write(stream.ReadToEnd());
             else
                 Debug.Write("File not found!\n");*/
-            
+
             BootAnimation();
 
             while (true) ;
@@ -147,7 +147,7 @@ namespace Atomix.Kernel_H
             req->Height = 450;
             Compositor.Server.Write(xData);
             SystemClient.Read(xData);
-
+            Debug.Write("Time: %d\n", Timer.TicksFromStart);
             while(true)
             {
                 SystemClient.Read(xData);

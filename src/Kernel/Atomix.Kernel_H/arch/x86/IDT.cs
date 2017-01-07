@@ -129,7 +129,7 @@ namespace Atomix.Kernel_H.Arch.x86
             var xInterruptsWithParam = new int[] { 8, 10, 11, 12, 13, 14 };
             for (int i = 0; i <= 255; i++)
             {
-                if (i == 1 || i == 3 || i == 0x20) // Timer Interrupt handled somewhere else
+                if (i == 1 || i == 3 || i == 0x20 || i == 0x75)
                     continue;
 
                 var xHex = i.ToString("X2");

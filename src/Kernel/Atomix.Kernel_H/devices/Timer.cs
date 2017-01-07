@@ -9,6 +9,11 @@
 
 using System;
 
+using Atomixilc;
+using Atomixilc.Machine;
+using Atomixilc.Attributes;
+using Atomixilc.Machine.x86;
+
 using Atomix.Kernel_H.Core;
 using Atomix.Kernel_H.Arch.x86;
 
@@ -16,6 +21,8 @@ namespace Atomix.Kernel_H.Devices
 {
     internal static class Timer
     {
+        internal static uint TicksFromStart;
+
         internal static void Setup()
         {
             Debug.Write("Initializing interval timer\n");
@@ -24,16 +31,11 @@ namespace Atomix.Kernel_H.Devices
             SetFrequency(100);
         }
 
-        internal static uint TicksFromStart
+        [Label("__Timer_Handler__")]
+        internal static uint Handler(uint aOldStack)
         {
-            get;
-            private set;
-        }
-
-        internal static void Tick()
-        {
-            // Tick Tok Tick Tok :P
             TicksFromStart++;
+            return Scheduler.SwitchTask(aOldStack);
         }
 
         private static void SetFrequency(int Hz)
@@ -46,6 +48,37 @@ namespace Atomix.Kernel_H.Devices
             /* Enable Timer IRQ (Clear mask) */
             byte value = (byte)(PortIO.In8(0x21) & 0xFE);
             PortIO.Out8(0x21, value);
+        }
+
+        [NoException]
+        [Assembly(false)]
+        [Plug("__ISR_Handler_20", Architecture.x86)]
+        private static void IRQ0()
+        {
+            // Clear Interrupts
+            new Cli();
+
+            // Push all the Registers
+            new Pushad();
+
+            // Push ESP
+            new Push { DestinationReg = Register.ESP };
+            new Call { DestinationRef = "__Timer_Handler__", IsLabel = true };
+
+            // Get New task ESP
+            new Mov { DestinationReg = Register.ESP, SourceReg = Register.EAX };
+
+            // Tell CPU that we have recieved IRQ
+            new Mov { DestinationReg = Register.AL, SourceRef = "0x20", Size = 8 };
+            new Out { DestinationRef = "0x20", SourceReg = Register.AL };
+
+            // Load Registers
+            new Popad();
+
+            // Enable Interrupts
+            new Sti();
+
+            new Iret();
         }
     }
 }

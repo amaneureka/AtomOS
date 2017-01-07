@@ -41,7 +41,8 @@ namespace Atomix.Kernel_H.IO
             if (aData.Length != PacketSize)
                 return false;
 
-            while (Hangup && BufferStatus[WritingPointer]) ;
+            while (Hangup && BufferStatus[WritingPointer])
+                Task.Switch();
 
             if (BufferStatus[WritingPointer])
                 return false;
@@ -58,7 +59,8 @@ namespace Atomix.Kernel_H.IO
             if (aData.Length != PacketSize)
                 return false;
 
-            while (!BufferStatus[ReadingPointer]) ;
+            while (!BufferStatus[ReadingPointer])
+                Task.Switch();
 
             Memory.FastCopy(aData.GetDataOffset(), Buffer + (uint)(ReadingPointer * PacketSize), (uint)PacketSize);
             BufferStatus[ReadingPointer] = false;

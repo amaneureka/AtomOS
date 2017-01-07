@@ -20,18 +20,18 @@ namespace Atomix.Kernel_H.Core
 {
     internal static class Task
     {
-        [Label("__Switch_Task__")]
-        internal static uint SwitchTask(uint oldStack)
+        [NoException]
+        [Assembly(false)]
+        internal static void Switch()
         {
-            // Increment System Timer
-            Timer.Tick();
-            return Scheduler.SwitchTask(oldStack);
+            new Literal("int 0x75");
+            new Ret { Offset = 0x0 };
         }
 
         [NoException]
         [Assembly(false)]
-        [Plug("__ISR_Handler_20", Architecture.x86)]
-        private static void SetupIRQ0()
+        [Plug("__ISR_Handler_75", Architecture.x86)]
+        private static void Handler()
         {
             // Clear Interrupts
             new Cli ();
@@ -46,16 +46,13 @@ namespace Atomix.Kernel_H.Core
             // Get New task ESP
             new Mov { DestinationReg = Register.ESP, SourceReg = Register.EAX };
 
-            // Tell CPU that we have recieved IRQ
-            new Mov { DestinationReg = Register.AL, SourceRef = "0x20", Size = 8 };
-            new Out { DestinationRef = "0x20", SourceReg = Register.AL };
-
             // Load Registers
             new Popad ();
 
             // Enable Interrupts
             new Sti ();
 
+            // Return
             new Iret ();
         }
     }

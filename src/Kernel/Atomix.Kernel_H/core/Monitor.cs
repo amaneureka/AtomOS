@@ -15,7 +15,8 @@ namespace Atomix.Kernel_H.Core
     {
         internal static void AcquireLock(ref uint aLock)
         {
-            while (Native.AtomicExchange(ref aLock, 1) != 0) ;
+            while (Native.AtomicExchange(ref aLock, 1) != 0)
+                Task.Switch();
         }
 
         internal static void ReleaseLock(ref uint aLock)

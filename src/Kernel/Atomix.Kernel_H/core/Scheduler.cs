@@ -7,6 +7,11 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
+using Atomixilc;
+using Atomixilc.Machine;
+using Atomixilc.Attributes;
+using Atomixilc.Machine.x86;
+
 using Atomix.Kernel_H.Lib;
 using Atomix.Kernel_H.Arch.x86;
 
@@ -17,28 +22,17 @@ namespace Atomix.Kernel_H.Core
         static Thread CurrentTask;
         static IQueue<Thread> ThreadQueue;
 
+        internal static Process SystemProcess;
+
         internal static Process RunningProcess
         {
-            get
-            {
-                if (CurrentTask != null)
-                    return CurrentTask.Process;
-                return SystemProcess;
-            }
+            get { return CurrentTask.Process; }
         }
 
         internal static Thread RunningThread
-        { get { return CurrentTask; } }
-
-        internal static int RunningThreadID
         {
-            get
-            {
-                return (CurrentTask != null ? CurrentTask.ThreadID : 0);
-            }
+            get { return CurrentTask; }
         }
-
-        internal static Process SystemProcess;
 
         internal static void Init(uint KernelDirectory)
         {
@@ -55,6 +49,7 @@ namespace Atomix.Kernel_H.Core
             ThreadQueue.Enqueue(th);
         }
 
+        [Label("__Switch_Task__")]
         internal static uint SwitchTask(uint aStack)
         {
             var NextTask = InvokeNext();
@@ -71,24 +66,19 @@ namespace Atomix.Kernel_H.Core
 
         private static Thread InvokeNext()
         {
-            if (ThreadQueue.Count == 0)
-                return null;
-
-            if (CurrentTask != null)
+            var state = CurrentTask.Status;
+            switch (state)
             {
-                var state = CurrentTask.Status;
-                switch (state)
-                {
-                    case ThreadState.Running:
-                        ThreadQueue.Enqueue(CurrentTask);
-                        break;
-                    case ThreadState.Dead:
-                        CurrentTask.Free();
-                        break;
-                    default:// Do nothing for not active
-                        break;
-                }
+                case ThreadState.Running:
+                    ThreadQueue.Enqueue(CurrentTask);
+                    break;
+                case ThreadState.Dead:
+                    CurrentTask.Free();
+                    break;
+                default:// Do nothing for not active
+                    break;
             }
+
             return ThreadQueue.Dequeue();
         }
     }
