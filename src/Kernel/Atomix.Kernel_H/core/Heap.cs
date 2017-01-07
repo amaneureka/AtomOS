@@ -33,7 +33,7 @@ namespace Atomix.Kernel_H.Core
         // ~16K items, complete assumption, so should take care of this
         const int HeapManagerSize = 1024 * 16;
 
-        static int LockStatus;
+        static uint HeapLock;
 
         internal static void Init(uint InitHeap)
         {
@@ -67,7 +67,6 @@ namespace Atomix.Kernel_H.Core
             BlockSize[0] = HeapEnd - HeapStart;
             HeapManagerPosition = 1;
             HeapManagerSetup = true;
-            LockStatus = -1;
         }
 
         [Label(Atomixilc.Helper.Heap_Label)]
@@ -102,7 +101,7 @@ namespace Atomix.Kernel_H.Core
                 return kmalloc(len);
             }
 
-            HeapLock();
+            Monitor.AcquireLock(ref HeapLock);
 
             // Find a suitable hole
             int iterator;
@@ -172,7 +171,7 @@ namespace Atomix.Kernel_H.Core
                 }
                 HeapManagerPosition--; // Reduce size of array, no need to clear last empty because we never read it
             }
-            HeapUnLock();
+            Monitor.ReleaseLock(ref HeapLock);
             Memory.FastClear(Address, len); // Clear the memory and return
             return Address;
         }
@@ -235,7 +234,7 @@ namespace Atomix.Kernel_H.Core
                     HeapManagerPosition++;
                 }
             }
-            HeapUnLock();
+            Monitor.ReleaseLock(ref HeapLock);
             Memory.FastClear(pos, len);
             return pos;
         }
@@ -297,7 +296,7 @@ namespace Atomix.Kernel_H.Core
             if (len == 0)
                 return;
 
-            HeapLock();
+            Monitor.AcquireLock(ref HeapLock);
 
             // Check if any block can fit to left/Right of this
             int iterator, left = -1, right = -1;
@@ -367,28 +366,7 @@ namespace Atomix.Kernel_H.Core
                 BlockAddress[HeapManagerPosition] = NewAddress;
                 HeapManagerPosition++;
             }
-            HeapUnLock();
-        }
-
-        /// <summary>
-        /// Monitor class uses memory allocation for maintaing the list of acquired locks so we can't use it for
-        /// Heap lock
-        /// </summary>
-        private static void HeapLock()
-        {
-            int ThreadID = Scheduler.RunningThreadID;
-            if (LockStatus == ThreadID)
-                return;
-
-            while (LockStatus != -1) ;
-            LockStatus = ThreadID;
-        }
-
-        private static void HeapUnLock()
-        {
-            int ThreadID = Scheduler.RunningThreadID;
-            if (LockStatus == ThreadID)
-                LockStatus = -1;
+            Monitor.ReleaseLock(ref HeapLock);
         }
     }
 }
