@@ -32,7 +32,7 @@ namespace Atomix.Kernel_H.Devices
         }
 
         [Label("__Timer_Handler__")]
-        internal static uint Handler(uint aOldStack)
+        private static uint Handler(uint aOldStack)
         {
             TicksFromStart++;
             return Scheduler.SwitchTask(aOldStack);
@@ -61,16 +61,16 @@ namespace Atomix.Kernel_H.Devices
             // Push all the Registers
             new Pushad();
 
+            // Tell CPU that we have recieved IRQ
+            new Mov { DestinationReg = Register.AL, SourceRef = "0x20", Size = 8 };
+            new Out { DestinationRef = "0x20", SourceReg = Register.AL };
+
             // Push ESP
             new Push { DestinationReg = Register.ESP };
             new Call { DestinationRef = "__Timer_Handler__", IsLabel = true };
 
             // Get New task ESP
             new Mov { DestinationReg = Register.ESP, SourceReg = Register.EAX };
-
-            // Tell CPU that we have recieved IRQ
-            new Mov { DestinationReg = Register.AL, SourceRef = "0x20", Size = 8 };
-            new Out { DestinationRef = "0x20", SourceReg = Register.AL };
 
             // Load Registers
             new Popad();

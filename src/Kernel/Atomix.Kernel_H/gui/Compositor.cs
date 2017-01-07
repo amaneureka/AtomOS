@@ -162,6 +162,8 @@ namespace Atomix.Kernel_H.Gui
 
                 Cairo.Restore(MainContext);
                 Cairo.Restore(VideoContext);
+
+                Task.Switch();
             }
         }
 

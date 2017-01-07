@@ -54,12 +54,13 @@ namespace Atomix.Kernel_H.Core
         {
             var NextTask = InvokeNext();
 
-            if ((CurrentTask == NextTask) || (NextTask == null))
+            if (CurrentTask == NextTask)
                 return aStack;
 
             CurrentTask.SaveStack(aStack);
             if (NextTask.Process != CurrentTask.Process)
                 NextTask.Process.SetEnvironment();
+
             CurrentTask = NextTask;
             return NextTask.LoadStack();
         }

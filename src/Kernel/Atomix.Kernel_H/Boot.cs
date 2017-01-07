@@ -147,6 +147,7 @@ namespace Atomix.Kernel_H
             req->Height = 450;
             Compositor.Server.Write(xData);
             SystemClient.Read(xData);
+
             Debug.Write("Time: %d\n", Timer.TicksFromStart);
             while(true)
             {

@@ -32,7 +32,7 @@ namespace Atomix.Kernel_H.Core
             COM_Scratch = 0x06
         };
 
-        static bool IsWriting;
+        static uint Lock;
 
         internal static void Init()
         {
@@ -47,7 +47,6 @@ namespace Atomix.Kernel_H.Core
             PortIO.Out8((ushort)(PORT + (ushort)Cmd.COM_Interrupt), 0x0F);
 
             Write("Debugger Initalized\n");
-            IsWriting = false;
         }
 
         private static void WaitForWriteReady()
@@ -62,7 +61,7 @@ namespace Atomix.Kernel_H.Core
 
         internal static void Write(string str, uint nums)
         {
-            Lock();
+            Monitor.AcquireLock(ref Lock);
 
             char a;
             for (int i = 0; i < str.Length; i++)
@@ -78,12 +77,13 @@ namespace Atomix.Kernel_H.Core
                     Write(a);
                 }
             }
-            UnLock();
+
+            Monitor.ReleaseLock(ref Lock);
         }
 
         internal static void Write(string str, string arg0)
         {
-            Lock();
+            Monitor.AcquireLock(ref Lock);
 
             char a;
             for (int i = 0; i < str.Length; i++)
@@ -99,14 +99,14 @@ namespace Atomix.Kernel_H.Core
                     Write(a);
                 }
             }
-            UnLock();
+            Monitor.ReleaseLock(ref Lock);
         }
 
         internal static void Write(string str)
         {
-            Lock();
+            Monitor.AcquireLock(ref Lock);
             WriteAsync(str);
-            UnLock();
+            Monitor.ReleaseLock(ref Lock);
         }
 
         private static void WriteAsync(string str)
@@ -143,17 +143,6 @@ namespace Atomix.Kernel_H.Core
                 tmp %= c;
                 c /= 10;
             }
-        }
-
-        private static void Lock()
-        {
-            while (IsWriting) ;
-            IsWriting = true;
-        }
-
-        private static void UnLock()
-        {
-            IsWriting = false;
         }
     }
 }

@@ -66,39 +66,48 @@ namespace Atomix.Kernel_H.Drivers.Input
 
         private static void HandleIRQ(ref IRQContext context)
         {
-            byte input = Read();
-            switch (MouseCycle)
+            int status = PortIO.In8(MOUSE_STATUS);
+
+            while((status & MOUSE_BBIT) != 0)
             {
-                case 0:
+                if ((status & MOUSE_F_BIT) != 0)
+                {
+                    byte input = PortIO.In8(MOUSE_PORT);
+                    switch (MouseCycle)
                     {
-                        MouseData[1] = input;
-                        if ((input & MOUSE_V_BIT) != 0)
-                            MouseCycle = 1;
+                        case 0:
+                            {
+                                MouseData[1] = input;
+                                if ((input & MOUSE_V_BIT) != 0)
+                                    MouseCycle = 1;
+                            }
+                            break;
+                        case 1:
+                            {
+                                MouseData[2] = input;
+                                MouseCycle = 2;
+                            }
+                            break;
+                        case 2:
+                            {
+                                MouseData[3] = input;
+                                MouseCycle = 0;
+                                /*
+                                 * http://wiki.osdev.org/Mouse_Input
+                                 * The top two bits of the first byte (values 0x80 and 0x40) supposedly show Y and X overflows,
+                                 * respectively. They are not useful. If they are set, you should probably just discard the entire packet.
+                                 */
+                                if ((MouseData[1] & 0xC0) != 0) // X-Y (0x40 & 0x80) Overflow
+                                    break;
+
+                                // Send packet to kernel:= { MAGIC, btn, X-Pos, Y-Pos }
+                                // Send package and seek the read pointer if necessary
+                                MousePipe.Write(MouseData, false);
+                            }
+                            break;
                     }
-                    break;
-                case 1:
-                    {
-                        MouseData[2] = input;
-                        MouseCycle = 2;
-                    }
-                    break;
-                case 2:
-                    {
-                        MouseData[3] = input;
-                        MouseCycle = 0;
-                        /*
-                         * http://wiki.osdev.org/Mouse_Input
-                         * The top two bits of the first byte (values 0x80 and 0x40) supposedly show Y and X overflows,
-                         * respectively. They are not useful. If they are set, you should probably just discard the entire packet.
-                         */
-                        //if ((MouseData[1] & 0x40) != 0)//X Overflow
-                        //    break;
-                        //if ((MouseData[1] & 0x80) != 0)//Y Overflow
-                        //    break;
-                        //Send packet to kernel:= { MAGIC, btn, X-Pos, Y-Pos }
-                        MousePipe.Write(MouseData, false);//Send package and seek the read pointer if necessary
-                    }
-                    break;
+                }
+                status = PortIO.In8(MOUSE_STATUS);
             }
         }
 
