@@ -187,17 +187,13 @@ namespace Atomix.Kernel_H.Gui
                 int x = Packet[2];
                 int y = Packet[3];
 
+                if ((btn & 0x10) != 0)
+                    x |= ~0xFF;
+
+                if ((btn & 0x20) != 0)
+                    y |= ~0xFF;
+
                 mouseRequest->Button = btn;
-
-                if ((btn & 0x10) == 0)
-                    x = (x << 1);
-                else
-                    x = -((x ^ 0xFF) << 1);
-
-                if ((btn & 0x20) == 0)
-                    y = -(y << 1);
-                else
-                    y = ((y ^ 0xFF) << 1);
 
                 mouseRequest->Xpos = x;
                 mouseRequest->Ypos = y;
@@ -229,8 +225,8 @@ namespace Atomix.Kernel_H.Gui
                                 int btn = mouse_request->Button;
 
                                 /* calculate new mouse position */
-                                int x = Mouse_X + mouse_request->Xpos;
-                                int y = Mouse_Y + mouse_request->Ypos;
+                                int x = Mouse_X + (mouse_request->Xpos << 1);
+                                int y = Mouse_Y - (mouse_request->Ypos << 1);
 
                                 /* bound mouse position */
                                 if (x < 0) x = 0;

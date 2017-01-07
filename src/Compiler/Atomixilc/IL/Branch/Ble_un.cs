@@ -60,9 +60,9 @@ namespace Atomixilc.IL
                         if (!itemA.SystemStack || !itemB.SystemStack)
                             throw new Exception(string.Format("UnImplemented-RegisterType '{0}'", msIL));
 
-                        new Pop { DestinationReg = Register.EDX };
                         new Pop { DestinationReg = Register.EAX };
-                        new Cmp { DestinationReg = Register.EAX, SourceReg = Register.EDX };
+                        new Pop { DestinationReg = Register.EDX };
+                        new Cmp { DestinationReg = Register.EDX, SourceReg = Register.EAX };
                         new Jmp { Condition = ConditionalJump.JBE, DestinationRef = xTrueLabel };
 
                         Optimizer.SaveStack(offset);

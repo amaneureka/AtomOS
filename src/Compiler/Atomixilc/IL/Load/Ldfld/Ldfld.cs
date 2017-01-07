@@ -54,11 +54,16 @@ namespace Atomixilc.IL
                         if (!item.SystemStack)
                             throw new Exception(string.Format("UnImplemented-RegisterType '{0}'", msIL));
 
-                        new Pop { DestinationReg = Register.EDX };
+                        new Pop { DestinationReg = Register.EAX };
 
                         for (int i = 1; i <= (size / 4); i++)
                         {
-                            new Push { DestinationReg = Register.EDX, DestinationIndirect = true, DestinationDisplacement = (size - (i * 4) + offset) };
+                            new Push
+                            {
+                                DestinationReg = Register.EAX,
+                                DestinationIndirect = true,
+                                DestinationDisplacement = (size - (i * 4) + offset)
+                            };
                         }
 
                         switch(size % 4)
@@ -66,13 +71,13 @@ namespace Atomixilc.IL
                             case 0: break;
                             case 1:
                                 {
-                                    new Movzx { DestinationReg = Register.EAX, SourceReg = Register.EDX, SourceIndirect = true, SourceDisplacement = offset, Size = 8 };
+                                    new Movzx { DestinationReg = Register.EAX, SourceReg = Register.EAX, SourceIndirect = true, SourceDisplacement = offset, Size = 8 };
                                     new Push { DestinationReg = Register.EAX };
                                 }
                                 break;
                             case 2:
                                 {
-                                    new Movzx { DestinationReg = Register.EAX, SourceReg = Register.EDX, SourceIndirect = true, SourceDisplacement = offset, Size = 16 };
+                                    new Movzx { DestinationReg = Register.EAX, SourceReg = Register.EAX, SourceIndirect = true, SourceDisplacement = offset, Size = 16 };
                                     new Push { DestinationReg = Register.EAX };
                                 }
                                 break;

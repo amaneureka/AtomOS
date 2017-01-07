@@ -73,8 +73,19 @@ namespace Atomixilc.IL
         {
             new Pop { DestinationReg = Register.EDI };
             new Pop { DestinationReg = Register.EAX };
-            new Mov { DestinationReg = Register.EDX, SourceRef = "0x" + size.ToString("X") };
-            new Mul { DestinationReg = Register.EDX };
+
+            switch (size)
+            {
+                case 1: break;
+                case 2:
+                    new Shl { DestinationReg = Register.EAX, SourceRef = "0x1" };
+                    break;
+                case 4:
+                    new Shl { DestinationReg = Register.EAX, SourceRef = "0x2" };
+                    break;
+                default:
+                    throw new Exception("size not supported");
+            }
 
             new Pop { DestinationReg = Register.EDX };
             new Add { DestinationReg = Register.EAX, SourceReg = Register.EDX };
