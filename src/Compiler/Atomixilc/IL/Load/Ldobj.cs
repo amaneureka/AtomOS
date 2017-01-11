@@ -36,7 +36,7 @@ namespace Atomixilc.IL
                 throw new Exception("Internal Compiler Error: vStack.Count < 1");
 
             var xOpType = ((OpType)xOp).Value;
-            var size = Helper.GetStorageSize(xOpType, Config.TargetPlatform);
+            var size = Helper.GetTypeSize(xOpType, Config.TargetPlatform);
 
             /* The stack transitional behavior, in sequential order, is:
              * The address of a value type object is pushed onto the stack.
@@ -53,13 +53,12 @@ namespace Atomixilc.IL
                         if (!item.SystemStack)
                             throw new Exception(string.Format("UnImplemented-RegisterType '{0}'", msIL));
 
-                        new Pop { DestinationReg = Register.ESI };
-
+                        new Pop { DestinationReg = Register.EAX };
                         for (int i = 1; i <= (size / 4); i++)
                         {
                             new Push
                             {
-                                DestinationReg = Register.ESI,
+                                DestinationReg = Register.EAX,
                                 DestinationIndirect = true,
                                 DestinationDisplacement = (size - (i * 4))
                             };
