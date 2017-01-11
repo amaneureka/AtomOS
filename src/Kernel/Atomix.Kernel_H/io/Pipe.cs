@@ -38,16 +38,18 @@ namespace Atomix.Kernel_H.IO
 
         internal bool Write(byte[] aData, bool Hangup = true)
         {
-            if (aData.Length != PacketSize)
-                return false;
+            return Write((byte*)aData.GetDataOffset(), Hangup);
+        }
 
+        internal bool Write(byte* aData, bool Hangup = true)
+        {
             while (Hangup && BufferStatus[WritingPointer])
                 Task.Switch();
 
             if (BufferStatus[WritingPointer])
                 return false;
 
-            Memory.FastCopy(Buffer + (uint)(WritingPointer * PacketSize), aData.GetDataOffset(), (uint)PacketSize);
+            Memory.FastCopy(Buffer + (uint)(WritingPointer * PacketSize), (uint)aData, (uint)PacketSize);
             BufferStatus[WritingPointer] = true;
 
             WritingPointer = (WritingPointer + 1) % PacketsCount;
@@ -56,9 +58,6 @@ namespace Atomix.Kernel_H.IO
 
         internal bool Read(byte[] aData)
         {
-            if (aData.Length != PacketSize)
-                return false;
-
             while (!BufferStatus[ReadingPointer])
                 Task.Switch();
 

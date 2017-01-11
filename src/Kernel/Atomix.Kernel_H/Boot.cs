@@ -100,7 +100,7 @@ namespace Atomix.Kernel_H
             SystemClient.Read(xData);
             if (request->Error != ErrorType.None)
             {
-                Debug.Write("Error: %d\n", (int)request->Error);
+                Debug.Write("Error5: %d\n", (int)request->Error);
                 return;
             }
 
@@ -146,7 +146,6 @@ namespace Atomix.Kernel_H
             req->Width = 600;
             req->Height = 450;
             Compositor.Server.Write(xData);
-            SystemClient.Read(xData);
 
             Debug.Write("Time: %d\n", Timer.TicksFromStart);
             while(true)
@@ -154,17 +153,19 @@ namespace Atomix.Kernel_H
                 SystemClient.Read(xData);
                 if (request->Error != ErrorType.None) continue;
                 if (request->Type != RequestType.MouseEvent) continue;
-                var mreq = (MouseData*)request;
-                if ((mreq->Button & 0x1) != 0)
+                var mreq = (MouseEvent*)request;
+                if (mreq->WindowID != winID) continue;
+                if ((mreq->Function & MouseFunction.Click) != 0)
                 {
                     int x = mreq->Xpos;
                     int y = mreq->Ypos;
-                    request->Type = RequestType.WindowMove;
-                    var mv = (WindowMove*)request;
-                    mv->WindowID = winID;
-                    mv->RelX = x;
-                    mv->RelY = y;
-                    Compositor.Server.Write(xData);
+                    if (y < 40)
+                    {
+                        request->Type = RequestType.DragRequest;
+                        var mv = (DragRequest*)request;
+                        mv->WindowID = winID;
+                        Compositor.Server.Write(xData);
+                    }
                 }
             }
         }
@@ -185,7 +186,7 @@ namespace Atomix.Kernel_H
             SystemClient.Read(xData);
             if (request->Error != ErrorType.None)
             {
-                Debug.Write("Error: %d\n", (int)request->Error);
+                Debug.Write("Error4: %d\n", (int)request->Error);
                 return;
             }
 
@@ -229,12 +230,6 @@ namespace Atomix.Kernel_H
             req->Width = VBE.Xres;
             req->Height = height;
             Compositor.Server.Write(xData);
-            SystemClient.Read(xData);
-            if (request->Error != ErrorType.None)
-            {
-                Debug.Write("Error: %d\n", (int)request->Error);
-                return;
-            }
         }
 
         private static unsafe void PrintWallpaper(GuiRequest* request, byte[] xData)
@@ -254,7 +249,7 @@ namespace Atomix.Kernel_H
 
             if (request->Error != ErrorType.None)
             {
-                Debug.Write("Error: %d\n", (int)request->Error);
+                Debug.Write("Error1: %d\n", (int)request->Error);
                 return;
             }
 
@@ -281,12 +276,6 @@ namespace Atomix.Kernel_H
             req->Width = VBE.Xres;
             req->Height = VBE.Yres;
             Compositor.Server.Write(xData);
-            SystemClient.Read(xData);
-            if (request->Error != ErrorType.None)
-            {
-                Debug.Write("Error: %d\n", (int)request->Error);
-                return;
-            }
         }
 
         internal static void LoadIDE(bool IsPrimary, bool IsMaster)

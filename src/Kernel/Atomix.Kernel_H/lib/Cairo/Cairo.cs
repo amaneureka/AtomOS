@@ -317,7 +317,7 @@ namespace Atomix.Kernel_H.Lib.Cairo
         [NoException]
         [Plug("cairo_translate")]
         [DllImport(LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void TranslateTo(double y, double x, uint cr);
+        internal static extern void Translate(double y, double x, uint cr);
 
         /// <summary>
         /// cairo_public void

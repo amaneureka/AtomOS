@@ -26,7 +26,6 @@ namespace Atomix.Kernel_H.Gui
 
         static Window ActiveWindow;
         static IList<Pipe> Clients;
-        static IList<Window> Windows;
         static IQueue<uint> RedrawRects;
 
         internal static Pipe Server;
@@ -48,6 +47,10 @@ namespace Atomix.Kernel_H.Gui
         /* Cairo Contexts */
         static uint MainContext;
         static uint VideoContext;
+
+        /* Windows */
+        static Window MouseWindow;
+        static IList<Window> Windows;
 
         internal unsafe static void Setup(Process aParent)
         {
@@ -136,11 +139,11 @@ namespace Atomix.Kernel_H.Gui
                     for (int index = 0; index < count; index++)
                     {
                         var win = list[index];
-                        if (win.Z < 0) continue;
-
-                        Cairo.TranslateTo(win.Y, win.X, MainContext);
+                        Cairo.Save(MainContext);
+                        Cairo.Translate(win.Y, win.X, MainContext);
                         Cairo.SetSourceSurface(0, 0, win.Surface, MainContext);
                         Cairo.Paint(MainContext);
+                        Cairo.Restore(MainContext);
                     }
                     Monitor.ReleaseLock(ref WindowsLock);
                 }
@@ -149,12 +152,12 @@ namespace Atomix.Kernel_H.Gui
                 {
                     Cairo.Clip(VideoContext);
 
-                    Cairo.TranslateTo(0, 0, VideoContext);
+                    Cairo.Translate(0, 0, VideoContext);
                     Cairo.SetOperator(Operator.Source, VideoContext);
                     Cairo.SetSourceSurface(0, 0, MainSurface, VideoContext);
                     Cairo.Paint(VideoContext);
 
-                    Cairo.TranslateTo(old_mouse_Y, old_mouse_X, VideoContext);
+                    Cairo.Translate(old_mouse_Y, old_mouse_X, VideoContext);
                     Cairo.SetOperator(Operator.Over, VideoContext);
                     Cairo.SetSourceSurface(0, 0, MouseSurface, VideoContext);
                     Cairo.Paint(VideoContext);
@@ -175,7 +178,7 @@ namespace Atomix.Kernel_H.Gui
 
             request->Type = RequestType.MouseEvent;
 
-            var mouseRequest = (MouseData*)request;
+            var mouseRequest = (MouseEvent*)request;
             while (true)
             {
                 Mouse.MousePipe.Read(Packet);
@@ -210,180 +213,265 @@ namespace Atomix.Kernel_H.Gui
             {
                 Server.Read(xData);
 
-                var request = (GuiRequest*)xData.GetDataOffset();
+                var Request = (GuiRequest*)xData.GetDataOffset();
 
-                if (request->ClientID >= Clients.Count)
-                    request->Error = ErrorType.BadRequest;
+                if (Request->ClientID >= Clients.Count)
+                    Request->Error = ErrorType.BadRequest;
 
-                if (request->Error == ErrorType.None)
+                if (Request->Error != ErrorType.None)
                 {
-                    switch (request->Type)
-                    {
-                        case RequestType.MouseEvent:
-                            {
-                                var mouse_request = (MouseData*)request;
-                                int btn = mouse_request->Button;
-
-                                /* calculate new mouse position */
-                                int x = Mouse_X + (mouse_request->Xpos << 1);
-                                int y = Mouse_Y - (mouse_request->Ypos << 1);
-
-                                /* bound mouse position */
-                                if (x < 0) x = 0;
-                                if (x > VBE.Xres) x = VBE.Xres;
-
-                                if (y < 0) y = 0;
-                                if (y > VBE.Yres) y = VBE.Yres;
-
-                                /* button details */
-                                MouseLeftBtn = (btn & 0x1) != 0;
-                                MouseRightBtn = (btn & 0x2) != 0;
-                                MouseMiddleBtn = (btn & 0x4) != 0;
-
-                                /* pass information to active window */
-                                if (ActiveWindow == null)
-                                    continue;
-
-                                mouse_request->Xpos = x - Mouse_X;
-                                mouse_request->Ypos = y - Mouse_Y;
-                                mouse_request->WindowID = ActiveWindow.ID;
-                                request->ClientID = ActiveWindow.ClientID;
-
-                                Mouse_X = x;
-                                Mouse_Y = y;
-                            }
-                            break;
-                        case RequestType.NewWindow:
-                            {
-                                var winRequest = (NewWindow*)request;
-
-                                if (winRequest->Width == 0 || winRequest->Height == 0)
-                                {
-                                    request->Error = ErrorType.BadParameters;
-                                    break;
-                                }
-
-                                var newWindow = new Window
-                                    (
-                                        request->ClientID,
-                                        winRequest->X,
-                                        winRequest->Y,
-                                        winRequest->Width,
-                                        winRequest->Height
-                                    );
-
-                                Marshal.Copy(newWindow.HashID, winRequest->Buffer, newWindow.HashID.Length);
-
-                                Monitor.AcquireLock(ref WindowsLock);
-                                newWindow.ID = Windows.Count;
-                                winRequest->WindowID = Windows.Count;
-                                Windows.Add(newWindow);
-                                Monitor.ReleaseLock(ref WindowsLock);
-                                ActiveWindow = newWindow;
-                            }
-                            break;
-                        case RequestType.Redraw:
-                            {
-                                var redraw = (Redraw*)request;
-
-                                int id = redraw->WindowID;
-                                if (id < 0 || id >= Windows.Count)
-                                {
-                                    request->Error = ErrorType.BadParameters;
-                                    break;
-                                }
-
-                                var win = Windows[id];
-
-                                var rect = (Rect*)Libc.malloc((uint)sizeof(Rect));
-                                rect->X = redraw->X + win.X;
-                                rect->Y = redraw->Y + win.Y;
-                                rect->Width = redraw->Width;
-                                rect->Height = redraw->Height;
-
-                                Monitor.AcquireLock(ref RedrawRectsLock);
-                                RedrawRects.Enqueue((uint)rect);
-                                Monitor.ReleaseLock(ref RedrawRectsLock);
-                            }
-                            break;
-                        case RequestType.WindowMove:
-                            {
-                                var winmove = (WindowMove*)request;
-
-                                int id = winmove->WindowID;
-                                if (id < 0 || id >= Windows.Count)
-                                {
-                                    request->Error = ErrorType.BadParameters;
-                                    break;
-                                }
-
-                                var win = Windows[id];
-
-                                var rect = (Rect*)Libc.malloc((uint)sizeof(Rect));
-                                rect->X = win.X;
-                                rect->Y = win.Y;
-                                rect->Width = win.Width;
-                                rect->Height = win.Height;
-
-                                var rect2 = (Rect*)Libc.malloc((uint)sizeof(Rect));
-                                win.X += winmove->RelX;
-                                win.Y += winmove->RelY;
-
-                                rect2->X = win.X;
-                                rect2->Y = win.Y;
-                                rect2->Width = win.Width;
-                                rect2->Height = win.Height;
-
-                                Monitor.AcquireLock(ref RedrawRectsLock);
-                                RedrawRects.Enqueue((uint)rect);
-                                RedrawRects.Enqueue((uint)rect2);
-                                Monitor.ReleaseLock(ref RedrawRectsLock);
-                            }
-                            break;
-                        case RequestType.RandomRequest:
-                            {
-                                var random = (RandomRequest*)request;
-
-                                if (ActiveWindow == null || random->WindowID != ActiveWindow.ID)
-                                {
-                                    request->Error = ErrorType.BadRequest;
-                                    break;
-                                }
-
-                                switch(random->MouseIcon)
-                                {
-                                    case MouseIcon.Idle:
-                                        MouseSurface = MouseIdleSurface;
-                                        break;
-                                    case MouseIcon.Help:
-                                        MouseSurface = MouseHelpSurface;
-                                        break;
-                                    case MouseIcon.Clipboard:
-                                        MouseSurface = MouseClipSurface;
-                                        break;
-                                    case MouseIcon.None: break;
-                                    default:
-                                        request->Error = ErrorType.BadRequest;
-                                        break;
-                                }
-
-                                switch(random->WindowState)
-                                {
-                                    default:
-                                        request->Error = ErrorType.BadRequest;
-                                        break;
-                                }
-                            }
-                            break;
-                        default:
-                            request->Error = ErrorType.BadFunction;
-                            break;
-                    }
+                    ReplyClient(Request);
+                    continue;
                 }
 
-                request->HashID = 0;
-                Clients[request->ClientID].Write(xData, false);
+                switch (Request->Type)
+                {
+                    case RequestType.MouseEvent:
+                        HandleMouseEvent(Request);
+                        break;
+                    case RequestType.NewWindow:
+                        HandleNewWindow(Request);
+                        break;
+                    case RequestType.Redraw:
+                        HandleRedraw(Request);
+                        break;
+                    case RequestType.WindowMove:
+                        HandleWindowMove(Request);
+                        break;
+                    case RequestType.DragRequest:
+                        HandleDragRequest(Request);
+                        break;
+                    default:
+                        Debug.Write("Function: %d\n", (int)Request->Type);
+                        Request->Error = ErrorType.BadFunction;
+                        break;
+                }
             }
+        }
+
+        private static unsafe void HandleDragRequest(GuiRequest* aRequest)
+        {
+            var DragRequest = (DragRequest*)aRequest;
+            int id = DragRequest->WindowID;
+
+            if (id < 0 || id >= Windows.Count)
+                aRequest->Error = ErrorType.BadParameters;
+
+            if (ActiveWindow == null || ActiveWindow.ID != id)
+                aRequest->Error = ErrorType.BadRequest;
+
+            if (aRequest->Error != ErrorType.None)
+            {
+                ReplyClient(aRequest);
+                return;
+            }
+
+            var win = Windows[id];
+            MouseWindow = win;
+        }
+
+        private static unsafe void HandleMouseEvent(GuiRequest* aRequest)
+        {
+            var MouseRequest = (MouseEvent*)aRequest;
+            MouseRequest->Function = MouseFunction.None;
+
+            MouseFunction function = 0;
+            if (MouseRequest->Xpos != 0 || MouseRequest->Ypos != 0)
+                function = MouseFunction.Move;
+
+            /* calculate new mouse position */
+            int x = Mouse_X + (MouseRequest->Xpos << 1);
+            int y = Mouse_Y - (MouseRequest->Ypos << 1);
+
+            /* bound mouse position */
+            if (x < 0) x = 0;
+            if (x > VBE.Xres) x = VBE.Xres;
+
+            if (y < 0) y = 0;
+            if (y > VBE.Yres) y = VBE.Yres;
+
+            /* Button Status */
+            int Button = MouseRequest->Button;
+            bool LeftBtn = (Button & 0x1) != 0;
+            bool RightBtn = (Button & 0x2) != 0;
+
+            /* stop window movement */
+            if (LeftBtn)
+            {
+                if (MouseWindow != null)
+                {
+                    var win = MouseWindow;
+                    MarkRectange(win.X, win.Y, win.Width, win.Height);
+                    MouseWindow.X += x - Mouse_X;
+                    MouseWindow.Y += y - Mouse_Y;
+                    MarkRectange(win.X, win.Y, win.Width, win.Height);
+                }
+            }
+            else
+            {
+                MouseWindow = null;
+            }
+
+            /* Update Coordinates */
+            Mouse_X = x;
+            Mouse_Y = y;
+
+            /* Mouse Events to Client */
+            if ((LeftBtn && !MouseLeftBtn) || (RightBtn && !MouseRightBtn))
+                function |= MouseFunction.KeyDown;
+
+            if ((!LeftBtn && MouseLeftBtn) || (!RightBtn && MouseRightBtn))
+                function |= MouseFunction.KeyUp;
+
+            /* button details */
+            MouseLeftBtn = LeftBtn;
+            MouseRightBtn = RightBtn;
+            MouseMiddleBtn = (Button & 0x4) != 0;
+
+            if ((function & MouseFunction.KeyDown) != 0)
+            {
+                Monitor.AcquireLock(ref WindowsLock);
+
+                var list = Windows;
+                int count = list.Count;
+                for (int i = count - 1; i >= 0; i--)
+                {
+                    var win = list[i];
+                    if (x < win.X ||
+                        y < win.Y ||
+                        x > win.X + win.Width ||
+                        y > win.Y + win.Height) continue;
+
+                    if (ActiveWindow == win)
+                    {
+                        function |= MouseFunction.Click;
+                        break;
+                    }
+
+                    ActiveWindow = win;
+                    function |= MouseFunction.Enter;
+
+                    for (int j = i + 1; j < count; j++)
+                        list[j - 1] = list[j];
+                    list[count - 1] = win;
+
+                    MarkRectange(win.X, win.Y, win.Width, win.Height);
+                    break;
+                }
+
+                Monitor.ReleaseLock(ref WindowsLock);
+            }
+
+            if (ActiveWindow == null) return;
+
+            var Window = ActiveWindow;
+
+            if (x < Window.X ||
+                y < Window.Y ||
+                x > Window.X + Window.Width ||
+                y > Window.Y + Window.Height)
+                return;
+
+            MouseRequest->WindowID = Window.ID;
+            MouseRequest->Xpos = x - Window.X;
+            MouseRequest->Ypos = y - Window.Y;
+            MouseRequest->Function = function;
+            aRequest->ClientID = Window.ClientID;
+            ReplyClient(aRequest);
+        }
+
+        private static unsafe void HandleWindowMove(GuiRequest* aRequest)
+        {
+            var WindowRequest = (WindowMove*)aRequest;
+            int id = WindowRequest->WindowID;
+            if (id < 0 || id >= Windows.Count)
+                aRequest->Error = ErrorType.BadParameters;
+
+            if (aRequest->Error != ErrorType.None)
+            {
+                ReplyClient(aRequest);
+                return;
+            }
+
+            var win = Windows[id];
+            MarkRectange(win.X, win.Y, win.Width, win.Height);
+            win.X += WindowRequest->RelX;
+            win.Y += WindowRequest->RelY;
+            MarkRectange(win.X, win.Y, win.Width, win.Height);
+        }
+
+        private static unsafe void HandleNewWindow(GuiRequest* aRequest)
+        {
+            var WindowRequest = (NewWindow*)aRequest;
+
+            int x = WindowRequest->X;
+            int y = WindowRequest->Y;
+            int width = WindowRequest->Width;
+            int height = WindowRequest->Height;
+
+            if (width <= 0 || height <= 0)
+                aRequest->Error = ErrorType.BadParameters;
+
+            if (aRequest->Error != ErrorType.None)
+            {
+                ReplyClient(aRequest);
+                return;
+            }
+
+            var window = new Window(aRequest->ClientID, x, y, width, height);
+            Marshal.Copy(window.HashID, WindowRequest->Buffer, window.HashID.Length);
+
+            Monitor.AcquireLock(ref WindowsLock);
+
+            int id = Windows.Count;
+            window.ID = id;
+            WindowRequest->WindowID = id;
+            Windows.Add(window);
+
+            Monitor.ReleaseLock(ref WindowsLock);
+            ActiveWindow = window;
+
+            ReplyClient(aRequest);
+        }
+
+        private static unsafe void HandleRedraw(GuiRequest* aRequest)
+        {
+            var RedrawRequest = (Redraw*)aRequest;
+
+            int id = RedrawRequest->WindowID;
+            int width = RedrawRequest->Width;
+            int height = RedrawRequest->Height;
+
+            if (id < 0 || id >= Windows.Count || width <= 0 || height <= 0)
+                aRequest->Error = ErrorType.BadParameters;
+
+            if (aRequest->Error != ErrorType.None)
+            {
+                ReplyClient(aRequest);
+                return;
+            }
+
+            var Window = Windows[id];
+            MarkRectange(RedrawRequest->X + Window.X, RedrawRequest->Y + Window.Y, width, height);
+        }
+
+        private static unsafe void MarkRectange(int x, int y, int width, int height)
+        {
+            var DamageRect = (Rect*)Libc.malloc(sizeof(Rect));
+            DamageRect->X = x;
+            DamageRect->Y = y;
+            DamageRect->Width = width;
+            DamageRect->Height = height;
+
+            Monitor.AcquireLock(ref RedrawRectsLock);
+            RedrawRects.Enqueue((uint)DamageRect);
+            Monitor.ReleaseLock(ref RedrawRectsLock);
+        }
+
+        private static unsafe void ReplyClient(GuiRequest* aRequest)
+        {
+            aRequest->HashID = 0;
+            Clients[aRequest->ClientID].Write((byte*)aRequest, false);
         }
     }
 }

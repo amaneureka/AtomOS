@@ -31,7 +31,7 @@ namespace Atomixilc.Lib
         [NoException]
         [Plug("malloc")]
         [DllImport(LIBRARY, CallingConvention = CallingConvention.Cdecl)]
-        public static extern uint malloc(uint len);
+        public static extern uint malloc(int len);
 
         [NoException]
         [Plug("free")]

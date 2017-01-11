@@ -26,7 +26,7 @@ namespace Atomix.Kernel_H.Gui
     };
 
     [StructLayout(LayoutKind.Explicit, Size = 28)]
-    internal unsafe struct MouseData
+    internal unsafe struct MouseEvent
     {
         [FieldOffset(16)]
         internal int WindowID;
@@ -36,6 +36,8 @@ namespace Atomix.Kernel_H.Gui
         internal int Xpos;
         [FieldOffset(28)]
         internal int Ypos;
+        [FieldOffset(32)]
+        internal MouseFunction Function;
     };
 
     [StructLayout(LayoutKind.Explicit, Size = 44)]
@@ -81,15 +83,13 @@ namespace Atomix.Kernel_H.Gui
         internal int RelY;
     };
 
-    [StructLayout(LayoutKind.Explicit, Size = 28)]
-    internal struct RandomRequest
+    [StructLayout(LayoutKind.Explicit, Size = 20)]
+    internal struct DragRequest
     {
         [FieldOffset(16)]
         internal int WindowID;
         [FieldOffset(20)]
-        internal MouseIcon MouseIcon;
-        [FieldOffset(24)]
-        internal WindowState WindowState;
+        internal int Flag;
     };
 
     [StructLayout(LayoutKind.Explicit, Size = 16)]
@@ -113,8 +113,8 @@ namespace Atomix.Kernel_H.Gui
         WindowMove = 3,
         MouseEvent = 4,
         KeyboardEvent = 5,
-        RandomRequest = 6
-    }
+        DragRequest = 6
+    };
 
     internal enum ErrorType : uint
     {
@@ -123,7 +123,7 @@ namespace Atomix.Kernel_H.Gui
         BadParameters = 2,
         OutOfMemory = 3,
         BadFunction = 4,
-    }
+    };
 
     internal enum MouseIcon : int
     {
@@ -132,7 +132,7 @@ namespace Atomix.Kernel_H.Gui
         Help = 2,
         Clipboard = 3,
         Busy = 4
-    }
+    };
 
     internal enum WindowState : int
     {
@@ -140,5 +140,15 @@ namespace Atomix.Kernel_H.Gui
         FullScreen = 1,
         Minimized = 2,
         Close = 3,
-    }
+    };
+
+    internal enum MouseFunction : int
+    {
+        None = 0,
+        KeyUp = 1,
+        KeyDown = 2,
+        Move = 4,
+        Enter = 8,
+        Click = 16
+    };
 }
