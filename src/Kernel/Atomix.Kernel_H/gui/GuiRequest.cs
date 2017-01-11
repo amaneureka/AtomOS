@@ -88,8 +88,21 @@ namespace Atomix.Kernel_H.Gui
     {
         [FieldOffset(16)]
         internal int WindowID;
+    };
+
+    [StructLayout(LayoutKind.Explicit, Size = 36)]
+    internal struct InfoRequest
+    {
+        [FieldOffset(16)]
+        internal int WindowID;
         [FieldOffset(20)]
-        internal int Flag;
+        internal int X;
+        [FieldOffset(24)]
+        internal int Y;
+        [FieldOffset(28)]
+        internal int Width;
+        [FieldOffset(32)]
+        internal int Height;
     };
 
     [StructLayout(LayoutKind.Explicit, Size = 16)]
@@ -113,7 +126,8 @@ namespace Atomix.Kernel_H.Gui
         WindowMove = 3,
         MouseEvent = 4,
         KeyboardEvent = 5,
-        DragRequest = 6
+        DragRequest = 6,
+        InfoRequest = 7
     };
 
     internal enum ErrorType : uint

@@ -32,6 +32,7 @@ namespace Atomix.Kernel_H.Gui
 
         /* Locks */
         static uint WindowsLock;
+        static uint StackingLock;
         static uint RedrawRectsLock;
 
         /* Mouse Surfaces */
@@ -51,6 +52,7 @@ namespace Atomix.Kernel_H.Gui
         /* Windows */
         static Window MouseWindow;
         static IList<Window> Windows;
+        static IList<Window> Stacking;
 
         internal unsafe static void Setup(Process aParent)
         {
@@ -58,6 +60,7 @@ namespace Atomix.Kernel_H.Gui
 
             Clients = new IList<Pipe>();
             Windows = new IList<Window>();
+            Stacking = new IList<Window>();
             RedrawRects = new IQueue<uint>();
 
             /* Mouse Surfaces */
@@ -73,9 +76,9 @@ namespace Atomix.Kernel_H.Gui
             MainContext = Cairo.Create(MainSurface);
             VideoContext = Cairo.Create(VideoSurface);
 
-            new Thread(aParent, Renderer).Start();
-            new Thread(aParent, HandleMouse).Start();
             new Thread(aParent, HandleRequest).Start();
+            new Thread(aParent, HandleMouse).Start();
+            new Thread(aParent, Renderer).Start();
         }
 
         internal static int CreateConnection(Pipe aClient)
@@ -133,8 +136,8 @@ namespace Atomix.Kernel_H.Gui
                 if (update)
                 {
                     Cairo.Clip(MainContext);
-                    var list = Windows;
-                    Monitor.AcquireLock(ref WindowsLock);
+                    var list = Stacking;
+                    Monitor.AcquireLock(ref StackingLock);
                     int count = list.Count;
                     for (int index = 0; index < count; index++)
                     {
@@ -145,7 +148,7 @@ namespace Atomix.Kernel_H.Gui
                         Cairo.Paint(MainContext);
                         Cairo.Restore(MainContext);
                     }
-                    Monitor.ReleaseLock(ref WindowsLock);
+                    Monitor.ReleaseLock(ref StackingLock);
                 }
 
                 if (update)
@@ -241,12 +244,37 @@ namespace Atomix.Kernel_H.Gui
                     case RequestType.DragRequest:
                         HandleDragRequest(Request);
                         break;
+                    case RequestType.InfoRequest:
+                        HandleInfoRequest(Request);
+                        break;
                     default:
                         Debug.Write("Function: %d\n", (int)Request->Type);
                         Request->Error = ErrorType.BadFunction;
                         break;
                 }
             }
+        }
+
+        private static unsafe void HandleInfoRequest(GuiRequest* aRequest)
+        {
+            var InfoRequest = (InfoRequest*)aRequest;
+            int id = InfoRequest->WindowID;
+
+            if (id < 0 || id >= Windows.Count)
+                aRequest->Error = ErrorType.BadParameters;
+
+            if (aRequest->Error != ErrorType.None)
+            {
+                ReplyClient(aRequest);
+                return;
+            }
+
+            var win = Windows[id];
+            InfoRequest->X = win.X;
+            InfoRequest->Y = win.Y;
+            InfoRequest->Width = win.Width;
+            InfoRequest->Height = win.Height;
+            ReplyClient(aRequest);
         }
 
         private static unsafe void HandleDragRequest(GuiRequest* aRequest)
@@ -330,9 +358,9 @@ namespace Atomix.Kernel_H.Gui
 
             if ((function & MouseFunction.KeyDown) != 0)
             {
-                Monitor.AcquireLock(ref WindowsLock);
+                Monitor.AcquireLock(ref StackingLock);
 
-                var list = Windows;
+                var list = Stacking;
                 int count = list.Count;
                 for (int i = count - 1; i >= 0; i--)
                 {
@@ -351,15 +379,18 @@ namespace Atomix.Kernel_H.Gui
                     ActiveWindow = win;
                     function |= MouseFunction.Enter;
 
-                    for (int j = i + 1; j < count; j++)
-                        list[j - 1] = list[j];
-                    list[count - 1] = win;
+                    if (i != 0)
+                    {
+                        for (int j = i + 1; j < count; j++)
+                            list[j - 1] = list[j];
+                        list[count - 1] = win;
 
-                    MarkRectange(win.X, win.Y, win.Width, win.Height);
+                        MarkRectange(win.X, win.Y, win.Width, win.Height);
+                    }
                     break;
                 }
 
-                Monitor.ReleaseLock(ref WindowsLock);
+                Monitor.ReleaseLock(ref StackingLock);
             }
 
             if (ActiveWindow == null) return;
@@ -430,6 +461,10 @@ namespace Atomix.Kernel_H.Gui
 
             Monitor.ReleaseLock(ref WindowsLock);
             ActiveWindow = window;
+
+            Monitor.AcquireLock(ref StackingLock);
+            Stacking.Add(window);
+            Monitor.ReleaseLock(ref StackingLock);
 
             ReplyClient(aRequest);
         }

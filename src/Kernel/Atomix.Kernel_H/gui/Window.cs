@@ -26,14 +26,11 @@ namespace Atomix.Kernel_H.Gui
 
         internal int X;
         internal int Y;
-        internal int Z;
 
         internal int Width;
         internal int Height;
 
         internal uint Surface;
-
-        static int Zcounter;
 
         internal Window(int aClientID, int aXpos, int aYpos, int aWidth, int aHeight)
         {
@@ -48,13 +45,6 @@ namespace Atomix.Kernel_H.Gui
             Buffer = SHM.Obtain(HashID, (uint)(aWidth * aHeight * 4), true);
 
             Surface = Cairo.ImageSurfaceCreateForData(aWidth * 4, aHeight, aWidth, ColorFormat.ARGB32, Buffer);
-
-            BringToFront();
-        }
-
-        internal void BringToFront()
-        {
-            Z = ++Zcounter;
         }
 
         internal static string GenerateNewHashID()
