@@ -78,7 +78,7 @@ namespace Atomixilc.IL
             {
                 case 1: break;
                 case 2:
-                    new Shl { DestinationReg = Register.EAX, SourceRef = "0x1" };
+                    new Add { DestinationReg = Register.EAX, SourceReg = Register.EAX };
                     break;
                 case 4:
                     new Shl { DestinationReg = Register.EAX, SourceRef = "0x2" };

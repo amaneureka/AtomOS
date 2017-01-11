@@ -75,12 +75,13 @@ namespace Atomixilc.IL
         internal static void Executex86(int size, bool IsSigned)
         {
             new Pop { DestinationReg = Register.EAX };
+            new Pop { DestinationReg = Register.EDX };
 
-            switch(size)
+            switch (size)
             {
                 case 1: break;
                 case 2:
-                    new Shl { DestinationReg = Register.EAX, SourceRef = "0x1" };
+                    new Add { DestinationReg = Register.EAX, SourceReg = Register.EAX };
                     break;
                 case 4:
                     new Shl { DestinationReg = Register.EAX, SourceRef = "0x2" };
@@ -89,20 +90,19 @@ namespace Atomixilc.IL
                     throw new Exception("size not supported");
             }
 
-            new Pop { DestinationReg = Register.EDX };
-            new Add { DestinationReg = Register.EDX, SourceReg = Register.EAX };
+            new Add { DestinationReg = Register.EAX, SourceReg = Register.EDX };
 
             if (size < 4)
             {
                 if (IsSigned)
-                    new Movsx { DestinationReg = Register.EAX, SourceReg = Register.EDX, SourceDisplacement = 0x10, SourceIndirect = true, Size = (byte)(size * 8) };
+                    new Movsx { DestinationReg = Register.EAX, SourceReg = Register.EAX, SourceDisplacement = 0x10, SourceIndirect = true, Size = (byte)(size * 8) };
                 else
-                    new Movzx { DestinationReg = Register.EAX, SourceReg = Register.EDX, SourceDisplacement = 0x10, SourceIndirect = true, Size = (byte)(size * 8) };
+                    new Movzx { DestinationReg = Register.EAX, SourceReg = Register.EAX, SourceDisplacement = 0x10, SourceIndirect = true, Size = (byte)(size * 8) };
                 new Push { DestinationReg = Register.EAX };
             }
             else
             {
-                new Push { DestinationReg = Register.EDX, DestinationDisplacement = 0x10, DestinationIndirect = true };
+                new Push { DestinationReg = Register.EAX, DestinationDisplacement = 0x10, DestinationIndirect = true };
             }
         }
     }
