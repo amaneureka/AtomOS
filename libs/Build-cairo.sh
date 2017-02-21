@@ -6,7 +6,7 @@ export PREFIX="$ROOT/../src/Build/Local"
 export SOURCES="$ROOT/../src/Build/Temp"
 export TARBALLS="$ROOT/../tarballs"
 export PATCHFILES="$ROOT/../toolchain"
-export PATH=/usr/bin:$PREFIX/bin
+export PATH=$PATH:/usr/bin:$PREFIX/bin
 
 LIB_URL=https://cairographics.org/releases/cairo-1.12.18.tar.xz
 LIB_FOLDER=cairo-1.12.18
@@ -23,7 +23,7 @@ if [ ! -d $LIB_FOLDER ]; then
 	fi
 	tar -xvf "$TARBALLS/$LIB_FOLDER.tar.gz" -C $ROOT
 	pushd $ROOT/$LIB_FOLDER || bail
-		patch -p1 -i "$PATCHFILES/$LIB_FOLDER.diff" || bail
+		patch -p1 -f -i "$PATCHFILES/$LIB_FOLDER.diff" || bail
 	popd
 fi
 
