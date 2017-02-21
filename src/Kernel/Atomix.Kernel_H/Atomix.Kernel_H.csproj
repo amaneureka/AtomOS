@@ -88,6 +88,7 @@
     <Compile Include="Devices\Timer.cs" />
     <Compile Include="Boot.cs" />
     <Compile Include="Gui\GuiRequest.cs" />
+    <Compile Include="Gui\Programs\Explorer.cs" />
     <Compile Include="Gui\Window.cs" />
     <Compile Include="IO\FileSystem\FatFileSystem.cs" />
     <Compile Include="IO\FileSystem\FAT\FatStream.cs" />

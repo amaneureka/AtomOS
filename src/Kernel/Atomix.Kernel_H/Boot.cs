@@ -68,7 +68,7 @@ namespace Atomix.Kernel_H
                 Debug.Write(stream.ReadToEnd());
             else
                 Debug.Write("File not found!\n");*/
-
+            Gui.Programs.Explorer.Init(SystemClient);
             BootAnimation();
 
             while (true) ;
@@ -80,8 +80,6 @@ namespace Atomix.Kernel_H
             var Request = (GuiRequest*)xData.GetDataOffset();
             Request->ClientID = ClientID;
 
-            PrintWallpaper(Request, xData);
-            DrawTaskbar(Request, xData);
             DrawWindow(Request, xData);
         }
 
@@ -229,52 +227,6 @@ namespace Atomix.Kernel_H
             req->Y = 0;
             req->Width = VBE.Xres;
             req->Height = height;
-            Compositor.Server.Write(xData);
-        }
-
-        private static unsafe void PrintWallpaper(GuiRequest* request, byte[] xData)
-        {
-            request->Type = RequestType.NewWindow;
-            request->Error = ErrorType.None;
-            var wallpaper = (NewWindow*)request;
-
-            wallpaper->X = 0;
-            wallpaper->Y = 0;
-            wallpaper->Width = VBE.Xres;
-            wallpaper->Height = VBE.Yres;
-
-            Compositor.Server.Write(xData);
-
-            SystemClient.Read(xData);
-
-            if (request->Error != ErrorType.None)
-            {
-                Debug.Write("Error1: %d\n", (int)request->Error);
-                return;
-            }
-
-            string HashCode = new string(wallpaper->Buffer);
-            var aBuffer = SHM.Obtain(HashCode, 0, false);
-            int winID = wallpaper->WindowID;
-            Debug.Write("winID: %d\n", winID);
-
-            uint surface = Cairo.ImageSurfaceCreateForData(VBE.Xres * 4, VBE.Yres, VBE.Xres, ColorFormat.ARGB32, aBuffer);
-            uint cr = Cairo.Create(surface);
-
-            uint wall = Cairo.ImageSurfaceFromPng(Marshal.C_String("disk0/wallpaper.png"));
-            Cairo.SetSourceSurface(0, 0, wall, cr);
-            Cairo.Paint(cr);
-
-            Cairo.Destroy(cr);
-            Cairo.SurfaceDestroy(surface);
-
-            request->Type = RequestType.Redraw;
-            var req = (Redraw*)request;
-            req->WindowID = winID;
-            req->X = 0;
-            req->Y = 0;
-            req->Width = VBE.Xres;
-            req->Height = VBE.Yres;
             Compositor.Server.Write(xData);
         }
 
