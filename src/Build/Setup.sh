@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 export TARGET=i386-atomos
 export PREFIX="$(pwd)/Local"
