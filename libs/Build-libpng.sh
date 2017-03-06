@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 
+ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 export TARGET=i386-atomos
-export ROOT=$(pwd)
 export PREFIX="$ROOT/../src/Build/Local"
 export SOURCES="$ROOT/../src/Build/Temp"
 export TARBALLS="$ROOT/../tarballs"
 export PATCHFILES="$ROOT/../toolchain"
-export PATH=$PATH:/usr/bin:$PREFIX/bin:$PREFIX/lib
+export PATH=/usr/bin:$PREFIX/bin:$PREFIX/lib:$PATH
 
 LIB_URL=http://b.dakko.us/~klange/mirrors/libpng-1.5.13.tar.gz
 LIB_FOLDER=libpng-1.5.13

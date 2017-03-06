@@ -24,7 +24,7 @@ diff -urN gcc-old/fixincludes/mkfixinc.sh gcc/fixincludes/mkfixinc.sh
 diff -urN gcc-old/gcc/config/atomos.h gcc/gcc/config/atomos.h
 --- gcc-old/gcc/config/atomos.h	1970-01-01 05:30:00.000000000 +0530
 +++ gcc/gcc/config/atomos.h	2016-09-25 17:11:54.102944000 +0530
-@@ -0,0 +1,29 @@
+@@ -0,0 +1,31 @@
 +/* Useful if you wish to make target-specific gcc changes. */
 +#undef TARGET_ATOMOS
 +#define TARGET_ATOMOS 1
@@ -35,9 +35,11 @@ diff -urN gcc-old/gcc/config/atomos.h gcc/gcc/config/atomos.h
 +
 +/* Files that are linked before user code.
 +   The %s tells gcc to look for these files in the library directory. */
++#undef  STARTFILE_SPEC
 +#define STARTFILE_SPEC "crt0.o%s crti.o%s crtbegin.o%s"
 +
 +/* Files that are linked after user code. */
++#undef  ENDFILE_SPEC
 +#define ENDFILE_SPEC "crtend.o%s crtn.o%s"
 +
 +/* Don't automatically add extern "C" { } around header files. */

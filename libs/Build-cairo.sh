@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 
+ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 export TARGET=i386-atomos
-export ROOT=$(pwd)
 export PREFIX="$ROOT/../src/Build/Local"
 export SOURCES="$ROOT/../src/Build/Temp"
 export TARBALLS="$ROOT/../tarballs"
 export PATCHFILES="$ROOT/../toolchain"
-export PATH=$PATH:/usr/bin:$PREFIX/bin
+export PATH=/usr/bin:$PREFIX/bin:$PATH
 
 LIB_URL=https://cairographics.org/releases/cairo-1.12.18.tar.xz
 LIB_FOLDER=cairo-1.12.18
