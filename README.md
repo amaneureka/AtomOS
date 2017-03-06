@@ -1,6 +1,6 @@
 # Atomix Development : Atom OS
 
-A Multitasking **Monolithic** Kernel based x86 targetting Operating System written in C# from scratch aiming for high level implementation of drivers in managed environment and security. [How to Build from Source?](https://github.com/amaneureka/AtomOS/wiki/Build-Environment)
+A Multitasking **Monolithic** Kernel based x86 targetting Operating System written in C# from scratch aiming for high level implementation of drivers in managed environment and security.
 
 ## Kernel Features
 - Paging
@@ -19,8 +19,13 @@ A Multitasking **Monolithic** Kernel based x86 targetting Operating System writt
 - Timer
 - FAT-32
 
-## How to contribute?
-Yes I am looking for dedicated people to continue work on Atom with me. Feel free to ping me on mail :-)
+## Community
+
+### Wiki
+For instructions on building, check [Building from Source](https://github.com/amaneureka/AtomOS/wiki/Build-Environment)
+
+### IRC
+For help building the kernel or discussion join us in ```#atomos``` on Freenode (```irc.freenode.net```).
 
 ## Screenshot
 ![Compsitor Testing](http://i.imgur.com/mrMfyTb.png)
