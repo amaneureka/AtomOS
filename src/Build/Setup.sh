@@ -155,7 +155,7 @@ pushd Bin > Setup.log 2>&1 || bail
 		pushd gcc-native > Setup.log 2>&1 || bail
 			$SOURCES/gcc-5.3.0/configure --prefix=$PREFIX --target=$TARGET --disable-nls --without-headers --enable-languages=c,c++ --disable-libssp --with-gnu-as --with-gnu-ld --with-newlib > Setup.log 2>&1 || bail
 			make -j4 all-gcc > Setup.log || bail
-			make -j4 install-gcc > Setup.log || bail
+			make -j4 install-gcc > Setup.log 2>&1 || bail
 		popd
 	fi
 
@@ -172,7 +172,7 @@ pushd Bin > Setup.log 2>&1 || bail
 		pushd newlib || bail
 			$SOURCES/newlib-1.19.0/configure --target=$TARGET --prefix=$PREFIX > Setup.log 2>&1 || bail
 			make -j4 > Setup.log || bail
-			make install > Setup.log || bail
+			make install > Setup.log 2>&1 || bail
 		popd
 		pushd $SOURCES/newlib-1.19.0/newlib/libc/sys/atomos > Setup.log 2>&1 || bail
 			nasm -felf crti.s -o $PREFIX/$TARGET/lib/crti.o || bail
@@ -184,7 +184,7 @@ pushd Bin > Setup.log 2>&1 || bail
 		reply "    Compiling gcc again"
 		pushd gcc-native > Setup.log 2>&1 || bail
 			make -j4 all-target-libstdc++-v3 > Setup.log || bail
-			make -j4 install-target-libstdc++-v3 > Setup.log || bail
+			make -j4 install-target-libstdc++-v3 > Setup.log 2>&1 || bail
 		popd
 	fi
 

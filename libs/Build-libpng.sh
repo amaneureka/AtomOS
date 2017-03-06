@@ -22,7 +22,7 @@ if [ ! -d $LIB_FOLDER ]; then
 	if [ ! -f "$TARBALLS/$LIB_FOLDER.tar.gz" ]; then
 		wget -O "$TARBALLS/$LIB_FOLDER.tar.gz" $LIB_URL || bail
 	fi
-	tar -xvf "$TARBALLS/$LIB_FOLDER.tar.gz" -C $ROOT
+	tar -xvf "$TARBALLS/$LIB_FOLDER.tar.gz" -C $ROOT > Setup.log 2>&1
 	pushd $ROOT/$LIB_FOLDER || bail
 		patch -p1 -f -i "$PATCHFILES/$LIB_FOLDER.diff" || bail
 	popd
@@ -38,9 +38,9 @@ pushd "$ROOT/../src/Build/Bin" || bail
 
 	pushd $LIB_FOLDER || bail
 
-		CPPFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib" $ROOT/$LIB_FOLDER/configure --prefix=$PREFIX --host=$TARGET --disable-shared || bail
-		make -j4 || bail
-		make -j4 install || bail
+		CPPFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib" $ROOT/$LIB_FOLDER/configure --prefix=$PREFIX --host=$TARGET --disable-shared > Setup.log 2>&1 || bail
+		make -j4 > Setup.log || bail
+		make -j4 install > Setup.log || bail
 
 	popd
 

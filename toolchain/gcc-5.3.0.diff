@@ -24,7 +24,7 @@ diff -urN gcc-old/fixincludes/mkfixinc.sh gcc/fixincludes/mkfixinc.sh
 diff -urN gcc-old/gcc/config/atomos.h gcc/gcc/config/atomos.h
 --- gcc-old/gcc/config/atomos.h	1970-01-01 05:30:00.000000000 +0530
 +++ gcc/gcc/config/atomos.h	2016-09-25 17:11:54.102944000 +0530
-@@ -0,0 +1,31 @@
+@@ -0,0 +1,32 @@
 +/* Useful if you wish to make target-specific gcc changes. */
 +#undef TARGET_ATOMOS
 +#define TARGET_ATOMOS 1
@@ -56,7 +56,7 @@ diff -urN gcc-old/gcc/config/atomos.h gcc/gcc/config/atomos.h
 +    builtin_assert ("system=unix");   \
 +    builtin_assert ("system=posix");   \
 +  } while(0);
-\ No newline at end of file
++ 
 diff -urN gcc-old/gcc/config.gcc gcc/gcc/config.gcc
 --- gcc-old/gcc/config.gcc	2015-09-10 19:47:53.000000000 +0530
 +++ gcc/gcc/config.gcc	2016-09-24 14:10:47.931820000 +0530

@@ -7,7 +7,6 @@ script:
   - pushd libs && sudo bash ./Build-pixman.sh && popd
   - pushd libs && sudo bash ./Build-freetype.sh && popd
   - pushd libs && sudo bash ./Build-cairo.sh && popd
-  - pushd src/Build && bash ./Build.sh --mono && popd
 addons:
   apt:
     packages:
@@ -19,7 +18,7 @@ addons:
     - flex
     - bison
     - nasm
-    - zlib-dev
+    - libz-dev
     - genisoimage
     - libgmp-dev
     - libmpc-dev

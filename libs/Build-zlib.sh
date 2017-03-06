@@ -21,7 +21,7 @@ if [ ! -d $LIB_FOLDER ]; then
 	if [ ! -f "$TARBALLS/$LIB_FOLDER.tar.gz" ]; then
 		wget -O "$TARBALLS/$LIB_FOLDER.tar.gz" $LIB_URL || bail
 	fi
-	tar -xvzf "$TARBALLS/$LIB_FOLDER.tar.gz" -C $ROOT
+	tar -xvzf "$TARBALLS/$LIB_FOLDER.tar.gz" -C $ROOT > Setup.log 2>&1
 fi
 
 pushd "$ROOT/../src/Build/Bin" || bail
@@ -37,9 +37,9 @@ pushd "$ROOT/../src/Build/Bin" || bail
 
 	pushd $LIB_FOLDER || bail
 
-		CC=$TARGET-gcc ./configure --prefix=$PREFIX --static || bail
-		make -j4 || bail
-		make -j4 install || bail
+		CC=$TARGET-gcc ./configure --prefix=$PREFIX --static > Setup.log 2>&1 || bail
+		make -j4 > Setup.log || bail
+		make -j4 install > Setup.log || bail
 
 	popd
 
