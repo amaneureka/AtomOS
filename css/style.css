@@ -4,7 +4,7 @@
 
 body {
     background: #f8f8f8;
-    border-top: 10px solid #24c12e;
+    border-top: 10px solid #0099e6;
     font-family: 'Lato', sans-serif;
     color: #000;
     font-weight: 400;
@@ -21,8 +21,8 @@ a, a:hover, a:focus {
 
 img { max-width: 100%; }
 
-::-moz-selection { background: #24c12e; color: #000; text-shadow: none; }
-::selection { background: #24c12e; color: #000; text-shadow: none; }
+::-moz-selection { background: #0099e6; color: #000; text-shadow: none; }
+::selection { background: #0099e6; color: #000; text-shadow: none; }
 
 
 /***** Coming Soon *****/
