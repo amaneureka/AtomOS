@@ -7,7 +7,7 @@ export PREFIX="$ROOT/../src/Build/Local"
 export SOURCES="$ROOT/../src/Build/Temp"
 export TARBALLS="$ROOT/../tarballs"
 export PATCHFILES="$ROOT/../toolchain"
-export PATH=/usr/bin:$PREFIX/bin:$PATH
+export PATH=$PREFIX/bin:/usr/bin:$PATH
 
 LIB_URL=http://mirror.rackdc.com/savannah//freetype/freetype-2.4.9.tar.gz
 LIB_FOLDER=freetype-2.4.9

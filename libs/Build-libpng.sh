@@ -7,7 +7,7 @@ export PREFIX="$ROOT/../src/Build/Local"
 export SOURCES="$ROOT/../src/Build/Temp"
 export TARBALLS="$ROOT/../tarballs"
 export PATCHFILES="$ROOT/../toolchain"
-export PATH=/usr/bin:$PREFIX/bin:$PREFIX/lib:$PATH
+export PATH=$PREFIX/bin:/usr/bin:$PATH
 
 LIB_URL=http://b.dakko.us/~klange/mirrors/libpng-1.5.13.tar.gz
 LIB_FOLDER=libpng-1.5.13

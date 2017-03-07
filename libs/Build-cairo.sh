@@ -7,7 +7,7 @@ export PREFIX="$ROOT/../src/Build/Local"
 export SOURCES="$ROOT/../src/Build/Temp"
 export TARBALLS="$ROOT/../tarballs"
 export PATCHFILES="$ROOT/../toolchain"
-export PATH=/usr/bin:$PREFIX/bin:$PATH
+export PATH=$PREFIX/bin:/usr/bin:$PATH
 
 LIB_URL=https://cairographics.org/releases/cairo-1.12.18.tar.xz
 LIB_FOLDER=cairo-1.12.18

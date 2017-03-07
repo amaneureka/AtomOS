@@ -6,7 +6,7 @@ export TARGET=i386-atomos
 export PREFIX="$ROOT/../src/Build/Local"
 export SOURCES="$ROOT/../src/Build/Temp"
 export TARBALLS="$ROOT/../tarballs"
-export PATH=/usr/bin:$PREFIX/bin:$PATH
+export PATH=$PREFIX/bin:/usr/bin:$PATH
 
 LIB_URL=http://excellmedia.dl.sourceforge.net/project/libpng/zlib/1.2.8/zlib-1.2.8.tar.gz
 LIB_FOLDER=zlib-1.2.8

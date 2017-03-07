@@ -7,7 +7,7 @@ export PREFIX="$DIR/Local"
 export SOURCES="$DIR/Temp"
 export TARBALLS="$DIR/../../tarballs"
 export PATCHFILES="$DIR/../../toolchain"
-export PATH=/usr/bin:$PREFIX/bin:$PATH
+export PATH=$PREFIX/bin:/usr/bin:$PATH
 
 BUILD_GCC=false
 BUILD_GCC_2=false
