@@ -1,0 +1,109 @@
+
+/* Cooming Soon page style by Nicolo Altamura */
+
+
+body {
+    background: #f8f8f8;
+    border-top: 10px solid #24c12e;
+    font-family: 'Lato', sans-serif;
+    color: #000;
+    font-weight: 400;
+    text-align: left;
+}
+
+strong { font-weight: 700; }
+
+a, a:hover, a:focus {
+	color: #e75967;
+	text-decoration: none;
+    -o-transition: all .3s; -moz-transition: all .3s; -webkit-transition: all .3s; -ms-transition: all .3s; transition: all .3s;
+}
+
+img { max-width: 100%; }
+
+::-moz-selection { background: #24c12e; color: #000; text-shadow: none; }
+::selection { background: #24c12e; color: #000; text-shadow: none; }
+
+
+/***** Coming Soon *****/
+
+.coming-soon {
+    margin: 0 auto;
+    text-align: center;
+    color: #fff;
+    background: url(../images/backcode.png) #272822;
+}
+
+.coming-soon h1 {
+    color: aqua;
+}
+
+.inner-bg {
+    padding: 55px 0 60px 0;
+  
+    -moz-box-shadow: 0 1px 5px 0 rgba(0,0,0,.3) inset;
+    -webkit-box-shadow: 0 1px 5px 0 rgba(0,0,0,.3) inset;
+    box-shadow: 0 1px 5px 0 rgba(0,0,0,.3) inset;
+}
+
+.coming-soon h2 {
+    font-size: 40px;
+    line-height: 44px;
+    font-weight: 700;
+    text-transform: uppercase;
+    text-shadow: 0 1px 27px rgba(0, 0, 0, 0.5);
+}
+
+.coming-soon p {
+    margin-top: 20px;
+    font-size: 18px;
+    line-height: 36px;
+    text-shadow: 0 1px 17px rgba(0, 0, 0, 0.4);
+}
+
+
+
+
+
+/***** Content *****/
+
+
+
+/***** Media Queries *****/
+
+
+
+
+@media (max-width: 767px) {
+
+    .logo h1 { text-align: center; }
+    .call-us { padding-bottom: 7px; text-align: center; }
+
+    .inner-bg { padding: 45px 0 50px 0; }
+
+    .coming-soon h2 { font-size: 36px; }
+
+    
+
+}
+
+
+.bt {
+  display: inline-block;
+  padding: 6px 12px;
+  margin-bottom: 0;
+  font-size: 25px;
+  font-weight: normal;
+  line-height: 1.428571429;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+       -o-user-select: none;
+          user-select: none;
+}
