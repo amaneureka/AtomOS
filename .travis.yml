@@ -1,12 +1,15 @@
 language: csharp
 solution: ./src/Atomix.sln
+mono: latest
 script:
+  - xbuild /p:Configuration=Release ./src/Atomix.sln
   - pushd src/Build && sudo bash ./Setup.sh --setup && popd
   - pushd libs && sudo bash ./Build-zlib.sh && popd
   - pushd libs && sudo bash ./Build-libpng.sh && popd
   - pushd libs && sudo bash ./Build-pixman.sh && popd
   - pushd libs && sudo bash ./Build-freetype.sh && popd
   - pushd libs && sudo bash ./Build-cairo.sh && popd
+  - pushd src/Build && bash ./Build.sh --mono && popd
 addons:
   apt:
     packages:
