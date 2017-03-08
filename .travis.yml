@@ -1,3 +1,5 @@
+dist: trusty
+sudo: required
 language: csharp
 solution: ./src/Atomix.sln
 mono: latest
@@ -20,9 +22,9 @@ addons:
     - make
     - flex
     - bison
-    - nasm
     - libz-dev
     - genisoimage
     - libgmp-dev
     - libmpc-dev
     - libmpfr-dev
+    - nasm

@@ -22,7 +22,7 @@ if [ ! -d $LIB_FOLDER ]; then
 	if [ ! -f "$TARBALLS/$LIB_FOLDER.tar.gz" ]; then
 		wget -O "$TARBALLS/$LIB_FOLDER.tar.gz" $LIB_URL || bail
 	fi
-	tar -xvf "$TARBALLS/$LIB_FOLDER.tar.gz" -C $ROOT > Setup.log 2>&1
+	tar -xvf "$TARBALLS/$LIB_FOLDER.tar.gz" -C $ROOT >> Setup.log 2>&1
 	pushd $ROOT/$LIB_FOLDER || bail
 		patch -p1 -f -i "$PATCHFILES/$LIB_FOLDER.diff" || bail
 	popd
@@ -38,12 +38,12 @@ pushd "$ROOT/../src/Build/Bin" || bail
 
 	pushd $LIB_FOLDER || bail
 
-		CPPFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib" PKG_CONFIG_PATH=$PREFIX/lib/pkgconfig $ROOT/$LIB_FOLDER/configure --prefix=$PREFIX --host=$TARGET --enable-ps=no --enable-pdf=no --enable-interpreter=no --disable-xlib --disable-xcb --enable-fc=no --disable-gobject > Setup.log 2>&1 || bail
+		CPPFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib" PKG_CONFIG_PATH=$PREFIX/lib/pkgconfig $ROOT/$LIB_FOLDER/configure --prefix=$PREFIX --host=$TARGET --enable-ps=no --enable-pdf=no --enable-interpreter=no --disable-xlib --disable-xcb --enable-fc=no --disable-gobject >> Setup.log 2>&1 || bail
 		cp "$PATCHFILES/cairo-Makefile" test/Makefile || bail
 		cp "$PATCHFILES/cairo-Makefile" perf/Makefile || bail
 		echo -e "\n\n#define CAIRO_NO_MUTEX 1" >> config.h || bail
-		make -j4 > Setup.log || bail
-		make -j4 install > Setup.log || bail
+		make -j4 >> Setup.log || bail
+		make -j4 install >> Setup.log || bail
 
 	popd
 

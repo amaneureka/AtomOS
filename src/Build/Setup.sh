@@ -35,7 +35,7 @@ reply()
 fetch()
 {
 	if [ ! -d "$TARBALLS" ]; then
-		mkdir "$TARBALLS" > Setup.log 2>&1
+		mkdir "$TARBALLS" >> Setup.log 2>&1
 	fi
 
 	if [ -f "$TARBALLS/$2" ]; then
@@ -49,24 +49,24 @@ fetch()
 extract()
 {
 	if [ ! -d "$SOURCES" ]; then
-		mkdir "$SOURCES" > Setup.log 2>&1
+		mkdir "$SOURCES" >> Setup.log 2>&1
 	fi
 
-	tar -xvzf "$TARBALLS/$1" -C "$SOURCES/" > Setup.log 2>&1 || bail
+	tar -xvzf "$TARBALLS/$1" -C "$SOURCES/" >> Setup.log 2>&1 || bail
 }
 
 cleandir()
 {
 	if [ -d "$1" ]; then
-		rm -rf "$1" > Setup.log 2>&1 || bail
+		rm -rf "$1" >> Setup.log 2>&1 || bail
 	fi
 	mkdir "$1"
 }
 
 patchc()
 {
-	pushd "$SOURCES/$1" > Setup.log 2>&1 || bail
-		patch -p1  -i "$PATCHFILES/$2" > Setup.log 2>&1
+	pushd "$SOURCES/$1" >> Setup.log 2>&1 || bail
+		patch -p1  -i "$PATCHFILES/$2" >> Setup.log 2>&1
 	popd
 }
 
@@ -94,11 +94,11 @@ do
 done
 
 if [ ! -d Bin ]; then
-	mkdir Bin > Setup.log 2>&1
+	mkdir Bin >> Setup.log 2>&1
 fi
 
 if [ ! -d $PREFIX ]; then
-	mkdir $PREFIX > Setup.log 2>&1
+	mkdir $PREFIX >> Setup.log 2>&1
 fi
 
 message "Fetching Tarballs..."
@@ -114,33 +114,33 @@ patchc "newlib-1.19.0" "newlib-1.19.0.diff"
 
 message "Building Stuffs..."
 
-pushd Bin > Setup.log 2>&1 || bail
+pushd Bin >> Setup.log 2>&1 || bail
 
 	if $BUILD_AUTOCONF; then
 		reply "    Compiling autoconf"
 		cleandir "autoconf-native"
-		pushd autoconf-native > Setup.log 2>&1 || gbail
-			$SOURCES/autoconf-2.65/configure --prefix=$PREFIX > Setup.log 2>&1  || bail
-			make -j4 > Setup.log 2>&1 || bail
-			make -j4 install > Setup.log 2>&1 || bail
+		pushd autoconf-native >> Setup.log 2>&1 || gbail
+			$SOURCES/autoconf-2.65/configure --prefix=$PREFIX >> Setup.log 2>&1  || bail
+			make -j4 >> Setup.log 2>&1 || bail
+			make -j4 install >> Setup.log 2>&1 || bail
 		popd
 	fi
 
 	if $BUILD_AUTOMAKE; then
 		reply "    Compiling automake"
 		cleandir "automake-native"
-		pushd automake-native > Setup.log 2>&1 || bail
-			$SOURCES/automake-1.12/configure --prefix=$PREFIX > Setup.log 2>&1 || bail
-			make -j4 > Setup.log 2>&1 || bail
-			make -j4 install > Setup.log 2>&1 || bail
+		pushd automake-native >> Setup.log 2>&1 || bail
+			$SOURCES/automake-1.12/configure --prefix=$PREFIX >> Setup.log 2>&1 || bail
+			make -j4 >> Setup.log 2>&1 || bail
+			make -j4 install >> Setup.log 2>&1 || bail
 		popd
 	fi
 
 	if $BUILD_BINUTILS; then
 		reply "    Compiling binutils"
 		cleandir "binutils-native"
-		pushd binutils-native > Setup.log 2>&1 || bail
-			$SOURCES/binutils-2.26/configure --prefix=$PREFIX --target=$TARGET > Setup.log 2>&1 || bail
+		pushd binutils-native >> Setup.log 2>&1 || bail
+			$SOURCES/binutils-2.26/configure --prefix=$PREFIX --target=$TARGET >> Setup.log 2>&1 || bail
 			make -j4 > Setup.log || bail
 			make -j4 install > Setup.log || bail
 		popd
@@ -149,32 +149,32 @@ pushd Bin > Setup.log 2>&1 || bail
 	if $BUILD_GCC; then
 		reply "    Compiling gcc"
 		cleandir "gcc-native"
-		pushd $SOURCES/gcc-5.3.0/libstdc++-v3 > Setup.log 2>&1 || bail
-			autoconf > Setup.log 2>&1
+		pushd $SOURCES/gcc-5.3.0/libstdc++-v3 >> Setup.log 2>&1 || bail
+			autoconf >> Setup.log 2>&1
 		popd
-		pushd gcc-native > Setup.log 2>&1 || bail
-			$SOURCES/gcc-5.3.0/configure --prefix=$PREFIX --target=$TARGET --disable-nls --without-headers --enable-languages=c,c++ --disable-libssp --with-gnu-as --with-gnu-ld --with-newlib > Setup.log 2>&1 || bail
+		pushd gcc-native >> Setup.log 2>&1 || bail
+			$SOURCES/gcc-5.3.0/configure --prefix=$PREFIX --target=$TARGET --disable-nls --without-headers --enable-languages=c,c++ --disable-libssp --with-gnu-as --with-gnu-ld --with-newlib >> Setup.log 2>&1 || bail
 			make -j4 all-gcc > Setup.log || bail
-			make -j4 install-gcc > Setup.log 2>&1 || bail
+			make -j4 install-gcc >> Setup.log 2>&1 || bail
 		popd
 	fi
 
 	if $BUILD_NEWLIB; then
 		reply "    Compiling newlib"
 		cleandir "newlib"
-		cp -r $PATCHFILES/newlib $SOURCES/newlib-1.19.0 > Setup.log 2>&1 || bail
-		pushd $SOURCES/newlib-1.19.0/newlib/libc/sys/atomos > Setup.log 2>&1 || bail
-			autoreconf > Setup.log 2>&1 || bail
+		cp -r $PATCHFILES/newlib $SOURCES/newlib-1.19.0 >> Setup.log 2>&1 || bail
+		pushd $SOURCES/newlib-1.19.0/newlib/libc/sys/atomos >> Setup.log 2>&1 || bail
+			autoreconf >> Setup.log 2>&1 || bail
 		popd
-		pushd $SOURCES/newlib-1.19.0/newlib/libc/sys > Setup.log 2>&1 || bail
-			autoconf > Setup.log 2>&1 || bail
+		pushd $SOURCES/newlib-1.19.0/newlib/libc/sys >> Setup.log 2>&1 || bail
+			autoconf >> Setup.log 2>&1 || bail
 		popd
 		pushd newlib || bail
-			$SOURCES/newlib-1.19.0/configure --target=$TARGET --prefix=$PREFIX > Setup.log 2>&1 || bail
+			$SOURCES/newlib-1.19.0/configure --target=$TARGET --prefix=$PREFIX >> Setup.log 2>&1 || bail
 			make -j4 > Setup.log || bail
-			make install > Setup.log 2>&1 || bail
+			make install >> Setup.log 2>&1 || bail
 		popd
-		pushd $SOURCES/newlib-1.19.0/newlib/libc/sys/atomos > Setup.log 2>&1 || bail
+		pushd $SOURCES/newlib-1.19.0/newlib/libc/sys/atomos >> Setup.log 2>&1 || bail
 			nasm -felf crti.s -o $PREFIX/$TARGET/lib/crti.o || bail
 			nasm -felf crtn.s -o $PREFIX/$TARGET/lib/crtn.o || bail
 		popd
@@ -182,9 +182,9 @@ pushd Bin > Setup.log 2>&1 || bail
 
 	if $BUILD_GCC_2; then
 		reply "    Compiling gcc again"
-		pushd gcc-native > Setup.log 2>&1 || bail
+		pushd gcc-native >> Setup.log 2>&1 || bail
 			make -j4 all-target-libstdc++-v3 > Setup.log || bail
-			make -j4 install-target-libstdc++-v3 > Setup.log 2>&1 || bail
+			make -j4 install-target-libstdc++-v3 >> Setup.log 2>&1 || bail
 		popd
 	fi
 
