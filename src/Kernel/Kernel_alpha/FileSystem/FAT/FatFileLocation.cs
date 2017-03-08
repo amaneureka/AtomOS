@@ -1,7 +1,9 @@
-/* Copyright (C) Atomix OS Development, Inc - All Rights Reserved
-* Unauthorized copying of this file, via any medium is strictly prohibited
-* Proprietary and confidential
-* Written by SANDEEP ILIGER <sandeep.iliger@gmail.com>, 08-2014
+/*
+* PROJECT:          Atomix Development
+* LICENSE:          BSD 3-Clause (LICENSE.md)
+* PURPOSE:
+* PROGRAMMERS:      SANDEEP ILIGER <sandeep.iliger@gmail.com>
+*                   Aman Priyadarshi <aman.eureka@gmail.com>
 */
 
 using System;

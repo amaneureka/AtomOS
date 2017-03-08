@@ -1,8 +1,6 @@
 ﻿/*
 * PROJECT:          Atomix Development
-* LICENSE:          Copyright (C) Atomix Development, Inc - All Rights Reserved
-*                   Unauthorized copying of this file, via any medium is
-*                   strictly prohibited Proprietary and confidential.
+* LICENSE:          BSD 3-Clause (LICENSE.md)
 * PURPOSE:          File Contains various mscorlib plug belongs to String class
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
