@@ -8,6 +8,10 @@ set -ex
 # ██║  ██║   ██║   ╚██████╔╝██║ ╚═╝ ██║██║██╔╝ ██╗    ╚██████╔╝███████║
 # ╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝     ╚═╝╚═╝╚═╝  ╚═╝     ╚═════╝ ╚══════╝
 
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+export PREFIX="$DIR/Local"
+export PATH=$PREFIX/bin:/usr/bin:$PATH
+
 BUILD_CPU=x86
 BUILD_NAME=AtomOS-Alfa
 ATOMIX_APPS=./Bin/Apps
@@ -18,7 +22,7 @@ ATOMIX_ISO_DIR=./ISO
 ATOMIX_RD=./ramdisk
 ATOMIX_LIB=./Bin/Atomix.Core.dll
 ATOMIX_RamFS=./Bin/Atomix.RamFS.exe
-GCC_LIB=./Local/Lib
+GCC_LIB=./Local/lib
 
 ATOMIX_KERNEL_H=./Bin/Atomix.Kernel_H.dll
 ATOMIX_KERNEL_H_LINKER=./../Kernel/Atomix.Kernel_H/linker.ld
@@ -48,4 +52,4 @@ readelf --wide --symbols $ATOMIX_ISO_DIR/Kernel.bin > Kernel.map
 $PREFIX $ATOMIX_RamFS $ATOMIX_RD -o $ATOMIX_ISO_DIR/Initrd.bin
 
 #CREATE ISO IMAGE
-genisoimage.exe -o $OUTPUT_DIR/$BUILD_NAME.iso -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -input-charset utf-8 -boot-info-table $ATOMIX_ISO_DIR
+genisoimage -o $OUTPUT_DIR/$BUILD_NAME.iso -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -input-charset utf-8 -boot-info-table $ATOMIX_ISO_DIR
