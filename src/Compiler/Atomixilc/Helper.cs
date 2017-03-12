@@ -158,7 +158,7 @@ namespace Atomixilc
             if (cachedFieldLabel.ContainsKey(field))
                 return cachedFieldLabel[field];
 
-            var illegalLabel = string.Format("static_Field__{2}.{1}.{0}", field.Name, field.DeclaringType, field.FieldType.FullName).ToArray();
+            var illegalLabel = string.Format("static_{3}_Field__{2}.{1}.{0}", field.Name, field.DeclaringType, field.FieldType.FullName, field.FieldType.IsClass ? "Object" : "Data").ToArray();
 
             for (int i = 0; i < illegalLabel.Length; i++)
             {
