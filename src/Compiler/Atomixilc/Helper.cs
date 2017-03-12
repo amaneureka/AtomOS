@@ -232,6 +232,9 @@ namespace Atomixilc
         /// <returns></returns>
         internal static int GetStorageSize(Type type, Architecture platform)
         {
+            if (typeof(Delegate).IsAssignableFrom(type))
+                return 0x14; // Dirty Hack, Check Issue #51
+
             int size = 0;
             if (type.IsClass && !type.IsValueType)
                 size = 12;
