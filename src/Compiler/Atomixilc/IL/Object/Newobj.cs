@@ -38,9 +38,11 @@ namespace Atomixilc.IL
             var addressRefernce = functionInfo.FullName();
             var parameters = functionInfo.GetParameters();
             var type = functionInfo.DeclaringType;
-            var memsize = Helper.GetStorageSize(type, Config.TargetPlatform);
-            var paramsize = parameters.Sum(para => Helper.GetTypeSize(para.ParameterType, Config.TargetPlatform, true));
 
+            int FieldIsClassType;
+            var memsize = Helper.GetStorageSize(type, Config.TargetPlatform, out FieldIsClassType);
+            var paramsize = parameters.Sum(para => Helper.GetTypeSize(para.ParameterType, Config.TargetPlatform, true));
+            Verbose.Warning("{0} : ByRefCount '{1}'", type.FullName, FieldIsClassType);
             int count = parameters.Length;
             if (Optimizer.vStack.Count < count)
                 throw new Exception("Internal Compiler Error: vStack.Count < expected size");
@@ -118,7 +120,7 @@ namespace Atomixilc.IL
                         new Jmp { Condition = ConditionalJump.JNZ, DestinationRef = xOp.HandlerRef };
 
                         new Mov { DestinationReg = Register.EAX, DestinationIndirect = true, SourceRef = "0x" + type.GetHashCode().ToString("X") };
-                        new Mov { DestinationReg = Register.EAX, DestinationIndirect = true, DestinationDisplacement = 4, SourceRef = "0x1" };
+                        new Mov { DestinationReg = Register.EAX, DestinationIndirect = true, DestinationDisplacement = 4, SourceRef = "0x" + (0x1 | FieldIsClassType << 2).ToString("X") };
                         new Mov { DestinationReg = Register.EAX, DestinationIndirect = true, DestinationDisplacement = 8, SourceRef = "0x" + memsize.ToString("X") };
 
                         new Push { DestinationReg = Register.EAX };

@@ -777,7 +777,7 @@ namespace Atomixilc
                 Instruction.Block = block;
 
                 /* Ah! I really can't explain this :P It was so difficult to write
-                 * signature : void.ctor(memory, params ...)
+                 * method signature : void Invoke(memory, params ...)
                  * check if System.Object [memory + 0x10] is null or not
                  * if null, simply call Intptr [memory + 0xC] after pushing params on to the stack
                  * if not null, first push System.Object [memory + 0x10] then push push params and then call Intptr [memory + 0xC]

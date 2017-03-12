@@ -95,6 +95,17 @@ namespace Atomixilc.Lib
             return 0;
         }
 
+        [NoException]
+        [Assembly(false)]
+        public static uint GetStackPointer()
+        {
+            new Mov { DestinationReg = Register.EAX, SourceReg = Register.ESP };
+            new Add { DestinationReg = Register.EAX, SourceRef = "0x4" };
+            new Ret { Offset = 0x0 };
+
+            return 0;
+        }
+
         /// <summary>
         /// End of kernel offset
         /// </summary>
