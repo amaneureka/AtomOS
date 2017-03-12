@@ -230,7 +230,7 @@ namespace Atomixilc
         /// <param name="type"></param>
         /// <param name="platform"></param>
         /// <returns></returns>
-        internal static int GetStorageSize(Type type, Architecture platform)
+        internal static int GetStorageSize(Type type, Architecture platform, out int FieldIsClassType)
         {
             if (typeof(Delegate).IsAssignableFrom(type))
                 return 0x14; // Dirty Hack, Check Issue #51
@@ -244,8 +244,11 @@ namespace Atomixilc
             if (type.BaseType != null)
                 fields.AddRange(type.BaseType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).OrderBy(a => a.Name));
 
+            FieldIsClassType = 0;
             foreach (var fld in fields)
             {
+                if (fld.FieldType.IsClass)
+                    FieldIsClassType++;
                 size += GetTypeSize(fld.FieldType, platform);
             }
 
@@ -273,6 +276,8 @@ namespace Atomixilc
 
             if (type.BaseType != null)
                 fields.AddRange(type.BaseType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).OrderBy(a => a.Name));
+
+            fields = fields.OrderBy(a => a.FieldType.IsByRef).ToList();
 
             foreach(var fld in fields)
             {
