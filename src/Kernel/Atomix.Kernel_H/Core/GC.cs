@@ -12,17 +12,15 @@ namespace Atomix.Kernel_H.Core
     internal unsafe class GC
     {
         static uint mStack;
-        static uint mStackSize;
 
         static int mAllocatedObjectCount;
 
         static uint[] mAllocatedObjects;
         static uint[] mAllocatedObjectSize;
 
-        internal GC(uint aStack, uint aStackSize, uint aMaximumObjectCount = 1024)
+        internal GC(uint aStack, uint aMaximumObjectCount = 1024)
         {
             mStack = aStack;
-            mStackSize = aStackSize;
 
             mAllocatedObjectCount = 0;
             mAllocatedObjects = new uint[aMaximumObjectCount];
@@ -48,9 +46,8 @@ namespace Atomix.Kernel_H.Core
 
         internal void Collect()
         {
+            Debug.Write("Collect\n");
             uint pointer = Native.GetStackPointer();
-            if (pointer >= mStack || pointer + mStackSize <= mStack)
-                return;
 
             SortObjects();
 
@@ -77,6 +74,7 @@ namespace Atomix.Kernel_H.Core
             }
 
             // free unmarked objects
+            int index = 0;
             for (int i = 0; i < count; i++)
             {
                 if ((mAllocatedObjectSize[i] & (1U << 31)) == 0)
@@ -85,6 +83,25 @@ namespace Atomix.Kernel_H.Core
                     Debug.Write(" %d\n", mAllocatedObjectSize[i]);
                     Heap.Free(mAllocatedObjects[i], mAllocatedObjectSize[i]);
                 }
+                else
+                {
+                    mAllocatedObjects[index] = mAllocatedObjects[i];
+                    mAllocatedObjectSize[index] = mAllocatedObjectSize[i];
+                    index++;
+                }
+            }
+
+            mAllocatedObjectCount = index;
+        }
+
+        public void Dump()
+        {
+            Debug.Write("GC Dump()\n");
+            int count = mAllocatedObjectCount;
+            for (int i = 0; i < count; i++)
+            {
+                Debug.Write("%d ", mAllocatedObjects[i]);
+                Debug.Write("%d\n", mAllocatedObjectSize[i] & 0x7fffffff);
             }
         }
 

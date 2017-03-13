@@ -13,6 +13,7 @@ namespace Atomix.Kernel_H.Core
 {
     internal class Thread
     {
+        internal readonly GC GC;
         internal readonly Process Process;
         internal readonly int ThreadID;
 
@@ -54,6 +55,7 @@ namespace Atomix.Kernel_H.Core
             StackBottom = aStackStart - aStackLimit;
             StackLimit = aStackLimit;
             ThreadID = ++ThreadCounter;
+            GC = new GC(aStackStart);
 
             if (aStackStart != 0)
                 SetupInitialStack();

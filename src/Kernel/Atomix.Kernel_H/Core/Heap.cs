@@ -170,6 +170,7 @@ namespace Atomix.Kernel_H.Core
                 HeapManagerPosition--; // Reduce size of array, no need to clear last empty because we never read it
             }
             Monitor.ReleaseLock(ref HeapLock);
+            NotifyGC(Address, len);
             Memory.FastClear(Address, len); // Clear the memory and return
             return Address;
         }
@@ -234,6 +235,7 @@ namespace Atomix.Kernel_H.Core
             }
             Monitor.ReleaseLock(ref HeapLock);
             Memory.FastClear(pos, len);
+            NotifyGC(pos, len);
             return pos;
         }
 
@@ -365,6 +367,18 @@ namespace Atomix.Kernel_H.Core
                 HeapManagerPosition++;
             }
             Monitor.ReleaseLock(ref HeapLock);
+        }
+
+        private static void NotifyGC(uint Address, uint Length)
+        {
+            var CurrentTask = Scheduler.RunningThread;
+            if (CurrentTask == null)
+                return;
+
+            var GC = CurrentTask.GC;
+            if (GC == null)
+                return;
+            GC.Notify(Address, Length);
         }
     }
 }
