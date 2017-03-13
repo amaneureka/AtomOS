@@ -251,6 +251,7 @@ namespace Atomixilc
                 return 0x14; // Dirty Hack, Check Issue #51
 
             int size = 0;
+            FieldIsClassType = 0;
             if (type.IsClass && !type.IsValueType)
                 size = 12;
 
@@ -259,7 +260,6 @@ namespace Atomixilc
             if (type.BaseType != null)
                 fields.AddRange(type.BaseType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).OrderBy(a => a.Name));
 
-            FieldIsClassType = 0;
             foreach (var fld in fields)
             {
                 if (fld.FieldType.IsClass)
