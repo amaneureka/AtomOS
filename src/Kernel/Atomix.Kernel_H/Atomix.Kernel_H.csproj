@@ -67,6 +67,7 @@
     <Compile Include="Arch\x86\PIC.cs" />
     <Compile Include="Arch\x86\PortIO.cs" />
     <Compile Include="Arch\x86\SHM.cs" />
+    <Compile Include="Core\GC.cs" />
     <Compile Include="Core\Syscall.cs" />
     <Compile Include="Exec\ELF.cs" />
     <Compile Include="Core\Monitor.cs" />

@@ -67,9 +67,19 @@ namespace Atomix.Kernel_H
             else
                 Debug.Write("File not found!\n");*/
             Gui.Programs.Explorer.Init(SystemClient);
-            BootAnimation();
-
+            //BootAnimation();
+            Debug.Write("<--------------->\n");
+            Scheduler.RunningThread.GC.Collect();
+            LOL();
+            Debug.Write("<--------------->\n");
+            Scheduler.RunningThread.GC.Collect();
+            Scheduler.RunningThread.GC.Dump();
             while (true) ;
+        }
+
+        private static void LOL()
+        {
+            new object();
         }
 
         internal static unsafe void BootAnimation()

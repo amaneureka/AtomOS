@@ -181,7 +181,6 @@
     <Compile Include="Lib\Plugs\Array.cs" />
     <Compile Include="Lib\Plugs\BitConverter.cs" />
     <Compile Include="Lib\Plugs\Exception.cs" />
-    <Compile Include="Lib\GC.cs" />
     <Compile Include="Lib\Plugs\String.cs" />
     <Compile Include="Lib\VTable.cs" />
     <Compile Include="Machine\Comment.cs" />
