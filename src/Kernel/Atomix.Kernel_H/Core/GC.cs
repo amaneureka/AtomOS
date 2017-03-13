@@ -5,41 +5,59 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-using Atomixilc.Attributes;
+using Atomixilc.Lib;
 
-namespace Atomixilc.Lib
+namespace Atomix.Kernel_H.Core
 {
-    internal unsafe static class GC
+    internal unsafe class GC
     {
         static uint mStack;
         static uint mStackSize;
 
         static int mAllocatedObjectCount;
 
-        static uint[] mAllocatedObjects;        
+        static uint[] mAllocatedObjects;
         static uint[] mAllocatedObjectSize;
 
-        const int MaximumObjectCount = 1024 * 16;
-
-        internal static void Init(uint aStack, uint aStackSize)
+        internal GC(uint aStack, uint aStackSize, uint aMaximumObjectCount = 1024)
         {
             mStack = aStack;
             mStackSize = aStackSize;
 
             mAllocatedObjectCount = 0;
-            mAllocatedObjects = new uint[MaximumObjectCount];
-            mAllocatedObjectSize = new uint[MaximumObjectCount];
+            mAllocatedObjects = new uint[aMaximumObjectCount];
+            mAllocatedObjectSize = new uint[aMaximumObjectCount];
         }
 
-        [Plug("System_Void_System_GC_Collect__")]
-        internal static unsafe void Collect()
+        internal bool Notify(uint aAddress, uint aLength)
+        {
+            if (mAllocatedObjectCount == mAllocatedObjects.Length)
+                return false;
+
+            Debug.Write("Allocate: %d ", aAddress);
+            Debug.Write(" %d\n", aLength);
+
+            // add the object to pool and update counter
+            int index = mAllocatedObjectCount;
+            mAllocatedObjects[index] = aAddress;
+            mAllocatedObjectSize[index] = aLength;
+            mAllocatedObjectCount = index + 1;
+
+            return true;
+        }
+
+        internal void Collect()
         {
             uint pointer = Native.GetStackPointer();
             if (pointer >= mStack || pointer + mStackSize <= mStack)
                 return;
 
             SortObjects();
-            UnmarkObjects();
+
+            // umark objects
+            int count = mAllocatedObjectCount;
+            for (int i = 0; i < count; i++)
+                mAllocatedObjectSize[i] &= 0x7FFFFFFF;
 
             // trace stack
             uint limit = mStack;
@@ -50,16 +68,27 @@ namespace Atomixilc.Lib
             }
 
             // trace global
-        }
+            uint start = Native.GlobalVarStart();
+            uint end = Native.GlobalVarEnd();
+            while (start < end)
+            {
+                MarkObject(*(uint*)start);
+                start += 4;
+            }
 
-        private static void UnmarkObjects()
-        {
-            int count = mAllocatedObjectCount;
+            // free unmarked objects
             for (int i = 0; i < count; i++)
-                mAllocatedObjectSize[i] &= 0x7FFFFFFF;
+            {
+                if ((mAllocatedObjectSize[i] & (1U << 31)) == 0)
+                {
+                    Debug.Write("Free: %d ", mAllocatedObjects[i]);
+                    Debug.Write(" %d\n", mAllocatedObjectSize[i]);
+                    Heap.Free(mAllocatedObjects[i], mAllocatedObjectSize[i]);
+                }
+            }
         }
 
-        private static void MarkObject(uint Address)
+        private void MarkObject(uint Address)
         {
             int index = BinarySearch(Address);
             // no such object found
@@ -73,24 +102,25 @@ namespace Atomixilc.Lib
             uint flag = data[1];
 
             // check object flag
-            if ((flag & 0x3) != 0x1) return;
+            if ((flag & 0x3) != 0x1)
+                return;
 
             // find sub-fields and mark them
             uint childrens = flag >> 2;
             data += 3;
-            while(childrens > 0)
+            while (childrens > 0)
             {
                 MarkObject(*data);
                 data++;
                 childrens--;
             }
         }
-        
-        private static int BinarySearch(uint Address)
+
+        private int BinarySearch(uint Address)
         {
             if (Address == 0) return -1;
             int left = 0, right = mAllocatedObjectCount - 1;
-            while(left <= right)
+            while (left <= right)
             {
                 int mid = (left + right) >> 1;
                 uint found = mAllocatedObjects[mid];
@@ -107,7 +137,7 @@ namespace Atomixilc.Lib
             return -1;
         }
 
-        private static void SortObjects()
+        private void SortObjects()
         {
             int count = mAllocatedObjectCount;
             for (int i = 1; i < count; i++)

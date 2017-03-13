@@ -32,6 +32,21 @@ namespace Atomixilc
         public const string VTable_Flush = "__VTable_Flush__";
 
         /// <summary>
+        /// Global Data Section First Entry Pointer
+        /// </summary>
+        public const string Global_Section_Start = "__GSS__";
+
+        /// <summary>
+        /// Global Data Section Last Entry Pointer
+        /// </summary>
+        public const string Global_Section_End = "__GSE__";
+
+        /// <summary>
+        /// Pointer to End of Compiler
+        /// </summary>
+        public const string Compiler_End = "Compiler_End";
+
+        /// <summary>
         /// Stores extra data element added by application through literal assembled code
         /// </summary>
         internal readonly static List<AsmData> DataSegment = new List<AsmData>();

@@ -115,10 +115,30 @@ namespace Atomixilc.Lib
         public static uint EndOfKernel()
         {
             // Just put Compiler_End location into return value
-            new Mov { DestinationReg = Register.EAX, SourceRef = "Compiler_End" };
+            new Mov { DestinationReg = Register.EAX, SourceRef = Helper.Compiler_End };
             new Ret { Offset = 0x0 };
 
             return 0; // just for c# error
+        }
+
+        [NoException]
+        [Assembly(false)]
+        public static uint GlobalVarStart()
+        {
+            new Mov { DestinationReg = Register.EAX, SourceRef = Helper.Global_Section_Start };
+            new Ret { Offset = 0x0 };
+
+            return 0;
+        }
+
+        [NoException]
+        [Assembly(false)]
+        public static uint GlobalVarEnd()
+        {
+            new Mov { DestinationReg = Register.EAX, SourceRef = Helper.Global_Section_End };
+            new Ret { Offset = 0x0 };
+
+            return 0;
         }
 
         [NoException]
