@@ -292,7 +292,7 @@ namespace Atomixilc
             if (type.BaseType != null)
                 fields.AddRange(type.BaseType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).OrderBy(a => a.Name));
 
-            fields = fields.OrderBy(a => a.FieldType.IsByRef).ToList();
+            fields = fields.OrderBy(a => !a.FieldType.IsClass).ToList();
 
             foreach(var fld in fields)
             {

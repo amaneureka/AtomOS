@@ -49,10 +49,10 @@ namespace Atomix.Kernel_H
             Mouse.Setup();
             #endregion
             #region Compositor
-            SystemClient = new Pipe(Compositor.PACKET_SIZE, 100);
-            //Compositor.Setup(Scheduler.SystemProcess);
-            //ClientID = Compositor.CreateConnection(SystemClient);
 
+            SystemClient = new Pipe(Compositor.PACKET_SIZE, 100);
+            Compositor.Setup(Scheduler.SystemProcess);
+            ClientID = Compositor.CreateConnection(SystemClient);
 
             #endregion
             #region IDE Devices
@@ -66,25 +66,10 @@ namespace Atomix.Kernel_H
                 Debug.Write(stream.ReadToEnd());
             else
                 Debug.Write("File not found!\n");*/
-
-            //Gui.Programs.Explorer.Init(SystemClient);
-            Scheduler.RunningThread.GC.Collect();
-            TestGC();
-            Scheduler.RunningThread.GC.Collect();
+            Core.GC.Run();
+            Gui.Programs.Explorer.Init(SystemClient);
+            BootAnimation();
             while (true) ;
-        }
-
-        private static void TestGC()
-        {
-            Debug.Write("<----->\n");
-            LOL();
-            Debug.Write("<----->\n");
-        }
-
-        private static void LOL()
-        {
-            var t = new object[5];
-            t[0] = new object();
         }
 
         internal static unsafe void BootAnimation()
