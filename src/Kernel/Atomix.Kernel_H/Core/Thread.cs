@@ -11,7 +11,7 @@ using Atomixilc.Lib;
 
 namespace Atomix.Kernel_H.Core
 {
-    internal class Thread
+    internal unsafe class Thread
     {
         internal readonly GC GC;
         internal readonly Process Process;
@@ -21,8 +21,8 @@ namespace Atomix.Kernel_H.Core
         ThreadState State;
 
         uint Address;
-        uint StackBottom;
-        uint StackTop;
+
+        uint* StackTop;
         uint StackLimit;
 
         internal ThreadState Status
@@ -51,8 +51,7 @@ namespace Atomix.Kernel_H.Core
             Address = aAddress;
             Process.Threads.Add(this);
             State = ThreadState.NotActive;
-            StackTop = aStackStart;
-            StackBottom = aStackStart - aStackLimit;
+            StackTop = (uint*)aStackStart;
             StackLimit = aStackLimit;
             ThreadID = ++ThreadCounter;
             GC = new GC(aStackStart);
@@ -92,24 +91,17 @@ namespace Atomix.Kernel_H.Core
             *--Stack = 0;               // ECX
             *--Stack = 0;               // EAX
 
-            StackTop = (uint)Stack;
+            StackTop = Stack;
         }
 
         internal uint LoadStack()
         {
-            return StackTop;
+            return (uint)StackTop;
         }
 
         internal void SaveStack(uint Stack)
         {
-            StackTop = Stack;
-        }
-
-        internal void Free()
-        {
-            Heap.Free(Dead);
-            Heap.Free(StackBottom, StackLimit);
-            Heap.Free(this);
+            StackTop = (uint*)Stack;
         }
 
         internal static void Die()

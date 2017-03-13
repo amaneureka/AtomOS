@@ -51,17 +51,11 @@ namespace Atomix.Kernel_H.IO.FileSystem
             var BootSector = new byte[512];
 
             if (!IDevice.Read(0U, 1U, BootSector))
-            {
-                Heap.Free(BootSector);
                 return false;
-            }
 
             var xSig = BitConverter.ToUInt16(BootSector, 510);
             if (xSig != 0xAA55)
-            {
-                Heap.Free(BootSector);
                 return false;
-            }
 
             /* BPB (BIOS Parameter Block) */
             BytePerSector = BitConverter.ToUInt16(BootSector, 11);
@@ -92,10 +86,7 @@ namespace Atomix.Kernel_H.IO.FileSystem
             /* Not Necessary, To Avoid Crashes during corrupted BPB Info */
             // Just to prevent ourself from hacking
             if (TotalFAT == 0 || TotalFAT > 2 || BytePerSector == 0 || TotalSectors == 0 || SectorsPerCluster == 0)
-            {
-                Heap.Free(BootSector);
                 return false;
-            }
 
             /* Some basic calculations to check basic error :P */
             uint RootDirSectors = 0;
@@ -133,8 +124,6 @@ namespace Atomix.Kernel_H.IO.FileSystem
             DataSector = ReservedSector + (TotalFAT * SectorsPerFAT) + RootSectorCount;
 
             mFSType = FileSystemType.FAT;
-
-            Heap.Free(BootSector);
             return true;
         }
 
@@ -153,7 +142,6 @@ namespace Atomix.Kernel_H.IO.FileSystem
                 return null;
 
             var xStream = new FatStream(this, path[path.Length - 1], FileLocation.FirstCluster, FileLocation.Size);
-            Heap.Free(FileLocation);
             return xStream;
         }
 
@@ -167,16 +155,11 @@ namespace Atomix.Kernel_H.IO.FileSystem
                 Compare.Name = path[pointer];
                 location = FindEntry(Compare, CurrentCluster);
                 if (location == null)
-                {
-                    Heap.Free(Compare);
                     return null;
-                }
                 CurrentCluster = location.FirstCluster;
                 pointer++;
-                Heap.Free(location);
             }
 
-            Heap.Free(Compare);
             return location;
         }
 
@@ -196,7 +179,6 @@ namespace Atomix.Kernel_H.IO.FileSystem
                 if (compare.Compare(aData, offset, FatType))
                 {
                     FatFileAttributes attribute = (FatFileAttributes)aData[offset + (int)Entry.FileAttributes];
-                    Heap.Free(aData);
                     return new FatFileLocation(
                         GetClusterEntry(aData, index, FatType),
                         activeSector,
@@ -209,7 +191,6 @@ namespace Atomix.Kernel_H.IO.FileSystem
                     break;
             }
 
-            Heap.Free(aData);
             return null;
         }
 
@@ -222,7 +203,6 @@ namespace Atomix.Kernel_H.IO.FileSystem
             var aData = new byte[512];
             IDevice.Read(sector, 1U, aData);
             var xNextCluster = (BitConverter.ToUInt32(aData, sectorOffset) & 0x0FFFFFFF);
-            Heap.Free(aData);
 
             return xNextCluster;
         }

@@ -30,7 +30,6 @@ namespace Atomix.Kernel_H.Lib
             {
                 var _new = new T[_size + _size];
                 Array.Copy(_items, _new, _size);
-                Heap.Free(_items);
                 _items = _new;
                 _capacity += _size;
             }
@@ -60,11 +59,6 @@ namespace Atomix.Kernel_H.Lib
         internal void Clear()
         {
             _size = 0;
-        }
-
-        internal void Delete()
-        {
-            Heap.Free(_items);
         }
     }
 }

@@ -73,7 +73,6 @@ namespace Atomix.Kernel_H.Gui.Programs
 
             DesktopSurface = surface;
             DesktopContext = context;
-            Heap.Free(Data);
         }
 
         private static void Taskbar()
@@ -129,7 +128,6 @@ namespace Atomix.Kernel_H.Gui.Programs
 
             TaskbarSurface = surface;
             TaskbarContext = context;
-            Heap.Free(Data);
         }
     }
 }

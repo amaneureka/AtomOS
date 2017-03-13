@@ -7,8 +7,6 @@
 
 using System;
 
-using Atomix.Kernel_H.Core;
-
 namespace Atomix.Kernel_H.Lib
 {
     internal class ISet<_type>
@@ -65,7 +63,6 @@ namespace Atomix.Kernel_H.Lib
 
             var ToDelete = Current.mNext;
             Current.mNext = ToDelete.mNext;
-            Heap.Free(ToDelete);// Free bucket
         }
     }
 }

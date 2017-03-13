@@ -13,7 +13,7 @@ namespace Atomix.Kernel_H.IO
 {
     internal unsafe class Pipe
     {
-        uint Buffer;
+        uint* Buffer;
         uint BufferSize;
         bool[] BufferStatus;
 
@@ -28,7 +28,7 @@ namespace Atomix.Kernel_H.IO
             PacketsCount = aPacketsCount;
             PacketSize = aPacketSize;
             BufferSize = (uint)(PacketsCount * PacketSize);
-            Buffer = Heap.kmalloc(BufferSize);
+            Buffer = (uint*)Heap.kmalloc(BufferSize);
             BufferStatus = new bool[PacketsCount];
 
             ReadingPointer = WritingPointer = 0;
@@ -47,7 +47,7 @@ namespace Atomix.Kernel_H.IO
             if (BufferStatus[WritingPointer])
                 return false;
 
-            Memory.FastCopy(Buffer + (uint)(WritingPointer * PacketSize), (uint)aData, (uint)PacketSize);
+            Memory.FastCopy((uint)Buffer + (uint)(WritingPointer * PacketSize), (uint)aData, (uint)PacketSize);
             BufferStatus[WritingPointer] = true;
 
             WritingPointer = (WritingPointer + 1) % PacketsCount;
@@ -59,18 +59,11 @@ namespace Atomix.Kernel_H.IO
             while (!BufferStatus[ReadingPointer])
                 Task.Switch();
 
-            Memory.FastCopy(aData.GetDataOffset(), Buffer + (uint)(ReadingPointer * PacketSize), (uint)PacketSize);
+            Memory.FastCopy(aData.GetDataOffset(), (uint)Buffer + (uint)(ReadingPointer * PacketSize), (uint)PacketSize);
             BufferStatus[ReadingPointer] = false;
 
             ReadingPointer = (ReadingPointer + 1) % PacketsCount;
             return true;
-        }
-
-        internal void Close()
-        {
-            Heap.Free(Buffer, BufferSize);
-            Heap.Free(BufferStatus);
-            Heap.Free(this);
         }
     }
 }

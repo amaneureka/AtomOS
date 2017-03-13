@@ -31,7 +31,6 @@ namespace Atomix.Kernel_H.Devices
             ParseData(aMBR, 462);
             ParseData(aMBR, 478);
             ParseData(aMBR, 494);
-            Heap.Free(aMBR);
         }
 
         private void ParseData(byte[] aMBR, Int32 aLoc)
@@ -51,12 +50,6 @@ namespace Atomix.Kernel_H.Devices
                 UInt32 xStartSector = BitConverter.ToUInt32(aMBR, aLoc + 8);
                 mPartitions.Add(new Partition(mDisk, xStartSector, xSectorCount));
             }
-        }
-
-        internal void Clean()
-        {
-            Heap.Free(mPartitions);
-            Heap.Free(this);
         }
     }
 }

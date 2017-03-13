@@ -6,9 +6,7 @@
 */
 
 using Atomixilc.Lib;
-using Atomixilc.Machine;
 using Atomixilc.Attributes;
-using Atomixilc.Machine.x86;
 
 namespace Atomix.Kernel_H.Core
 {
@@ -83,7 +81,15 @@ namespace Atomix.Kernel_H.Core
             }
             else
             {
-                return kmalloc(len, false);
+                var address = kmalloc(len, false);
+                var CurrentTask = Scheduler.RunningThread;
+                if (CurrentTask != null)
+                {
+                    var GC = CurrentTask.GC;
+                    if (GC != null)
+                        GC.Notify(address, len);
+                }
+                return address;
             }
         }
 
@@ -170,7 +176,6 @@ namespace Atomix.Kernel_H.Core
                 HeapManagerPosition--; // Reduce size of array, no need to clear last empty because we never read it
             }
             Monitor.ReleaseLock(ref HeapLock);
-            NotifyGC(Address, len);
             Memory.FastClear(Address, len); // Clear the memory and return
             return Address;
         }
@@ -235,59 +240,7 @@ namespace Atomix.Kernel_H.Core
             }
             Monitor.ReleaseLock(ref HeapLock);
             Memory.FastClear(pos, len);
-            NotifyGC(pos, len);
             return pos;
-        }
-
-        internal static void FreeArray(object[] objs)
-        {
-            for (int i = 0; i < objs.Length; i++)
-                Free(objs[i]);
-            Free(objs);
-        }
-
-        /// <summary>
-        /// Clear Object class and Array type objects
-        /// </summary>
-        /// <param name="obj"></param>
-        [Assembly(true)]
-        internal static unsafe void Free(object obj)
-        {
-            var xEndlbl = Label.Primary + ".End";
-            var xLabel_Object = Label.Primary + ".object";
-
-            new Mov { DestinationReg = Register.ECX, SourceReg = Register.EBP, SourceDisplacement = 0x8, SourceIndirect = true };
-            new Xor { DestinationReg = Register.EAX, SourceReg = Register.EAX };
-            new Mov { DestinationReg = Register.EBX, SourceReg = Register.ECX, SourceDisplacement = 0x4, SourceIndirect = true };
-            new Cmp { DestinationReg = Register.EBX, SourceRef = "0x1" };
-            new Jmp { Condition = ConditionalJump.JE, DestinationRef = xLabel_Object };
-            new Cmp { DestinationReg = Register.EBX, SourceRef = "0x2" };
-            new Jmp { Condition = ConditionalJump.JNE, DestinationRef = xEndlbl };
-            /* Array :-
-             * According to compiler layout is:
-             * 1) Type Signature
-             * 2) Magic 0x2 -- 0x4
-             * 3) Number of elements -- 0x8
-             * 4) Size of each element -- 0xC
-             */
-            new Mov { DestinationReg = Register.EAX, SourceReg = Register.ECX, SourceDisplacement = 0x8, SourceIndirect = true };
-            new Mul { DestinationReg = Register.ECX, DestinationDisplacement = 0xC, DestinationIndirect = true };
-            new Add { DestinationReg = Register.EAX, SourceRef = "0x10" };//Header
-            new Jmp { DestinationRef = xEndlbl };
-
-            new Label (xLabel_Object);
-            /* Object :-
-             * According to compiler layout is:
-             * 1) Type Signature
-             * 2) Magic 0x1 -- 0x4
-             * 3) Total Size -- 0x8 (It includes header)
-             */
-            new Mov { DestinationReg = Register.EAX, SourceReg = Register.ECX, SourceDisplacement = 0x8, SourceIndirect = true };
-
-            new Label (xEndlbl);
-            new Push { DestinationReg = Register.ECX }; // Address
-            new Push { DestinationReg = Register.EAX }; // Length
-            new Call { DestinationRef = "__Heap_Free__", IsLabel = true };
         }
 
         [Label("__Heap_Free__")]
@@ -367,18 +320,6 @@ namespace Atomix.Kernel_H.Core
                 HeapManagerPosition++;
             }
             Monitor.ReleaseLock(ref HeapLock);
-        }
-
-        private static void NotifyGC(uint Address, uint Length)
-        {
-            var CurrentTask = Scheduler.RunningThread;
-            if (CurrentTask == null)
-                return;
-
-            var GC = CurrentTask.GC;
-            if (GC == null)
-                return;
-            GC.Notify(Address, Length);
         }
     }
 }

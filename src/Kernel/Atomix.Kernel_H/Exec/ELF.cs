@@ -252,10 +252,7 @@ namespace Atomix.Kernel_H.Exec
                 }
             }
 
-            uint LoadAddress = Header->e_entry;
-            Heap.Free(xData);
-
-            return LoadAddress;
+            return Header->e_entry;
         }
 
         private static void Relocate(Elf_Header* aHeader, Elf_Shdr* aShdr)
@@ -343,7 +340,6 @@ namespace Atomix.Kernel_H.Exec
                         string SymName = new string((sbyte*)(StrTabAdd + SymTab->st_name));
 
                         Debug.Write("Undefined Symbol: %s\n", SymName);
-                        Heap.Free(SymName);
                         throw new Exception("[ELF]: Extern Symbol not supported");
                     }
                 case SHN_ABS:

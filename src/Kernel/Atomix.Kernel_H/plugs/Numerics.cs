@@ -90,9 +90,7 @@ namespace Atomix.Kernel_H.plugs
             if (Signed)
                 xResult[--xPos] = '-';
 
-            var xStr = new string(xResult, xPos, 11 - xPos);
-            Heap.Free(xResult);
-            return xStr;
+            return new string(xResult, xPos, 11 - xPos); ;
         }
     }
 }
