@@ -183,8 +183,6 @@ namespace Atomix.Kernel_H.Drivers.buses.ATA
             // Read Model, Firmware, SerialNo.
             mModel      = xBuff.GetString((int)Identify.ATA_IDENT_MODEL, 40);
             mSerialNo   = xBuff.GetString((int)Identify.ATA_IDENT_SERIAL, 20);
-
-            Heap.Free(xBuff);
         }
 
         internal override bool Read(uint SectorNo, uint SectorCount, byte[] xData)

@@ -132,7 +132,6 @@ namespace Atomix.Kernel_H.IO.FileSystem.FAT
         internal override bool Close()
         {
             Heap.Free((uint)mBufferCluster, (uint)mBufferLength);
-            Heap.Free(this);
             return true;
         }
     }

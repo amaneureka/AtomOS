@@ -50,8 +50,8 @@ namespace Atomix.Kernel_H
             #endregion
             #region Compositor
             SystemClient = new Pipe(Compositor.PACKET_SIZE, 100);
-            Compositor.Setup(Scheduler.SystemProcess);
-            ClientID = Compositor.CreateConnection(SystemClient);
+            //Compositor.Setup(Scheduler.SystemProcess);
+            //ClientID = Compositor.CreateConnection(SystemClient);
 
 
             #endregion
@@ -66,15 +66,23 @@ namespace Atomix.Kernel_H
                 Debug.Write(stream.ReadToEnd());
             else
                 Debug.Write("File not found!\n");*/
-            Gui.Programs.Explorer.Init(SystemClient);
-            //BootAnimation();
-            Debug.Write("<--------------->\n");
+
+            //Gui.Programs.Explorer.Init(SystemClient);
+            //Scheduler.RunningThread.GC.Collect();
+            TestGC();
+            while (true) ;
+        }
+
+        private static void TestGC()
+        {
+            Debug.Write("<----->\n");
+            LOL();
+            LOL();
             Scheduler.RunningThread.GC.Collect();
             LOL();
-            Debug.Write("<--------------->\n");
+            LOL();
             Scheduler.RunningThread.GC.Collect();
-            Scheduler.RunningThread.GC.Dump();
-            while (true) ;
+            Debug.Write("<----->\n");
         }
 
         private static void LOL()
@@ -268,18 +276,12 @@ namespace Atomix.Kernel_H
                                         VirtualFileSystem.MountDevice(null, xFileSystem);
                                         Clean = false;
                                     }
-                                    else
-                                        Heap.Free(xFileSystem);
                                 }
                             }
-                            xMBR.Clean();
                         }
                         break;
                 }
             }
-
-            if (Clean)
-                Heap.Free(xIDE);
         }
     }
 }

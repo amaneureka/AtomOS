@@ -71,9 +71,6 @@ namespace Atomix.Kernel_H.Core
                 case ThreadState.Running:
                     ThreadQueue.Enqueue(CurrentTask);
                     break;
-                case ThreadState.Dead:
-                    CurrentTask.Free();
-                    break;
                 default:// Do nothing for not active
                     break;
             }

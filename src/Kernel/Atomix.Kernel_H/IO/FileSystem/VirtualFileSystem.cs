@@ -37,7 +37,6 @@ namespace Atomix.Kernel_H.IO.FileSystem
             if (FileSystem == null)
                 return null;
             var xStream = FileSystem.GetFile(paths, 1);
-            Heap.FreeArray(paths);
             return xStream;
         }
 
@@ -48,7 +47,6 @@ namespace Atomix.Kernel_H.IO.FileSystem
             if (FileSystem == null)
                 return false;
             var xValue = FileSystem.CreateFile(paths, 1);
-            Heap.FreeArray(paths);
             return xValue;
         }
 
@@ -73,7 +71,6 @@ namespace Atomix.Kernel_H.IO.FileSystem
         {
 			string suffix = Convert.ToString(mDeviceLabelCounter++);
             string Label = ("disk") + suffix;
-            Heap.Free(suffix);
             return Label;
         }
     }

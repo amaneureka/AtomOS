@@ -35,11 +35,7 @@ namespace Atomix.Kernel_H.plugs
                     char_result[p++] = current[j];
             }
 
-            var result = new string(char_result);
-            Heap.Free(char_result);
-            Heap.Free((object)strs);
-
-            return result;
+            return new string(char_result);
         }
 
         [Plug("System_Boolean_System_String_op_Equality_System_String__System_String_")]

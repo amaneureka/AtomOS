@@ -141,7 +141,6 @@ namespace Atomix.Kernel_H.Lib
                 ToDelete = Current.mNext;
                 Current.mNext = ToDelete.mNext;
             }
-            Heap.Free(ToDelete);// Free bucket
         }
     }
 }

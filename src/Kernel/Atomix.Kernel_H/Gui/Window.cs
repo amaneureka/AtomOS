@@ -52,7 +52,6 @@ namespace Atomix.Kernel_H.Gui
             string tid = Timer.TicksFromStart.ToString();
             string xid = "win." + tid;
 
-            Heap.Free(tid);
             return xid;
         }
     }

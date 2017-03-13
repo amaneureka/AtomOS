@@ -69,7 +69,6 @@ namespace Atomix.Kernel_H.Lib
             if (index != count)
                 strs[index] = new string(aArray, last, len - last);
 
-            Heap.Free(aArray);
             return strs;
         }
     }

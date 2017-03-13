@@ -87,7 +87,6 @@ namespace Atomix.Kernel_H.IO.FileSystem.RFS
 
         internal override bool Close()
         {
-            Heap.Free(this);
             return true;
         }
     }

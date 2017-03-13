@@ -139,7 +139,6 @@ namespace Atomix.Kernel_H.Core
             var filename = new string(file);
             var stream = VirtualFileSystem.GetFile(filename);
             Debug.Write("fopen: %s\n", filename);
-            Heap.Free(filename);
 
             if (stream == null)
                 return -1;
