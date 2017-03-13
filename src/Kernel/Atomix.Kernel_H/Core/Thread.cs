@@ -21,8 +21,9 @@ namespace Atomix.Kernel_H.Core
         ThreadState State;
 
         uint Address;
+        uint* StackFrame;
 
-        uint* StackTop;
+        uint StackTop;
         uint StackLimit;
 
         internal ThreadState Status
@@ -33,7 +34,7 @@ namespace Atomix.Kernel_H.Core
         static int ThreadCounter;
 
         public Thread(Process aParent, Action aMethod)
-            :this(aParent, aMethod.InvokableAddress(), Heap.kmalloc(0x20000) + 0x20000, 0x20000)
+            :this(aParent, aMethod.InvokableAddress(), Heap.kmalloc(0x20000, false) + 0x20000, 0x20000)
         {
             return;
         }
@@ -51,7 +52,8 @@ namespace Atomix.Kernel_H.Core
             Address = aAddress;
             Process.Threads.Add(this);
             State = ThreadState.NotActive;
-            StackTop = (uint*)aStackStart;
+            StackTop = aStackStart;
+            StackFrame = (uint*)(aStackStart - aStackLimit);
             StackLimit = aStackLimit;
             ThreadID = ++ThreadCounter;
             GC = new GC(aStackStart);
@@ -91,17 +93,17 @@ namespace Atomix.Kernel_H.Core
             *--Stack = 0;               // ECX
             *--Stack = 0;               // EAX
 
-            StackTop = Stack;
+            StackTop = (uint)Stack;
         }
 
         internal uint LoadStack()
         {
-            return (uint)StackTop;
+            return StackTop;
         }
 
         internal void SaveStack(uint Stack)
         {
-            StackTop = (uint*)Stack;
+            StackTop = Stack;
         }
 
         internal static void Die()

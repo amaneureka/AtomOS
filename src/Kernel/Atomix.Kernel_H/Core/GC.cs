@@ -11,17 +11,22 @@ namespace Atomix.Kernel_H.Core
 {
     internal unsafe class GC
     {
-        static uint mStack;
+        uint mStack;
+        uint mMemoryUsage;
 
-        static int mAllocatedObjectCount;
+        int mAllocatedObjectCount;
 
-        static uint[] mAllocatedObjects;
-        static uint[] mAllocatedObjectSize;
+        uint[] mAllocatedObjects;
+        uint[] mAllocatedObjectSize;
+
+        internal uint MemoryUsage
+        { get { return mMemoryUsage; } }
 
         internal GC(uint aStack, uint aMaximumObjectCount = 1024)
         {
             mStack = aStack;
 
+            mMemoryUsage = 0;
             mAllocatedObjectCount = 0;
             mAllocatedObjects = new uint[aMaximumObjectCount];
             mAllocatedObjectSize = new uint[aMaximumObjectCount];
@@ -32,21 +37,18 @@ namespace Atomix.Kernel_H.Core
             if (mAllocatedObjectCount == mAllocatedObjects.Length)
                 return false;
 
-            Debug.Write("Allocate: %d ", aAddress);
-            Debug.Write(" %d\n", aLength);
-
             // add the object to pool and update counter
             int index = mAllocatedObjectCount;
             mAllocatedObjects[index] = aAddress;
             mAllocatedObjectSize[index] = aLength;
             mAllocatedObjectCount = index + 1;
+            mMemoryUsage += aLength;
 
             return true;
         }
 
         internal void Collect()
         {
-            Debug.Write("Collect\n");
             uint pointer = Native.GetStackPointer();
 
             SortObjects();
@@ -75,23 +77,27 @@ namespace Atomix.Kernel_H.Core
 
             // free unmarked objects
             int index = 0;
+            uint MemoryFreed = 0;
             for (int i = 0; i < count; i++)
             {
-                if ((mAllocatedObjectSize[i] & (1U << 31)) == 0)
-                {
-                    Debug.Write("Free: %d ", mAllocatedObjects[i]);
-                    Debug.Write(" %d\n", mAllocatedObjectSize[i]);
-                    Heap.Free(mAllocatedObjects[i], mAllocatedObjectSize[i]);
-                }
-                else
+                if ((mAllocatedObjectSize[i] & (1U << 31)) != 0)
                 {
                     mAllocatedObjects[index] = mAllocatedObjects[i];
                     mAllocatedObjectSize[index] = mAllocatedObjectSize[i];
                     index++;
                 }
+                else
+                {
+                    MemoryFreed += mAllocatedObjectSize[i];
+                    //Debug.Write("free: %d\n", mAllocatedObjects[i]);
+                    Heap.Free(mAllocatedObjects[i], mAllocatedObjectSize[i]);
+                }
             }
 
             mAllocatedObjectCount = index;
+            mMemoryUsage -= MemoryFreed;
+
+            Debug.Write("[GC]\tMemory Freed: %d\n", MemoryFreed);
         }
 
         public void Dump()
@@ -182,6 +188,12 @@ namespace Atomix.Kernel_H.Core
                 mAllocatedObjects[j] = address;
                 mAllocatedObjectSize[j] = length;
             }
+        }
+
+        internal static void Run()
+        {
+            Scheduler.RunningThread.GC.Collect();
+            Debug.Write("Memory Usage: %d\n", Scheduler.RunningThread.GC.MemoryUsage);
         }
     }
 }
