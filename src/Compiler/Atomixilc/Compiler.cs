@@ -296,8 +296,13 @@ namespace Atomixilc
 
                 var bssEntries = ZeroSegment.ToList();
                 bssEntries.Sort((x, y) => y.Value.CompareTo(x.Value));
+
+                SW.WriteLine(Helper.Global_Section_Start + ":");
+
                 foreach (var bssEntry in bssEntries)
                     SW.WriteLine(string.Format("{0} resb {1}", bssEntry.Key, bssEntry.Value));
+
+                SW.WriteLine(Helper.Global_Section_End + ":");
                 SW.WriteLine();
 
                 /* Data Section */
@@ -340,7 +345,7 @@ namespace Atomixilc
                     SW.WriteLine();
                 }
 
-                SW.WriteLine("Compiler_End:");
+                SW.WriteLine(Helper.Compiler_End + ":");
 
                 SW.Flush();
                 SW.Close();
