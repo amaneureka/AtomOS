@@ -112,6 +112,9 @@ namespace Atomix.Kernel_H
             new Or { DestinationReg = Register.AX, SourceRef = "0x600", Size = 16 };
             new Mov { DestinationReg = Register.CR4, SourceReg = Register.EAX };
 
+            /* push initial stack */
+            new Push { DestinationReg = Register.ESP };
+
             /* Call Kernel Start */
             new Cli();
             new Call { DestinationRef = "Kernel_Start", IsLabel = true };
@@ -123,7 +126,7 @@ namespace Atomix.Kernel_H
         /// <param name="magic">Magic Number of Multiboot</param>
         /// <param name="address">Multiboot Address</param>
         [Label("Kernel_Start")]
-        internal static void Start(uint magic, uint address, uint KernelDirectory, uint InitialHeap)
+        internal static void Start(uint magic, uint address, uint KernelDirectory, uint InitialHeap, uint StackStart)
         {
             /* Kernel Logger init */
             Debug.Init();
@@ -150,7 +153,7 @@ namespace Atomix.Kernel_H
             Native.Sti();
 
             /* Setup Scheduler */
-            Scheduler.Init(KernelDirectory);
+            Scheduler.Init(KernelDirectory, StackStart);
 
             /* Setup System Timer */
             Timer.Setup();

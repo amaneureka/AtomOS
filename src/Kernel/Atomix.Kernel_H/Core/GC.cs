@@ -120,7 +120,15 @@ namespace Atomix.Kernel_H.Core
 
             // check object flag
             if ((flag & 0x3) != 0x1)
+            {
+                if ((flag & 0x3) == 0x3)
+                {
+                    int lastIndex = (int)data[2] + 4;
+                    for (int i = 4; i < lastIndex; i++)
+                        MarkObject(data[i]);
+                }
                 return;
+            }
 
             // find sub-fields and mark them
             uint childrens = flag >> 2;

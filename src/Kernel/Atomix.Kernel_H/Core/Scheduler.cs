@@ -5,13 +5,11 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-using Atomixilc;
+using Atomixilc.Lib;
 using Atomixilc.Machine;
 using Atomixilc.Attributes;
-using Atomixilc.Machine.x86;
 
 using Atomix.Kernel_H.Lib;
-using Atomix.Kernel_H.Arch.x86;
 
 namespace Atomix.Kernel_H.Core
 {
@@ -32,12 +30,12 @@ namespace Atomix.Kernel_H.Core
             get { return CurrentTask; }
         }
 
-        internal static void Init(uint KernelDirectory)
+        internal static void Init(uint KernelDirectory, uint StackStart)
         {
             ThreadQueue = new IQueue<Thread>(100);
 
             SystemProcess = new Process("System", KernelDirectory);
-            CurrentTask = new Thread(SystemProcess, 0, 0, 10000);
+            CurrentTask = new Thread(SystemProcess, 0, StackStart, 10000, false);
 
             CurrentTask.Start();
         }
