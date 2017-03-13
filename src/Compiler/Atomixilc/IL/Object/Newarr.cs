@@ -63,7 +63,7 @@ namespace Atomixilc.IL
 
                         new Pop { DestinationReg = Register.ESI };
                         new Mov { DestinationReg = Register.EAX, DestinationIndirect = true, SourceRef = "0x" + type.GetHashCode().ToString("X") };
-                        new Mov { DestinationReg = Register.EAX, DestinationIndirect = true, DestinationDisplacement = 4, SourceRef = "0x2" };
+                        new Mov { DestinationReg = Register.EAX, DestinationIndirect = true, DestinationDisplacement = 4, SourceRef = "0x" + (0x2 | (type.IsClass ? 0x1 : 0x0)).ToString("X") };
                         new Mov { DestinationReg = Register.EAX, DestinationIndirect = true, DestinationDisplacement = 8, SourceReg = Register.ESI };
                         new Mov { DestinationReg = Register.EAX, DestinationIndirect = true, DestinationDisplacement = 12, SourceRef = "0x" + size.ToString("X") };
 

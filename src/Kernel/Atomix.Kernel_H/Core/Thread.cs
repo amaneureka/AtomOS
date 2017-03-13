@@ -44,7 +44,7 @@ namespace Atomix.Kernel_H.Core
             return;
         }
 
-        public Thread(Process aParent, uint aAddress, uint aStackStart, uint aStackLimit)
+        public Thread(Process aParent, uint aAddress, uint aStackStart, uint aStackLimit, bool SetupStack = true)
         {
             Dead = Die;
             Process = aParent;
@@ -56,7 +56,7 @@ namespace Atomix.Kernel_H.Core
             ThreadID = ++ThreadCounter;
             GC = new GC(aStackStart);
 
-            if (aStackStart != 0)
+            if (SetupStack)
                 SetupInitialStack();
         }
 

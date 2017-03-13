@@ -68,8 +68,9 @@ namespace Atomix.Kernel_H
                 Debug.Write("File not found!\n");*/
 
             //Gui.Programs.Explorer.Init(SystemClient);
-            //Scheduler.RunningThread.GC.Collect();
+            Scheduler.RunningThread.GC.Collect();
             TestGC();
+            Scheduler.RunningThread.GC.Collect();
             while (true) ;
         }
 
@@ -77,17 +78,13 @@ namespace Atomix.Kernel_H
         {
             Debug.Write("<----->\n");
             LOL();
-            LOL();
-            Scheduler.RunningThread.GC.Collect();
-            LOL();
-            LOL();
-            Scheduler.RunningThread.GC.Collect();
             Debug.Write("<----->\n");
         }
 
         private static void LOL()
         {
-            new object();
+            var t = new object[5];
+            t[0] = new object();
         }
 
         internal static unsafe void BootAnimation()
