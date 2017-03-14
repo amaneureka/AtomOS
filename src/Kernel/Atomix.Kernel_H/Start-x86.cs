@@ -134,6 +134,9 @@ namespace Atomix.Kernel_H
             /* Initalize Heap */
             Heap.Init(InitialHeap);
 
+            /* Init GC */
+            Core.GC.Init();
+
             /* Multiboot Info Parsing */
             Multiboot.Setup(magic, address);
 

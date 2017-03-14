@@ -5,11 +5,11 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-using Atomixilc.Lib;
 using Atomixilc.Machine;
 using Atomixilc.Attributes;
 
 using Atomix.Kernel_H.Lib;
+using Atomix.Kernel_H.Arch.x86;
 
 namespace Atomix.Kernel_H.Core
 {

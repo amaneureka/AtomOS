@@ -9,34 +9,31 @@ using Atomixilc.Lib;
 
 namespace Atomix.Kernel_H.Core
 {
-    internal unsafe class GC
+    internal static unsafe class GC
     {
-        uint mStack;
-        uint mMemoryUsage;
+        static uint mMemoryUsage;
 
-        int mAllocatedObjectCount;
+        static int mAllocatedObjectCount;
 
-        uint[] mAllocatedObjects;
-        uint[] mAllocatedObjectSize;
+        static uint[] mAllocatedObjects;
+        static uint[] mAllocatedObjectSize;
 
-        internal uint MemoryUsage
+        internal static uint MemoryUsage
         { get { return mMemoryUsage; } }
 
-        internal GC(uint aStack, uint aMaximumObjectCount = 1024)
+        internal static void Init(uint aMaximumObjectCount = 1024)
         {
-            mStack = aStack;
-
             mMemoryUsage = 0;
             mAllocatedObjectCount = 0;
+
             mAllocatedObjects = new uint[aMaximumObjectCount];
             mAllocatedObjectSize = new uint[aMaximumObjectCount];
         }
 
-        internal bool Notify(uint aAddress, uint aLength)
+        internal static bool Notify(uint aAddress, uint aLength)
         {
-            if (mAllocatedObjectCount == mAllocatedObjects.Length)
+                if (mAllocatedObjectCount == mAllocatedObjects.Length)
                 return false;
-
             // add the object to pool and update counter
             int index = mAllocatedObjectCount;
             mAllocatedObjects[index] = aAddress;
@@ -47,23 +44,28 @@ namespace Atomix.Kernel_H.Core
             return true;
         }
 
-        internal void Collect()
+        internal static void Collect()
         {
-            uint pointer = Native.GetStackPointer();
-
             SortObjects();
 
-            // umark objects
+            // unmark objects
             int count = mAllocatedObjectCount;
             for (int i = 0; i < count; i++)
                 mAllocatedObjectSize[i] &= 0x7FFFFFFF;
 
             // trace stack
-            uint limit = mStack;
-            while (pointer < limit)
+            var threads = Scheduler.SystemProcess.Threads;
+            int threadcount = threads.Count;
+            for (int i = 0; i < threadcount; i++)
             {
-                MarkObject(*(uint*)pointer);
-                pointer += 4;
+                var thread = threads[i];
+                uint limit = thread.StackTop;
+                uint pointer = thread.StackCurrent;
+                while (pointer < limit)
+                {
+                    MarkObject(*(uint*)pointer);
+                    pointer += 4;
+                }
             }
 
             // trace global
@@ -89,7 +91,6 @@ namespace Atomix.Kernel_H.Core
                 else
                 {
                     MemoryFreed += mAllocatedObjectSize[i];
-                    //Debug.Write("free: %d\n", mAllocatedObjects[i]);
                     Heap.Free(mAllocatedObjects[i], mAllocatedObjectSize[i]);
                 }
             }
@@ -100,7 +101,7 @@ namespace Atomix.Kernel_H.Core
             Debug.Write("[GC]\tMemory Freed: %d\n", MemoryFreed);
         }
 
-        public void Dump()
+        public static void Dump()
         {
             Debug.Write("GC Dump()\n");
             int count = mAllocatedObjectCount;
@@ -111,8 +112,9 @@ namespace Atomix.Kernel_H.Core
             }
         }
 
-        private void MarkObject(uint Address)
+        private static void MarkObject(uint Address)
         {
+            if (Address == 0) return;
             int index = BinarySearch(Address);
             // no such object found
             if (index == -1) return;
@@ -147,9 +149,8 @@ namespace Atomix.Kernel_H.Core
             }
         }
 
-        private int BinarySearch(uint Address)
+        private static int BinarySearch(uint Address)
         {
-            if (Address == 0) return -1;
             int left = 0, right = mAllocatedObjectCount - 1;
             while (left <= right)
             {
@@ -168,7 +169,7 @@ namespace Atomix.Kernel_H.Core
             return -1;
         }
 
-        private void SortObjects()
+        private static void SortObjects()
         {
             int count = mAllocatedObjectCount;
             for (int i = 1; i < count; i++)
@@ -188,12 +189,6 @@ namespace Atomix.Kernel_H.Core
                 mAllocatedObjects[j] = address;
                 mAllocatedObjectSize[j] = length;
             }
-        }
-
-        internal static void Run()
-        {
-            Scheduler.RunningThread.GC.Collect();
-            Debug.Write("Memory Usage: %d\n", Scheduler.RunningThread.GC.MemoryUsage);
         }
     }
 }
