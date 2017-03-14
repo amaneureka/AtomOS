@@ -66,8 +66,8 @@ namespace Atomix.Kernel_H
                 Debug.Write(stream.ReadToEnd());
             else
                 Debug.Write("File not found!\n");*/
-            Core.GC.Run();
             Gui.Programs.Explorer.Init(SystemClient);
+            Core.GC.Collect();
             BootAnimation();
             while (true) ;
         }

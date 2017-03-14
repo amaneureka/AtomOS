@@ -13,50 +13,56 @@ namespace Atomix.Kernel_H.Core
 {
     internal unsafe class Thread
     {
-        internal readonly GC GC;
         internal readonly Process Process;
         internal readonly int ThreadID;
 
         Action Dead;
         ThreadState State;
 
-        uint Address;
-        uint* StackFrame;
+        uint mAddress;
+        uint* mStackFrame;
 
-        uint StackTop;
-        uint StackLimit;
+        uint mStackTop;
+        uint mStackCurrent;
+        uint mStackLimit;
 
         internal ThreadState Status
         {
             get { return State; }
         }
 
+        internal uint StackTop
+        { get { return mStackTop; } }
+
+        internal uint StackCurrent
+        { get { return mStackCurrent; } }
+
         static int ThreadCounter;
 
         public Thread(Process aParent, Action aMethod)
             :this(aParent, aMethod.InvokableAddress(), Heap.kmalloc(0x20000, false) + 0x20000, 0x20000)
         {
-            return;
         }
 
         public Thread(Process aParent, Action aMethod, uint aStackStart, uint aStackLimit)
             :this(aParent, aMethod.InvokableAddress(), aStackStart, aStackLimit)
         {
-            return;
         }
 
         public Thread(Process aParent, uint aAddress, uint aStackStart, uint aStackLimit, bool SetupStack = true)
         {
             Dead = Die;
             Process = aParent;
-            Address = aAddress;
             Process.Threads.Add(this);
             State = ThreadState.NotActive;
-            StackTop = aStackStart;
-            StackFrame = (uint*)(aStackStart - aStackLimit);
-            StackLimit = aStackLimit;
+
+            mAddress = aAddress;
+            mStackTop = aStackStart;
+            mStackCurrent = aStackStart;
+            mStackFrame = (uint*)(aStackStart - aStackLimit);
+            mStackLimit = aStackLimit;
+
             ThreadID = ++ThreadCounter;
-            GC = new GC(aStackStart);
 
             if (SetupStack)
                 SetupInitialStack();
@@ -74,14 +80,14 @@ namespace Atomix.Kernel_H.Core
 
         private unsafe void SetupInitialStack()
         {
-            uint* Stack = (uint*)StackTop;
+            uint* Stack = (uint*)mStackCurrent;
 
             *--Stack = Dead.InvokableAddress();
 
             // processor data
             *--Stack = 0x202;           // EFLAGS
             *--Stack = 0x08;            // CS
-            *--Stack = Address;         // EIP
+            *--Stack = mAddress;        // EIP
 
             // pusha
             *--Stack = 0;               // EDI
@@ -93,17 +99,17 @@ namespace Atomix.Kernel_H.Core
             *--Stack = 0;               // ECX
             *--Stack = 0;               // EAX
 
-            StackTop = (uint)Stack;
+            mStackCurrent = (uint)Stack;
         }
 
         internal uint LoadStack()
         {
-            return StackTop;
+            return mStackCurrent;
         }
 
         internal void SaveStack(uint Stack)
         {
-            StackTop = Stack;
+            mStackCurrent = Stack;
         }
 
         internal static void Die()

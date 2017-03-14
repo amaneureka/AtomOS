@@ -23,8 +23,6 @@ namespace Atomix.Kernel_H.Lib
             int i = 0;
             while (len-- != 0)
                 cstr[i] = (sbyte)aStr[i++];
-
-            var str = new string(cstr);
             return cstr;
         }
 

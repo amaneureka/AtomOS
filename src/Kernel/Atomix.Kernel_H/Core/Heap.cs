@@ -82,13 +82,7 @@ namespace Atomix.Kernel_H.Core
             else
             {
                 var address = kmalloc(len, false);
-                var CurrentTask = Scheduler.RunningThread;
-                if (CurrentTask != null)
-                {
-                    var GC = CurrentTask.GC;
-                    if (GC != null)
-                        GC.Notify(address, len);
-                }
+                GC.Notify(address, len);
                 return address;
             }
         }
