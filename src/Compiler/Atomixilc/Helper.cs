@@ -245,7 +245,7 @@ namespace Atomixilc
         /// <param name="type"></param>
         /// <param name="platform"></param>
         /// <returns></returns>
-        internal static int GetStorageSize(Type type, Architecture platform, out int FieldIsClassType)
+        internal static int GetStorageSize(Type type, Architecture platform, ref int FieldIsClassType)
         {
             int size = 0;
             FieldIsClassType = 0;

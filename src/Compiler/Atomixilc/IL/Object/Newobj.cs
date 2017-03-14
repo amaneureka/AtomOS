@@ -39,8 +39,8 @@ namespace Atomixilc.IL
             var parameters = functionInfo.GetParameters();
             var type = functionInfo.DeclaringType;
 
-            int FieldIsClassType;
-            var memsize = Helper.GetStorageSize(type, Config.TargetPlatform, out FieldIsClassType);
+            int FieldIsClassType = 0;
+            var memsize = Helper.GetStorageSize(type, Config.TargetPlatform, ref FieldIsClassType);
             var paramsize = parameters.Sum(para => Helper.GetTypeSize(para.ParameterType, Config.TargetPlatform, true));
             Verbose.Warning("{0} : ByRefCount '{1}'", type.FullName, FieldIsClassType);
             int count = parameters.Length;
