@@ -49,7 +49,7 @@ namespace Atomix.Kernel_H.Gui
         {
             // TODO: memory get more and more fragmented this way
             // come up with better idea
-            string tid = Timer.TicksFromStart.ToString();
+            string tid = Convert.ToString(Timer.TicksFromStart);
             string xid = "win." + tid;
 
             return xid;

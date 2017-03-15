@@ -254,6 +254,10 @@ namespace Atomixilc
             FlushVTables();
             FlushStringTable();
 
+            /* Hack? Issue: #55 */
+            if (Verbose.ErrorCounter > 0)
+                Verbose.Error("Errors: {0}", Verbose.ErrorCounter);
+
             switch (Config.TargetPlatform)
             {
                 case Architecture.x86:

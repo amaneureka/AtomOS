@@ -13,8 +13,10 @@ namespace Atomixilc
             Console.ForegroundColor = oldColor;
         }
 
+        public static int ErrorCounter { get; private set; }
         internal static void Error(string message, params object[] args)
         {
+            ErrorCounter++;
             var oldColor = Console.ForegroundColor;
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(string.Format(message, args));
