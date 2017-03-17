@@ -1,34 +1,22 @@
 ﻿/*
 * PROJECT:          Atomix Development
 * LICENSE:          BSD 3-Clause (LICENSE.md)
-* PURPOSE:          Generic File System class
+* PURPOSE:          Generic File System
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-using Atomix.Kernel_H.Devices;
-
 namespace Atomix.Kernel_H.IO.FileSystem
 {
-    public abstract class GenericFileSystem
+    internal abstract class GenericFileSystem : Directory
     {
-        internal Storage IDevice;
-        protected bool mIsValid;
-        protected FileSystemType mFSType;
+        internal readonly Stream Device;
 
-        internal bool IsValid
-        { get { return mIsValid; } }
+        internal GenericFileSystem(string aName, Stream aDevice)
+            : base(aName)
+        {
+            Device = aDevice;
+        }
 
-        internal FileSystemType FileSystem
-        { get { return mFSType; } }
-
-        internal abstract Stream GetFile(string[] path, int pointer);
-
-        internal abstract bool CreateFile(string[] path, int pointer);
-    }
-
-    public enum FileSystemType : byte
-    {
-        None = 0x0,
-        FAT = 0x1
+        internal abstract bool Detect();
     }
 }

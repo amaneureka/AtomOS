@@ -36,7 +36,7 @@ namespace Atomix.Kernel_H.Lib
 
         internal static void Copy(char* aDes, string aSrc, int aLen)
         {
-            Memory.FastCopy((uint)aDes, aSrc.GetDataOffset(), (uint)(aLen * sizeof(char)));
+            Memory.FastCopy((uint)aDes, aSrc.GetDataOffset(), aLen * sizeof(char));
             aDes[aLen] = '\0';
         }
 

@@ -13,11 +13,11 @@ using Atomixilc.Machine;
 using Atomixilc.Attributes;
 using Atomixilc.Machine.x86;
 
+using Atomix.Kernel_H.IO;
 using Atomix.Kernel_H.Core;
 using Atomix.Kernel_H.Devices;
 using Atomix.Kernel_H.Arch.x86;
 using Atomix.Kernel_H.Drivers.Video;
-using Atomix.Kernel_H.IO.FileSystem;
 
 namespace Atomix.Kernel_H
 {
@@ -168,7 +168,7 @@ namespace Atomix.Kernel_H
             VBE.Init();
 
             /* Initialise Virtual File system */
-            VirtualFileSystem.Setup();
+            VFS.Install();
 
             /* Setup Syscall */
             Syscall.Setup();

@@ -231,8 +231,6 @@ namespace Atomix.Kernel_H
         internal static void LoadIDE(bool IsPrimary, bool IsMaster)
         {
             var xIDE = new IDE(IsPrimary, IsMaster);
-
-            bool Clean = true;
             if (xIDE.IsValid)
             {
                 switch(xIDE.Device)
@@ -256,7 +254,6 @@ namespace Atomix.Kernel_H
                                     if (xFileSystem.IsValid)
                                     {
                                         VirtualFileSystem.MountDevice(null, xFileSystem);
-                                        Clean = false;
                                     }
                                 }
                             }

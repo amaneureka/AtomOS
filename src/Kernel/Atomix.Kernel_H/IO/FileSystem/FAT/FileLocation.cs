@@ -1,7 +1,7 @@
 ﻿/*
 * PROJECT:          Atomix Development
 * LICENSE:          BSD 3-Clause (LICENSE.md)
-* PURPOSE:          FAT Helper
+* PURPOSE:          FAT File Location
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 

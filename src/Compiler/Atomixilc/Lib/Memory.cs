@@ -129,7 +129,7 @@ namespace Atomixilc.Lib
 
         [NoException]
         [Assembly(false)]
-        public static void FastCopy(uint aDest, uint aSrc, uint aLen)
+        public static void FastCopy(uint aDest, uint aSrc, int aLen)
         {
             new Mov { DestinationReg = Register.EAX, SourceReg = Register.ESP, SourceDisplacement = 0x4, SourceIndirect = true };
             new Mov { DestinationReg = Register.ESI, SourceReg = Register.ESP, SourceDisplacement = 0x8, SourceIndirect = true };
