@@ -156,7 +156,7 @@ namespace Atomixilc.Lib
         public static uint AtomicExchange(ref uint aLock, uint val)
         {
             new Mov { DestinationReg = Register.EBX, SourceReg = Register.ESP, SourceDisplacement = 0x8, SourceIndirect = true };
-            new Mov { DestinationReg = Register.EAX, SourceReg = Register.ESP, SourceDisplacement = 0x8, SourceIndirect = true };
+            new Mov { DestinationReg = Register.EAX, SourceReg = Register.ESP, SourceDisplacement = 0x4, SourceIndirect = true };
             new Literal("xchg dword [EBX], EAX");
             new Ret { Offset = 0x8 };
 
