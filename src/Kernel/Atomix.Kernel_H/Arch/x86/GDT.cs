@@ -18,13 +18,10 @@ namespace Atomix.Kernel_H.Arch.x86
 {
     internal static unsafe class GDT
     {
-        private static uint gdt;
-        private static GDT_Entries* gdt_entries;
-
         internal static void Setup()
         {
-            gdt = Heap.kmalloc(46);
-            gdt_entries = (GDT_Entries*)(gdt + 6);
+            var gdt = Heap.kmalloc(46, false);
+            var gdt_entries = (GDT_Entries*)(gdt + 6);
 
             Memory.Write16(gdt, (0x8 * 6) - 1);
             Memory.Write32(gdt + 2, (uint)gdt_entries);
@@ -32,18 +29,17 @@ namespace Atomix.Kernel_H.Arch.x86
             Debug.Write("GDT Setup!!\n");
             Debug.Write("       Base Address::%d\n", gdt);
 
-            Set_GDT_Gate(0, 0, 0, 0, 0);                // Null segment
-            Set_GDT_Gate(1, 0, 0xFFFFFFFF, 0x9A, 0xCF); // Code segment
-            Set_GDT_Gate(2, 0, 0xFFFFFFFF, 0x92, 0xCF); // Data segment
-            Set_GDT_Gate(3, 0, 0xFFFFFFFF, 0xFA, 0xCF); // User mode code segment
-            Set_GDT_Gate(4, 0, 0xFFFFFFFF, 0xF2, 0xCF); // User mode data segment
+            Set_GDT_Gate(gdt_entries + 0, 0, 0, 0, 0);                // Null segment
+            Set_GDT_Gate(gdt_entries + 1, 0, 0xFFFFFFFF, 0x9A, 0xCF); // Code segment
+            Set_GDT_Gate(gdt_entries + 2, 0, 0xFFFFFFFF, 0x92, 0xCF); // Data segment
+            Set_GDT_Gate(gdt_entries + 3, 0, 0xFFFFFFFF, 0xFA, 0xCF); // User mode code segment
+            Set_GDT_Gate(gdt_entries + 4, 0, 0xFFFFFFFF, 0xF2, 0xCF); // User mode data segment
 
             SetupGDT(gdt);
         }
 
-        private static void Set_GDT_Gate(int index, uint address, uint limit, byte access, byte granularity)
+        private static void Set_GDT_Gate(GDT_Entries* gdt_entry, uint address, uint limit, byte access, byte granularity)
         {
-            var gdt_entry = gdt_entries + index;
             gdt_entry->BaseLow = (ushort)address;
             gdt_entry->BaseMiddle = (byte)(address >> 16);
             gdt_entry->BaseHigh = (byte)(address >> 24);

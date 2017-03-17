@@ -32,14 +32,14 @@ namespace Atomixilc
         public const string VTable_Flush = "__VTable_Flush__";
 
         /// <summary>
-        /// Global Data Section First Entry Pointer
+        /// GC Global Data Root Start Entry
         /// </summary>
-        public const string Global_Section_Start = "__GSS__";
+        public const string GC_Root_Start = "__GCRS__";
 
         /// <summary>
-        /// Global Data Section Last Entry Pointer
+        /// GC Global Data Root End Entry
         /// </summary>
-        public const string Global_Section_End = "__GSE__";
+        public const string GC_Root_End = "__GCRE__";
 
         /// <summary>
         /// Pointer to End of Compiler

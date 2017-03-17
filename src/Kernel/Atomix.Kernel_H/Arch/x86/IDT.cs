@@ -51,18 +51,16 @@ namespace Atomix.Kernel_H.Arch.x86
         public int EFlags;
     };
 
-    internal static class IDT
+    internal static unsafe class IDT
     {
-        private static uint idt;
-        private static uint idt_entries;
         private static InterruptHandler[] xINT;
 
         internal static void Setup()
         {
-            idt = Heap.kmalloc(2048 + 6);
-            idt_entries = idt + 6;
+            var idt = Heap.kmalloc(2048 + 6, false);
+            var idt_entries = idt + 6;
 
-            Memory.Write16(idt, ((byte)0x8 * 256) - 1);
+            Memory.Write16(idt, (0x8 * 256) - 1);
             Memory.Write32(idt + 2, idt_entries);
 
             Debug.Write("IDT Setup!!\n");

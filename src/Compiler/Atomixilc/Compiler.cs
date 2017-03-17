@@ -92,7 +92,7 @@ namespace Atomixilc
         /// <summary>
         /// Processed Bss Entries
         /// </summary>
-        Dictionary<string, int> ZeroSegment;
+        Dictionary<string, Type> ZeroSegment;
 
         /// <summary>
         /// Processed Data Entries
@@ -127,7 +127,7 @@ namespace Atomixilc
             Externals = new HashSet<MethodBase>();
             OpCode = new Dictionary<short, Emit.OpCode>();
 
-            ZeroSegment = new Dictionary<string, int>();
+            ZeroSegment = new Dictionary<string, Type>();
             DataSegment = new Dictionary<string, AsmData>();
             CodeSegment = new List<FunctionalBlock>();
             StringTable = new HashSet<string>();
@@ -298,15 +298,34 @@ namespace Atomixilc
                 foreach (var bssEntry in Helper.ZeroSegment)
                     SW.WriteLine(string.Format("{0} resb {1}", bssEntry.Key, bssEntry.Value));
 
+                /* BSS - Global Variable Section */
                 var bssEntries = ZeroSegment.ToList();
-                bssEntries.Sort((x, y) => y.Value.CompareTo(x.Value));
+                bssEntries.Sort((x, y) => y.Value.IsClass.CompareTo(x.Value.IsClass));
 
-                SW.WriteLine(Helper.Global_Section_Start + ":");
+                int index = 0, count = bssEntries.Count;
 
-                foreach (var bssEntry in bssEntries)
-                    SW.WriteLine(string.Format("{0} resb {1}", bssEntry.Key, bssEntry.Value));
+                /* GC Root Start */
+                SW.WriteLine(Helper.GC_Root_Start + ":");
+                for (; index < count; index++)
+                {
+                    var entry = bssEntries[index];
+                    int size = Helper.GetTypeSize(entry.Value, Config.TargetPlatform);
+                    if (!entry.Value.IsClass)
+                        break;
+                    SW.WriteLine(string.Format("{0} resb {1}", entry.Key, size));
+                }
+                SW.WriteLine(Helper.GC_Root_End + ":");
+                /* GC Root End */
 
-                SW.WriteLine(Helper.Global_Section_End + ":");
+                for (; index < count; index++)
+                {
+                    var entry = bssEntries[index];
+                    int size = Helper.GetTypeSize(entry.Value, Config.TargetPlatform, true);// align it
+                    SW.WriteLine(string.Format("{0} resb {1}", entry.Key, size));
+                }
+
+                /* End of Global Variables Section */
+
                 SW.WriteLine();
 
                 /* Data Section */
@@ -714,10 +733,9 @@ namespace Atomixilc
         internal void ProcessFieldInfo(FieldInfo fieldInfo)
         {
             var name = fieldInfo.FullName();
-            int size = Helper.GetTypeSize(fieldInfo.FieldType, Config.TargetPlatform);
 
             /* simply add this to BSS segment with given size */
-            InsertData(name, size);
+            InsertData(name, fieldInfo.FieldType);
             FinishedQ.Add(fieldInfo);
         }
 
@@ -726,18 +744,18 @@ namespace Atomixilc
         /// </summary>
         /// <param name="name"></param>
         /// <param name="size"></param>
-        internal void InsertData(string name, int size)
+        internal void InsertData(string name, Type fieldtype)
         {
             /* Again I can't take bet on my stupidity */
             if (ZeroSegment.ContainsKey(name))
             {
-                if (ZeroSegment[name] != size)
+                if (ZeroSegment[name] != fieldtype)
                     /* please log, if I did some stupidity */
-                    Verbose.Error("Two different size for same field label '{0}' : '{1}' '{2}'", name, ZeroSegment[name], size);
+                    Verbose.Error("Two different type for same field label '{0}' : '{1}' '{2}'", name, ZeroSegment[name], fieldtype.Name);
                 return;
             }
 
-            ZeroSegment.Add(name, size);
+            ZeroSegment.Add(name, fieldtype);
         }
 
         /// <summary>
@@ -1062,7 +1080,7 @@ namespace Atomixilc
                 case Architecture.x86:
                     {
                         var key = method.ConstructorKey();
-                        InsertData(key, 1);
+                        InsertData(key, typeof(bool));
 
                         /* Return if it was called before */
 

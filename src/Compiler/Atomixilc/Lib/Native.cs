@@ -125,7 +125,7 @@ namespace Atomixilc.Lib
         [Assembly(false)]
         public static uint GlobalVarStart()
         {
-            new Mov { DestinationReg = Register.EAX, SourceRef = Helper.Global_Section_Start };
+            new Mov { DestinationReg = Register.EAX, SourceRef = Helper.GC_Root_Start };
             new Ret { Offset = 0x0 };
 
             return 0;
@@ -135,7 +135,7 @@ namespace Atomixilc.Lib
         [Assembly(false)]
         public static uint GlobalVarEnd()
         {
-            new Mov { DestinationReg = Register.EAX, SourceRef = Helper.Global_Section_End };
+            new Mov { DestinationReg = Register.EAX, SourceRef = Helper.GC_Root_End };
             new Ret { Offset = 0x0 };
 
             return 0;
