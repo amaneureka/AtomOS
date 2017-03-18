@@ -102,11 +102,8 @@
     <Compile Include="IO\FileSystem\FAT\FatType.cs" />
     <Compile Include="IO\FileSystem\FAT\FatFileAttribute.cs" />
     <Compile Include="IO\FileSystem\FAT\FileNameAttribute.cs" />
-    <Compile Include="IO\FileSystem\FAT\Find\Any.cs" />
-    <Compile Include="IO\FileSystem\FAT\Find\ByCluster.cs" />
-    <Compile Include="IO\FileSystem\FAT\Find\Empty.cs" />
-    <Compile Include="IO\FileSystem\FAT\Find\WithName.cs" />
     <Compile Include="IO\FileSystem\FAT\Comparison.cs" />
+    <Compile Include="IO\FileSystem\RFS\FileEntry.cs" />
     <Compile Include="IO\FileSystem\RFS\RamFileSystem.cs" />
     <Compile Include="IO\FileSystem\RFS\RamFile.cs" />
     <Compile Include="Drivers\Video\VBE.cs" />

@@ -35,9 +35,9 @@ namespace Atomix.Kernel_H
             #region InitRamDisk
             if (Multiboot.RamDisk != 0)
             {
-                var xFileSystem = new RamFileSystem(Multiboot.RamDisk, Multiboot.RamDiskSize);
-                if (xFileSystem.IsValid)
-                    VirtualFileSystem.MountDevice(null, xFileSystem);
+                var xFileSystem = new RamFileSystem("disk0", new MemoryStream(Multiboot.RamDisk, Multiboot.RamDiskSize));
+                if (xFileSystem.Detect())
+                    VirtualFileSystem.Mount(xFileSystem, "/");
                 else
                     throw new Exception("RamDisk Corrupted!");
             }
@@ -250,11 +250,11 @@ namespace Atomix.Kernel_H
                                     /*
                                      * Iterate over all FileSystem Drivers and check which is valid
                                      */
-                                    var xFileSystem = new FatFileSystem(xMBR.PartInfo[i]);
+                                    /*var xFileSystem = new FatFileSystem(xMBR.PartInfo[i]);
                                     if (xFileSystem.IsValid)
                                     {
                                         VirtualFileSystem.MountDevice(null, xFileSystem);
-                                    }
+                                    }*/
                                 }
                             }
                         }

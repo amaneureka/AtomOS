@@ -7,9 +7,10 @@
 
 using System;
 
+using Atomixilc.Lib;
+
 using Atomix.Kernel_H.IO;
 using Atomix.Kernel_H.Arch.x86;
-using Atomix.Kernel_H.IO.FileSystem;
 
 namespace Atomix.Kernel_H.Core
 {
@@ -99,7 +100,10 @@ namespace Atomix.Kernel_H.Core
             if (fd >= files.Count) return -1;
 
             var stream = Process.Files[fd];
-            return stream.Read(buffer, count);
+            var data = new byte[count];
+            int status = stream.Read(data, count);
+            Memory.FastCopy((uint)buffer, data.GetDataOffset(), count);
+            return status;
         }
 
         private static int sys_seek(int fd, int offset, int origin)
@@ -113,7 +117,7 @@ namespace Atomix.Kernel_H.Core
             if (origin > 2) return -1;
 
             var stream = Process.Files[fd];
-            return stream.Seek(offset, (SEEK)origin);
+            return stream.Seek(offset, (FileSeek)origin);
         }
 
         private static int sys_close(int fd)
@@ -134,15 +138,16 @@ namespace Atomix.Kernel_H.Core
             return 0;
         }
 
-        private static unsafe int sys_open(sbyte* file, int flags, int mode)
+        private static unsafe int sys_open(sbyte* name, int flags, int mode)
         {
-            var filename = new string(file);
-            var stream = VirtualFileSystem.GetFile(filename);
+            var filename = new string(name);
+            var file = VirtualFileSystem.Open(filename);
             Debug.Write("fopen: %s\n", filename);
 
-            if (stream == null)
+            if (file == null || !(file is File))
                 return -1;
 
+            var stream = ((File)file).Open(FileMode.Read);
             var Process = Scheduler.RunningProcess;
             var files = Process.Files;
             int count = files.Count;

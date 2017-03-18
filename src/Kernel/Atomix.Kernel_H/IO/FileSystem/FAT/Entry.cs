@@ -1,28 +1,57 @@
 ﻿/*
 * PROJECT:          Atomix Development
 * LICENSE:          BSD 3-Clause (LICENSE.md)
-* PURPOSE:          FAT Entry Enum
+* PURPOSE:          FAT Entry Structure
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
+using System.Runtime.InteropServices;
 
 namespace Atomix.Kernel_H.IO.FileSystem.FAT
 {
-    internal enum Entry : int
+    [StructLayout(LayoutKind.Explicit, Size = 40)]
+    internal unsafe struct Entry
     {
-        DOSName             = 0x00, // 8
-        DOSExtension        = 0x08,	// 3
-        FileAttributes      = 0x0B,	// 1
-        Reserved            = 0x0C,	// 1
-        CreationTimeFine    = 0x0D, // 1
-        CreationTime        = 0x0E, // 2
-        CreationDate        = 0x10, // 2
-        LastAccessDate      = 0x12, // 2
-        EAIndex             = 0x14, // 2
-        LastModifiedTime    = 0x16, // 2
-        LastModifiedDate    = 0x18, // 2
-        FirstCluster        = 0x1A, // 2
-        FileSize            = 0x1C, // 4
-        EntrySize           = 32,
-    }
+        [FieldOffset(0)]
+        public fixed sbyte DOSName[8];
+
+        [FieldOffset(8)]
+        public fixed sbyte DOSExtension[3];
+
+        [FieldOffset(11)]
+        public FatFileAttributes FileAttributes;
+
+        [FieldOffset(12)]
+        public byte Reserved;
+
+        [FieldOffset(13)]
+        public byte CreationTimeFine;
+
+        [FieldOffset(14)]
+        public short CreationTime;
+
+        [FieldOffset(16)]
+        public short CreationDate;
+
+        [FieldOffset(18)]
+        public short LastAccessDate;
+
+        [FieldOffset(20)]
+        public short EAIndex;
+
+        [FieldOffset(22)]
+        public short LastModifiedTime;
+
+        [FieldOffset(24)]
+        public short LastModifiedDate;
+
+        [FieldOffset(26)]
+        public short FirstCluster;
+
+        [FieldOffset(28)]
+        public uint FileSize;
+
+        [FieldOffset(32)]
+        public uint EntrySize;
+    };
 }

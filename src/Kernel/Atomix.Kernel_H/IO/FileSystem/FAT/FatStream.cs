@@ -13,6 +13,7 @@ using Atomix.Kernel_H.Core;
 
 namespace Atomix.Kernel_H.IO.FileSystem.FAT
 {
+    /*
     internal unsafe class FatStream : Stream
     {
         private FatFileSystem mFS;
@@ -134,5 +135,5 @@ namespace Atomix.Kernel_H.IO.FileSystem.FAT
             Heap.Free((uint)mBufferCluster, (uint)mBufferLength);
             return true;
         }
-    }
+    }*/
 }

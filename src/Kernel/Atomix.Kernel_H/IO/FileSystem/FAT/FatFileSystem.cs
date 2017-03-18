@@ -11,7 +11,6 @@ using Atomixilc.Lib;
 
 using Atomix.Kernel_H.Core;
 using Atomix.Kernel_H.IO.FileSystem.FAT;
-using Atomix.Kernel_H.IO.FileSystem.FAT.Find;
 
 namespace Atomix.Kernel_H.IO.FileSystem
 {
@@ -125,13 +124,15 @@ namespace Atomix.Kernel_H.IO.FileSystem
 
         internal override FSObject FindEntry(string aName)
         {
-            throw new NotImplementedException();
+            return FindEntry(aName, RootCluster);
         }
 
-        internal FSObject FindEntry(Comparison compare, int startCluster)
+        internal FSObject FindEntry(string name, int startCluster)
         {
-            int activeSector = ((startCluster - RootCluster) * SectorsPerCluster) + DataSector;
+            int len = name.Length;
+            if (len > 12) return null;
 
+            int activeSector = ((startCluster - RootCluster) * SectorsPerCluster) + DataSector;
             if (startCluster == 0)
             {
                 activeSector = RootSector;
@@ -139,13 +140,50 @@ namespace Atomix.Kernel_H.IO.FileSystem
                     activeSector = GetSectorByCluster(RootCluster);
             }
 
-            byte[] aData = new byte[BytePerSector * SectorsPerCluster];
-            ReadBlock(aData, activeSector, SectorsPerCluster);
+            var data = new byte[BytePerSector * SectorsPerCluster];
+            ReadBlock(data, activeSector, SectorsPerCluster);
 
-            int offset = 0;
-            for (int index = 0; index < EntriesPerSector * SectorsPerCluster; index++)
+            var entry = (Entry*)data.GetDataOffset();
+            for (int index = 0; index < EntriesPerSector * SectorsPerCluster; index++, entry++)
             {
-                offset += (int)Entry.EntrySize;
+                var filename = entry->DOSName;
+                var EntryAttribute = filename[0];
+                switch((FileNameAttribute)EntryAttribute)
+                {
+                    case FileNameAttribute.Escape:
+                    case FileNameAttribute.Deleted:
+                    case FileNameAttribute.LastEntry:
+                        continue;
+                }
+
+                // compare name
+                int i = 0;
+                for (; i < len; i++)
+                    if (filename[i] != name[i])
+                        break;
+
+                if ((i < len) && (name[i] != '.' || filename[i] != '\0'))
+                    continue;
+
+                i++;
+                for (; i < len; i++)
+                    if (filename[i - 1] != name[i])
+                        break;
+
+                if (i < len || filename[i - 1] != '\0')
+                    continue;
+
+                // calculate cluster number
+                int cluster = entry->FirstCluster;
+                if (FatType == FatType.FAT32)
+                    cluster |= entry->EAIndex << 16;
+
+                if (cluster == 0)
+                    cluster = 2;
+
+                if ((entry->FileAttributes & FatFileAttributes.SubDirectory) != 0)
+                    return new FatDirectory(this, name, cluster, entry->FileSize);
+                return new FatFile(this, name, cluster, entry->FileSize);
             }
 
             return null;

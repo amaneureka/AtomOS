@@ -65,7 +65,7 @@ namespace Atomix.Kernel_H.IO
             return aCount;
         }
 
-        internal override bool Seek(int aValue, FileSeek aSeek)
+        internal override int Seek(int aValue, FileSeek aSeek)
         {
             switch (aSeek)
             {
@@ -77,19 +77,19 @@ namespace Atomix.Kernel_H.IO
                 case FileSeek.Current:
                     {
                         if (mPointer + aValue > mLength)
-                            return false;
+                            break;
                         mPointer += aValue;
                     }
                     break;
                 case FileSeek.End:
                     {
                         if (aValue > mLength)
-                            return false;
+                            break;
                         mPointer = mLength - aValue;
                     }
                     break;
             }
-            return true;
+            return mPointer;
         }
 
         internal override bool Close()

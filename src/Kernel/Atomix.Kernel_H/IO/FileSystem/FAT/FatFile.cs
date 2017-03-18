@@ -11,17 +11,15 @@ namespace Atomix.Kernel_H.IO.FileSystem.FAT
 {
     internal class FatFile : File
     {
-        internal readonly uint StartCluster;
-        internal readonly uint DirectorySector;
-        internal readonly int DirectoryIndex;
-        internal readonly int Size;
+        internal readonly FatFileSystem FS;
+        internal readonly int StartCluster;
+        internal readonly uint Size;
 
-        internal FatFile(string aName, uint aStartCluster, uint aDirectorySector, int aDirectoryIndex, int aSize)
+        internal FatFile(FatFileSystem aFS, string aName, int aStartCluster, uint aSize)
             : base(aName)
         {
-            StartCluster = aStartCluster;
-            DirectorySector = aDirectorySector;
-            DirectoryIndex = aDirectoryIndex;
+            FS = aFS;
+            StartCluster = aStartCluster;;
             Size = aSize;
         }
 

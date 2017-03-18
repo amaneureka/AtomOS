@@ -5,8 +5,6 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-using System.Runtime.InteropServices;
-
 using Atomixilc.Lib;
 
 using Atomix.Kernel_H.Lib;
@@ -46,19 +44,6 @@ namespace Atomix.Kernel_H.IO.FileSystem
         internal override FSObject FindEntry(string aName)
         {
             return mFiles.GetValue(aName, null);
-        }
-
-        [StructLayout(LayoutKind.Explicit, Size = 40)]
-        struct FileEntry
-        {
-            [FieldOffset(0)]
-            public fixed sbyte Name[32];
-
-            [FieldOffset(32)]
-            public uint StartAddress;
-
-            [FieldOffset(36)]
-            public int Length;
         }
     }
 }
