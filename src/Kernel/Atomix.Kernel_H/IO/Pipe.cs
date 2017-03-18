@@ -47,7 +47,7 @@ namespace Atomix.Kernel_H.IO
             if (BufferStatus[WritingPointer])
                 return false;
 
-            Memory.FastCopy((uint)Buffer + (uint)(WritingPointer * PacketSize), (uint)aData, (uint)PacketSize);
+            Memory.FastCopy((uint)Buffer + (uint)(WritingPointer * PacketSize), (uint)aData, PacketSize);
             BufferStatus[WritingPointer] = true;
 
             WritingPointer = (WritingPointer + 1) % PacketsCount;
@@ -59,7 +59,7 @@ namespace Atomix.Kernel_H.IO
             while (!BufferStatus[ReadingPointer])
                 Task.Switch();
 
-            Memory.FastCopy(aData.GetDataOffset(), (uint)Buffer + (uint)(ReadingPointer * PacketSize), (uint)PacketSize);
+            Memory.FastCopy(aData.GetDataOffset(), (uint)Buffer + (uint)(ReadingPointer * PacketSize), PacketSize);
             BufferStatus[ReadingPointer] = false;
 
             ReadingPointer = (ReadingPointer + 1) % PacketsCount;

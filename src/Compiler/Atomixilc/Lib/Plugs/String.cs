@@ -132,7 +132,7 @@ namespace Atomixilc.Lib.Plugs
         {
             int len = aStr.Length;
             var aArray = new char[len];
-            Memory.FastCopy(aArray.GetDataOffset(), aStr.GetDataOffset(), (uint)(len << 1));
+            Memory.FastCopy(aArray.GetDataOffset(), aStr.GetDataOffset(), (len << 1));
 
             return aArray;
         }

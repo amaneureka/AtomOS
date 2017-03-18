@@ -7,17 +7,23 @@
 
 namespace Atomix.Kernel_H.IO.FileSystem.RFS
 {
-    internal class RamFile
+    internal class RamFile : File
     {
-        internal readonly string Name;
-        internal readonly uint StartAddress;
-        internal readonly int Length;
+        int mLength;
+        uint mStartAddress;
 
         internal RamFile(string aName, uint aStartAddress, int aLength)
+            :base(aName)
         {
-            Name = aName;
-            StartAddress = aStartAddress;
-            Length = aLength;
+            mLength = aLength;
+            mStartAddress = aStartAddress;
+        }
+
+        internal override Stream Open(FileMode aMode)
+        {
+            if ((aMode & FileMode.Append) != 0 || (aMode & FileMode.Write) != 0)
+                return null;
+            return new MemoryStream(mStartAddress, mLength);
         }
     }
 }

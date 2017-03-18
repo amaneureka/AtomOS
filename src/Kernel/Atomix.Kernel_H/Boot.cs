@@ -8,12 +8,12 @@
 using System;
 
 using Atomixilc.Lib;
-using Atomix.Kernel_H.Lib.Cairo;
 using Atomix.Kernel_H.IO;
 using Atomix.Kernel_H.Gui;
 using Atomix.Kernel_H.Core;
 using Atomix.Kernel_H.Devices;
 using Atomix.Kernel_H.Arch.x86;
+using Atomix.Kernel_H.Lib.Cairo;
 using Atomix.Kernel_H.Drivers.Video;
 using Atomix.Kernel_H.IO.FileSystem;
 
@@ -35,9 +35,9 @@ namespace Atomix.Kernel_H
             #region InitRamDisk
             if (Multiboot.RamDisk != 0)
             {
-                var xFileSystem = new RamFileSystem(Multiboot.RamDisk, Multiboot.RamDiskSize);
-                if (xFileSystem.IsValid)
-                    VirtualFileSystem.MountDevice(null, xFileSystem);
+                var xFileSystem = new RamFileSystem("disk0", new MemoryStream(Multiboot.RamDisk, Multiboot.RamDiskSize));
+                if (xFileSystem.Detect())
+                    VirtualFileSystem.Mount(xFileSystem, "/");
                 else
                     throw new Exception("RamDisk Corrupted!");
             }
@@ -231,8 +231,6 @@ namespace Atomix.Kernel_H
         internal static void LoadIDE(bool IsPrimary, bool IsMaster)
         {
             var xIDE = new IDE(IsPrimary, IsMaster);
-
-            bool Clean = true;
             if (xIDE.IsValid)
             {
                 switch(xIDE.Device)
@@ -252,12 +250,11 @@ namespace Atomix.Kernel_H
                                     /*
                                      * Iterate over all FileSystem Drivers and check which is valid
                                      */
-                                    var xFileSystem = new FatFileSystem(xMBR.PartInfo[i]);
+                                    /*var xFileSystem = new FatFileSystem(xMBR.PartInfo[i]);
                                     if (xFileSystem.IsValid)
                                     {
                                         VirtualFileSystem.MountDevice(null, xFileSystem);
-                                        Clean = false;
-                                    }
+                                    }*/
                                 }
                             }
                         }
