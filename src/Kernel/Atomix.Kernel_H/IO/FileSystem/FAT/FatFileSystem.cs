@@ -10,7 +10,6 @@ using System;
 using Atomixilc.Lib;
 
 using Atomix.Kernel_H.Core;
-using Atomix.Kernel_H.Devices;
 using Atomix.Kernel_H.IO.FileSystem.FAT;
 using Atomix.Kernel_H.IO.FileSystem.FAT.Find;
 
@@ -75,7 +74,6 @@ namespace Atomix.Kernel_H.IO.FileSystem
 
             /* FAT 12 and FAT 16 ONLY */
             SectorsPerFAT = BitConverter.ToUInt16(BootSector, 22);
-
             if (SectorsPerFAT == 0)
             {
                 /* FAT 32 ONLY */
@@ -104,7 +102,7 @@ namespace Atomix.Kernel_H.IO.FileSystem
             if (FatType == FatType.FAT32)
             {
                 SerialNo = BitConverter.ToInt32(BootSector, 39);
-                VolumeLabel = new string((sbyte*)BootSector.GetDataOffset(), 71, 11);   // for checking
+                VolumeLabel = new string((sbyte*)BootSector.GetDataOffset(), 71, 11);
                 RootCluster = BitConverter.ToInt32(BootSector, 44);
                 RootSector = 0;
                 RootSectorCount = 0;
@@ -118,20 +116,11 @@ namespace Atomix.Kernel_H.IO.FileSystem
                 RootSectorCount = (DirectoryEntry * 32 + (BytePerSector - 1)) / BytePerSector;
                 fatEntries = SectorsPerFAT * 512 / 4;
             }
+
             /* Now it shows our forward path ;) */
             EntriesPerSector = BytePerSector / 32;
             DataSector = ReservedSector + (TotalFAT * SectorsPerFAT) + RootSectorCount;
             return true;
-        }
-
-        internal override Directory CreateDirectory(string aName)
-        {
-            return null;
-        }
-
-        internal override File CreateFile(string aName)
-        {
-            return null;
         }
 
         internal override FSObject FindEntry(string aName)
@@ -139,136 +128,18 @@ namespace Atomix.Kernel_H.IO.FileSystem
             throw new NotImplementedException();
         }
 
-        internal override Stream GetFile(string[] path, int pointer)
-        {
-            FatFileLocation FileLocation = ChangeDirectory(path, pointer);
-            if (FileLocation == null)
-                return null;
-
-            var xStream = new FatStream(this, path[path.Length - 1], FileLocation.FirstCluster, FileLocation.Size);
-            return xStream;
-        }
-
-        private FatFileLocation ChangeDirectory(string[] path, int pointer)
-        {
-            int CurrentCluster = RootCluster;
-            var Compare = new WithName(null);
-            FatFileLocation location = null;
-            while (pointer < path.Length)
-            {
-                Compare.Name = path[pointer];
-                location = FindEntry(Compare, CurrentCluster);
-                if (location == null)
-                    return null;
-                CurrentCluster = location.FirstCluster;
-                pointer++;
-            }
-
-            return location;
-        }
-
-        private FatFileLocation FindEntry(Comparison compare, int startCluster)
-        {
-            int activeSector = ((startCluster - RootCluster) * SectorsPerCluster) + DataSector;
-
-            if (startCluster == 0)
-                activeSector = (FatType == FatType.FAT32) ? GetSectorByCluster(RootCluster) : RootSector;
-
-            byte[] aData = new byte[BytePerSector * SectorsPerCluster];
-            ReadBlock(aData, activeSector, SectorsPerCluster);
-
-            for (uint index = 0; index < EntriesPerSector * SectorsPerCluster; index++)
-            {
-                int offset = (int)(index * (int)Entry.EntrySize);
-                if (compare.Compare(aData, offset, FatType))
-                {
-                    FatFileAttributes attribute = (FatFileAttributes)aData[offset + (int)Entry.FileAttributes];
-                    return new FatFileLocation(
-                        GetClusterEntry(aData, index, FatType),
-                        activeSector,
-                        index,
-                        (attribute & FatFileAttributes.SubDirectory) != 0,
-                        BitConverter.ToInt32(aData, offset + (int)Entry.FileSize));
-                }
-
-                if (aData[(int)Entry.DOSName + offset] == (int)FileNameAttribute.LastEntry)
-                    break;
-            }
-
-            return null;
-        }
-
-        internal uint GetClusterEntryValue(int cluster)
-        {
-            int fatoffset = cluster<<2;
-            int sector = ReservedSector + (fatoffset / BytePerSector);
-            int sectorOffset = (int)(fatoffset % BytePerSector);
-
-            var aData = new byte[512];
-            ReadBlock(aData, sector, 1);
-            var xNextCluster = (BitConverter.ToUInt32(aData, sectorOffset) & 0x0FFFFFFF);
-
-            return xNextCluster;
-        }
-
-        private int GetSectorByCluster(int cluster)
-        {
-            return DataSector + ((cluster - RootCluster) * SectorsPerCluster);
-        }
-
-        internal static uint GetClusterEntry(byte[] data, uint index, FatType type)
-        {
-            uint cluster = BitConverter.ToUInt16(data, (int)((uint)Entry.FirstCluster + (index * (uint)Entry.EntrySize)));
-
-            if (type == FatType.FAT32)
-                cluster |= (uint)BitConverter.ToUInt16(data, (int)((uint)Entry.EAIndex + (index * (uint)Entry.EntrySize))) << 16;
-
-            if (cluster == 0)
-                cluster = 2;
-
-            return cluster;
-        }
-
-        internal static bool IsClusterBad(uint Cluster)
-        {
-            // Values are depend only on FAT 32 FS
-            return (Cluster == 0x0FFFFFF7);
-        }
-
-        internal static bool IsClusterFree(uint Cluster)
-        {
-            // Values are depend only on FAT 32 FS
-            return (Cluster == 0x0);
-        }
-
-        internal static bool IsClusterReserved(uint Cluster)
-        {
-            // Values are depend only on FAT 32 FS
-            return ((Cluster == 0x0) || (Cluster >= 0xFFF0) && (Cluster < 0x0FFFFFF7));
-        }
-
-        internal static bool IsClusterLast(uint Cluster)
-        {
-            // Values are depend only on FAT 32 FS
-            return (Cluster == 0x0FFFFFF8);
-        }
-
         internal bool ReadBlock(byte[] aBuffer, int aBlockIndex, int aBlockCount)
         {
-            int Count = BytePerSector * aBlockCount;
-            if (Count > aBuffer.Length)
-                return false;
-            Device.Seek(aBlockIndex * BytePerSector, FileSeek.Origin);
-            return Device.Read(aBuffer, Count) == Count;
+            int count = BytePerSector * aBlockCount;
+            int offset = aBlockIndex * BytePerSector;
+            return Device.Read(aBuffer, offset, count) == count;
         }
 
         internal bool WriteBlock(byte[] aBuffer, int aBlockIndex, int aBlockCount)
         {
-            int Count = BytePerSector * aBlockCount;
-            if (Count > aBuffer.Length)
-                return false;
-            Device.Seek(aBlockIndex * BytePerSector, FileSeek.Origin);
-            return Device.Write(aBuffer, Count) == Count;
+            int count = BytePerSector * aBlockCount;
+            int offset = aBlockIndex * BytePerSector;
+            return Device.Write(aBuffer, offset, count) == count;
         }
 
         internal void PrintDebugInfo()

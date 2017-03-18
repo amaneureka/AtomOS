@@ -5,7 +5,6 @@
 * PROGRAMMERS:      Aman Priyadarshi (aman.eureka@gmail.com)
 */
 
-using System;
 using System.Runtime.InteropServices;
 
 using Atomixilc.Lib;
@@ -46,7 +45,7 @@ namespace Atomix.Kernel_H.IO.FileSystem
 
         internal override FSObject FindEntry(string aName)
         {
-            throw new NotImplementedException();
+            return mFiles.GetValue(aName, null);
         }
 
         [StructLayout(LayoutKind.Explicit, Size = 40)]
