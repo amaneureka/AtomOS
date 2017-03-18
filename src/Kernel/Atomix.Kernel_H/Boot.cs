@@ -8,12 +8,12 @@
 using System;
 
 using Atomixilc.Lib;
-using Atomix.Kernel_H.Lib.Cairo;
 using Atomix.Kernel_H.IO;
 using Atomix.Kernel_H.Gui;
 using Atomix.Kernel_H.Core;
 using Atomix.Kernel_H.Devices;
 using Atomix.Kernel_H.Arch.x86;
+using Atomix.Kernel_H.Lib.Cairo;
 using Atomix.Kernel_H.Drivers.Video;
 using Atomix.Kernel_H.IO.FileSystem;
 

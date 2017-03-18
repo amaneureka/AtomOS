@@ -168,7 +168,7 @@ namespace Atomix.Kernel_H
             VBE.Init();
 
             /* Initialise Virtual File system */
-            VFS.Install();
+            VirtualFileSystem.Install();
 
             /* Setup Syscall */
             Syscall.Setup();

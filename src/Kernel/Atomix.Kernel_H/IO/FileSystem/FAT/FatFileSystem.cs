@@ -128,6 +128,34 @@ namespace Atomix.Kernel_H.IO.FileSystem
             throw new NotImplementedException();
         }
 
+        internal FSObject FindEntry(Comparison compare, int startCluster)
+        {
+            int activeSector = ((startCluster - RootCluster) * SectorsPerCluster) + DataSector;
+
+            if (startCluster == 0)
+            {
+                activeSector = RootSector;
+                if (FatType == FatType.FAT32)
+                    activeSector = GetSectorByCluster(RootCluster);
+            }
+
+            byte[] aData = new byte[BytePerSector * SectorsPerCluster];
+            ReadBlock(aData, activeSector, SectorsPerCluster);
+
+            int offset = 0;
+            for (int index = 0; index < EntriesPerSector * SectorsPerCluster; index++)
+            {
+                offset += (int)Entry.EntrySize;
+            }
+
+            return null;
+        }
+
+        internal int GetSectorByCluster(int cluster)
+        {
+            return DataSector + ((cluster - RootCluster) * SectorsPerCluster);
+        }
+
         internal bool ReadBlock(byte[] aBuffer, int aBlockIndex, int aBlockCount)
         {
             int count = BytePerSector * aBlockCount;
